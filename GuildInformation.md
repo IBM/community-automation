@@ -1,0 +1,1 @@
+# CloudPak Automation Guild Details
