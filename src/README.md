@@ -1,5 +1,5 @@
-# Source Code for Automation Services
+# Source Code for common Automation implementations
 
-place holder for common automation services
+place holder for common automation implementations
 
 Implementation details pending.
