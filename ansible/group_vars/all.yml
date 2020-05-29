@@ -1,0 +1,5 @@
+---
+
+## ocp-cs required vars
+cs_install: false
+

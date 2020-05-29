@@ -1,0 +1,74 @@
+---
+# tasks file for ocp4 common services
+
+- name: Create setup directory
+  file:
+    path: "{{ cs_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - absent
+  - directory
+
+- name: Generate config yaml files
+  template:
+    src: "{{ item }}.yaml.j2"
+    dest: "{{ cs_setup_dir }}/{{ item }}.yaml"
+  with_items:
+  - cs-group
+  - cs-request
+  - cs-sub
+  - opencloudio-source
+    
+- name: Retrieve default StorageClass
+  shell: |
+    oc get storageclass | grep "(default)" | awk '{print $1}'
+  register: default_sc
+  
+- name: Making default StorageClass
+  when: default_sc.stdout|length|int > 0
+  shell: |
+    oc patch storageclass {{ default_sc.stdout }} -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
+    
+- name: Making user specified StorageClass as default
+  shell: |
+    oc patch storageclass {{ storageclass_name }} -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
+    
+- name: Apply the CRDs
+  shell: |
+    oc apply -f opencloudio-source.yaml
+    oc new-project {{ cs_project_name }}
+    oc apply -f cs-group.yaml
+    oc apply -f cs-sub.yaml
+  args:
+    chdir: "{{ cs_setup_dir }}"
+    
+# The Operand Deployment Lifecycle Manager is not always available immediately
+- name: Waiting for Operand Deployment Lifecycle Manager to complete
+  shell: "oc get csv --no-headers | grep Succeeded | wc -l"
+  register: operand_count
+  until: operand_count.stdout|int != 0
+  retries: 10
+  delay: 30
+  
+- name: Deploy list of operands requested
+  shell: |
+    oc apply -f cs-request.yaml
+  args:
+    chdir: "{{ cs_setup_dir }}"
+
+- name: Waiting for all ClusterServiceVersion to initialize
+  shell: |
+    oc get csv --no-headers | grep -v 'ibm-common-service-operator*\|operand-deployment-lifecycle-manager*' | wc -l
+  register: csvi_count
+  until: csvi_count.stdout|int == cs_operand_list|length|int
+  retries: 15
+  delay: 30
+
+- name: Waiting for all ClusterServiceVersion to complete
+  shell: "oc get csv --no-headers | grep -v Succeeded | wc -l"
+  register: csvc_count
+  until: csvc_count.stdout|int == 0
+  retries: 15
+  delay: 60
+
