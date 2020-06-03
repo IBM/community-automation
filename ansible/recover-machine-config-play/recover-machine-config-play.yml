@@ -1,0 +1,6 @@
+---
+- hosts: ocp-clusters
+  gather_facts: false
+  roles: 
+  - role: recover-machine-config 
+
