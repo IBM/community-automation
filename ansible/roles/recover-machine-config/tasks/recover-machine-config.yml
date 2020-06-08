@@ -1,0 +1,30 @@
+---
+-name: "oc login"
+ shell: "oc login {{ ocp_api_url }} -u {{ kubeadmin_username }} -p {{ kubeadmin_password }} --insecure-skip-tls-verify=true"
+ changed_when: false
+
+-name: "check machine-config failure"
+ shell: "oc adm upgrade"
+ register: check_machine_config
+ changed_when: false
+
+- when: '"has not yet successfully rolled out" in check_machine_config.stdout'
+  block:  
+  -name: "query machine config"
+   shell: "oc "
+   register: machine_config
+   changed_when: false
+
+  -name: "get list of master nodes"
+   shell: oc get nodes -l node-role.kubernetes.io/master="" -o name
+   register: master_nodes
+   changed_when: false
+
+  -name: "touch machine config daemon file on each master node"
+   shell: oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force
+   with_items: "{{ master_nodes.stdout_lines }}"
+
+  -name: "patch machine config on each master node"
+   shell: oc patch node {{ item }}  -p '{"metadata": {"annotations": {"machineconfiguration.openshift.io/currentConfig": "'{{ machine-config }}'"}}}'
+   with_items: "{{ master_nodes.stdout_lines }}"
+

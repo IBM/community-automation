@@ -1,12 +1,11 @@
 ---
 #ocp-cs vars
-cs_install: false
 cs_setup_dir: ~/setup-files/cs-setup
 cs_operator_name: ibm-common-service-operator
 cs_project_name: ibm-common-services
-cs_subscription_channel: dev
+cs_subscription_channel: stable-v1
 cs_subscription_strategy: Automatic
 cs_starting_csv: ibm-common-service-operator.v3.4.1
 cs_operand_list: ["ibm-cert-manager-operator","ibm-mongodb-operator","ibm-iam-operator","ibm-monitoring-exporters-operator","ibm-monitoring-prometheusext-operator","ibm-monitoring-grafana-operator","ibm-healthcheck-operator","ibm-management-ingress-operator","ibm-metering-operator","ibm-commonui-operator","ibm-ingress-nginx-operator"]
-storageclass_name: managed-nfs-storage
+storageclass_name: ""
 
