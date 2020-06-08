@@ -18,31 +18,32 @@
   - cs-group
   - cs-request
   - cs-sub
-  - opencloudio-source
-    
+  - opencloud-source
+
 - name: Retrieve default StorageClass
   shell: |
     oc get storageclass | grep "(default)" | awk '{print $1}'
   register: default_sc
-  
-- name: Making default StorageClass
-  when: default_sc.stdout|length|int > 0
+
+- name: Reset default StorageClass
+  when: default_sc.stdout|length|int > 0 and storageclass_name != ""
   shell: |
     oc patch storageclass {{ default_sc.stdout }} -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "false"}}}'
-    
+
 - name: Making user specified StorageClass as default
+  when: storageclass_name != ""
   shell: |
     oc patch storageclass {{ storageclass_name }} -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
-    
+
 - name: Apply the CRDs
   shell: |
-    oc apply -f opencloudio-source.yaml
+    oc apply -f opencloud-source.yaml
     oc new-project {{ cs_project_name }}
     oc apply -f cs-group.yaml
     oc apply -f cs-sub.yaml
   args:
     chdir: "{{ cs_setup_dir }}"
-    
+
 # The Operand Deployment Lifecycle Manager is not always available immediately
 - name: Waiting for Operand Deployment Lifecycle Manager to complete
   shell: "oc get csv --no-headers | grep Succeeded | wc -l"
@@ -50,7 +51,7 @@
   until: operand_count.stdout|int != 0
   retries: 10
   delay: 30
-  
+
 - name: Deploy list of operands requested
   shell: |
     oc apply -f cs-request.yaml
