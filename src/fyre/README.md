@@ -1,1 +1,0 @@
-## Common fyre automation implementation
