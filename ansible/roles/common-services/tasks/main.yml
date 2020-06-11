@@ -12,13 +12,14 @@
 
 - name: Generate config yaml files
   template:
-    src: "{{ item }}.yaml.j2"
-    dest: "{{ cs_setup_dir }}/{{ item }}.yaml"
+    src: "{{ item }}.j2"
+    dest: "{{ cs_setup_dir }}/{{ item }}"
   with_items:
-  - cs-group
-  - cs-request
-  - cs-sub
-  - opencloud-source
+  - cs-group.yaml
+  - cs-request.yaml
+  - cs-sub.yaml
+  - opencloud-source.yaml
+  - cs-validation.bash
 
 - name: Retrieve default StorageClass
   shell: |
@@ -72,4 +73,10 @@
   until: csvc_count.stdout|int == 0
   retries: 15
   delay: 60
+
+- name: Validation with statefulsets and jobs
+  shell: "bash cs-validation.bash"
+  delay: 60
+  args:
+    chdir: "{{ cs_setup_dir }}"
 

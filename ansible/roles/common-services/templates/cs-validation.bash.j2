@@ -1,0 +1,105 @@
+#!/bin/bash
+
+declare -i exit_code=0
+declare -i ROUND=0
+declare -i count_sub=0
+declare -i count_csv=0
+strict_validation={{ strict_validation }}
+NAMESPACE=ibm-common-services
+NAMESPACE_ODLM=common-service
+
+# check statefulsets to make sure running normal
+func_check_statefulsets () {
+   ROUND=0
+   # we assume mongodb is mandatory for CS
+   while ! oc -n $NAMESPACE get statefulsets icp-mongodb 2>/dev/null; do
+      echo -e "	.!. waiting for mongo to appear round $ROUND"
+      ROUND=$((ROUND+1))
+      sleep 30
+   done
+   ROUND=0
+   while oc get statefulset -n $NAMESPACE | egrep "0/1|0/2|1/2|0/3|1/3|2/3"; do
+      ROUND=$((ROUND+1))
+      echo "Waiting for statefulsets round $ROUND..."
+      sleep 30
+      if [[ $ROUND -gt 40 ]]; then
+         if [[ "$strict_validation" != "yes" ]]; then
+            echo -e "	!.! statefulsets timeout"
+            break
+         fi
+      fi
+   done
+}
+
+# check job status to make sure finished
+func_check_jobs () {
+   echo "Make sure jobs are finished"
+   ROUND=0
+   while oc get jobs -n $NAMESPACE | egrep "0/1|0/2|1/2|0/3|1/3|2/3"; do
+      echo "Waiting for jobs to finish round $ROUND..."
+      ROUND=$((ROUND+1))
+      sleep 30
+      if [[ $ROUND -gt 30 ]]; then
+         if [[ "$strict_validation" != "yes" ]]; then
+            echo -e "	!.! jobs timeout"
+            break
+         fi
+      fi
+   done
+}
+
+# verify installation status
+func_status () {
+   oc get pods -n $NAMESPACE | egrep -v "Running|Completed"
+   sleep 10
+   if oc get pods -n $NAMESPACE | egrep -i "configerror"; then
+      echo -e "!!! pod config errors"
+      exit_code=1
+   fi
+   if oc get pods -n $NAMESPACE | egrep -i "imagepull|invalidimage"; then
+      echo -e "!!! pod image issue"
+      exit_code=1
+   fi
+   if oc get jobs -n $NAMESPACE | egrep -i "0/1|0/2|1/2|0/3|1/3|2/3"; then
+      if [[ "$strict_validation" != "yes" ]]; then
+         echo -e "!.! job issue, ... do not abort for now"
+         sleep 60
+      else
+         echo -e "!!! job issue"
+         exit_code=1
+      fi
+   fi
+   if oc get csv -n $NAMESPACE | egrep -i "pengding|failed"; then
+      echo -e "!!! csv issue"
+      exit_code=1
+   else
+      count_sub=`oc get sub -n $NAMESPACE | wc -l`
+      count_csv=`oc get csv -n $NAMESPACE | wc -l`
+      if [[ $count_csv -lt $count_sub ]]; then
+         echo -e "!!! csv issue"
+         exit_code=1
+      fi
+   fi
+   if oc get statefulset -n $NAMESPACE | egrep -i "0/1|0/2|1/2|0/3|1/3|2/3"; then
+      echo -e "!!! statefulset issue"
+      exit_code=1
+   fi
+   if oc get operandregistry,operandconfig,operandrequest -n $NAMESPACE | egrep -i fail; then
+      if [[ "$strict_validation" != "yes" ]]; then
+         echo -e "!.! operand issue, ... do not abort for now"
+      else
+         echo -e "!!! operand issue"
+         exit_code=1
+      fi
+   fi
+}
+
+####               ####
+##    Main Logic     ##
+####               ####
+func_check_statefulsets
+func_check_jobs
+func_status
+
+exit $exit_code
+

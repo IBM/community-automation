@@ -6,6 +6,6 @@ cs_project_name: ibm-common-services
 cs_subscription_channel: stable-v1
 cs_subscription_strategy: Automatic
 cs_starting_csv: ibm-common-service-operator.v3.4.1
-cs_operand_list: ["ibm-cert-manager-operator","ibm-mongodb-operator","ibm-iam-operator","ibm-monitoring-exporters-operator","ibm-monitoring-prometheusext-operator","ibm-monitoring-grafana-operator","ibm-healthcheck-operator","ibm-management-ingress-operator","ibm-metering-operator","ibm-commonui-operator","ibm-ingress-nginx-operator"]
+cs_operand_list: ["ibm-cert-manager-operator","ibm-mongodb-operator","ibm-iam-operator","ibm-monitoring-exporters-operator","ibm-monitoring-prometheusext-operator","ibm-monitoring-grafana-operator","ibm-healthcheck-operator","ibm-management-ingress-operator","ibm-metering-operator","ibm-commonui-operator","ibm-ingress-nginx-operator","ibm-platform-api-operator"]
 storageclass_name: ""
-
+strict_validation: true
