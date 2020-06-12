@@ -21,6 +21,7 @@ Role Variables
 | cs_starting_csv          | no       | ibm-common-service-operator.v3.4.1 | Cluster Service Version for instaling Common Services     |
 | cs_operand_list          | no       | ["ibm-cert-manager-operator","ibm-mongodb-operator","ibm-iam-operator","ibm-monitoring-exporters-operator","ibm-monitoring-prometheusext-operator","ibm-monitoring-grafana-operator","ibm-healthcheck-operator","ibm-management-ingress-operator","ibm-metering-operator","ibm-commonui-operator","ibm-ingress-nginx-operator"] | List of Common Services Operators to install |
 | storageclass_name        | no       | managed-nfs-storage                | StorageClass name                                         |
+| strict_validation        | no       | true                               | Specify if to validate deployment strictly                |
 
 Dependencies
 ------------
