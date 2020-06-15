@@ -4,13 +4,14 @@
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We desided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
 ## Jenkins
-https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/j
+[Community Jenkins Server](https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/)
 
 ## Ansible
-https://docs.ansible.com/ansible/latest/user_guide/index.html
+[Ansible Documentation](https://docs.ansible.com/ansible/latest/user_guide/index.html)
 
 ## Folder Structure
 The folder structure was taken from the [ansible best practices document](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
+
 
 The following is a snippet to help understand the folder structure and how we are using it.  
 We have plays and roles, and each are at the top level under ansible/.  
