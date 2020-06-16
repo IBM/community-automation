@@ -50,7 +50,7 @@ func_check_jobs () {
 
 # verify installation status
 func_status () {
-   oc get pods -n $NAMESPACE | egrep -v "Running|Completed"
+   # oc get pods -n $NAMESPACE | egrep -v "Running|Completed"
    sleep 10
    if oc get pods -n $NAMESPACE | egrep -i "configerror"; then
       echo -e "!!! pod config errors"
@@ -97,8 +97,8 @@ func_status () {
 ####               ####
 ##    Main Logic     ##
 ####               ####
-func_check_statefulsets
-func_check_jobs
+# func_check_statefulsets
+# func_check_jobs
 func_status
 
 exit $exit_code
