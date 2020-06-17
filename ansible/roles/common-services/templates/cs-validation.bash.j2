@@ -6,7 +6,7 @@ declare -i count_sub=0
 declare -i count_csv=0
 strict_validation={{ strict_validation }}
 NAMESPACE=ibm-common-services
-NAMESPACE_ODLM=common-service
+NAMESPACE_ODLM={{ cs_operator_project_name }}
 
 # check statefulsets to make sure running normal
 func_check_statefulsets () {
@@ -22,7 +22,7 @@ func_check_statefulsets () {
       ROUND=$((ROUND+1))
       echo "Waiting for statefulsets round $ROUND..."
       sleep 30
-      if [[ $ROUND -gt 40 ]]; then
+      if [[ $ROUND -gt 10 ]]; then
          if [[ "$strict_validation" != "yes" ]]; then
             echo -e "	!.! statefulsets timeout"
             break
@@ -39,7 +39,7 @@ func_check_jobs () {
       echo "Waiting for jobs to finish round $ROUND..."
       ROUND=$((ROUND+1))
       sleep 30
-      if [[ $ROUND -gt 30 ]]; then
+      if [[ $ROUND -gt 10 ]]; then
          if [[ "$strict_validation" != "yes" ]]; then
             echo -e "	!.! jobs timeout"
             break
@@ -97,8 +97,8 @@ func_status () {
 ####               ####
 ##    Main Logic     ##
 ####               ####
-# func_check_statefulsets
-# func_check_jobs
+func_check_statefulsets
+func_check_jobs
 func_status
 
 exit $exit_code

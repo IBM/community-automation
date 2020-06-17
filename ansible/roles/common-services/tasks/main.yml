@@ -10,7 +10,7 @@
   - absent
   - directory
 
-- name: Generate config yaml files
+- name: Generate config files
   template:
     src: "{{ item }}.j2"
     dest: "{{ cs_setup_dir }}/{{ item }}"
@@ -39,22 +39,23 @@
 - name: Apply the CRDs
   shell: |
     oc apply -f opencloud-source.yaml
-    oc new-project {{ cs_project_name }}
-    oc apply -f cs-group.yaml
-    oc apply -f cs-sub.yaml
+    oc new-project {{ cs_operator_project_name }}
+    sleep 5
+    oc -n {{ cs_operator_project_name }} apply -f cs-group.yaml
+    oc -n {{ cs_operator_project_name }} apply -f cs-sub.yaml
   args:
     chdir: "{{ cs_setup_dir }}"
 
 # The Operand Deployment Lifecycle Manager is not always available immediately
 - name: Waiting for Operand Deployment Lifecycle Manager to complete
-  shell: "oc get csv --no-headers | grep Succeeded | wc -l"
+  shell: "oc -n {{ cs_operator_project_name }} get csv --no-headers | grep operand-deployment-lifecycle-manager | grep Succeeded | wc -l"
   register: operand_count
   until: operand_count.stdout|int != 0
   retries: 10
   delay: 30
 
-- name: Making sure crd OperandConfig is present
-  shell: "oc get operandconfig --no-headers | grep common-service | wc -l"
+- name: Making sure CRD OperandConfig is present
+  shell: "oc -n ibm-common-services get operandconfig --no-headers | grep common-service | wc -l"
   register: crdc_count
   until: crdc_count.stdout|int == 1
   retries: 10
@@ -68,43 +69,42 @@
 
 - name: Waiting for all ClusterServiceVersion to initialize
   shell: |
-    oc get csv --no-headers | grep -v 'ibm-common-service-operator*\|operand-deployment-lifecycle-manager*' | wc -l
+    oc -n ibm-common-services get csv --no-headers | grep -v operand-deployment-lifecycle-manager | wc -l
   register: csvi_count
   until: csvi_count.stdout|int == cs_operand_list|length|int
   retries: 15
   delay: 60
 
 - name: Waiting for all ClusterServiceVersion to complete
-  shell: "oc get csv --no-headers | grep -v Succeeded | wc -l"
+  shell: "sleep 30; oc -n ibm-common-services get csv --no-headers | grep -v Succeeded | wc -l"
   register: csvc_count
   until: csvc_count.stdout|int == 0
   retries: 45
-  delay: 60
+  delay: 30
 
 - name: Make sure Mongodb is present
-  shell: "oc get statefulset --no-headers | grep -i mongodb | wc -l"
+  shell: "oc -n ibm-common-services get statefulset --no-headers | grep -i mongodb | wc -l"
   register: mongo_count
   until: mongo_count.stdout|int != 0
   retries: 10
-  delay: 60
+  delay: 30
 
 - name: Make sure all Statefulsets are healthy
-  shell: "oc get statefulset --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
+  shell: "sleep 30; oc -n ibm-common-services get statefulset --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
   register: statefulset_unhealthy
   until: statefulset_unhealthy.stdout|int == 0
-  retries: 15
-  delay: 60
+  retries: 30
+  delay: 30
 
 - name: Make sure all jobs are completed
-  shell: "oc get job --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
+  shell: "sleep 30; oc -n ibm-common-services get job --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
   register: job_notcompleted
   until: job_notcompleted.stdout|int == 0
   retries: 15
-  delay: 60
+  delay: 30
 
 - name: Validation with statefulsets and jobs
   shell: "bash cs-validation.bash"
-  delay: 60
   args:
     chdir: "{{ cs_setup_dir }}"
 
