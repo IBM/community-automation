@@ -20,8 +20,8 @@
 
 - name: Make oc global
   shell: "cp oc /usr/local/bin"
-  
-- name: Give script execute auth
+
+- name: Give scripts execute auth
   shell: "chmod +x {{ bastion_setup_dir }}/*.sh"
 
 - name: Install csi-cephfs
@@ -40,6 +40,6 @@
       warn: false
   register: waitceph
 
-- name: Wait for csi-cephfs pods to go to Running
+- name: Viewing wait-for-csi-cephfs pods to go to Running Log
   debug:
     msg: "{{ waitceph.stdout }}"

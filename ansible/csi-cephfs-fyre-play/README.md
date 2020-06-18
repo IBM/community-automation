@@ -10,7 +10,7 @@
 
 - From the `csi-cephfs-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
 - Modify `fyre.inf.node.9dot.ip` variable in the `inventory` file with the 9dot ip of the inf node in your fyre OCP+Beta cluster.
--Modify `fyre.root.pw` variable in the `inventory` file  with your fyre root password.
+- Modify `fyre.root.pw` variable in the `inventory` file  with your fyre root password.
 
 ```
 cp examples/inventory .
