@@ -1,0 +1,4 @@
+---
+#ocp-cs vars
+bastion_host_ip:
+bastion_host_root_pw: ibm-common-services

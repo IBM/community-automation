@@ -1,0 +1,45 @@
+---
+# tasks file for ocp4 common services
+hosts: bastion
+  become: yes
+  become_user: root
+
+- name: Create setup directory
+  file:
+    path: "{{ bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - absent
+  - directory
+
+- name: Copy scripts to bastion host
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ bastion_setup_dir }}/{{ item }}"
+  with_items:
+  - csi-ceph.sh
+  - wait-for-csi-ceph.sh
+
+- name: Make oc global
+  shell: "cp oc /usr/local/bin"
+
+- name: Install csi-cephfs
+  shell: "{{ bastion_setup_dir }}/csi-ceph.sh"
+  args:
+      warn: false
+  register: cephinstall
+
+- name: Viewing csi-cephfs install log
+  debug:
+    msg: "{{ cephinstall.stdout }}"
+
+- name: Wait for ceph to finish pod bring-up
+  shell: "{{ bastion_setup_dir }}/wait-for-csi-ceph.sh"
+  args:
+      warn: false
+  register: waitceph
+
+- name: Wait for csi-cephfs pods to go to Running
+  debug:
+    msg: "{{ waitceph.stdout }}"
