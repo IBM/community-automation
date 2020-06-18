@@ -1,8 +1,8 @@
 ---
 # tasks file for ocp4 common services
 hosts: bastion
-  become: yes
-  become_user: root
+become: yes
+become_user: root
 
 - name: Create setup directory
   file:
