@@ -16,9 +16,9 @@
     dest: "{{ cs_setup_dir }}/{{ item }}"
   with_items:
   - cs-group.yaml
-  - cs-request.yaml
   - cs-sub.yaml
   - opencloud-source.yaml
+  - cs-request.bash
   - cs-validation.bash
 
 - name: Retrieve default StorageClass
@@ -54,26 +54,47 @@
   retries: 10
   delay: 30
 
-- name: Making sure CRD OperandConfig is present
-  shell: "oc -n ibm-common-services get operandconfig --no-headers | grep common-service | wc -l"
+- name: Making sure CRD OperandRegistry is present
+  shell: "oc -n ibm-common-services get operandregistry --no-headers | grep common-service | wc -l"
   register: crdc_count
   until: crdc_count.stdout|int == 1
   retries: 10
   delay: 30
 
-- name: Deploy list of operands requested
+- name: Query available operands
+  shell: oc -n ibm-common-services get operandregistry common-service -o jsonpath='{.spec.operators[*].name}'
+  register: oc_operands
+
+- name: Display available operands
+  debug:
+    msg: "{{ oc_operands.stdout.split() }}"
+
+- name: Generate OperandRequest
   shell: |
-    oc apply -f cs-request.yaml
+    bash cs-request.bash; cat operandrequest.yml
+  register: deploy_operands
   args:
     chdir: "{{ cs_setup_dir }}"
 
-- name: Waiting for all ClusterServiceVersion to initialize
+- name: Display generated OperandRequest
+  debug:
+    msg: "{{ deploy_operands.stdout_lines }}"
+
+- name: Deploy generated OperandRequest
   shell: |
+    oc project ibm-common-services
+    oc -n ibm-common-services apply -f operandrequest.yml
+  args:
+    chdir: "{{ cs_setup_dir }}"
+
+- name: Waiting for ClusterServiceVersion to initialize
+  shell: |
+    sleep 30
     oc -n ibm-common-services get csv --no-headers | grep -v operand-deployment-lifecycle-manager | wc -l
   register: csvi_count
-  until: csvi_count.stdout|int == cs_operand_list|length|int
+  until: csvi_count.stdout|int >= 1
   retries: 15
-  delay: 60
+  delay: 30
 
 - name: Waiting for all ClusterServiceVersion to complete
   shell: "sleep 30; oc -n ibm-common-services get csv --no-headers | grep -v Succeeded | wc -l"
@@ -108,3 +129,12 @@
   args:
     chdir: "{{ cs_setup_dir }}"
 
+- name: Query console admin password
+  shell: |
+    oc -n ibm-common-services get route cp-console -o jsonpath='{.spec.host}'; echo
+    oc -n ibm-common-services get secret platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 -d
+  register: cs_admin_password
+
+- name: Display console admin password
+  debug:
+    msg: "Console route is: {{ cs_admin_password.stdout_lines[0] }}    Console admin password is: {{ cs_admin_password.stdout_lines[1] }}"
