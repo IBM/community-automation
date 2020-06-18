@@ -1,10 +1,5 @@
 #!/bin/bash
 
-my_dir=$(dirname $(readlink -f $0))
-source $my_dir/../export_templates/fyre-vars
-
-# Log in to oc
-#$oclogin
 sleep_count=15
 while [[ $sleep_count -gt 0 ]]; do
   po_status=$(oc  get po -n rook-ceph | grep  -e  rook-ceph-mds-myfs | tr -s ' ')
