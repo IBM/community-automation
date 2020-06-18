@@ -1,4 +1,4 @@
-ocp-cs: Common Services on OCP
+csi-cephfs: csi cephfs on OCP
 =========
 
 This module will install csi-cephfs on fyre OCP+Beta clusters version 4.4.3 or later.
