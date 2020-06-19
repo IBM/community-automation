@@ -17,9 +17,14 @@
   with_items:
   - cs-group.yaml
   - cs-sub.yaml
-  - opencloud-source.yaml
+  - catalog-source.yaml
   - cs-request.bash
   - cs-validation.bash
+
+- name: Check for an oc connection
+  shell: |
+    oc cluster-info
+  register: oc_connection
 
 - name: Retrieve default StorageClass
   shell: |
@@ -38,7 +43,7 @@
 
 - name: Apply the CRDs
   shell: |
-    oc apply -f opencloud-source.yaml
+    oc apply -f catalog-source.yaml
     oc new-project {{ cs_operator_project_name }}
     sleep 5
     oc -n {{ cs_operator_project_name }} apply -f cs-group.yaml
@@ -104,10 +109,10 @@
   delay: 30
 
 - name: Make sure Mongodb is present
-  shell: "oc -n ibm-common-services get statefulset --no-headers | grep -i mongodb | wc -l"
+  shell: "sleep 30; oc -n ibm-common-services get statefulset --no-headers | grep -i mongodb | wc -l"
   register: mongo_count
   until: mongo_count.stdout|int != 0
-  retries: 10
+  retries: 5
   delay: 30
 
 - name: Make sure all Statefulsets are healthy
