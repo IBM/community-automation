@@ -1,5 +1,5 @@
 ---
-# tasks file for ocp4 common services
+# tasks git install
 
 - name: Install git on fyre inf node
   shell: "sudo dnf install git-all -y"
