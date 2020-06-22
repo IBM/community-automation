@@ -17,7 +17,7 @@
 
 - name: Copy wait-for-csi-cephfs script to dest
   copy:
-    cephfs_bastion_setup_dir: files/wait-for-csi-ceph.sh
+    src: files/wait-for-csi-ceph.sh
     dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
     mode: '0755'
 
