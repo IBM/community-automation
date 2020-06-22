@@ -11,15 +11,15 @@
 
 - name: Copy csi-cephfs script to dest
   copy:
-    scr: files/csi-ceph.sh
+    src: files/csi-ceph.sh
     dest: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
-    mode: '0644'
+    mode: '0755'
 
 - name: Copy wait-for-csi-cephfs script to dest
   copy:
-    scr: files/wait-for-csi-ceph.sh
+    cephfs_bastion_setup_dir: files/wait-for-csi-ceph.sh
     dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
-    mode: '0644'
+    mode: '0755'
 
 - name: Install csi-cephfs
   shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"

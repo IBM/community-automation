@@ -1,12 +1,11 @@
-csi-cephfs: csi cephfs on OCP
+git-install-fyre: git inf node of gyre on OCP cluster
 =========
 
-This module will install csi-cephfs on fyre OCP+Beta clusters version 4.4.3 or later.
+This module will install git onto the inf node of a fyre OCP+Beta clusters version 4.4.3 or later.
 
 Requirements
 ------------
- - oc client installed.
- - git client installed.
+
  - Running fyre OCP+Beta cluster is needed.
 
 
@@ -16,6 +15,7 @@ Example Playbook
     - name: Install csi-cephfs
       hosts: bastion
       roles:
+      - git-install-fyre
       - csi-cephfs-fyre
 
 License

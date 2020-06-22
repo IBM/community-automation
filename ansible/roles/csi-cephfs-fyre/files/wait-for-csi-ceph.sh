@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sleep_count=15
+sleep_count=30
 while [[ $sleep_count -gt 0 ]]; do
   po_status=$(oc  get po -n rook-ceph | grep  -e  rook-ceph-mds-myfs | tr -s ' ')
   if [[ -z $po_status ]] ; then
