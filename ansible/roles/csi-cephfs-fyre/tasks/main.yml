@@ -3,29 +3,26 @@
 
 - name: Create setup directory
   file:
-    path: "{{ bastion_setup_dir }}"
+    path: "{{ cephfs_bastion_setup_dir }}"
     state: "{{ item }}"
     mode: '0755'
   with_items:
-  - absent
   - directory
 
-- name: Copy scripts to bastion host
-  template:
-    src: "{{ item }}.j2"
-    dest: "{{ bastion_setup_dir }}/{{ item }}"
-  with_items:
-  - csi-ceph.sh
-  - wait-for-csi-ceph.sh
+- name: Copy csi-cephfs script to dest
+  copy:
+    scr: files/csi-ceph.sh
+    dest: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
+    mode: '0644'
 
-- name: Make oc global
-  shell: "cp oc /usr/local/bin"
-
-- name: Give scripts execute auth
-  shell: "chmod +x {{ bastion_setup_dir }}/*.sh"
+- name: Copy wait-for-csi-cephfs script to dest
+  copy:
+    scr: files/wait-for-csi-ceph.sh
+    dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
+    mode: '0644'
 
 - name: Install csi-cephfs
-  shell: "{{ bastion_setup_dir }}/csi-ceph.sh"
+  shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
   args:
       warn: false
   register: cephinstall
@@ -35,7 +32,7 @@
     msg: "{{ cephinstall.stdout }}"
 
 - name: Wait for ceph to finish pod bring-up
-  shell: "{{ bastion_setup_dir }}/wait-for-csi-ceph.sh"
+  shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
   args:
       warn: false
   register: waitceph

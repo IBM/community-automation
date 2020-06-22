@@ -4,10 +4,6 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 
 # Install ceph
 rm -rf rook
-echo "Doing Yum update"
-yum update -y
-echo "Doing git yum install"
-yum install git -y
 echo "Doing clone of rook"
 git clone https://github.com/rook/rook.git -b v1.1.7
 echo "Doing common.yaml"

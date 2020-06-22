@@ -2,4 +2,5 @@
 - name: Install csi-cephfs on fyre OCP+Beta env
   hosts: bastion
   roles:
+  - git-install-fyre
   - csi-cephfs-fyre
