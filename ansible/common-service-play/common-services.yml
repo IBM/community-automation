@@ -3,4 +3,3 @@
   hosts: bastion
   roles:
   - common-services
-
