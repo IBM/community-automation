@@ -1,2 +1,2 @@
 ---
-- include_task: git-install-fyre.yaml
+- include_tasks: git-install-fyre.yaml
