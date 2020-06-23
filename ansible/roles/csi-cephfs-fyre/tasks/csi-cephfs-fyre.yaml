@@ -1,0 +1,42 @@
+---
+# tasks csi-cephfs install
+
+- name: Create setup directory
+  file:
+    path: "{{ cephfs_bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - directory
+
+- name: Copy csi-cephfs script to dest
+  copy:
+    src: files/csi-ceph.sh
+    dest: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
+    mode: '0755'
+
+- name: Copy wait-for-csi-cephfs script to dest
+  copy:
+    src: files/wait-for-csi-ceph.sh
+    dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
+    mode: '0755'
+
+- name: Install csi-cephfs
+  shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
+  args:
+      warn: false
+  register: cephinstall
+
+- name: Viewing csi-cephfs install log
+  debug:
+    msg: "{{ cephinstall.stdout }}"
+
+- name: Wait for ceph to finish pod bring-up
+  shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
+  args:
+      warn: false
+  register: waitceph
+
+- name: Viewing wait-for-csi-cephfs pods to go to Running Log
+  debug:
+    msg: "{{ waitceph.stdout }}"
