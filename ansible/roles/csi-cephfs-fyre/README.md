@@ -11,7 +11,7 @@ Requirements
  - oc login to OCP cluster performed.
  - git client installed.
 
-How to install oc clinet
+How to install oc client
 ------------------------
  - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
  - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
@@ -27,11 +27,14 @@ How to install oc clinet
 
 Example Playbook
 ----------------
+- Install csi-cephfs on a fyre cluster before Common Services.
 
-    - name: Install csi-cephfs
-      hosts: bastion
-      roles:
-      - csi-cephfs-fyre
+ - name: Install common services
+   hosts: bastion
+   roles:
+   - csi-cephfs-fyre
+   - common-services
+
 
 License
 -------
