@@ -1,8 +1,12 @@
-# Ansible Playbook for Common Services Installation
+# Ansible Playbook for Fyre OCP+Beta Cluster Common Services Installation
 
 ## Assumptions:
 
- - A healthy OpenShift 4 cluster in running state.
+ - A healthy OCP+Beta OpenShift 4.4.6 or later cluster in running state.
+ - oc login has been completed to fyre cluster.
+   - Example oc login: `oc login https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>" `
+
+
 
 ## Setting up inventory
 
@@ -25,11 +29,10 @@ cp examples/cs_vars.yml .
 Once you have configured the vars & inventory file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory -e @cs_vars.yml common-services.yml
+ansible-playbook  -i inventory -e @cs_vars_fyre.yml common-services-fyre.yml
 ```
 
 License
 -------
 
 See LICENCE.txt
-
