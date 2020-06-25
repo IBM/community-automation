@@ -2,7 +2,7 @@
 
 ## Assumptions:
 
- - A healthy OCP+Beta OpenShift 4.4.6 or later cluster in running state.
+ - A healthy Fyre OCP+Beta OpenShift 4.4.6 or later cluster in running state.
  - oc login has been completed to fyre cluster.
    - Example oc login: `oc login https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>" `
 
@@ -23,7 +23,7 @@ cp examples/inventory .
 Make use of the sample file at `examples/cs_vars.yml`. Modify the values as per your cluster. For more information refer to examples.
 
 ```
-cp examples/cs_vars.yml .
+cp examples/cs_vars_fyre.yml .
 ```
 
 Once you have configured the vars & inventory file, run the playbook using:
