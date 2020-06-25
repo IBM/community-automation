@@ -1,9 +1,17 @@
 # Ansible Playbook for Fyre OCP+Beta Cluster Common Services Installation
 
+## Overvieww
+
+- Installs `csi-cephfs` storage on worker nodes using the /dev/vdb drive on each worker node.
+  - Creates file storage (rwo/rwx)  storageclass called `csi-cephfs` as the default storageclass.
+  - Creates block storageclass (rwo/rwx) `rook-ceph-block`
+- Installs `common-services` 3.4.1 GA by default.
+
 ## Assumptions:
 
  - A healthy Fyre OCP+Beta OpenShift 4.4.6 or later cluster in running state.
  - oc login has been completed to fyre cluster.
+ - Running on Ubuntu or Mac.
 
 
 ## How to install oc client
@@ -27,7 +35,7 @@ cp examples/inventory .
 
 #### Setting up variables for playbook
 
-Make use of the sample file at `examples/cs_vars.yml`. Modify the values as per your cluster. For more information refer to examples.
+Make use of the sample file at `examples/cs_vars_fyre.yml`. Modify the values as per your cluster. For more information refer to examples.
 
 ```
 cp examples/cs_vars_fyre.yml .
