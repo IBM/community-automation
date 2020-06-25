@@ -4,8 +4,15 @@
 
  - A healthy Fyre OCP+Beta OpenShift 4.4.6 or later cluster in running state.
  - oc login has been completed to fyre cluster.
-   - Example oc login: `oc login https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>" `
 
+
+## How to install oc client
+
+  - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
+  - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
+  - Extract: tar xf oc.tar.gz
+  - Move to /usr/local/bin: cp oc /usr/lcoal/bring
+  - Example oc login: `oc login https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
 
 
 ## Setting up inventory
