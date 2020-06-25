@@ -1,0 +1,6 @@
+---
+- name: Install common services onto OCP+Beta Fyre clusters
+  hosts: bastion
+  roles:
+  - csi-cephfs-fyre
+  - common-services
