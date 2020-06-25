@@ -1,0 +1,10 @@
+---
+# tasks git install
+
+- name: Install git on fyre inf node
+  shell: "sudo dnf install git-all -y"
+  register: gitinstall
+
+- name: Viewing git-install log
+  debug:
+    msg: "{{ gitinstall.stdout_lines }}"

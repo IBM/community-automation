@@ -1,0 +1,2 @@
+---
+- include_tasks: csi-cephfs-fyre.yaml
