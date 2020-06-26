@@ -138,19 +138,19 @@
   command: "ssh-keygen -R {{ fyre_inf_public_ip }}"
   changed_when: false 
   # changed_when: false Technically not true but change is not particularly meaningful
-  failure_when: false
+  failed_when: false
   delegate_to: localhost
 - name: remove new host from localhost known_hosts
   command: "ssh-keygen -R {{ fyre_inf_node_name }}"
   changed_when: false 
   # changed_when: false Technically not true but change is not particularly meaningful
-  failure_when: false
+  failed_when: false
   delegate_to: localhost
 - name: remove new host from localhost known_hosts fqdn
   command: "ssh-keygen -R {{ fyre_inf_node_name }}.fyre.ibm.com" 
   changed_when: false 
   # changed_when: false Technically not true but change is not particularly meaningful
-  failure_when: false
+  failed_when: false
   delegate_to: localhost
 
 - name: Add inf host to group
