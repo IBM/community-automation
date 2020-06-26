@@ -36,12 +36,12 @@
         cluster_name : "{{ clusterName }}"
         site: "{{fyre_site}}"
         ocp_version: "{{ ocpVersion }}"
-        master_quantity: 3
-        master_cpu: 4
-        master_memory: 8
-        worker_quantity: 3
-        worker_cpu: 4
-        worker_memory: 16 
+        master_quantity: "{{ fyre_master_quantity }}"
+        master_cpu: "{{ fyre_master_cpu }}"
+        master_memory: "{{ fyre_master_memory }}"
+        worker_quantity: "{{ fyre_worker_quantity }}"
+        worker_cpu: "{{ fyre_worker_cpu }}"
+        worker_memory: "{{ fyre_worker_memory }}"
     register: fyrestatus
   - name: check fyre status
     fail: 

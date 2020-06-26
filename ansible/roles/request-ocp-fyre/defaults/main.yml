@@ -5,3 +5,10 @@ fyre_opshowclusterurl: "{{ fyre_apiurl }}?operation=query&request=showclusters"
 fyre_ocp_inf_group: "ocp-clusters"
 fyre_inf_node_name: "{{ clusterName }}-inf"
 fyre_site: "svl"
+
+fyre_master_quantity: 3
+fyre_master_cpu: 4
+fyre_master_memory: 8
+fyre_worker_quantity: 3
+fyre_worker_cpu: 4
+fyre_worker_memory: 16
