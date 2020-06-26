@@ -1,0 +1,37 @@
+---
+# Download from URL oav and deploy to vCenter
+- name: Download ova to local folder
+  get_url:
+    url: '{{ ova_url }}'
+    dest: '{{ local_target_folder }}'
+    mode: '0644'
+  args:
+      warn: true
+  register: downloadova
+
+- name: Get download ova file name
+  debug:
+    msg: "{{ downloadova.stdout_lines }}"
+
+- name: ova file name
+  shell: "echo {{ ova_url }} | rev | cut -f1 -d'/' | rev"
+  register: ovafilename
+
+- name: echo ovafilename stdout vars
+  debug:
+    var: "{{ ovafilename }}"
+
+- vmware_deploy_ovf:
+    hostname: '{{ vcenter_ip }}'
+    username: '{{ vcenter_uid }}'
+    password: '{{ vcenter_pw }}'
+    datacenter: '{{ vcenter_datacenter }}'
+    cluster: '{{ vcenter_cluster }}'
+    datastore: '{{ vcenter_datastore }}'
+    name: "{{ ovafilename.stdout }}"
+    networks: "{u'{{ vcenter_network_label }}'}"
+    validate_certs: no
+    power_on: no
+    ovf: '{{ local_target_folder }}/{{ ovafilename.stdout }}'
+    folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+  delegate_to: localhost

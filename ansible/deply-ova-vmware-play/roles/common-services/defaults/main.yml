@@ -1,0 +1,12 @@
+---
+
+cs_setup_dir: ~/setup-files/cs-setup
+cs_operator_name: ibm-common-service-operator
+cs_operator_project_name: common-service
+cs_operator_catalog_image: docker.io/ibmcom/ibm-common-service-catalog:latest # this relates to subscription channel below, examples 3.4-beta, dev-latest, dev-20200631
+cs_subscription_channel: stable-v1 # this relates to catalog image above, examples beta, dev
+cs_subscription_strategy: Automatic
+cs_operand_list: [] # leave empty list by default enable all operands. support name and pattern. example for cpd ["licensing","metering","commonui","iam"]
+cs_operand_to_disable: ["elastic"] # support name and pattern to disable operands
+storageclass_name: ""
+strict_validation: true

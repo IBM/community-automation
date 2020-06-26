@@ -1,0 +1,167 @@
+---
+- name: Check OCP Existance
+  no_log: True
+  uri:
+    url: "{{fyre_clusterstatusurl}}"
+    method: "GET"
+    user: "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    validate_certs: False
+  register: ocpexistance
+  changed_when: false
+  failed_when: false
+
+- name: Create Fyre OCP
+  when: ocpexistance.json.status is defined # Status is only defined if cluster does not exist
+  block:
+  #START BLOCK
+  - debug:
+      msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
+
+  - name: Create Fyre stack
+    no_log: True
+    uri: 
+      url: "{{fyre_ocpdeployurl}}"
+      method: "POST"
+      user: "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      validate_certs: False
+      body_format: "json"
+      body: 
+        fyre: 
+          creds: 
+            username: "{{ fyreuser }}" 
+            api_key: "{{ fyreapikey }}"
+            public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"   
+        cluster_name : "{{ clusterName }}"
+        site: "{{fyre_site}}"
+        ocp_version: "{{ ocpVersion }}"
+        master_quantity: "{{ fyre_master_quantity }}"
+        master_cpu: "{{ fyre_master_cpu }}"
+        master_memory: "{{ fyre_master_memory }}"
+        worker_quantity: "{{ fyre_worker_quantity }}"
+        worker_cpu: "{{ fyre_worker_cpu }}"
+        worker_memory: "{{ fyre_worker_memory }}"
+    register: fyrestatus
+  - name: check fyre status
+    fail: 
+      msg: "{{ fyrestatus }}"
+    when: fyrestatus.json.status != 'submitted'
+    changed_when: false
+
+  - pause:
+      minutes: 2
+  # END BLOCK
+
+- name: check fyrestatus for error
+  no_log: True
+  uri:
+    url: "{{fyre_clusterstatusurl}}"
+    method: GET
+    user:  "{{ fyreuser }}"
+    validate_certs: False
+    password: "{{ fyreapikey }}"
+  changed_when: false
+  register: error_status
+
+- name: check for error status
+  fail:
+   msg: 
+   - "{{error_status.json.status}}"
+   - "{{error_status.json.details}}"
+  when: 
+  - error_status.json.status is defined
+  - (error_status.json.status) == 'error'
+
+- name: check that all fyre nodes have a deployed status
+  no_log: True
+  uri:
+    url: "{{fyre_clusterstatusurl}}"
+    method: GET
+    user:  "{{ fyreuser }}"
+    validate_certs: False
+    password: "{{ fyreapikey }}"
+    return_content: yes
+    body_format: json
+  changed_when: false
+  register: cluster_status_response
+  until: (cluster_status_response.status == 200) and (cluster_status_response.json[ clusterName ][0].status == "deployed") or (cluster_status_response.json[ clusterName ][0].status == "error")
+  retries: 300
+  delay: 20
+
+- name: check for error status after loop check
+  fail:
+   msg:
+   - "{{cluster_status_response.json.status}}"
+   - "{{cluster_status_response.json.details}}"
+  when:
+  - cluster_status_response.json.status is defined
+  - (cluster_status_response.json.status) == 'error'
+
+- name: check that bootstrap node is removed.  indicatator of installation progress for ocp
+  no_log: True
+  uri:
+    url: "{{fyre_clusterstatusurl}}"
+    method: GET
+    user:  "{{ fyreuser }}"
+    validate_certs: False
+    password: "{{ fyreapikey }}"
+    return_content: yes
+    body_format: json
+  changed_when: false
+  register: cluster_details_response
+  until: (cluster_details_response.status == 200) and (cluster_details_response.json[ clusterName ] | selectattr("node", 'equalto', clusterName+"-bootstrap") | list | count == 0)
+  retries: 240
+  delay: 30
+
+- name: check cluster status
+  no_log: True
+  uri:
+    url: "{{fyre_opshowclusterurl}}"
+    method: POST
+    user:  "{{ fyreuser }}"
+    validate_certs: False
+    password: "{{ fyreapikey }}"
+    return_content: yes
+    body_format: json
+  changed_when: false
+  register: all_user_clusters_response
+  until: (all_user_clusters_response.status == 200) and (all_user_clusters_response.json.clusters | selectattr('name', 'equalto', clusterName) | map(attribute='status') | list | first == 'deployed')
+  retries: 240
+  delay: 20
+
+- name: Derive Info from Fyre Api
+  no_log: True
+  set_fact:
+    fyre_inf_public_ip: "{{ cluster_details_response.json[clusterName] | selectattr('node', 'equalto', fyre_inf_node_name) | map(attribute='publicip') | list | first }}"
+    fyre_inf_root_password: "{{ cluster_details_response.json[clusterName] | selectattr('node', 'equalto', fyre_inf_node_name) | map(attribute='root_password') | list | first }}"
+
+- name: remove new host from localhost known_hosts ip
+  command: "ssh-keygen -R {{ fyre_inf_public_ip }}"
+  changed_when: false 
+  # changed_when: false Technically not true but change is not particularly meaningful
+  failed_when: false
+  delegate_to: localhost
+- name: remove new host from localhost known_hosts
+  command: "ssh-keygen -R {{ fyre_inf_node_name }}"
+  changed_when: false 
+  # changed_when: false Technically not true but change is not particularly meaningful
+  failed_when: false
+  delegate_to: localhost
+- name: remove new host from localhost known_hosts fqdn
+  command: "ssh-keygen -R {{ fyre_inf_node_name }}.fyre.ibm.com" 
+  changed_when: false 
+  # changed_when: false Technically not true but change is not particularly meaningful
+  failed_when: false
+  delegate_to: localhost
+
+- name: Add inf host to group
+  no_log: "True"
+  add_host:
+    name: "{{fyre_inf_public_ip}}"
+    groups: "{{ fyre_ocp_inf_group }}"
+    ansible_user: "root"
+    inf_public_ip: "{{fyre_inf_public_ip}}"
+    inf_root_password: "{{fyre_inf_root_password}}"
+    clusterName: "{{ clusterName }}"
+  changed_when: false

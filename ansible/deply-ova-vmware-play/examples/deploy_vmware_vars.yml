@@ -1,0 +1,12 @@
+---
+#Download from URL to local file then deploy ova to vcenter
+ova_url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/4.4.3/rhcos-4.4.3-x86_64-vmware.x86_64.ova
+vcenter_ip: 9.37.222.18
+vcenter_uid: <vcenter uid>@icovcpc65.rtp
+vcenter_pw: <pw>
+vcenter_datacenter: IOCDCPC1
+vcenter_datastore: ICOVCPC-RSX6-102
+vcenter_cluster: ICO01
+vcenter_network_label: VIS241
+vcenter_folder: krapohl/ova
+local_target_folder: ~/ova_cp_folder # <absolute path to local folder to copy ova into>
