@@ -1,0 +1,5 @@
+---
+- hosts: fyreApi
+  roles: 
+  - role: request-ocp-fyre
+

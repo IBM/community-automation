@@ -1,0 +1,7 @@
+fyre_apiurl: "https://api.fyre.ibm.com/rest/v1/"
+fyre_clusterstatusurl: "{{ fyreapiurl }}?operation=query&request=showclusterdetails&cluster_name={{ clusterName }}"
+fyre_ocpdeployurl: "{{ fyreapiurl }}?operation=deployopenshiftcluster"
+fyre_opshowclusterurl: "{{ fyreapiurl }}?operation=query&request=showclusters"
+fyre_ocp_inf_group: "ocp-clusters"
+fyre_inf_node_name: "{{ clusterName }}-inf"
+fyre_site: "svl"
