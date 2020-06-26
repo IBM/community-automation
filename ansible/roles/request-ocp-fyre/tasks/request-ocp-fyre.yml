@@ -12,7 +12,7 @@
   failed_when: false
 
 - name: Create Fyre OCP
-  when: ocpexistance.json.status is not defined # Status is only defined if cluster does not exist
+  when: ocpexistance.json.status is defined # Status is only defined if cluster does not exist
   block:
   #START BLOCK
   - debug:
@@ -95,8 +95,8 @@
    - "{{cluster_status_response.json.status}}"
    - "{{cluster_status_response.json.details}}"
   when:
-  - cluster_status_response.json.json.status is defined
-  - (cluster_status_response.json.json.status) == 'error'
+  - cluster_status_response.json.status is defined
+  - (cluster_status_response.json.status) == 'error'
 
 - name: check that bootstrap node is removed.  indicatator of installation progress for ocp
   no_log: True
@@ -110,7 +110,7 @@
     body_format: json
   changed_when: false
   register: cluster_details_response
-  until: (cluster_details_response.status == 200) and (cluster_details_response.json.[ clusterName ] | selectattr("node", 'equalto', clusterName+"-bootstrap") | list | count == 0)
+  until: (cluster_details_response.status == 200) and (cluster_details_response.json[ clusterName ] | selectattr("node", 'equalto', clusterName+"-bootstrap") | list | count == 0)
   retries: 240
   delay: 30
 
@@ -130,7 +130,9 @@
   retries: 240
   delay: 20
 
-- set_fact:
+- name: Derive Info from Fyre Api
+  no_log: True
+  set_fact:
     fyre_inf_public_ip: "{{ cluster_details_response.json[clusterName] | selectattr('node', 'equalto', fyre_inf_node_name) | map(attribute='publicip') | list | first }}"
     fyre_inf_root_password: "{{ cluster_details_response.json[clusterName] | selectattr('node', 'equalto', fyre_inf_node_name) | map(attribute='root_password') | list | first }}"
 
@@ -154,6 +156,7 @@
   delegate_to: localhost
 
 - name: Add inf host to group
+  no_log: "True"
   add_host:
     name: "{{fyre_inf_public_ip}}"
     groups: "{{ fyre_ocp_inf_group }}"
@@ -161,3 +164,4 @@
     inf_public_ip: "{{fyre_inf_public_ip}}"
     inf_root_password: "{{fyre_inf_root_password}}"
     clusterName: "{{ clusterName }}"
+  changed_when: false
