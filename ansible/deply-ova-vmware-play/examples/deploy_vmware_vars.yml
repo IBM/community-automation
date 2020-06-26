@@ -8,5 +8,5 @@ vcenter_datacenter: IOCDCPC1
 vcenter_datastore: ICOVCPC-RSX6-102
 vcenter_cluster: ICO01
 vcenter_network_label: VIS241
-vcenter_folder: krapohl/ova
+vcenter_folder: ova
 local_target_folder: ~/ova_cp_folder # <absolute path to local folder to copy ova into>
