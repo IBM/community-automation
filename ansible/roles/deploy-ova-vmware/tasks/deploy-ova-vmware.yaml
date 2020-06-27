@@ -1,25 +1,20 @@
 ---
 # Download from URL oav and deploy to vCenter
+
+- name: Get ova file name
+  shell: "echo {{ ova_url }} | rev | cut -f1 -d'/' |  cut -f2-  -d'.' | rev"
+  register: ovafilename
+
+- name: Setup local download folder
+  shell: |
+     mkdir -p {{ local_target_folder }}
+     chmod 777 {{ local_target_folder }}
+     rm -f {{ local_target_folder }}/{{ ovafilename.stdout }}.ova
+
 - name: Download ova to local folder
   get_url:
     url: '{{ ova_url }}'
     dest: '{{ local_target_folder }}'
-    mode: '0644'
-  args:
-      warn: true
-  register: downloadova
-
-- name: Get download ova file name
-  debug:
-    msg: "{{ downloadova.stdout_lines }}"
-
-- name: ova file name
-  shell: "echo {{ ova_url }} | rev | cut -f1 -d'/' | rev"
-  register: ovafilename
-
-- name: echo ovafilename stdout vars
-  debug:
-    var: "{{ ovafilename }}"
 
 - vmware_deploy_ovf:
     hostname: '{{ vcenter_ip }}'
@@ -29,9 +24,30 @@
     cluster: '{{ vcenter_cluster }}'
     datastore: '{{ vcenter_datastore }}'
     name: "{{ ovafilename.stdout }}"
-    networks: "{u'{{ vcenter_network_label }}'}"
+    networks: "{u'VM Network':u'{{ vcenter_network_label }}'}"
     validate_certs: no
     power_on: no
-    ovf: '{{ local_target_folder }}/{{ ovafilename.stdout }}'
+    ovf: '{{ local_target_folder }}/{{ ovafilename.stdout }}.ova'
     folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
   delegate_to: localhost
+
+- name: Download govc
+  get_url: url='http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ govc_prq }}/{{ govc_vers}}/{{ govc_dwld }}' dest='{{ local_target_folder }}'
+
+- name: Unpackage  govc
+  shell: "gzip -d {{ local_target_folder }}/{{ govc_dwld }}"
+
+- name: Get govc exec name
+  shell: "echo {{ govc_dwld }} | rev |cut -f2- -d'.' | rev"
+  register: govcexec
+
+- name: Set disk.EnableUUID=TRUE
+  shell: |
+    chmod +x {{ local_target_folder }}/{{ govcexec.stdout }}
+    rm -f {{ local_target_folder }}/govc
+    mv {{ local_target_folder }}/{{ govcexec.stdout }} {{ local_target_folder }}/govc
+    export GOVC_INSECURE=1
+    export GOVC_USERNAME="{{ vcenter_uid }}"
+    export GOVC_URL=https://{{ vcenter_ip }}
+    export GOVC_PASSWORD='{{ vcenter_pw }}'
+    {{ local_target_folder }}/govc vm.change -e='disk.EnableUUID=TRUE' -vm='/{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}/{{ ovafilename.stdout }}'

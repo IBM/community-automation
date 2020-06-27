@@ -1,44 +1,27 @@
-csi-cephfs: csi cephfs on OCP
-=========
 
-This module will install csi-cephfs on fyre OCP+Beta clusters version 4.4.3 or later.
+# Ansible role for uploading a new rhcos vmware template to a vCenter.
 
-Requirements
-------------
+## Description
+ - Downloads to the local ubuntu system a rhcos ova file.
+ - Import the ova file into a vCenter as a VM, for use as a VM template or clone.
+ - Sets the storage to `thin` when importing the ova.
+ - Set the disk.EnableUUID=TRUE
+## Assumptions:
+ - Need to be on an ubuntu system, with ansible 2.9.9 or later and pyvmomi installed.
+   - sudo apt-get update -y
+   - sudo apt-get install ansible
+   - sudo apt-get install -y python-pyvmomi
 
- - Running fyre OCP+Beta cluster is needed.
- - oc client installed.
- - oc login to OCP cluster performed.
- - git client installed.
+## Example Playbook
+   ----------------
 
-How to install oc clinet
-------------------------
- - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
- - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
- - Extract: tar xf oc.tar.gz
- - Move to /usr/local/bin: cp oc /usr/lcoal/bring
- - Example oc login: `oc login -u kubeadmin -p "<kubeadmin pw>" https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true`
+   - name: Install ova
+     hosts: bastion
+     roles:
+     - deploy-ova-vmware
 
- How to install git client
- -------------------------
- - On Redhat: `sudo dnf install git-all -y`
- - On Ubuntu: `sudo apt install git-all`
- - On Mac: `https://git-scm.com/book/en/v2/Getting-Started-Installing-Git`
-
-Example Playbook
-----------------
-
-    - name: Install csi-cephfs
-      hosts: bastion
-      roles:
-      - csi-cephfs-fyre
 
 License
 -------
 
 See LICENCE.txt
-
-Author Information
-------------------
-
-Walt Krapohl (krapohl@us.ibm.com)

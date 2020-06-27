@@ -1,16 +1,24 @@
-# Ansible Playbook for installing csi-cephfs onto Fyre OCP+Beta clusters.
+# Ansible Playbook for uploading a new rhcos vmware template to a vCenter.
+
+## Description
+ - Downloads to the local ubuntu system a rhcos ova file.
+ - Import the ova file into a vCenter as a VM, for use as a VM template or clone.
+ - Sets the storage to `thin` when importing the ova.
+ - Set the disk.EnableUUID=TRUE on the VM
 
 ## Assumptions:
+ - Need to be on an ubuntu system, with ansible 2.9.9 or later and pyvmomi installed.
+   - sudo apt-get update -y
+   - sudo apt-get install ansible
+   - sudo apt-get install -y python-pyvmomi
 
- - A healthy Fyre OCP+Beta OpenShift 4.4.3 cluster or later in running state.
- - The OCP cluster must have 3 master nodes and at least 3 worker nodes.
- - You must have a fyre root password for your cluster to access the inf node with-in your OCP cluster.
+## Copy deploy_vmware_vars.yml from examples and configure with your values
 
-## Setting up inventory
+```
+cp examples/deploy_vmware_vars.yml .
+```
 
-- From the `csi-cephfs-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
-- Modify `fyre.inf.node.9dot.ip` variable in the `inventory` file with the 9dot ip of the inf node in your fyre OCP+Beta cluster.
-- Modify `fyre.root.pw` variable in the `inventory` file  with your fyre root password.
+## Copy inventory file from examples (no changes needed)
 
 ```
 cp examples/inventory .
@@ -19,10 +27,14 @@ cp examples/inventory .
 ## Run playbook
 
 
-Once you have configured the `inventory` file, run the playbook using:
+Once you have configured the `deploy_vmware_vars.yml` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory csi-cephfs.yml
+ansible-playbook  -i inventory -e @deploy_vmware_vars.yml deploy-ova-vmware.yml
+```
+For debug run with -vvv
+```
+ansible-playbook  -vvv -i inventory -e @deploy_vmware_vars.yml deploy-ova-vmware.yml
 ```
 
 License

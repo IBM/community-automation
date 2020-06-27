@@ -9,3 +9,6 @@ vcenter_cluster: ICO01
 vcenter_network_label: VIS241
 vcenter_folder: ova
 local_target_folder: ~/ova_cp_folder # <absolute path to local folder to copy ova into>
+govc_prq: vmware
+govc_vers: 0.21.0
+govc_dwld: govc_linux_amd64.gz
