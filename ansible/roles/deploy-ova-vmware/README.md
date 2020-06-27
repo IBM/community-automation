@@ -5,6 +5,7 @@ Ansible role for uploading a new rhcos vmware ova to a vCenter.
 
 Description
 -----------
+
  - Downloads to the local ubuntu system a rhcos ova file.
  - Imports the ova file into a vCenter as a VM, for use as a VM template or clone.
  - Sets the storage to `thin` when importing the ova.
@@ -12,6 +13,7 @@ Description
 
 Requirements:
 ------------
+
  - Need to be on an ubuntu system, with ansible 2.9.9 or later and pyvmomi installed.
    - sudo apt-get update -y
    - sudo apt-get install ansible
