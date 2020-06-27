@@ -1,4 +1,4 @@
-# Ansible Playbook for uploading a new rhcos vmware template to a vCenter.
+# Ansible Playbook for uploading a new rhcos vmware ova to a vCenter.
 
 ## Description
  - Downloads to the local ubuntu system a rhcos ova file.
