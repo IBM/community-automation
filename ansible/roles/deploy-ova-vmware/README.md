@@ -8,7 +8,7 @@ Description
  - Downloads to the local ubuntu system a rhcos ova file.
  - Imports the ova file into a vCenter as a VM, for use as a VM template or clone.
  - Sets the storage to `thin` when importing the ova.
- - Sets the disk.EnableUUID=TRUE
+ - Sets the `disk.EnableUUID=TRUE`
 
 Requirements:
 ------------
@@ -20,11 +20,10 @@ Requirements:
 Example Playbook
 ----------------
 
-- name: Install ova
-  hosts: bastion
-  roles:
-  - deploy-ova-vmware
-
+   - name: Install ova to vCenter
+     hosts: bastion
+     roles:
+     - deploy-ova-vmware
 
 License
 -------
