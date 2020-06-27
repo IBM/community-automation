@@ -29,7 +29,7 @@
 
 - name: Viewing csi-cephfs install log
   debug:
-    msg: "{{ cephinstall.stdout }}"
+    msg: "{{ cephinstall.stdout_lines }}"
 
 - name: Wait for ceph to finish pod bring-up
   shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
@@ -39,4 +39,4 @@
 
 - name: Viewing wait-for-csi-cephfs pods to go to Running Log
   debug:
-    msg: "{{ waitceph.stdout }}"
+    msg: "{{ waitceph.stdout_lines }}"
