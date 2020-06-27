@@ -22,10 +22,10 @@ Requirements:
 Example Playbook
 ----------------
 
-   - name: Install ova to vCenter
-     hosts: bastion
-     roles:
-     - deploy-ova-vmware
+    - name: Install ova to vCenter
+      hosts: bastion
+      roles:
+      - deploy-ova-vmware
 
 License
 -------
