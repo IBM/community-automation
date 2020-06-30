@@ -14,23 +14,18 @@
   - Min mem required 64GB per worker
   - Min cluster storage availability of 6.5 TB on VMware thin and AWS gp2 storage.
 
-    - Use this command to figure this out if you don't know ``
-  - Creates file storage (rwo/rwx)  storageclass called `csi-cephfs` as the default storageclass.
-  - Creates block storageclass (rwo/rwx) `rook-ceph-block`
-- Installs `common-services` 3.4.1 GA by default.
-
 ## How to install oc client
 
   - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
   - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
   - Extract: tar xf oc.tar.gz
   - Move to /usr/local/bin: cp oc /usr/local/bin
-  - Example oc login: `oc login https://api.dev_fyre.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
+  - Example oc login: `oc login https://api.evident-pika.purple-chesterfield.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
 
 
 ## Setting up inventory
 
-Make use of sample file at `examples/inventory`.
+Make use of sample file at `examples/inventory` (no changes needed).
 
 ```
 cp examples/inventory .
@@ -40,13 +35,13 @@ cp examples/inventory .
 
 #### Setting up variables for playbook
 
-Make use of the sample file at `examples/ocs_vars.yml`. Modify the values as per your cluster. For more information refer to examples.
+Make use of the sample file at `examples/ocs_vars.yml`. Modify the values as per your cluster.
 
 ```
 cp examples/ocs_vars.yml .
 ```
 
-Once you have configured the vars & inventory file, run the playbook using:
+Once you have configured the vars file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory -e @ocs_vars.yml request-ocs-common.yml

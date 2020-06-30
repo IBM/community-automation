@@ -166,7 +166,7 @@ do
   fi
 done
 oc get sc
-
+echo "setDefault = $setDefault"
 if [ "$setDefault" == "true" ]; then
    defStgClass=$(oc get sc -o json | jq -r '.items[].metadata | select(.annotations["storageclass.kubernetes.io/is-default-class"] == "true") | .name')
    oc patch storageclass $defStgClass -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
