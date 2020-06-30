@@ -1,4 +1,4 @@
-# Ansible Playbook for installing Openshift Container Storage on AWS, VMware and Fyre OCP+Beta Clusters
+# Ansible Playbook for installing Openshift Container Storage on AWS and VMware Clusters
 
 ## Overvieww
 
