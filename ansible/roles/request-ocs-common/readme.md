@@ -29,7 +29,6 @@ Default parameters set in the defaults/main.yml
 
 Example Playbook
 ----------------
-- Install request-ocs-common on AWS or VMware cluster.
 
     - name: Install ocs
       hosts: bastion
