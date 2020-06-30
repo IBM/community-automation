@@ -1,6 +1,7 @@
 #!/bin/bash
 
-ocpversion=$1
+ocsChannel=$1
+setDefault=$2
 # Check the worker nodes have enough cpus
 CPUS=$(kubectl get node -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/worker"] != null) | .status.capacity.cpu' | awk '{s+=$1} END {print s}')
 if [ $CPUS -lt 48 ]; then
@@ -48,7 +49,7 @@ metadata:
   name: openshift-storage-operatorgroup
   namespace: ${namespc}
 spec:
-  channel: ${ocsversion}
+  channel: ${ocsChannel}
   installPlanApproval: Automatic
   name: ocs-operator
   source: redhat-operators
