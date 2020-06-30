@@ -43,7 +43,7 @@
   - name: check fyre status
     fail: 
       msg: "{{ fyrestatus }}"
-    when: fyrestatus.json.failed != 'false'
+    when: fyrestatus.json.status != 'success'
     changed_when: false
 
   - pause:
