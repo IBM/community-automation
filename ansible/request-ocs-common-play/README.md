@@ -49,7 +49,7 @@ cp examples/ocs_vars.yml .
 Once you have configured the vars & inventory file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory -e @ocs_vars.yml common-services-fyre.yml
+ansible-playbook  -i inventory -e @ocs_vars.yml request-ocs-common.yml
 ```
 
 License
