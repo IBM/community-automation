@@ -22,16 +22,16 @@ How to install oc client
 Default parameters set in the defaults/main.yml
 ------------------
 
-ocs_channel: stable-4.4 # Channel to pull ocs from, it should match the OCP version.
-ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Working dir for running the ocs_install.sh
-setdefault: false  # Make the ocs cephfs storageclass the default or not.
+    - ocs_channel: stable-4.4 # Channel to pull ocs from, it should match the OCP version.
+    - ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Working dir for running the ocs_install.sh
+    - setdefault: false  # Make the ocs cephfs storageclass the default or not.
 
 
 Example Playbook
 ----------------
 - Install request-ocs-common on AWS or VMware cluster.
 
- - name: Install ocs
-   hosts: bastion
-   roles:
-   - request-ocs-common
+    - name: Install ocs
+      hosts: bastion
+      roles:
+      - request-ocs-common
