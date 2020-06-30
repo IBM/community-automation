@@ -1,5 +1,9 @@
 # Request OCS Installs
-This role installs OCS onto either AWS or VMware Clusters that meet the following requirements
+This role installs OCS onto either AWS or VMware Clusters that meet the following requirements.
+
+Credits
+-------
+ - Thanks to the CP4I team for providing the base ocs_install.sh (with slite modifications) script used by this role.
 
 Requirements
 ------------
