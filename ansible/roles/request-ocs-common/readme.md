@@ -1,27 +1,37 @@
 # Request OCS Installs
 This role installs OCS onto either AWS or VMware Clusters that meet the following requirements
 
-The role expects to be supplied:
- - clusterName
- - ocpVersion
- - fyre_ocp_inf_group (optional: defaults to 'ocp-clusters')
- - fyre_site (optional: defaults to svl)
+Requirements
+------------
+
+ - Running AWS or VMware cluster is needed.
+ - oc client installed.
+ - oc login to OCP cluster performed.
 
 
-Ansible controller machine should have an public ssh key available: ~/.ssh/id_rsa.pub
+How to install oc client
+------------------------
 
-The roles behaves in the following way:
-1) Will reuse an existing cluster if name matches (no changes will be reported in this event)
-2) Requests and Wait for an OCP cluster to be fully deployed if one does not exist
-3) Role will error if cluster fails to create in fyre
-4) An ansible host will be added to represent the inf node within the cluster. This node will be part of the supplied group
-5) No checking is performed to ensure that cluster matches ocpVersion
+ - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
+ - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
+ - Extract: tar xf oc.tar.gz
+ - Move to /usr/local/bin: cp oc /usr/lcoal/bring
+ - Example oc login: `c login https://api.evident-pika.purple-chesterfield.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>`
 
-The following is an example of how to run the role.
-```
-- hosts: fyreApi
-  roles:
-  - role: request-ocp-fyre
-    clusterName: "myfirstcluster"
-    ocpVersion: "4.3"
-```
+
+Default parameters set in the defaults/main.yml
+------------------
+
+ocs_channel: stable-4.4 # Channel to pull ocs from, it should match the OCP version.
+ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Working dir for running the ocs_install.sh
+setdefault: false  # Make the ocs cephfs storageclass the default or not.
+
+
+Example Playbook
+----------------
+- Install request-ocs-common on AWS or VMware cluster.
+
+ - name: Install ocs
+   hosts: bastion
+   roles:
+   - request-ocs-common
