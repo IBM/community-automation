@@ -1,0 +1,12 @@
+---
+#Download from URL to local file then deploy ova to vcenter
+ova_url: https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.4/4.4.3/rhcos-4.4.3-x86_64-vmware.x86_64.ova
+vcenter_ip: 9.37.222.18 # vCenter IP
+vcenter_uid: <vcenter uid>@icovcpc65.rtp # vCenter login username
+vcenter_pw: <pw>  # vCenter login password
+vcenter_datacenter: IOCDCPC1 # vCenter datacenter VM will live in
+vcenter_datastore: ICOVCPC-RSX6-102 # vCenter datastore to put ova on
+vcenter_cluster: ICO01 # Cluster all the esxi host are on
+vcenter_network_label: VIS241 # vCenter Network Label
+vcenter_folder: ova # vCenter folder you want he ova to go into
+local_target_folder: ~/ova_cp_folder # <absolute path to local folder to copy ova into>

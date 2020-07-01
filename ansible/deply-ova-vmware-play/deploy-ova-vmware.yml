@@ -1,0 +1,5 @@
+---
+- name: Download ova and then deploy to vcenter
+  hosts: bastion
+  roles:
+  - deploy-ova-vmware
