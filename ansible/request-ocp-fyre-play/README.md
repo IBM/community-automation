@@ -17,9 +17,18 @@ cp examples/inventory .
 
 ## Run playbook
 
+The playbook/role supports provisioning clusters at configurable ocpVersions and works with the OCP and OCP+ apis from fyre team
+These are controlled by the ocpVersion and fyre_ocptype variables respectively.
+
+e.g. ocpVersion=4.3.19
+fyre_ocptype=ocp or fyre_ocptype=ocpplus
+
+
 
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion"
+ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e="fyre_ocptype=ocpplus"
 ```
+
+This command will create an ocp plus cluster in fyre called myClusterName. If myClusterName already exists it will instead just define it to ansible.

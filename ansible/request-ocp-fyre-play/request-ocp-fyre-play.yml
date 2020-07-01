@@ -3,3 +3,9 @@
   roles: 
   - role: request-ocp-fyre
 
+- hosts: ocp-clusters
+  gather_facts: false
+  tasks:
+  - name: Check machine alive
+    raw: echo "hello im running on the inf node"
+    changed_when: false
