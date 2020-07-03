@@ -1,0 +1,26 @@
+---
+# tasks ocs  install
+
+- name: Create ocs setup directory
+  file:
+    path: "{{ ocs_bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - directory
+
+- name: Copy ocs_install.sh  script to dest
+  copy:
+    src: files/ocs_install.sh
+    dest: "{{ ocs_bastion_setup_dir }}/ocs_install.sh"
+    mode: '0755'
+
+- name: Install ocs from channel {{ ocs_channel }}
+  shell: "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
+  args:
+      warn: false
+  register: ocsinstall
+
+- name: Viewing ocs install log
+  debug:
+    msg: "{{ ocsinstall.stdout_lines }}"

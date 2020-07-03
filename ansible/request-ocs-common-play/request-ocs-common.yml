@@ -1,0 +1,5 @@
+---
+- name: Install ocs on AWS or VMware
+  hosts: bastion
+  roles:
+  - request-ocs-common
