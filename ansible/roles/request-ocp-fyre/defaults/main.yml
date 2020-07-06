@@ -1,10 +1,16 @@
 fyre_apiurl: "https://api.fyre.ibm.com/rest/v1/"
+fyreocpplus_apiurl: "https://ocpapi.svl.ibm.com"
 fyre_clusterstatusurl: "{{ fyre_apiurl }}?operation=query&request=showclusterdetails&cluster_name={{ clusterName }}"
+fyreocpplus_clusterstatusurl: "{{ fyreocpplus_apiurl }}/v1/ocp/{{ clusterName }}"
 fyre_ocpdeployurl: "{{ fyre_apiurl }}?operation=deployopenshiftcluster"
+fyreocpplus_ocpdeployurl: "{{ fyreocpplus_apiurl }}/v1/ocp/"
 fyre_opshowclusterurl: "{{ fyre_apiurl }}?operation=query&request=showclusters"
 fyre_ocp_inf_group: "ocp-clusters"
 fyre_inf_node_name: "{{ clusterName }}-inf"
 fyre_site: "svl"
+fyre_ocptype: "ocp"
+
+ocpPlatform: "x"
 
 fyre_master_quantity: 3
 fyre_master_cpu: 4
