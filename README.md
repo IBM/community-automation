@@ -3,6 +3,23 @@
 ## Introduction
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We desided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
+## Play list
+| play | Description | status | Comments |
+|------|-------------|--------|----------|
+|common-service-fyre-play|deploy an OCP cluster on FYRE| Available | none |
+|common-service-play|deploy common-services on any infrastructure|Available|none|
+|csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
+|deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
+|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
+|request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
+|request-ocp-roks-play|deploy an OCP cluster on roks|WIP|none|
+|request-ocs-common-play|Install Openshift Container Storage|Available| none|
+
+## Supporting Roles
+| role | Description | status | Comments |
+|------|-------------|--------|----------|
+|ocp-login | used when OCP Login is needed for your play | WIP | none |
+
 ## Jenkins
 [Community Jenkins Server](https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/)
 
