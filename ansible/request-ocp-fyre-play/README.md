@@ -28,7 +28,7 @@ fyre_ocptype=ocp or fyre_ocptype=ocpplus
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e="fyre_ocptype=ocpplus"
+ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus"
 ```
 
 This command will create an ocp plus cluster in fyre called myClusterName. If myClusterName already exists it will instead just define it to ansible.
