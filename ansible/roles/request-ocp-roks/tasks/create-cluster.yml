@@ -1,0 +1,29 @@
+---
+- name: get-resource-group
+  ibmcloud.ibmcollection.ibm_resource_group_info:
+    name: "{{ resourceGroup }}"
+  register: output_resource_group
+
+- name: set-fact-resource-group-id
+  set_fact:
+    cacheable: yes
+    resource_group: "{{ output_resource_group.resource }}"
+    
+- name: create-cluster
+  ibmcloud.ibmcollection.ibm_container_cluster:
+    disk_encryption: False
+    machine_type: "{{ machineType }}"
+    name: "{{ clusterName }}"
+    datacenter: "{{ dataCenter }}"
+    hardware: "{{ hardware }}"
+    worker_num: "{{ defaultPoolSize }}"
+    default_pool_size: "{{ defaultPoolSize }}"
+    kube_version: "{{ kubeVersion }}"
+    private_vlan_id: "{{ privateVLAN }}"
+    public_vlan_id: "{{ publicVLAN }}"
+    resource_group_id: "{{ resource_group.id }}"
+  register: iccluster
+
+- name: create-cluster-output
+  debug:
+    var: iccluster.resource
