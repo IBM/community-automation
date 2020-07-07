@@ -8,7 +8,9 @@ Credits
 Requirements
 ------------
 
- - Running AWS or VMware cluster is needed.
+ - Running OCP 4.x AWS or VMware cluster is needed
+ - Min of 3 worker nodes per cluster.
+ - Min sum of worker CPU must be 48 CPUs.
  - oc client installed.
  - oc login to OCP cluster performed.
 

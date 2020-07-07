@@ -1,6 +1,6 @@
 # Ansible Playbook for installing Openshift Container Storage on AWS and VMware Clusters
 
-## Overvieww
+## Overview
 
 
 - Installs `Openshift Contianer Storage 4.4` by default onto an AWS or VMware OCP cluster.
@@ -16,6 +16,7 @@
   - Running on Ubuntu or Mac.
     - jq is install on the host box.
   - OCP cluster version matches OCS version.
+  - Min of three worker nodes.
   - Min required CPUs across all OCP cluster workers must be 48.
   - Min mem required 64GB per worker
   - Min cluster storage availability of 6.5 TB on VMware thin and AWS gp2 storage.

@@ -1,6 +1,6 @@
 # Ansible Playbook for Fyre OCP+Beta Cluster Common Services Installation
 
-## Overvieww
+## Overview
 
 - Installs `csi-cephfs` storage on worker nodes using the /dev/vdb drive on each worker node.
   - Creates file storage (rwo/rwx)  storageclass called `csi-cephfs` as the default storageclass.
