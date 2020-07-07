@@ -6,7 +6,7 @@ fyre_ocpdeployurl: "{{ fyre_apiurl }}?operation=deployopenshiftcluster"
 fyreocpplus_ocpdeployurl: "{{ fyreocpplus_apiurl }}/v1/ocp/"
 fyre_opshowclusterurl: "{{ fyre_apiurl }}?operation=query&request=showclusters"
 fyre_ocp_inf_group: "ocp-clusters"
-fyre_inf_node_name: "{{ clusterName }}-inf"
+fyre_inf_node_name: "{{ clusterName | lower }}-inf"
 fyre_site: "svl"
 fyre_ocptype: "ocp"
 
