@@ -14,11 +14,13 @@ This repo represents the Community Automation effort where teams can contribute 
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|WIP|none|
 |request-ocs-common-play|Install Openshift Container Storage|Available| none|
+|recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
 
 ## Supporting Roles
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
-|ocp-login | used when OCP Login is needed for your play | WIP | none |
+|ocp-login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
+|oc-client-install|installs oc command| Available | is automatic when using ocp-login role|
 
 ## Jenkins
 [Community Jenkins Server](https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/)

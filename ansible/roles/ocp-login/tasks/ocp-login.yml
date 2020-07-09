@@ -1,9 +1,3 @@
 ---
-gather_facts: false
-vars:
- kubeadmin_user: kubeadmin
- kubeadmin_password: xxx-xxx-xxx-xxx
- ocp_api_url: https://
-
--name: "OCP login"
- shell: "oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} {{ ocp_api_url }}
+- name: "OCP login"
+  shell: "./oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} https://{{ ocp_api_url }} --insecure-skip-tls-verify=true"
