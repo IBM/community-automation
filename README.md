@@ -19,6 +19,7 @@ This repo represents the Community Automation effort where teams can contribute 
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
 |ocp-login | used when OCP Login is needed for your play | WIP | none |
+|oc-client-install|installs oc command| Available | is automatic when using ocp-login role|
 
 ## Jenkins
 [Community Jenkins Server](https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/)

@@ -1,6 +1,10 @@
 ---
-- hosts: ocp-clusters
-  gather_facts: false
+- name: Recover Machine Config
+  hosts: bastion
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+  become: yes
+  become_user: root
+  gather_facts: no
   roles: 
-  - role: recover-machine-config 
-
+  - recover-machine-config
