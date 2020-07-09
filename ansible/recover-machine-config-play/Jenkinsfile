@@ -1,4 +1,4 @@
-! groovy
+#! groovy
 
 // Standard job properties
 def jobProps = [
