@@ -4,18 +4,29 @@
 
 ## Variables
 
-| Name              | Description                      | Required | Type              |
-|-------------------|----------------------------------|----------|-------------------|
-| resourceGroup     | Name of resource group to use    | No       | string            |
-| cloudregion       | IBM Cloud Region                 | No       | default: us-south |
-| machineType       | IBM Cloud flavor to use          | Yes      | string            |
-| clusterName       | Name of the new cluster          | Yes      | string            |
-| dataCenter        | IBM Cloud zone / data center     | Yes      | string            |
-| hardware          | Shared or Dedicated hardware option | No    | default: shared   |
-| defaultPoolSize   | Number of workers to create      | No       | default: 2        |
-| kubeVersion       | 4.3_openshift or IKS options     | No       | default: 4.3_openshift |
-| privateVLAN       | Private VLAN ID to use           | Yes      | string            |
-| publicVLAN        | Public VLAND ID to use, blank for none | No | string            |
+| Name              | Description                            | Required | Type                   |
+|-------------------|----------------------------------------|----------|------------------------|
+| clusterName       | Name of the new cluster                | Yes      | string                 |
+| dataCenter        | IBM Cloud zone / data center           | Yes      | string                 |
+| machineType       | IBM Cloud flavor to use                | Yes      | string                 |
+| privateVLAN       | Private VLAN ID to use                 | Yes      | string                 |
+| apikey            | IBM IAM API Key with create rights     | Yes      | string                 |
+| resourceGroup     | Name of resource group to use          | No       | string                 |
+| cloudregion       | IBM Cloud Region                       | No       | default: us-south      |
+| hardware          | Shared or Dedicated hardware option    | No       | default: shared        |
+| defaultPoolSize   | Number of workers to create            | No       | default: 2             |
+| kubeVersion       | 4.3_openshift or IKS options           | No       | default: 4.3_openshift |
+| publicVLAN        | Public VLAND ID to use, blank for none | No       | string                 |
+
+### Additional Variable Information
+
+* dataCenter: This maps to the IBM Cloud Zone or datacenter to deploy to. Find options through the command line `ibmcloud cs zone ls --provider classic`
+* machineType: IBM Cloud specifies template machine specs supported in a cluster. Find options through the command line `ibmcloud cs flavors --provider classic --zone dal10`
+* cloudregion: IBM Cloud region for the data center. Find options through the command line: `ibmcloud regions`
+* kubeVersion: IBM Cloud specific version for Kubernetes or OpenShift clusters. Find options through the command line `ibmcloud cs versions`.
+* privateVLAN: A private VLAN is required and must exist.
+* publicVLAN: A public VLAN is required for inbound Internet access to the cluster. The VLAN must exist.
+* apikey: IBM Cloud IAM API key is required to provision. 
 
 ## Output
 
@@ -44,3 +55,35 @@ Registers variable: iccluster
       tasks:
         - import_role: 
             name: createROKSCluster
+
+## Running using a container
+
+*Container Dockerfile that would include all tools necessary for running in a Docker container:*
+
+```
+FROM centos:7
+# set up os and install ansible
+RUN yum install -y epel-release && yum update -y && yum install git openssh-clients.x86_64 ansible.noarch -y
+# below .keys - generate SSH Keys for client and server as these will be used to execute ansible
+ADD .keys/client/id_rsa /root/.ssh/id_rsa
+ADD .keys/client/id_rsa.pub /root/.ssh/id_rsa.pub
+COPY .keys/server/ /root/.ssh/
+# allows localhost ssh connectivity
+RUN cat /root/.ssh/ssh_host_ecdsa_key.pub > /root/.ssh/known_hosts && cat /root/.ssh/ssh_host_ed25519_key.pub >> /root/.ssh/known_hosts && cat /root/.ssh/ssh_host_rsa_key.pub >> /root/.ssh/known_hosts && mkdir -p /runner
+# below assumes you have terraform binary locally and install it
+ADD terraform /usr/local/bin
+# add kubernetes and ibmcloud modules to ansible
+RUN chmod +x /usr/local/bin && ansible-galaxy collection install community.kubernetes && ansible-galaxy collection install ibmcloud.ibmcollection && yum install python3.x86_64 -y && pip3 install openshift
+
+WORKDIR /runner
+ENTRYPOINT [ "/usr/bin/ansible-playbook" ]
+```
+
+*Running in a container*
+
+* Map the location of your playbook files and roles to the /runner directory
+* Provide variables either as "extra vars" or in a file
+* "apikey" must be included as one of the variables.
+
+`docker run -it --rm -v <playbook directory>:/runner <image name> -i localhost -e "<variable name>=<value> <variable name>=<value> ..." <playbook name>`
+
