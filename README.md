@@ -6,7 +6,7 @@ This repo represents the Community Automation effort where teams can contribute 
 ## Play list
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
-|common-service-fyre-play|deploy an OCP cluster on FYRE| Available | none |
+|common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
