@@ -12,7 +12,7 @@ This repo represents the Community Automation effort where teams can contribute 
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
-|request-ocp-roks-play|deploy an OCP cluster on roks|WIP|none|
+|request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
 |request-ocs-common-play|Install Openshift Container Storage|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
 
