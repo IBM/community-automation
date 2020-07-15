@@ -30,6 +30,7 @@
     power_on: no
     ovf: '{{ local_target_folder }}/{{ ovafilename.stdout }}.ova'
     folder: "{{ vcenter_datacenter }}/vm/{{ vcenter_folder }}"
+    allow_duplicates: no
   delegate_to: localhost
 
 - name: Download govc
