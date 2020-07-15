@@ -13,7 +13,7 @@ This repo represents the Community Automation effort where teams can contribute 
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
-|request-ocs-common-play|Install Openshift Container Storage|Available| none|
+|request-ocs-play|Install Openshift Container Storage|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
 
 ## Supporting Roles
@@ -127,10 +127,10 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
             └── templates
 ```
 
-# 
+#
 ## Common Repositories
 
-Terraform Automation (VMWare, AWS, Google, and Azure) 
+Terraform Automation (VMWare, AWS, Google, and Azure)
 https://github.ibm.com/ICP-DevOps/tf_openshift_4
 
 Some useful tools (cluster recovery scripts)  

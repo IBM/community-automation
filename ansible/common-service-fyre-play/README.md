@@ -25,7 +25,7 @@
 
 ## Setting up inventory
 
-Make use of sample file at `examples/inventory`.
+Make use of sample file at `examples/inventory` (with no changes).
 
 ```
 cp examples/inventory .
@@ -35,7 +35,7 @@ cp examples/inventory .
 
 #### Setting up variables for playbook
 
-Make use of the sample file at `examples/cs_vars_fyre.yml`. Modify the values as per your cluster. For more information refer to examples.
+Make use of the sample file at `examples/cs_vars_fyre.yml`. Modify the values as per your cluster. For more information refer to comments in the file.
 
 ```
 cp examples/cs_vars_fyre.yml .

@@ -12,7 +12,7 @@
    - sudo apt-get install ansible
    - sudo apt-get install -y python-pyvmomi
 
-## Copy deploy_vmware_vars.yml from examples and configure with your values
+## Copy deploy_vmware_vars.yml from examples and configure with your values. See comments in file to understand variables you can set.
 
 ```
 cp examples/deploy_vmware_vars.yml .
