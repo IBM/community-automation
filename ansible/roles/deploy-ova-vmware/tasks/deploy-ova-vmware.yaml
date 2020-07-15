@@ -15,6 +15,7 @@
   get_url:
     url: '{{ ova_url }}'
     dest: '{{ local_target_folder }}'
+    force: yes
 
 - vmware_deploy_ovf:
     hostname: '{{ vcenter_ip }}'
