@@ -1,0 +1,19 @@
+---
+# tasks ocs  install
+- name: Install SourceCatalog for the Common Services operator {{ catalog_source_version }}
+  shell: |
+    cat << EOF | oc apply -f -
+    apiVersion: operators.coreos.com/v1alpha1
+    kind: CatalogSource
+    metadata:
+      name: opencloud-operators
+      namespace: openshift-marketplace
+    spec:
+      displayName: IBMCS Operators
+      publisher: IBM
+      sourceType: grpc
+      image: quay.io/opencloudio/ibm-common-service-catalog:{{ catalog_source_version }}
+      updateStrategy:
+        registryPoll:
+          interval: 45m
+    EOF

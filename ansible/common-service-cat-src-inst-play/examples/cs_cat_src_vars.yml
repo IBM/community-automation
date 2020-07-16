@@ -1,0 +1,2 @@
+---
+catalog_source_version: latest # This is the version of the catalog source you want from quay.io. Options are `latest` or 'dev-latest`.'

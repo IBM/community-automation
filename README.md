@@ -6,6 +6,7 @@ This repo represents the Community Automation effort where teams can contribute 
 ## Play list
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
+|common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none
 |common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
@@ -13,7 +14,7 @@ This repo represents the Community Automation effort where teams can contribute 
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
-|request-ocs-play|Install Openshift Container Storage|Available| none|
+|request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
 
 ## Supporting Roles
