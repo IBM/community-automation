@@ -8,7 +8,7 @@ Description
 
  - Install the CatalogSource for the Common Services Operation .
  - It takes as input the version of the Common Services CatalogSource to install.
- - Valid Common Services versions are `latest' or `dev-latest`.
+ - Valid Common Services versions are `latest` or `dev-latest`.
 
 Requirements:
 ------------

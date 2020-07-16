@@ -37,10 +37,10 @@ cp examples/inventory .
 
 #### Setting up variables for playbook
 
-Make use of the sample file at `examples/cs_vars_fyre.yml`. Modify the values as per your cluster. For more information refer to comments in the file.
+Make use of the sample file at `examples/cs_cat_src_vars.yml`. Modify the values as per your cluster. For more information refer to comments in the file.
 
 ```
-cp examples/cs_vars_fyre.yml .
+cp examples/cs_cat_src_vars.yml .
 ```
 
 Once you have configured the vars & inventory file, run the playbook using:
