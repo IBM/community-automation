@@ -1,0 +1,8 @@
+[fyreApi]
+localhost 
+
+[fyreApi:vars]
+crc_username=fyre
+ansible_connection=local
+fyreuser=apiuser
+fyreapikey=apikey

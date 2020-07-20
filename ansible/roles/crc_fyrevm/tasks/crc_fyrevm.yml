@@ -1,0 +1,151 @@
+---
+
+- name: check status of the named cluster
+  no_log: "{{ noLog }}"
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ localclusterName }}'
+  args:
+   warn: no
+  register: clusterStatus
+
+- debug: 
+   msg: "{{ localclusterName }} is deployed - exit"
+  when: (clusterStatus.stdout|from_json).status is not defined 
+
+- meta: end_play
+  when: (clusterStatus.stdout|from_json).status is not defined 
+
+- name: get the public ssh id
+  shell: 'cat ~/.ssh/id_rsa.pub'
+  register: id_rsa_pub
+
+- name: create input json file
+  no_log: "{{ noLog }}"
+  copy:
+   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ localclusterName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ localclusterName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' } ] }"
+   dest: "fyre.{{ localclusterName }}.json"
+
+- name: Create Fyre stack
+  no_log: "{{ noLog }}"
+  raw: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurlbuild }} --data @fyre.{{ localclusterName }}.json
+  args:
+   warn: no
+  register: buildstatus
+
+- name: remove temp json
+  file:
+   path: "fyre.{{ localclusterName }}.json"
+   state: absent
+
+- name: check Fyre request status
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.stdout|from_json).request_id }}'
+  no_log: "{{ noLog }}"
+  args:
+   warn: no
+  register: fyreStatus
+
+- debug: var=fyreStatus.stdout 
+
+# this is used in fully automated setups - wait x mins for fyre to provision vm
+- pause:
+   minutes: 2
+
+- name: get Fyre request status
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.stdout|from_json).request_id }}'
+  no_log: "{{ noLog }}"
+  retries: 999
+  delay: 5
+  args:
+   warn: no
+  register: fyreStatus
+  until: (fyreStatus.stdout|from_json).request[0].get('status') == 'error' or (fyreStatus.stdout|from_json).request[0].get('status') == 'completed'
+
+- block:
+  - name: check Fyre request status
+    fail:
+     msg: "Fyre reqeust for cluster {{ localclusterName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
+  when: (fyreStatus.stdout|from_json).request[0].get('status') == 'error'
+
+- name: check status of the named cluster - get publicip
+  #no_log: "{{ noLog }}"
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ localclusterName }}'
+  args:
+   warn: no
+  register: clusterStatus
+
+- name: remove new host from localhost known_hosts ip
+  no_log: "{{ noLog }}"
+  vars: 
+    publicip: "{{ (clusterStatus.stdout|from_json)[localclusterName][0].get('publicip') }}"
+  command: "ssh-keygen -R {{ publicip }}"
+  ignore_errors: True
+- name: remove new host from localhost known_hosts
+  no_log: "{{ noLog }}"
+  command: "ssh-keygen -R {{ localclusterName }}-1"
+  ignore_errors: True
+- name: remove new host from localhost known_hosts fqdn
+  no_log: "{{ noLog }}"
+  command: "ssh-keygen -R {{ localclusterName }}-1.fyre.ibm.com" 
+  ignore_errors: True
+
+# somewhat hard coded here
+- name: check the host for a active ssh
+  command: 'ssh -o StrictHostKeyChecking=no root@{{ localclusterName }}-1.fyre.ibm.com /usr/bin/true'
+  retries: 999
+  delay: 5
+  register: result
+  until: result.rc == 0
+
+- block:
+  - name: check the host for cpu type
+    command: 'ssh -o StrictHostKeyChecking=no root@{{ localclusterName }}-1.fyre.ibm.com lscpu -J'
+    register: cpuType
+
+  - set_fact: 
+      isAMDchip: "{{ (cpuType.stdout|from_json).lscpu[9].get('data') }}"
+
+  - debug: var=disableFyreAMDFlag
+  - debug: 
+      msg: "{{ isAMDchip }}"
+ 
+  - block:
+    - name: is AMD?
+      vars: 
+      - fyreRetryVM: True
+      include_role:
+        name: fyrevm_delete
+
+    - name: is AMD retry
+      include_role:
+        name: crc_or_controller_fyrevm
+    when: (isAMDchip).find('AMD') >= 1 
+  when: 
+   - disableFyreAMDFlag == True
+   - crc_fyre
+
+# somewhat hard coded here
+- name: add host to known_hosts
+  shell: 'ssh-keyscan -H {{ localclusterName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'
+
+# this is an inventory file that can be used: ansible-playbook -i < path to host file > some.yml for debugging
+- name: create host inventory file for debugging
+  blockinfile:
+    backup: no
+    create: yes
+    path: setup_controller_inventory
+    block: |
+      [setup_controller]
+      {{ localclusterName }}-1{{ hostnameDomain }}
+      
+      [setup_controller:vars]
+      ansible_user={{ auto_username }}
+      clusterName={{ clusterName }}
+      controllerName={{ localclusterName }}
+      setup_controller_inventory={{ setup_controller_inventory }}
+
+      [icpa_controller]
+      {{ localclusterName }}-1{{ hostnameDomain }}
+
+      [icpa_controller:vars]
+      ansible_user={{ auto_username }}
+      INSTALLER_VERSION={{ icp4a_version }}
+      INSTALLER=icpa-installer

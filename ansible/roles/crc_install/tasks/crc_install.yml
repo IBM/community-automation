@@ -1,0 +1,60 @@
+---
+- name: check if crc is installed
+  stat:
+    path: "{{ ansible_user_dir }}/bin/crc"
+    follow: yes
+  register: iscrc
+
+- block:
+    - name: Download CRC Archive
+      get_url:
+        dest: '~/crc-linux-amd64.tar.xz'
+        url: "{{ crc_download_src }}"
+        validate_certs: false
+      
+    - name: archive dir structure
+      command: 'tar tf ~/crc-linux-amd64.tar.xz'
+      args:
+        warn: no
+      register: tarlist
+      
+    - debug: var=tarlist.stdout_lines
+
+    - name: install crc
+      unarchive:
+        src:  '~/crc-linux-amd64.tar.xz'
+        dest: '{{ ansible_user_dir }}/'
+        remote_src: yes
+
+    - name: home bin
+      file:
+        path: '{{ item }}'
+        state: directory
+      with_items:
+      - "{{ ansible_user_dir }}/bin"
+
+    - name: link crc
+      file:
+        src: '{{ ansible_user_dir }}/{{ tarlist.stdout_lines[1] | dirname }}/crc'
+        dest: '{{ ansible_user_dir }}/bin/crc'
+        state: link
+  when: iscrc.stat.exists == False
+
+- name: Install NetworkManager FireFox
+  become: yes
+  dnf:
+    name: "{{ packages }}"
+    state: latest
+  vars:
+    packages:
+    - NetworkManager
+    - firefox
+    - jq
+    state: latest
+
+- name: enable and start NetworkManager
+  become: yes
+  systemd:
+    name: NetworkManager.service
+    state: started
+    enabled: yes

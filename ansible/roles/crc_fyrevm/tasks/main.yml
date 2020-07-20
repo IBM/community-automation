@@ -1,0 +1,30 @@
+---
+
+- name: set ocp_controller host specs
+  no_log: "{{ noLog }}"
+  vars:
+  ## ocp_fyre controller specs
+  - arch: x
+  - numcpu: 1
+  - memory: 2 # GB memory Fyre hosting VM
+  - fos: 'Ubuntu 20.04'
+    #- fos: 'Redhat 8.2'
+  - comment: 'RH OpenShift OCP Kabanero controller'
+  - localclusterName: "{{ controllerName }}"
+  include_tasks:
+    file: crc_or_controller_fyrevm.yml
+  when: ocp_fyre or roks
+
+- name: set crc host specs
+  no_log: "{{ noLog }}"
+  vars:
+  ## crc host specs
+  - arch: x
+  - numcpu: 6
+  - memory: 32 # GB memory Fyre hosting VM
+  - fos: 'Redhat 8.2'
+  - comment: 'RH OpenShift crc'
+  - localclusterName: "{{ clusterName }}"
+  include_tasks:
+    file: crc_or_controller_fyrevm.yml
+  when: crc_fyre

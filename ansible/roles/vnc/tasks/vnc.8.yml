@@ -1,0 +1,118 @@
+---
+- name: authorized_key
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    manage_dir: yes
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"  
+
+- block:
+   - name: remove extraneous packages
+     become: yes
+     ignore_errors: yes
+     dnf:
+      name: "{{ packages }}"
+      state: absent
+      autoremove: yes
+     vars:
+      packages:
+      - "adobe*"
+      - "containers*"
+      - "java*"
+      - "samba*"
+      - "valgrind*"
+      - "tignervnc"
+
+   - name: install the workstation group
+     command: "dnf -y groupinstall 'workstation' --skip-broken"
+     args:
+       warn: no
+     register: manualdnf
+     become: yes
+
+   - name: install rhel packages
+     become: yes
+     dnf:
+      name: "{{ packages }}"
+      state: present
+# the skip_broken is not being passed :(
+      skip_broken: yes
+     vars:
+      packages:
+      - 'python3'
+      - 'tigervnc-server'
+      - 'xorg-x11-fonts-Type1'
+#      - '@workstation'
+
+  when:
+   - ansible_pkg_mgr == "dnf" 
+   - ansible_distribution_major_version >= "8"
+
+- name: prereq directories
+  file:
+    path: '{{ item }}'
+    state: directory
+    recurse: yes
+  with_items:
+  - ~/.config/systemd/user
+  - ~/.vnc
+
+  # -depth 8 -geometry 1852x1100 macbook pro res
+  # ExecStart=/usr/bin/vncserver
+- name: vnc user config
+  command: "cp /usr/lib/systemd/user/vncserver@.service ~/.config/systemd/user/"
+  args:
+    warn: no
+  register: vncuserconfig
+
+- name: add vnc geometry
+  lineinfile:
+    path: "~/.config/systemd/user/vncserver@.service"
+    state: present
+    regexp: 'ExecStart=/usr/bin/vncserver %i'
+    line: "ExecStart=/usr/bin/vncserver -geometry 1852x1100 %i"
+
+- name: user reload
+  command: "systemctl --user daemon-reload"
+  args:
+    warn: no
+  register: userreload
+
+- name: vnc pass
+  shell: "echo 'vncPassw0rd' | vncpasswd -f > ~/.vnc/passwd"
+  args:
+    warn: no
+  register: vncpass
+
+- name: chmod read-only 
+  file:
+   path: '~/.vnc/passwd'
+   mode: '0600'
+
+- name: vnc pass stdout
+  debug: 
+    msg: "{{ vncpass.stdout_lines }}"
+
+- name: user vnc enable
+  command: "systemctl --user enable vncserver@:1.service --now"
+  args:
+    warn: no
+  register: uservncenable
+
+- name: vnc user linger
+  command: "loginctl enable-linger {{ ansible_user }}"
+  args:
+    warn: no
+  register: userlinger
+
+- name: purge directories
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+  - ~/Documents
+  - ~/Music
+  - ~/Pictures
+  - ~/Public
+  - ~/Templates
+  - ~/Videos

@@ -1,0 +1,8 @@
+### helpful for debug to set noLog to false via -e noLog=false
+noLog: True
+auto_username: kevin
+# default version runs on OCP 4.3.x
+icp4a_version: 4.1.1
+hostnameDomain: '.fyre.ibm.com'
+regionTimeZone: 'America/New_York'
+

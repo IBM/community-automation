@@ -1,0 +1,81 @@
+---
+- name: check if .crc is created
+  stat:
+    path: ~/.crc
+  register: isdotcrc
+
+- name: Cleanup existing crc
+  block:
+  - name: crc stop
+    shell: "crc stop"
+    register: crcstop
+    ignore_errors: True
+    #failed_when: 
+    # - "'does not exist' not in crcstop.stderr and  crcstop.rc != 0"
+
+  - name: crcstop stdout
+    debug: 
+      msg: "{{ crcstop.stdout_lines }}"
+
+  - name: crc delete
+    shell: "crc -f delete"
+    register: crcdelete
+    ignore_errors: True
+
+  - name: crc delete stdout
+    debug: 
+      msg: "{{ crcdelete.stdout_lines }}"
+  when: isdotcrc.stat.exists == True
+
+- name: crc setup
+  shell: "crc setup"
+  register: crcsetup
+
+- name: crc setup stdout
+  debug: 
+    msg: "{{ crcsetup.stdout_lines }}"
+
+- name: crc pull secret
+  copy:
+    src: "{{ crc_pull_secret }}"
+    dest: "~/crc_pull_secret"
+
+- name: crc start
+  vars:
+  - crcmemory: "{{ (ansible_memtotal_mb*0.9)|int|abs }}"
+  shell: "crc start --cpus {{ ansible_processor_count }}  --memory {{ crcmemory }}  -p ~/crc_pull_secret"
+  register: crcstart
+
+- name: crc start stdout
+  debug: 
+    msg: "{{ crcstart.stdout_lines }}"
+
+#[kevin@svtcrc-886883-1 ~]$ crc status
+#CRC VM:          Running
+#OpenShift:       Running (v4.2.0)
+#Disk Usage:      11.97GB of 32.2GB (Inside the CRC VM)
+#Cache Usage:     9.536GB
+#Cache Directory: /home/kevin/.crc/cache
+# OpenShift takes longer then the vm to get to Running state
+
+- name: crc status
+  shell: "crc status"
+  register: crcstatus
+  retries: 100
+  delay: 10
+  args:
+    warn: no
+  until:
+    - crcstatus.rc == 0 and crcstatus.stdout_lines[1].find('Running') >= 1
+
+- name: Ensure User has libvirt group
+  user:
+    name: "{{ auto_username }}"
+    groups:
+     - 'libvirt'
+    append: yes
+  become: yes
+
+- name: crc status stdout
+  debug: 
+    msg: "{{ crcstatus.stdout_lines }}"
