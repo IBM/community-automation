@@ -4,7 +4,7 @@
   register: check_machine_config
   changed_when: false
 - debug:
-   msg: {{ check_machine_config.stdout_lines }}
+   msg: "{{ check_machine_config.stdout_lines }}"
 
 - name: recover machine config
   #when: '"has not yet successfully rolled out" in check_machine_config.stdout'
@@ -31,4 +31,4 @@
     shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
     register: recover_machine_config
   - debug:
-      msg: {{ recover_machine_config.stdout_lines }}
+      msg: "{{ recover_machine_config.stdout_lines }}""
