@@ -5,7 +5,8 @@
   changed_when: false
 
 - name: recover machine config
-  when: '"has not yet successfully rolled out" in check_machine_config.stdout'
+  #when: '"has not yet successfully rolled out" in check_machine_config.stdout'
+  when: '"VERSION" in check_machine_config.stdout'
   block:  
   - debug:
       msg: "Running recover machine config"
