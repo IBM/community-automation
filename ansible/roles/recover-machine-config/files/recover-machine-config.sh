@@ -9,9 +9,9 @@ echo "PWD:" $PWD
 
 NODES=$(oc get nodes -l node-role.kubernetes.io/master="" -o name)
 for NODE in $NODES; do 
-  /home/jenkins/oc debug $NODE -- chroot /host touch /run/machine-config-daemon-force; 
+  ./oc debug $NODE -- chroot /host touch /run/machine-config-daemon-force; 
 done
 
 for NODE in $NODES; do 
-  /home/jenkins/oc patch $NODE -p '{"metadata": {"annotations": {"machineconfiguration.openshift.io/currentConfig": "'$machine_config'"}}}';
+  ./oc patch $NODE -p '{"metadata": {"annotations": {"machineconfiguration.openshift.io/currentConfig": "'$machine_config'"}}}';
 done
