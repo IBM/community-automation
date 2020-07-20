@@ -18,8 +18,8 @@
     register: machine_config
     changed_when: false
  
- - debug:
-     msg: "{{ machin_config.stdout_lines }}"
+  - debug:
+      msg: "{{ machin_config.stdout_lines }}"
 
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
