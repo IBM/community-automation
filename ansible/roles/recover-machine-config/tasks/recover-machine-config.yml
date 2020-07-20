@@ -12,7 +12,7 @@
       msg: "Running recover machine config"
 
   - name: "query machine config"
-    shell: "./oc mc"
+    shell: "./oc get mc"
     register: machine_config
     changed_when: false
 
