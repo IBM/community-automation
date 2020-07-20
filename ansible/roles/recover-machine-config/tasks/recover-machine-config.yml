@@ -26,5 +26,5 @@
     with_items: "{{ master_nodes.stdout_lines }}"
 
   - name: "patch machine config on each master node"
-    shell: files/recover-machine-config.sh {{ machine_config }}
+    shell: ../files/recover-machine-config.sh {{ machine_config }}
     register: recover_machine_config
