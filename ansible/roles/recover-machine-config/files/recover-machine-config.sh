@@ -5,6 +5,7 @@ set -o pipefail
 
 # example: rendered-master-49cf574b7d19fc505c33440b19464d2b
 machine_config=$1
+echo "PWD:" $PWD
 
 NODES=$(oc get nodes -l node-role.kubernetes.io/master="" -o name)
 for NODE in $NODES; do 
