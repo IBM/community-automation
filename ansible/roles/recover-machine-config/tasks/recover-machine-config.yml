@@ -25,7 +25,5 @@
     with_items: "{{ master_nodes.stdout_lines }}"
 
   - name: "patch machine config on each master node"
-    # shell: echo "./oc patch node {{ item }}  -p '{"metadata": {"annotations": {"machineconfiguration.openshift.io/currentConfig": "{{ machine-config }}"}}}'"
-    shell: echo "patch machint config"
-    with_items: "{{ master_nodes.stdout_lines }}"
-
+    shell: files/recover-machine-config.sh {{ machine_config }}
+    register: recover_machine_config
