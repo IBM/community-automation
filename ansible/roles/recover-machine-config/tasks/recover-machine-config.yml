@@ -1,6 +1,6 @@
 ---
 - name: "check machine-config failure"
-  shell: "./oc adm upgrade"
+  shell: "echo $PWD; ./oc adm upgrade"
   register: check_machine_config
   changed_when: false
 
@@ -12,7 +12,7 @@
       msg: "Running recover machine config"
 
   - name: "query machine config"
-    shell: "./oc get mc"
+    shell: "echo $PWD; ./oc get mc"
     register: machine_config
     changed_when: false
 
