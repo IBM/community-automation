@@ -14,14 +14,18 @@
       msg: "Running recover machine config"
 
   - name: "query machine config"
-    shell: "echo $PWD; ./oc get mc"
+    shell: "echo PWD=$PWD; ./oc get mc"
     register: machine_config
     changed_when: false
+    debug:
+      msg: "{{ machin_config.stdout_lines }}"
 
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
     register: master_nodes
     changed_when: false
+    debug:
+      msg: "{{ master_nodes.stdout_lines }}"
 
   - name: "touch machine config daemon file on each master node"
     shell: find . recover-machine-config.sh; echo "./oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force"
