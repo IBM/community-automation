@@ -17,14 +17,16 @@
     shell: "echo PWD=$PWD; ./oc get mc"
     register: machine_config
     changed_when: false
-    debug:
-      msg: "{{ machin_config.stdout_lines }}"
+ 
+ - debug:
+     msg: "{{ machin_config.stdout_lines }}"
 
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
     register: master_nodes
     changed_when: false
-    debug:
+
+  - debug:
       msg: "{{ master_nodes.stdout_lines }}"
 
   - name: "touch machine config daemon file on each master node"
