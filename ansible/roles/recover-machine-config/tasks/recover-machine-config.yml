@@ -14,7 +14,7 @@
       msg: "Running recover machine config"
 
   - name: "query machine config"
-    shell: "echo PWD=$PWD; ./oc get mc"
+    shell: "./oc get mc"
     register: machine_config
     changed_when: false
  
