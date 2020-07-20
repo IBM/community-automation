@@ -31,4 +31,4 @@
     shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
     register: recover_machine_config
   - debug:
-      msg: "{{ recover_machine_config.stdout_lines }}""
+      msg: "{{ recover_machine_config.stdout_lines }}"
