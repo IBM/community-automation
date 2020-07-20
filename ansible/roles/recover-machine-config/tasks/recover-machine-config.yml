@@ -18,8 +18,8 @@
     register: machine_config
     changed_when: false
  
-  - debug:
-      msg: "{{ machine_config.stdout_lines }}"
+#  - debug:
+#      msg: "{{ machine_config.stdout_lines }}"
 
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
@@ -36,5 +36,6 @@
   - name: "patch machine config on each master node"
     shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
     register: recover_machine_config
+
   - debug:
       msg: "{{ recover_machine_config.stdout_lines }}"
