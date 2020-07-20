@@ -3,7 +3,7 @@
   shell: "echo $PWD; ./oc adm upgrade"
   register: check_machine_config
   changed_when: false
--debug:
+- debug:
    msg: {{ check_machine_config.stdout_lines }}
 
 - name: recover machine config
