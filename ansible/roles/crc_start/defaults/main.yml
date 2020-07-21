@@ -1,1 +1,1 @@
-crc_pull_secret: "{{ lookup('env','ansible_secrets_dir') }}/crc_pull_secret"
+crc_pull_password: 'Just4T3st!ng'
