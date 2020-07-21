@@ -35,6 +35,10 @@ or
 ansible-playbook  -i inventory request-crc-fyre-play.yml -e stackName=mycrcStack01 --vault-password-file roles/crc_start/files/crc_pull_pass
 ```
 
+To disable vnc server install ( takes around 8 minutes ) add
+``` -e vnc=False
+```
+
 ## Access the command line
 
 Once the stack is created, crc installed and running, ssh kevin@<stack name FQDN>
