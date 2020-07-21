@@ -42,7 +42,7 @@ To disable vnc server install ( takes around 8 minutes ) add
 
 ## Access the command line
 
-Once the stack is created, crc installed and running, ssh kevin@<stack name FQDN>
+Once the stack is created, crc installed and running, ssh kevin@stackname_FQDN
 
 ```
 crc status
@@ -51,7 +51,7 @@ crc console --credentials
 
 ## Access the web gui 
 
-One can also vncviewer <stackname FQDN>:5901
+One can also vncviewer stackname_FQDN:5901
 password is : vncPassw0rd
 
 Open a command term, and run
