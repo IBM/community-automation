@@ -1,0 +1,7 @@
+---
+- include_tasks: "{{ role_main_file }}"
+  with_first_found:
+    - files:
+      - crc_enable_telemetry.yml
+  loop_control:
+    loop_var: role_main_file

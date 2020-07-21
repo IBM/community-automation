@@ -1,0 +1,44 @@
+--- 
+
+- block:
+  # example
+  #   0	cluster-monitoring-operator
+  #   1	machine-config-operator
+  #   2	etcd-quorum-guard
+  #   3	machine-api-operator
+  #   4	cluster-autoscaler-operator
+  #   5	insights-operator
+  #   6	prometheus-k8s
+  - name: get ocp cluster version index
+    script: oc_get_clusterversion.sh
+    register: occlusterversion
+  
+  - set_fact:
+     monidx: "{{ occlusterversion.stdout[0:1] }}"
+  - name: monidx
+    debug:
+      msg: "{{ monidx }}"
+
+  - block:
+    - name: enable monitoring, alerting, and telemetry services
+      script: "oc_enable_monitoring.sh {{ monidx }}"
+      register: ocmonitoring
+  
+    - name: enable monitoring, alerting, and telemetry services stdout_lines
+      debug:
+        msg: "{{ ocmonitoring.stdout_lines }}"
+
+    - name: enable monitoring, alerting, and telemetry services
+      shell: 'oc get statefulset -n openshift-monitoring'
+      register: ocpmon
+  
+    - name: ocpmon stdout lines
+      debug:
+        msg: "{{ ocpmon.stdout_lines }}"
+    when:
+    - monidx is defined
+    - monidx != ""
+
+  when: 
+  - crcEnableTelemetryFlag == True
+  - ansible_facts['memtotal_mb'] >= 16000

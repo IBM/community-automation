@@ -1,0 +1,89 @@
+--- 
+
+- name: oc in user path
+  lineinfile:
+    path: ~/.bashrc
+    state: present
+    regexp: '.crc'
+    line: 'export PATH="/home/{{ crc_username }}/.crc/bin:$PATH"'
+    backup: yes
+
+#### change for crc 4.4.5
+# oc binary is in ~/.crc/bin/oc/oc
+- name: check if oc binary moved
+  ignore_errors: True
+  stat:
+    path: "~/.crc/bin/oc/oc"
+    follow: yes
+  register: isbinococ
+
+- block:
+  - name: swizzle up the location of oc dir
+    command: 'mv ~/.crc/bin/oc ~/.crc/bin/oc.bin'
+
+  - name: swizzle up the location of oc command
+    command: 'mv ~/.crc/bin/oc.bin/oc ~/.crc/bin/oc'
+  when:
+   - isbinococ.failed == False
+   - isbinococ.stat.exists == True
+
+- name: link oc kubectl
+  file:
+    src: '~/.crc/bin/oc'
+    dest: '~/.crc/bin/kubectl'
+    state: link
+
+# this seems a lot cleaner getting a token
+#[kevin@svtcrc-800620-1 ~]$ oc whoami -t
+#1hLIsHgoTp_6zR_R5xRXdTzdmEnsVdRXB-6EaKPzaHg
+# the login with
+#oc login --token=qCyUrHYDTJAJ_abs6TAYULJefD9XemWR1db6UE7eN-M --server=https://api.cjrkab1.os.fyre.ibm.com:6443
+
+- name: crc creds
+  shell: "crc console --credentials"
+  register: crccreds
+
+- name: crc creds stdout
+  debug: 
+    msg: "{{ crccreds.stdout_lines }}"
+
+- set_fact:
+    oc_admin: 'kubeadmin'
+  # below is the creds output to get parsed
+  #OLD: To login as an admin, username is 'kubeadmin' and password is 'F44En-Xau6V-jQuyb-yuMXB'.
+  #NEW: To login as an admin, run 'oc login -u kubeadmin -p mhk2X-Y8ozE-9icYb-uLCdV https://api.crc.testing:6443'
+    oc_admin_pw_string: "{{ crccreds.stdout_lines[1] }}"
+    oc_dev: 'developer'
+    oc_dev_pw: 'developer'
+
+# '([^']*)  give 4 match sets
+# https://docs.ansible.com/ansible/latest/user_guide/playbooks_filters.html?highlight=regex_search
+# https://regex101.com/
+# the following is somewhat hacky and completely dependant on the output of the crc console --credentials
+
+- set_fact:
+    oc_admin_pw_string: "{{ oc_admin_pw_string.split(' ')[11] }}"
+
+- set_fact:
+    pw_length: "{{ oc_admin_pw_string|length }}"
+
+- set_fact:
+    #oc_admin_pw: "{{ oc_admin_pw_string[1:pw_length|int-2] }}"
+    oc_admin_pw: "{{ oc_admin_pw_string[0:pw_length|int-0] }}"
+
+- set_fact:
+    oc_admin_login: "oc login  --insecure-skip-tls-verify=true  -u {{ oc_admin }} -p {{ oc_admin_pw }} {{ oc_cluster }}"
+    oc_dev_login: "oc login -u developer -p developer {{ oc_cluster }}"
+
+- name: oc login
+  shell: "{{ oc_admin_login }}"
+  retries: 12
+  delay: 10
+  args:
+    warn: no
+  register: oclogin
+  until: oclogin.rc == 0
+
+- name: oc login stdout
+  debug: 
+    msg: "{{ oclogin.stdout_lines }}"

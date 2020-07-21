@@ -1,0 +1,17 @@
+### helpful for debug to set noLog to false via -e noLog=false
+noLog: True
+hostnameDomain: '.fyre.ibm.com'
+regionTimeZone: 'America/New_York'
+### do not change below
+# Fyre urls and api
+fyreapiurl: https://api.fyre.ibm.com/rest/v1/
+opbuild: "?operation=build"
+fyreurlbuild: "{{ fyreapiurl }}{{ opbuild }}"
+requeststatus: "?operation=query&request=showrequests&request_id="
+fyrerequeststatus: "{{ fyreapiurl }}{{ requeststatus }}"
+clusterstatus: "?operation=query&request=showclusterdetails&cluster_name="
+fyreclusterstatus: "{{ fyreapiurl }}{{ clusterstatus }}"
+opshowcluster: "?operation=query&request=showclusters"
+fyreurlshowcluster: "{{ fyreapiurl }}{{ opsshowcluster }}"
+opdelete: "?operation=delete"
+fyreurldelete: "{{ fyreapiurl }}{{ opdelete }}"
