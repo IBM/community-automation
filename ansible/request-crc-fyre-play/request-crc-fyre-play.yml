@@ -1,0 +1,10 @@
+---
+- hosts: fyreApi
+  roles:
+  - role: crc_fyrevm
+  - role: vnc
+  - role: crc_install
+  - role: crc_start
+  - role: crc_oc_cli
+  - role: crc_enable_telemetry
+

@@ -5,7 +5,7 @@
     path: ~/.bashrc
     state: present
     regexp: '.crc'
-    line: 'export PATH="/home/{{ auto_username }}/.crc/bin:$PATH"'
+    line: 'export PATH="/home/{{ crc_username }}/.crc/bin:$PATH"'
     backup: yes
 
 #### change for crc 4.4.5

@@ -37,7 +37,7 @@
 
 - name: crc pull secret
   copy:
-    src: "{{ crc_pull_secret }}"
+    src: crc_pull_secret.yml
     dest: "~/crc_pull_secret"
 
 - name: crc start
@@ -70,7 +70,7 @@
 
 - name: Ensure User has libvirt group
   user:
-    name: "{{ auto_username }}"
+    name: "{{ crc_username }}"
     groups:
      - 'libvirt'
     append: yes

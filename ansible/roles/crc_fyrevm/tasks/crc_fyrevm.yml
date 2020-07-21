@@ -137,7 +137,7 @@
       {{ localclusterName }}-1{{ hostnameDomain }}
       
       [setup_controller:vars]
-      ansible_user={{ auto_username }}
+      ansible_user={{ crc_username }}
       clusterName={{ clusterName }}
       controllerName={{ localclusterName }}
       setup_controller_inventory={{ setup_controller_inventory }}
@@ -146,6 +146,6 @@
       {{ localclusterName }}-1{{ hostnameDomain }}
 
       [icpa_controller:vars]
-      ansible_user={{ auto_username }}
+      ansible_user={{ crc_username }}
       INSTALLER_VERSION={{ icp4a_version }}
       INSTALLER=icpa-installer
