@@ -4,6 +4,8 @@
 
  - You have capacity in fyre
  - Fyre is online
+ - schader@us.ibm.com maintains an up-to-date crc binary here:
+   - crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"
 
 ## Setting up inventory
 

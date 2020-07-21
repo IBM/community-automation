@@ -1,14 +1,18 @@
 ---
+- set_fact:
+   stackName: "crc{{ 999999 | random }}"
+  run_once: yes
+  when: stackName is not defined
 
 - name: check status of the named cluster
   no_log: "{{ noLog }}"
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ localclusterName }}'
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ stackName }}'
   args:
    warn: no
   register: clusterStatus
 
 - debug: 
-   msg: "{{ localclusterName }} is deployed - exit"
+   msg: "{{ stackName }} is deployed - exit"
   when: (clusterStatus.stdout|from_json).status is not defined 
 
 - meta: end_play
@@ -21,19 +25,19 @@
 - name: create input json file
   no_log: "{{ noLog }}"
   copy:
-   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ localclusterName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ localclusterName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' } ] }"
-   dest: "fyre.{{ localclusterName }}.json"
+   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ stackName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ stackName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' } ] }"
+   dest: "fyre.{{ stackName }}.json"
 
 - name: Create Fyre stack
   no_log: "{{ noLog }}"
-  raw: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurlbuild }} --data @fyre.{{ localclusterName }}.json
+  raw: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurlbuild }} --data @fyre.{{ stackName }}.json
   args:
    warn: no
   register: buildstatus
 
 - name: remove temp json
   file:
-   path: "fyre.{{ localclusterName }}.json"
+   path: "fyre.{{ stackName }}.json"
    state: absent
 
 - name: check Fyre request status
@@ -62,12 +66,12 @@
 - block:
   - name: check Fyre request status
     fail:
-     msg: "Fyre reqeust for cluster {{ localclusterName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
+     msg: "Fyre reqeust for cluster {{ stackName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
   when: (fyreStatus.stdout|from_json).request[0].get('status') == 'error'
 
 - name: check status of the named cluster - get publicip
   #no_log: "{{ noLog }}"
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ localclusterName }}'
+  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ stackName }}'
   args:
    warn: no
   register: clusterStatus
@@ -75,21 +79,21 @@
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{ (clusterStatus.stdout|from_json)[localclusterName][0].get('publicip') }}"
+    publicip: "{{ (clusterStatus.stdout|from_json)[stackName][0].get('publicip') }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
 - name: remove new host from localhost known_hosts
   no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ localclusterName }}-1"
+  command: "ssh-keygen -R {{ stackName }}-1"
   ignore_errors: True
 - name: remove new host from localhost known_hosts fqdn
   no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ localclusterName }}-1.fyre.ibm.com" 
+  command: "ssh-keygen -R {{ stackName }}-1.fyre.ibm.com" 
   ignore_errors: True
 
 # somewhat hard coded here
 - name: check the host for a active ssh
-  command: 'ssh -o StrictHostKeyChecking=no root@{{ localclusterName }}-1.fyre.ibm.com /usr/bin/true'
+  command: 'ssh -o StrictHostKeyChecking=no root@{{ stackName }}-1.fyre.ibm.com /usr/bin/true'
   retries: 999
   delay: 5
   register: result
@@ -97,7 +101,7 @@
 
 - block:
   - name: check the host for cpu type
-    command: 'ssh -o StrictHostKeyChecking=no root@{{ localclusterName }}-1.fyre.ibm.com lscpu -J'
+    command: 'ssh -o StrictHostKeyChecking=no root@{{ stackName }}-1.fyre.ibm.com lscpu -J'
     register: cpuType
 
   - set_fact: 
@@ -124,28 +128,4 @@
 
 # somewhat hard coded here
 - name: add host to known_hosts
-  shell: 'ssh-keyscan -H {{ localclusterName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'
-
-# this is an inventory file that can be used: ansible-playbook -i < path to host file > some.yml for debugging
-- name: create host inventory file for debugging
-  blockinfile:
-    backup: no
-    create: yes
-    path: setup_controller_inventory
-    block: |
-      [setup_controller]
-      {{ localclusterName }}-1{{ hostnameDomain }}
-      
-      [setup_controller:vars]
-      ansible_user={{ crc_username }}
-      clusterName={{ clusterName }}
-      controllerName={{ localclusterName }}
-      setup_controller_inventory={{ setup_controller_inventory }}
-
-      [icpa_controller]
-      {{ localclusterName }}-1{{ hostnameDomain }}
-
-      [icpa_controller:vars]
-      ansible_user={{ crc_username }}
-      INSTALLER_VERSION={{ icp4a_version }}
-      INSTALLER=icpa-installer
+  shell: 'ssh-keyscan -H {{ stackName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'

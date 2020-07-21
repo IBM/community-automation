@@ -1,4 +1,2 @@
 ---
-crc_archive_dir: "{{ artifact_cache_dir }}/crc"
-crc_archive: "{{ crc_archive_dir }}/crc-linux-amd64.tar.xz"
 crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"
