@@ -11,7 +11,7 @@
 
 - hosts: crc
   roles:
-  - { role: vnc, when: vnc }
+  - { role: vnc, when: vnc|bool }
   - role: crc_install
   - role: crc_start
   - role: crc_oc_cli

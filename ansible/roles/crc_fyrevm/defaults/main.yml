@@ -1,6 +1,5 @@
 ### helpful for debug to set noLog to false via -e noLog=false
 noLog: True
-disableFyreAMDFlag: False
 hostnameDomain: '.fyre.ibm.com'
 regionTimeZone: 'America/New_York'
 ### do not change below

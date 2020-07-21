@@ -107,7 +107,6 @@
   - set_fact: 
       isAMDchip: "{{ (cpuType.stdout|from_json).lscpu[9].get('data') }}"
 
-  - debug: var=disableFyreAMDFlag
   - debug: 
       msg: "{{ isAMDchip }}"
  
@@ -122,8 +121,6 @@
       include_role:
         name: crc_or_controller_fyrevm
     when: (isAMDchip).find('AMD') >= 1 
-  when: 
-   - disableFyreAMDFlag == True
 
 # somewhat hard coded here
 - name: add host to known_hosts

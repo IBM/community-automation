@@ -1,1 +1,1 @@
-oc_cluster: 'https://api.crc.testing:6443'
+crcEnableTelemetryFlag: False
