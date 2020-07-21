@@ -27,20 +27,31 @@ e.g. -e stackName=mycrcStack01
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory request-crc-fyre-play.yml 
+ansible-playbook  -i inventory request-crc-fyre-play.yml --vault-password-file roles/crc_start/files/crc_pull_pass
 
 or
 
 
-ansible-playbook  -i inventory request-crc-fyre-play.yml -e stackName=mycrcStack01
+ansible-playbook  -i inventory request-crc-fyre-play.yml -e stackName=mycrcStack01 --vault-password-file roles/crc_start/files/crc_pull_pass
 ```
 
-Once the stack is created, crc installed and running, ssh fyre@<stack name>
+## Access the command line
+
+Once the stack is created, crc installed and running, ssh kevin@<stack name FQDN>
 
 ```
 crc status
 crc console --credentials
 ```
 
-One can also vncviewer <stackname>:5901
+## Access the web gui 
+
+One can also vncviewer <stackname FQDN>:5901
 password is : vncPassw0rd
+
+Open a command term, and run
+
+```
+crc console --credentials
+crc console
+```

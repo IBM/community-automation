@@ -1,0 +1,45 @@
+--- 
+
+- name: Ensure User is Present
+  user: 
+    name: "{{ crc_username }}"
+    generate_ssh_key: yes
+    shell: "/bin/bash" 
+    state: present
+  become: yes
+
+- name: Add user to sudoers
+  lineinfile:
+    path: /etc/sudoers
+    state: present
+    regexp: '^{{ crc_username }}'
+    line: '{{ crc_username }} ALL=(ALL) NOPASSWD: ALL'
+    validate: 'visudo -cf %s'
+    backup: yes
+  become: yes
+
+- name: update user hard ulimit nofile
+  pam_limits:
+    domain: '{{ crc_username }}'
+    limit_type: hard
+    limit_item: nofile
+    use_max: yes
+    value: '64000'
+  become: yes
+
+- name: update user soft ulimit nofile
+  pam_limits:
+    domain: '{{ crc_username }}'
+    limit_type: soft
+    limit_item: nofile
+    use_max: yes
+    value: '64000'
+  become: yes
+
+- name: authorized_key
+  authorized_key:
+    user: "{{ crc_username }}"
+    state: present
+    manage_dir: yes
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"  
+  become: yes

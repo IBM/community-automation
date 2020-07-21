@@ -1,6 +1,6 @@
 ---
 - set_fact:
-   stackName: "crc{{ 999999 | random }}"
+   stackName: "crc-{{ 999999 | random }}"
   run_once: yes
   when: stackName is not defined
 
@@ -124,8 +124,14 @@
     when: (isAMDchip).find('AMD') >= 1 
   when: 
    - disableFyreAMDFlag == True
-   - crc_fyre
 
 # somewhat hard coded here
 - name: add host to known_hosts
   shell: 'ssh-keyscan -H {{ stackName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'
+
+- add_host:
+   name: "{{ stackName }}-1{{ hostnameDomain }}"
+   groups: crc
+   ansible_user: "{{ crc_username }}"
+   crc_username: "{{ crc_username }}"
+   stackName: "{{ stackName }}"

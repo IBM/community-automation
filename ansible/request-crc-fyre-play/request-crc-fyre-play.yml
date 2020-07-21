@@ -2,6 +2,15 @@
 - hosts: fyreApi
   roles:
   - role: crc_fyrevm
+
+- hosts: crc
+  vars:
+  - ansible_user: root
+  roles:
+  - role: crc_user
+
+- hosts: crc
+  roles:
   - role: vnc
   - role: crc_install
   - role: crc_start
