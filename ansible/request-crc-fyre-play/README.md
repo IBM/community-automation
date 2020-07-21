@@ -36,7 +36,8 @@ ansible-playbook  -i inventory request-crc-fyre-play.yml -e stackName=mycrcStack
 ```
 
 To disable vnc server install ( takes around 8 minutes ) add
-``` -e vnc=False
+``` 
+-e vnc=False
 ```
 
 ## Access the command line
