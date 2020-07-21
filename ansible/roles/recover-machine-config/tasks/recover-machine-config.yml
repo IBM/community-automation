@@ -21,6 +21,13 @@
 #  - debug:
 #      msg: "{{ machine_config.stdout_lines }}"
 
+  - name: "list directory"
+    shell: "ls -lR"
+    register: check_ls
+
+  -debug:
+     msg: "{{ check_ls.stdout_lines }}"
+
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
     register: master_nodes
