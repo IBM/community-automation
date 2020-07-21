@@ -42,7 +42,7 @@
 
   - name: "patch machine config on each master node"
     #shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
-    shell: ./oc patch {{ item }} -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":' {{ machine_config }} '}}}'
+    shell: ./oc patch {{ item }} -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":"{{ machine_config }}"}}}'
     with_items: "{{ master_nodes.stdout_lines }}"
     register: recover_machine_config
   - debug:
