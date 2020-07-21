@@ -1,0 +1,61 @@
+---
+
+- name: create input json file
+  copy:
+   content: "{ 'cluster_name':'{{ stackName }}'}"
+   dest: "/tmp/fyre.{{ stackName }}.json"
+  delegate_to: localhost
+
+- name: delete the named cluster
+  no_log: "{{ noLog }}"
+  command: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurldelete }} --data @/tmp/fyre.{{ stackName }}.json
+  args:
+   warn: no
+  delegate_to: localhost
+  register: deleteStatus
+
+- name: delete status stdout_lines
+  debug: 
+   msg: "{{ deleteStatus.stdout|from_json }}"
+  delegate_to: localhost
+
+- block:
+  # this is used in fully automated setups - wait x mins for fyre to delete vm
+  - pause:
+     minutes: 2
+
+  - name: get Fyre request status
+    no_log: "{{ noLog }}"
+    command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (deleteStatus.stdout|from_json).request_id }}'
+    retries: 999
+    delay: 5
+    args:
+     warn: no
+    register: fyreStatus
+    delegate_to: localhost
+    until: (fyreStatus.stdout|from_json).request[0].get('status') == 'error' or (fyreStatus.stdout|from_json).request[0].get('status') == 'completed'
+
+  - name: delete final status
+    debug: 
+     msg: "{{ fyreStatus.stdout|from_json }}"
+    delegate_to: localhost
+
+  - name: check Fyre request status
+    fail:
+     msg: "Fyre reqeust for cluster {{ stackName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
+    delegate_to: localhost
+    when: (fyreStatus.stdout|from_json).request[0].get('status') == 'error'
+
+  - name: remove deleted host from localhost known_hosts
+    command: "ssh-keygen -R {{ stackName }}-1.fyre.ibm.com" 
+    ignore_errors: True
+    delegate_to: localhost
+  
+  - name: remove temp json
+    file:
+     path: "/tmp/fyre.{{ stackName }}.json"
+     state: absent
+    delegate_to: localhost
+
+  when: deleteStatus.stdout is not search('error')
+

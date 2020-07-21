@@ -1,0 +1,8 @@
+---
+- include_tasks: "{{ role_main_file_fd }}"
+  with_first_found:
+    - files:
+      - "fyrevm_delete{{ ansible_os_family }}.yml"
+      - fyrevm_delete.yml
+  loop_control:
+    loop_var: role_main_file_fd
