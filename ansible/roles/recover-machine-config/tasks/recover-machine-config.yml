@@ -37,12 +37,13 @@
       msg: "{{ master_nodes.stdout_lines }}"
 
   - name: "touch machine config daemon file on each master node"
-    shell: find . recover-machine-config.sh; echo "./oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force"
+    shell: ./oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force
     with_items: "{{ master_nodes.stdout_lines }}"
 
   - name: "patch machine config on each master node"
-    shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
+    #shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
+    shell: ./oc patch node MYNODE -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":' {{ machine_config }} '}}}'
+    with_items: "{{ master_nodes.stdout_lines }}"
     register: recover_machine_config
-
   - debug:
       msg: "{{ recover_machine_config.stdout_lines }}"
