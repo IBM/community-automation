@@ -45,7 +45,6 @@
     shell: ./oc patch {{ item }} -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":"{{ machine_config }}"}}}'
     with_items: "{{ master_nodes.stdout_lines }}"
     register: recover_machine_config
-
   - debug:
       msg: "{{ item.stdout_lines }}"
-      with_items: "{{ recover_machine_config }}"
+      loop: "{{ recover_machine_config.results }}"
