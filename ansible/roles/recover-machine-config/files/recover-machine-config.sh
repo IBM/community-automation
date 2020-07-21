@@ -7,7 +7,7 @@ set -o pipefail
 machine_config=$1
 echo "PWD:" $PWD
 
-NODES=$(oc get nodes -l node-role.kubernetes.io/master="" -o name)
+NODES=$(./oc get nodes -l node-role.kubernetes.io/master="" -o name)
 for NODE in $NODES; do 
   ./oc debug $NODE -- chroot /host touch /run/machine-config-daemon-force; 
 done
