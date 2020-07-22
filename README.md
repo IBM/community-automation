@@ -16,6 +16,9 @@ This repo represents the Community Automation effort where teams can contribute 
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
+|recover-crc-fyre-play|Install Redhat Codeready Instance|WIP| none|
+|common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
+
 
 ## Supporting Roles
 | role | Description | status | Comments |
