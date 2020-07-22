@@ -1,2 +1,4 @@
 [fyreApi]
-localhost ansible_connection=local crc_username=kevin vnc=False fyreuser=myfyreuser fyreapikey=myfyreapikey
+localhost ansible_connection=local crc_username=kevin fyreuser=myfyreuser fyreapikey=myfyreapikey
+[crc]
+vnc=True
