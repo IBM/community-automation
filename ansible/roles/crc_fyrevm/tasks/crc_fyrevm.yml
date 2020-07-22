@@ -132,3 +132,4 @@
    ansible_user: "{{ crc_username }}"
    crc_username: "{{ crc_username }}"
    stackName: "{{ stackName }}"
+   vnc: "{{ vnc }}"
