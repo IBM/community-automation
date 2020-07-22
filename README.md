@@ -3,6 +3,9 @@
 ## Introduction
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We desided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
+## Prereq
+Make sure your ansible client is at version 2.9 or greater
+
 ## Play list
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
