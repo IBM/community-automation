@@ -49,7 +49,7 @@ crc status
 crc console --credentials
 ```
 
-## Access the web gui 
+## Access the web gui ( vnc is required )
 
 One can also vncviewer stackname_FQDN:5901
 password is : vncPassw0rd
