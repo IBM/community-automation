@@ -1,0 +1,34 @@
+---
+# tasks ocs  install
+- name: Create setup directory
+  file:
+    path: "{{ transfer_bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - directory
+
+- name: Generate OCP cluster transfer config files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ transfer_bastion_setup_dir }}/{{ item }}"
+  with_items:
+  - ocp_transfer.sh
+
+- name: Transfer fyre ocp cluster
+  shell: "{{ transfer_bastion_setup_dir }}/ocp_transfer.sh"
+  args:
+      warn: false
+  register: transfercluster
+
+- name: Viewing ocs install log
+  debug:
+    msg: "{{ transfercluster.stdout_lines }}"
+
+- name: Sending fyre ocp cluster email to {{ transfer_to_email }}
+  mail:
+    host: localhost
+    port: 25
+    to: {{ transfer_to_email }}
+    subject: Transfer of fyre cluster {{ cluster_name }}
+    body: ocp_web_console_url = {{ ocp_url }}./n kubeadmin password: {{ cluster_kubeadmin_pw }}./n Run curl -X PUT -k -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/{{ cluster_name }}/accept_transfer' to accept transfer.

@@ -1,0 +1,26 @@
+#!/bin/bash
+projDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+​​
+
+transfer_to_email={{ transfer_to_user_email }}
+cluster_name={{ cluster_name }}
+fyre_user={{ fyre_username }}
+fyre_api_key={{ fyre_key }}
+
+
+​#######################################################################################################
+## this loop connects to the machines listed in for statement and if json file found creates that ember
+#######################################################################################################
+cat > tmp.json << EOF
+{
+	"new_owner": "$transfer_to_email",
+  "comment": "Transfer cluster $cluster_name to $transfer_to_email"
+}
+EOF
+​
+json=$( cat tmp.json )
+#rm tmp.json
+echo "##################"
+echo "Transfering cluster $cluster_name to email $transfer_to_email"
+echo "##################"
+curl -X PUT -k -u ${fyre_user}:${fyre_api_key} "https://ocpapi.svl.ibm.com/v1/ocp/$cluster_name/transfer" --data "${json}"
