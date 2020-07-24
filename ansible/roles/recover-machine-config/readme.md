@@ -29,7 +29,7 @@ Edit ```examples/vars.yml```
   kubeadmin_password: <kubeadmin_password>
   ocp_api_url: <api_server>:6443
   arch: "linux"
-  ocp_client_version: "4.3.0"
+  ocp_client_version: "4.3.0" # lookup client version here https://mirror.openshift.com/pub/openshift-v4/clients/ocp/
   machine_config: "<machine_config>
 ```
 
