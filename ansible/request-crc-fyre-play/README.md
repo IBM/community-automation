@@ -5,7 +5,8 @@
  - You have capacity in fyre
  - Fyre is online
  - schader@us.ibm.com maintains an up-to-date crc binary here:
-   - crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"
+   - crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"  
+   NOTE: A temporary downgraded version has been placed here "http://9.46.68.100/crc-linux-amd64.tar.xz". It is currently the default install image.  The latest version is having issues completing the install.
 
 ## Setting up inventory
 
