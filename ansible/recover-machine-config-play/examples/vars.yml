@@ -1,0 +1,7 @@
+---
+  kubeadmin_user: "kubeadmin"
+  kubeadmin_password: <kubeadmin_password>
+  ocp_api_url: <api_server>:6443
+  arch: "linux"
+  ocp_client_version: "4.3.0"
+  machine_config: "<machine_config>"
