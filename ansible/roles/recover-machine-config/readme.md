@@ -41,8 +41,9 @@ ansible-playbook -vv -i examples/inventory -e @examples/vars.yml recover-machine
 
 ### How to install oc client
 
-- Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
-- Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
+- ocp client versions can be looked up here https://mirror.openshift.com/pub/openshift-v4/clients/ocp/
+- Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/<version>/linux/openshift-client-linux.tar.gz`
+- Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/ocp/<version>/macosx/openshift-clien-mac.tar.gz`
 - Extract: tar xf oc.tar.gz
 - Move to /usr/local/bin: cp oc /usr/local/bin
 - Example oc login: `oc login https://<api_host_name>:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
