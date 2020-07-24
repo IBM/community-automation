@@ -34,7 +34,7 @@ Edit ```examples/vars.yml```
 ```
 
 ```
-ansible-playbook -vv -i examples/inventory -e @examples/vars.yml recovery-machine-config.yml
+ansible-playbook -vv -i examples/inventory -e @examples/vars.yml recover-machine-config.yml
 ```
 
 ## NOTES
