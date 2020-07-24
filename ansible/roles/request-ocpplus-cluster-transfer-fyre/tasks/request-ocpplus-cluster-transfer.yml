@@ -24,11 +24,3 @@
 - name: Viewing ocs install log
   debug:
     msg: "{{ transfercluster.stdout_lines }}"
-
-- name: Sending fyre ocp cluster email to {{ transfer_to_email }}
-  mail:
-    host: localhost
-    port: 25
-    to: {{ transfer_to_email }}
-    subject: Transfer of fyre cluster {{ cluster_name }}
-    body: ocp_web_console_url = {{ ocp_url }}./n kubeadmin password: {{ cluster_kubeadmin_pw }}./n Run curl -X PUT -k -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/{{ cluster_name }}/accept_transfer' to accept transfer.
