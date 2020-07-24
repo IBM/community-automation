@@ -4,10 +4,6 @@
 
 - Transfers a fyre OCP+Beta cluster to a user using their IBM intranet email.
    - Transfers OCP+Beta cluster using API
-   - Sends an email to the new user with
-     - ocp_web_console_url
-     - kubeadmin Password
-     - API curl command to accept the cluster transfer
 
 
 ## Requirements

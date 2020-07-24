@@ -12,6 +12,7 @@
   template:
     src: "{{ item }}.j2"
     dest: "{{ transfer_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
   with_items:
   - ocp_transfer.sh
 

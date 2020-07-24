@@ -1,7 +1,5 @@
 transfer_bastion_setup_dir: ~/setup-files/transfer-setup
 transfer_to_email: <transfer_to_user_email> #IBM Intranet email of person transfering fyre OCP cluster to.
 cluster_name: <cluster_name> #Name of OCP cluster to transfer
-cluster_kubeadmin_pw: <cluster_kubeadmin_pw> #kubeadmin password
 fyre_user: <fyre_username> #Fyre API User name
 fyre_api_key: <fyre_key> #FYre API key
-ocp_url: <ocp_login_url>  # OCP login URL like https://console-openshift-console.apps.walturl45p.cp.fyre.ibm.com
