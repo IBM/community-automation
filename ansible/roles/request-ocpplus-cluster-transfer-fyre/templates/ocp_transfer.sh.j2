@@ -19,9 +19,10 @@ EOF
 json=$( cat tmp.json )
 #rm tmp.json
 echo "##################"
+echo ""
 echo "Transfering cluster $cluster_name to email $transfer_to_email"
 echo "Have $transfer_to_email run this command to accept transfer"
 echo "curl -X PUT -k -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/$cluster_name/accept_transfer'"
-echo "Then send $transfer_to_email the email you received for the fyre cluster $cluster_name"
+echo ""
 echo "##################"
 curl -X PUT -k -u ${fyre_user}:${fyre_api_key} "https://ocpapi.svl.ibm.com/v1/ocp/$cluster_name/transfer" --data "${json}"
