@@ -17,6 +17,7 @@ Make sure your ansible client is at version 2.9 or greater
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
+|request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|WIP| none|
 |recover-crc-fyre-play|Install Redhat Codeready Instance|WIP| none|

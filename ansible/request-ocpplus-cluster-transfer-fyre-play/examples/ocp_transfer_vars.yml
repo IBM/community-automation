@@ -1,0 +1,4 @@
+transfer_to_email: <transfer_to_user_email> #IBM Intranet email of person transfering fyre OCP cluster to.
+cluster_name: <cluster_name> #Name of OCP+Beta cluster to transfer
+fyre_user: <fyre_username> #Fyre API User name
+fyre_api_key: <fyre_key> #FYre API key

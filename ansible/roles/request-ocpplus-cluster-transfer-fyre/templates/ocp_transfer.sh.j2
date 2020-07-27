@@ -1,0 +1,28 @@
+#!/bin/bash
+​​
+transfer_to_email={{ transfer_to_email }}
+cluster_name={{ cluster_name }}
+fyre_user={{ fyre_user }}
+fyre_api_key={{ fyre_api_key }}
+
+
+​#######################################################################################################
+## this loop connects to the machines listed in for statement and if json file found creates that ember
+#######################################################################################################
+cat > tmp.json << EOF
+{
+	"new_owner": "$transfer_to_email",
+  "comment": "Transfer cluster $cluster_name to $transfer_to_email"
+}
+EOF
+​
+json=$( cat tmp.json )
+#rm tmp.json
+echo "##################"
+echo ""
+echo "Transfering cluster $cluster_name to email $transfer_to_email"
+echo "Have $transfer_to_email run this command to accept transfer"
+echo "curl -X PUT -k -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/$cluster_name/accept_transfer'"
+echo ""
+echo "##################"
+curl -X PUT -k -u ${fyre_user}:${fyre_api_key} "https://ocpapi.svl.ibm.com/v1/ocp/$cluster_name/transfer" --data "${json}"
