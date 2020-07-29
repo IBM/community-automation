@@ -1,2 +1,10 @@
 [bastion]
 localhost ansible_connection=local
+
+[bastion:vars]
+kubeadmin_user: "kubeadmin"
+kubeadmin_password: xxxx-xxxx-xxxx-xxxx
+ocp_api_url: <API_Server_URL>:<API_Server_Port>
+arch: "linux"
+ocp_client_version: "4.3.0"
+machine_config: <machine_config_value>
