@@ -18,16 +18,6 @@
     register: machine_config
     changed_when: false
  
-#  - debug:
-#      msg: "{{ machine_config.stdout_lines }}"
-
-  - name: "list directory"
-    shell: "ls -lR"
-    register: check_ls
-
-  - debug:
-     msg: "{{ check_ls.stdout_lines }}"
-
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
     register: master_nodes
@@ -41,7 +31,6 @@
     with_items: "{{ master_nodes.stdout_lines }}"
 
   - name: "patch machine config on each master node"
-    #shell: echo $PWD; roles/recover-machine-config/files/recover-machine-config.sh {{ machine_config }}
     shell: ./oc patch {{ item }} -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":"{{ machine_config }}"}}}'
     loop: "{{ master_nodes.stdout_lines }}"
     register: recover_machine_config
