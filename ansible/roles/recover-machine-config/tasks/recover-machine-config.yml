@@ -1,31 +1,39 @@
 ---
 - name: "check machine-config failure"
-  shell: "./oc adm upgrade"
+  shell: "echo $PWD; ./oc adm upgrade"
   register: check_machine_config
   changed_when: false
+- debug:
+   msg: "{{ check_machine_config.stdout_lines }}"
 
 - name: recover machine config
-  when: '"has not yet successfully rolled out" in check_machine_config.stdout'
+  #when: '"has not yet successfully rolled out" in check_machine_config.stdout'
+  when: '"VERSION" in check_machine_config.stdout'
   block:  
   - debug:
       msg: "Running recover machine config"
 
   - name: "query machine config"
-    shell: "./oc mc"
-    register: machine_config
+    shell: "./oc get mc"
+    register: list_machine_config
     changed_when: false
-
+ 
   - name: "get list of master nodes"
     shell: ./oc get nodes -l node-role.kubernetes.io/master="" -o name
     register: master_nodes
     changed_when: false
 
+  - debug:
+      msg: "{{ master_nodes.stdout_lines }}"
+
   - name: "touch machine config daemon file on each master node"
-    shell: echo "./oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force"
+    shell: ./oc debug {{ item }} -- chroot /host touch /run/machine-config-daemon-force
     with_items: "{{ master_nodes.stdout_lines }}"
 
   - name: "patch machine config on each master node"
-    # shell: echo "./oc patch node {{ item }}  -p '{"metadata": {"annotations": {"machineconfiguration.openshift.io/currentConfig": "{{ machine-config }}"}}}'"
-    shell: echo "patch machint config"
-    with_items: "{{ master_nodes.stdout_lines }}"
-
+    shell: ./oc patch {{ item }} -p '{"metadata":{"annotations":{"machineconfiguration.openshift.io/currentConfig":"{{ machine_config }}"}}}'
+    loop: "{{ master_nodes.stdout_lines }}"
+    register: recover_machine_config
+  - debug:
+      msg: "{{ item.stdout_lines }}"
+    loop: "{{ recover_machine_config.results }}"
