@@ -15,7 +15,7 @@
 
   - name: "query machine config"
     shell: "./oc get mc"
-    register: machine_config
+    register: list_machine_config
     changed_when: false
  
   - name: "get list of master nodes"
