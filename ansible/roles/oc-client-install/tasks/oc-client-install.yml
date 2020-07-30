@@ -1,5 +1,4 @@
 ---
-- setup:
 - name: Download OCP CLI
   get_url:
     url: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ arch }}-{{ ocp_client_version }}.tar.gz

@@ -7,6 +7,6 @@
     ansible_python_interpreter: /usr/bin/python3
   become: yes
   become_user: root
-  gather_facts: no
+  gather_facts: yes
   roles: 
   - recover-machine-config
