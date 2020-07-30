@@ -1,8 +1,8 @@
 ---
 - name: Recover Machine Config
   hosts: bastion
-  vars_file:
-   - examples/mc_vars.yml 
+  vars_files:
+   - mc_vars.yml 
   vars:
     ansible_python_interpreter: /usr/bin/python3
   become: yes
