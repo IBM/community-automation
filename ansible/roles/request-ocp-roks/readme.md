@@ -17,6 +17,8 @@
 | defaultPoolSize   | Number of workers to create            | No       | default: 2             |
 | kubeVersion       | 4.3_openshift or IKS options           | No       | default: 4.3_openshift |
 | publicVLAN        | Public VLAND ID to use, blank for none | No       | string                 |
+| entitlement       | Set to 'cloud_pak' to use entitlement  | No       | string                 |
+| icaccount         | IBM Cloud Account GUID                 | No       | string                 |
 
 ### Additional Variable Information
 
@@ -27,6 +29,7 @@
 * privateVLAN: A private VLAN is required and must exist.
 * publicVLAN: A public VLAN is required for inbound Internet access to the cluster. The VLAN must exist.
 * apikey: IBM Cloud IAM API key is required to provision. 
+* icaccount: Add IBM Cloud Account GUID when API Key provided is used by multiple accounts.
 
 ## Output
 
@@ -49,6 +52,8 @@ Registers variable: iccluster
         publicVLAN: 2345678
         resourceGroup: "RGNAME"
         workerCount: "5"
+        icaccount: "9zzzzzzzzzzzzzzzzzzzzzz61"
+        entitlement: "cloud_pak"
       collections:
         - ibmcloud.ibmcollection
 
