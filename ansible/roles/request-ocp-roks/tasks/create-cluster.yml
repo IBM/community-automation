@@ -24,6 +24,8 @@
     public_vlan_id: "{{ publicVLAN }}"
     resource_group_id: "{{ resource_group.id }}"
     ibmcloud_api_key: "{{ apikey }}"
+    account_guid: "{{ icaccount }}"
+    entitlement: "{{ entitlement }}"
   register: iccluster
 
 - name: create-cluster-output
