@@ -2,7 +2,8 @@
 
 ## Overview
 
-- Installs rook-cephfs from repository https://github.com/rook/rook.git:master onto your fyre inf node.
+- Installs rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
+- Default rook-ceph release is v1.3.8 from https://github.com/rook/rook/releases.
 - Creates 3 storageClass
   - rook-cephfs - File store (RWX)
   - rook-ceph-block - Ceph Block storage (RWO)
@@ -32,6 +33,11 @@ Once you have configured the `inventory` file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory csi-cephfs.yml
+```
+or to pass a new rook-ceph release
+
+```
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "rook_cephfs_release=v1.3.8"
 ```
 
 License

@@ -22,7 +22,7 @@
     mode: '0755'
 
 - name: Install csi-cephfs
-  shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
+  shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }}"
   args:
       warn: false
   register: cephinstall

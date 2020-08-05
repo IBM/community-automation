@@ -1,11 +1,11 @@
 #!/bin/bash
-
+rookRelease=$1
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
 # Install ceph
 rm -rf rook
 echo "Doing clone of rook"
-git clone https://github.com/rook/rook.git -b v1.3.8
+git clone https://github.com/rook/rook.git -b $rookRelease
 echo "Doing common.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
 echo "common.yaml exit $?"
