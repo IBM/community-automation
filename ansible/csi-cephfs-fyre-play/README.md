@@ -1,5 +1,15 @@
 # Ansible Playbook for installing csi-cephfs onto Fyre OCP+Beta clusters.
 
+## Overview
+
+- Installs rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
+- Default rook-ceph release is v1.3.8. See release information here https://github.com/rook/rook/releases.
+- Creates 3 storageClass
+  - rook-cephfs - File store (RWX)
+  - rook-ceph-block - Ceph Block storage (RWO)
+  - csi-cephfs - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as rook-cephfs.
+- Sets csi-cephfs as the default storageclass.
+
 ## Assumptions:
 
  - A healthy Fyre OCP+Beta OpenShift 4.4.3 cluster or later in running state.
@@ -23,6 +33,11 @@ Once you have configured the `inventory` file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory csi-cephfs.yml
+```
+or to pass a new rook-ceph release
+
+```
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "rook_cephfs_release=v1.3.8"
 ```
 
 License
