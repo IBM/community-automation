@@ -1,15 +1,13 @@
 csi-cephfs: csi cephfs on OCP
 =========
 
-This module will install
-- rook-cephfs from repository https://github.com/rook/rook.git master onto your fyre inf node.
-- Create 3 storageClass
+This module will install:
+- rook-cephfs from repository https://github.com/rook/rook.git:master onto your fyre inf node.
+- Creates 3 storageClass
   - rook-cephfs - File store (RWX)
   - rook-ceph-block - Ceph Block storage (RWO)
-  - csi-cephfs - For backward compatability to earlier version. This is the same a storageclass rook-cephfs.
+  - csi-cephfs - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as the rook-cephfs storageclass.
 - Sets csi-cephfs as the default storageclass.
-
-Requirements master. It will also install eon fyre OCP+Beta clusters version 4.4.3 or later.
 
 Requirements
 ------------
