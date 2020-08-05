@@ -25,5 +25,7 @@ echo "Doing filessystem-test.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/filesystem-test.yaml
 echo "Exit from filesystem-test.yaml $?"
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+sed -i "s/rook-cephfs/csi-cephfs/g" rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 oc patch storageclass csi-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml
