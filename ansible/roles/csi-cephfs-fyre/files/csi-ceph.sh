@@ -5,7 +5,7 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 # Install ceph
 rm -rf rook
 echo "Doing clone of rook"
-git clone https://github.com/rook/rook.git -b v1.1.7
+git clone https://github.com/rook/rook.git
 echo "Doing common.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
 echo "common.yaml exit $?"
@@ -16,7 +16,7 @@ echo "Doing sed of useAllDevices false"
 sed -i 's/useAllDevices: true/useAllDevices: false/g' rook/cluster/examples/kubernetes/ceph/cluster.yaml
 echo "Exit from useAllDevice $?"
 echo "Doing sed of deviceFilter"
-sed -i "s/deviceFilter:/deviceFilter: vdb/g" rook/cluster/examples/kubernetes/ceph/cluster.yaml
+sed -i "s/#deviceFilter:/deviceFilter: vdb/g" rook/cluster/examples/kubernetes/ceph/cluster.yaml
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
 oc create -f rook/cluster/examples/kubernetes/ceph/cluster.yaml
