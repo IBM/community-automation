@@ -5,7 +5,7 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 # Install ceph
 rm -rf rook
 echo "Doing clone of rook"
-git clone https://github.com/rook/rook.git
+git clone https://github.com/rook/rook.git -b v1.3.8
 echo "Doing common.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
 echo "common.yaml exit $?"
