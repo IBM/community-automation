@@ -27,7 +27,7 @@ timestamps {
       checkout scm
       stage('Stage 1') {
         sh """
-          cp ./ansible/request-ocp-fyre-play/examples/inventory ./ansible/request-ocp-fyre-play/; ansible-playbook -i ./ansible/request-ocp-fyre-play/inventory ./ansible/request-ocp-fyre-play/request-ocp-fyre-play.yml -e "fyreuser=${fyreuser}" -e "fyreapikey=${fyreapi}"  -e "clusterName=${clusterName}" -e "ocpVersion=${ocpVersion}" -e "fyre_ocptype=${ocptype}" -vv
+          cp ./ansible/request-ocp-fyre-play/examples/inventory ./ansible/request-ocp-fyre-play/; ansible-playbook -i ./ansible/request-ocp-fyre-play/inventory ./ansible/request-ocp-fyre-play/request-ocp-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapi}  -e clusterName=${params.clusterName} -e ocpVersion=${params.ocpVersion} -e fyre_ocptype=${params.ocptype} -vv
         """.stripIndent()
       }
    }
