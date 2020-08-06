@@ -10,7 +10,7 @@
 - From the `request-ocp-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
 - Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
 - Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
-
+- Optionally remove `ansible_python_interpreter: /usr/bin/python3` if you have issues with python discovery
 ```
 cp examples/inventory .
 ```
