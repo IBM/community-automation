@@ -9,7 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
-    string(name: 'ocpVersion', defaultValue: "4.2.0"),
+    string(name: 'ocpVersion', defaultValue: "4.5.4"),
     string(name: 'clusterName', description: 'name of fyre cluster'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
     password(name: 'fyreapikey', description: 'fyre api key'),
