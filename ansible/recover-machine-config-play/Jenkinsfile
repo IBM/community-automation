@@ -24,19 +24,20 @@ timestamps {
   ansiColor('xterm') {
     node ( 'kube_pod_slave' ) {
 
-      //def scmVars = checkout scm
       checkout scm
-      stage('Stage 1') {
-        echo "This is a test"
-        echo "${params.API_Server_URL}"
-        echo "${params.API_Server_Port}"
-        echo "${params.cluster_admin}"
-        echo "${params.cluster_admin_password}"
-      }
 
-      stage('Stage 2') {
+      stage('Recover Machine Config') {
         sh """
-          cp ./ansible/recover-machine-config-play/examples/mc_vars.yml ./ansible/recover-machine-config-play/;cp ./ansible/recover-machine-config-play/examples/inventory ./ansible/recover-machine-config-play/;cat ./ansible/recover-machine-config-play/inventory; ansible-playbook -i ./ansible/recover-machine-config-play/inventory ./ansible/recover-machine-config-play/recover-machine-config-play.yml -e kubeadmin_user=${params.cluster_admin} -e kubeadmin_password=${params.cluster_admin_password} -e ocp_api_url=${API_Server_URL}:${API_Server_Port} -e arch="linux" -e ocp_client_version=${ocp_client_version} -e machine_config=${machine_config} -vv
+          cp ./ansible/recover-machine-config-play/examples/mc_vars.yml ./ansible/recover-machine-config-play/;\
+          cp ./ansible/recover-machine-config-play/examples/inventory ./ansible/recover-machine-config-play/;\
+          ansible-playbook -i ./ansible/recover-machine-config-play/inventory \
+          ./ansible/recover-machine-config-play/recover-machine-config-play.yml \
+          -e kubeadmin_user=${params.cluster_admin} \
+          -e kubeadmin_password=${params.cluster_admin_password} \
+          -e ocp_api_url=${API_Server_URL}:${API_Server_Port} \
+          -e arch="linux" \
+          -e ocp_client_version=${ocp_client_version} \
+          -e machine_config=${machine_config} -vv
         """.stripIndent()
       }
    }
