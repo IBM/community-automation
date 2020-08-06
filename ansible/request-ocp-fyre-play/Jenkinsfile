@@ -1,0 +1,35 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'ocpVersion', defaultValue: "4.2.0"),
+    string(name: 'clusterName', description: 'name of fyre cluster'),
+    string(name: 'fyreuser', description: 'username for accessing fyre api'),
+    password(name: 'fyreapikey', description: 'fyre api key'),
+    choice(name: 'ocptype', choices: ['ocpplus', 'ocp'], description: 'type of fyre ocp cluster')
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'kube_pod_slave' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          cp ./ansible/request-ocp-fyre-play/examples/inventory ./ansible/request-ocp-fyre-play/; ansible-playbook -i ./ansible/request-ocp-fyre-play/inventory ./ansible/request-ocp-fyre-play/request-ocp-fyre-play.yml -e "fyreuser=${fyreuser}" -e "fyreapikey=${fyreapi}"  -e "clusterName=${clusterName}" -e "ocpVersion=${ocpVersion}" -e "fyre_ocptype=${ocptype}" -vv
+        """.stripIndent()
+      }
+   }
+  }
+}
