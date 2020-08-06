@@ -1,5 +1,9 @@
 #! groovy
 
+## jenkins file examples
+##  update paramsList
+##  update Stage () section
+
 // Standard job properties
 def jobProps = [
   buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
