@@ -4,6 +4,8 @@ Installation details can be found here https://docs.ansible.com/ansible/latest/i
 
 Your ansible version should be at 2.9.x when complete.
 
+**NOTE:** When configuring your inventory file you may need to add a reference to python.  [sample inventory](recover-machine-config-play/examples/inventory)
+
 ## Ubuntu
 ```
 sudo apt update
