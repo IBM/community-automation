@@ -16,7 +16,7 @@ while [[ $operator_sleep_count -gt 0 ]]; do
 done
 echo "Starting logging operand"
 cp {{ logging_bastion_setup_dir }}/logging-operand.yaml.template {{ logging_bastion_setup_dir }}/logging-operand.yaml
-if [[ -z {{ rendered_sc }} ]] ; then
+if [[  -z "{{ rendered_sc }}" ]] ; then
   default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
   echo "default_storage_class is $default_storage_class"
   if [[ -z $default_storage_class ]]; then
