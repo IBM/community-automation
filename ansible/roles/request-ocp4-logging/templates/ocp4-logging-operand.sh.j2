@@ -1,0 +1,46 @@
+#!/bin/bash
+
+echo "Make sure cluster-logging-operator is Running"
+operator_sleep_count=15
+while [[ $operator_sleep_count -gt 0 ]]; do
+  operator_status=$(oc  get po -n openshift-logging | grep  -e  cluster-logging-operator | grep -e Running | tr -s ' ')
+  if [[ -z $operator_status ]] ; then
+    echo "Waiting for cluster-logging-operator to go to  Running state"
+    sleep 30s
+    ((operator_sleep_count--))
+    echo "operator_sleep_count = $operator_sleep_count"
+  else
+    echo "cluster-logging-operator is in Running state."
+    break
+  fi
+done
+echo "Starting logging operand"
+cp {{ logging_bastion_setup_dir }}/logging-operand.yaml.template {{ logging_bastion_setup_dir }}/logging-operand.yaml
+if [[ -z {{ rendered_sc }} ]] ; then
+  default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
+  echo "default_storage_class is $default_storage_class"
+  if [[ -z $default_storage_class ]]; then
+    echo "No default storage class defined or ocp_logging_storageclass defined in tfvars to use for cluster logging operand"
+    exit 1
+  else
+    sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+  fi
+else
+  sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+fi
+oc create -f {{ logging_bastion_setup_dir }}/logging-operand.yaml
+echo "Wait for fluentd daemonset to become available"
+sleep_count=15
+while [[ $sleep_count -gt 0 ]]; do
+  ds_status=$(oc  get ds --all-namespaces | grep  -e  fluentd | tr -s ' ')
+  if [[ -z $ds_status ]] ; then
+    echo "Waiting for daemonset fluentd"
+    sleep 5s
+    ((sleep_count--))
+    echo "Fluentd daemonset sleep_count = $sleep_count"
+  else
+    echo "fluentd daemonet available"
+    break
+  fi
+done
+oc set env ds/fluentd MERGE_JSON_LOG=true -n openshift-logging

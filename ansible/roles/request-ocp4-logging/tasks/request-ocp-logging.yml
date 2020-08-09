@@ -1,0 +1,41 @@
+---
+# tasks ocs  install
+- name: Create ocp logging setup directory
+  file:
+    path: "{{ logging_bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - directory
+
+- name: Generate OCP operator/operand install files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ logging_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
+  with_items:
+  - ocp4-logging-operator.sh
+  - ocp4-logging-operand.sh
+  - logging-operand.yaml
+  - elasticsearch-operator.yaml
+  - logging-operator.yaml
+
+- name: Begin ocp logging operator install
+  shell: "{{ logging_bastion_setup_dir }}/ocp4-logging-operator.sh"
+  args:
+      warn: false
+  register: operator
+
+- name: Viewing ocp logging operator install log
+  debug:
+    msg: "{{ operator.stdout_lines }}"
+
+- name: Begin ocp logging operator install
+  shell: "{{ logging_bastion_setup_dir }}/ocp4-logging-operand.sh"
+  args:
+      warn: false
+  register: operand
+
+- name: Viewing ocp logging operator install log
+  debug:
+    msg: "{{ operand.stdout_lines }}"
