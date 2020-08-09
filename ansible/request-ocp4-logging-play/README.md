@@ -6,8 +6,8 @@
 
 ## Requirements
 
-  - Running fyre OCP+Beta cluster.
-  - Ansible 2.9 or later installed.
+  - Running OCP 4.x cluster with 3 workers and dynamic storage (examples: thin, gp2, csi-cephfs, ocs-storagecluster-cephfs) with at least 600G of storage.
+  - Ansible 2.9 or later installed, with python3.
   - oc client installed.
   - oc login to OCP cluster performed.
 
