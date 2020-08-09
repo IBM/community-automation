@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Install OCP logging onto an OCP 4.x clusters.
+- Install OCP logging onto an OCP 4.x cluster.
 
 ## Requirements
 

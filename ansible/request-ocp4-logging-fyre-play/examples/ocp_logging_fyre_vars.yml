@@ -1,3 +1,3 @@
 rook_cephfs_release: v1.3.8 #Rook-ceph release from https://github.com/rook/rook/releases. Default of v1.3.8 should work for most.
 rendered_sc: "csi-cephfs" #Storageclass to use for ocp logging PVCs. If left empty ("") will use the designated default storageclass.
-ocp_logging_version: 4.2 #Ocp logging version. Match to your version of OCP. Example, if using OCP 4.4.6, then use value 4.4.
+ocp_logging_version: 4.2 #Ocp logging version. Match to your version of OCP. Example, if using OCP 4.4.6 then use value 4.4. If using OCP 4.5.x use logging 4.4 for now. 
