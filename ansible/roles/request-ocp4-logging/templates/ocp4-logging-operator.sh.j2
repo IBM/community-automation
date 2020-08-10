@@ -1,0 +1,30 @@
+#!/bin/bash
+
+echo "Starting elasticsearch operator"
+oc create -f {{ logging_bastion_setup_dir }}/elasticsearch-operator.yaml
+sleep_count=15
+while [[ $sleep_count -gt 0 ]]; do
+  subs_status=$(oc  get subs --all-namespaces | grep  -e  elasticsearch | tr -s ' ')
+  if [[ -z $subs_status ]] ; then
+    echo "Waiting for Subscription to elasticsearch"
+    sleep 1m
+    ((sleep_count--))
+  else
+    echo "elasticsearch subscription available"
+    break
+  fi
+done
+echo "Starting cluster-logging operator "
+oc create -f {{ logging_bastion_setup_dir }}/logging-operator.yaml
+sleep_count=15
+while [[ $sleep_count -gt 0 ]]; do
+  subs_status=$(oc  get subs --all-namespaces | grep  -e  cluster-logging | tr -s ' ')
+  if [[ -z $subs_status ]] ; then
+    echo "Waiting for Subscription to cluster-logging"
+    sleep 1m
+    ((sleep_count--))
+  else
+    echo "cluster-logging subscription available"
+    break
+  fi
+done

@@ -1,0 +1,5 @@
+---
+- name: Install OCP logging onto a OCP 4.x cluster
+  hosts: bastion
+  roles:
+  - request-ocp4-logging

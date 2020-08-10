@@ -1,0 +1,48 @@
+#To create 4.4.6 OCP+Beta
+curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/' -d '
+{
+  "name": "<name, default will be picked from a pool>",
+  "description": "<description, default will just be left blank>",
+  "ocp_version": "4.4.6",
+  "platform": "x",
+  "product_group_id": "<YourProductGroup",
+  "fips": "no",
+  "ssh_key":"<public ssh key to be added to inf node>",
+  "worker": [
+    {
+      "count": "3",
+      "cpu": "16",
+      "memory": "32",
+      "additional_disk": [
+        "300"
+      ]
+    }
+  ]
+}'
+
+#To create 4.5.4 OCP cluster
+curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/' -d '
+{
+  "name": "ocpplus4.5.4logging",
+  "description": "OcpPlusBeta Logging example",
+  "product_group_id": "<your product group>",
+  "platform": "x",
+  "fips": "no",
+  "ssh_key": "/root/.ssh/id_rsa.pub",
+  "custom_ocp":"yes",
+  "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.5/latest/rhcos-4.5.2-x86_64-installer-kernel-x86_64",
+  "initramfs_url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.5/latest/rhcos-4.5.2-x86_64-installer-initramfs.x86_64.img",
+  "metal_url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.5/latest/rhcos-4.5.2-x86_64-metal.x86_64.raw.gz",
+  "install_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.5.4/openshift-install-linux-4.5.4.tar.gz",
+  "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.5.4/openshift-client-linux-4.5.4.tar.gz",
+  "worker": [
+    {
+      "count": "3",
+      "cpu": "16",
+      "memory": "32",
+      "additional_disk": [
+        "300"
+      ]
+    }
+  ]
+}'

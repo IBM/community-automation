@@ -1,0 +1,2 @@
+rendered_sc: "" #Storageclass to use for ocp logging PVCs. If left empty will use the designated default storageclass.
+ocp_logging_version: 4.2 #Ocp logging version. Match to your version of OCP. Example, if using OCP 4.4.6, then use value 4.4.
