@@ -3,11 +3,11 @@
 ## Overview
 
 - Will install csi-csephfs (v1.3.8) onto an OCP+Beta 4.x cluster and will set the csi-cephfs storageclass as the default.
-- Will install OCP logging onto the same fyre Larrge OCP+Beta 4.x cluster , and use the csi-cephfs storageclass for elasticsearch PVC creation.
+- Will install OCP logging onto the same fyre OCP+Beta 4.x cluster , and use the csi-cephfs storageclass for elasticsearch PVC creation.
 
 ## Requirements
 
-  - A running fyre OCP+Beta cluster (16CPU/32GMem) with 3 workers that have an additional disk on each worker of at least 300G for elasticsearch PVC creation. (You must use the request-ocp-fyre-play or the OCP+Beta API (https://w3.ibm.com/w3publisher/fyre/ocp/ocp-apis) to create clusters with additional disks to meet this requirement ). See example file examples/examplefyreAPIjson.
+  - A running fyre OCP+Beta cluster (16CPU/32GMem) with 3 workers that have an additional disk on each worker of at least 300G for elasticsearch PVC creation. (You must use the request-ocp-fyre-play or the OCP+Beta API https://w3.ibm.com/w3publisher/fyre/ocp/ocp-apis to create clusters with additional disks to meet this requirement ). See API example file examples/examplefyreAPIjson.
   - Ansible 2.9 or later installed with python3.
   - oc client installed.
   - oc login to OCP cluster performed.
