@@ -8,6 +8,13 @@ spec:
   managementState: "Managed"
   logStore:
     type: "elasticsearch"
+    retentionPolicy:
+      application:
+        maxAge: 1d
+      infra:
+        maxAge: 7d
+      audit:
+        maxAge: 7d
     elasticsearch:
       nodeCount: 3
       storage:

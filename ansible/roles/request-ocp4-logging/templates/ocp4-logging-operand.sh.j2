@@ -14,6 +14,8 @@ while [[ $operator_sleep_count -gt 0 ]]; do
     break
   fi
 done
+minor_version=$(oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.')
+echo "OCP Minor version is $minor_version"
 echo "Starting logging operand"
 cp {{ logging_bastion_setup_dir }}/logging-operand.yaml.template {{ logging_bastion_setup_dir }}/logging-operand.yaml
 if [[  -z "{{ rendered_sc }}" ]] ; then
@@ -23,12 +25,24 @@ if [[  -z "{{ rendered_sc }}" ]] ; then
     echo "No default storage class defined or ocp_logging_storageclass defined in tfvars to use for cluster logging operand"
     exit 1
   else
-    sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+    if [[ $minor_version -gt 4 ]]; then
+      sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand0.yaml
+    else
+      sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+    fi
   fi
 else
-  sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+  if [[ $minor_version -gt 4 ]]; then
+    sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand0.yaml
+  else
+    sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
+  fi
 fi
-oc create -f {{ logging_bastion_setup_dir }}/logging-operand.yaml
+if [[ $minor_version -gt 4 ]]; then
+  oc create -f {{ logging_bastion_setup_dir }}/logging-operand0.yaml
+else
+  oc create -f {{ logging_bastion_setup_dir }}/logging-operand.yaml
+fi
 echo "Wait for fluentd daemonset to become available"
 sleep_count=15
 while [[ $sleep_count -gt 0 ]]; do
