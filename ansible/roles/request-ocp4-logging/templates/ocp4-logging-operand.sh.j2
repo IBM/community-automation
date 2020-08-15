@@ -41,7 +41,7 @@ else
   fi
 fi
 if [[ $minor_version -gt 4 ]]; then
-  echo "oc create -f logging-operand0"
+  echo "Creating instance with oc create -f logging-operand0"
   oc create -f {{ logging_bastion_setup_dir }}/logging-operand0.yaml
 else
   oc create -f {{ logging_bastion_setup_dir }}/logging-operand.yaml
