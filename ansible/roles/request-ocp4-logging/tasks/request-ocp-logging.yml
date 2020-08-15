@@ -9,7 +9,7 @@
   - directory
 
 - name: Get ocp version major.minor
-  shell: "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement"
+  shell: "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
   register: ocpversion
 
 - name: Generate OCP operator/operand install files
