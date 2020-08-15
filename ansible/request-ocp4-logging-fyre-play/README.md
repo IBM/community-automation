@@ -9,7 +9,7 @@
 
   - A running fyre OCP+Beta cluster
     - Master nodes must have 8CPU / 16GMEM. See file examples/examplefyreAPIjson.
-    - Three Workers (16CPU/32GMem) that have an additional disk on each worker of at least 300G for elasticsearch PVC creation. (You must use the request-ocp-fyre-play or the OCP+Beta API https://w3.ibm.com/w3publisher/fyre/ocp/ocp-apis to create clusters with additional disks to meet this requirement ). See API example file examples/examplefyreAPIjson.
+    - Three Workers (16CPU/32GMem) that have an additional disk on each worker of at least 300G for elasticsearch PVC creation. (You must use the OCP+Beta API https://w3.ibm.com/w3publisher/fyre/ocp/ocp-apis to create clusters with additional disks to meet this requirement ). See API example file examples/examplefyreAPIjson.
   - Ansible 2.9 or later installed with python3.
   - oc client installed.
   - oc login to OCP cluster performed.
