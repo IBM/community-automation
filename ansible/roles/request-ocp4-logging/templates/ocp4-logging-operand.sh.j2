@@ -26,6 +26,7 @@ if [[  -z "{{ rendered_sc }}" ]] ; then
     exit 1
   else
     if [[ $minor_version -gt 4 ]]; then
+      echo "Using logging-operand0, no sc set $default_storage_class"
       sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand0.yaml
     else
       sed -i "s/___SC___/$default_storage_class/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
@@ -33,12 +34,14 @@ if [[  -z "{{ rendered_sc }}" ]] ; then
   fi
 else
   if [[ $minor_version -gt 4 ]]; then
+      echo "Using logging-operand0, sc set to {{ rendered_sc }}"
     sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand0.yaml
   else
     sed -i "s/___SC___/{{ rendered_sc }}/g" {{ logging_bastion_setup_dir }}/logging-operand.yaml
   fi
 fi
 if [[ $minor_version -gt 4 ]]; then
+  echo "oc create -f logging-operand0"
   oc create -f {{ logging_bastion_setup_dir }}/logging-operand0.yaml
 else
   oc create -f {{ logging_bastion_setup_dir }}/logging-operand.yaml
