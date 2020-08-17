@@ -1,5 +1,6 @@
 #!/bin/bash
 rookRelease=$1
+device=$2
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
 # Install ceph
@@ -16,7 +17,7 @@ echo "Doing sed of useAllDevices false"
 sed -i 's/useAllDevices: true/useAllDevices: false/g' rook/cluster/examples/kubernetes/ceph/cluster.yaml
 echo "Exit from useAllDevice $?"
 echo "Doing sed of deviceFilter"
-sed -i "s/#deviceFilter:/deviceFilter: vdb/g" rook/cluster/examples/kubernetes/ceph/cluster.yaml
+sed -i "s/#deviceFilter:/deviceFilter: $device/g" rook/cluster/examples/kubernetes/ceph/cluster.yaml
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
 oc create -f rook/cluster/examples/kubernetes/ceph/cluster.yaml
@@ -27,5 +28,14 @@ echo "Exit from filesystem-test.yaml $?"
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 sed -i "s/rook-cephfs/csi-cephfs/g" rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
+echo "default_storage_class is $default_storage_class"
+if [[ -z $default_storage_class ]]; then
+  echo "No default storage class defined"
+else
+  echo "Set storageclass $default_storage_class to not be default"
+  oc patch storageclass $default_storage_class -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+fi
+echo "Set default storageclass to csi-cephfs"
 oc patch storageclass csi-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml
