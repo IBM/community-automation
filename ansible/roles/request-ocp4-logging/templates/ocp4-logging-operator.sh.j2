@@ -18,7 +18,7 @@ e_sleep_count=30
 num_namespaces=$(oc get namespaces | grep -v STATUS | wc -l)
 echo "Number of namespaces is $num_namespaces"
 while [[ $e_sleep_count -gt 0  ]]; do
-  num_elastic_csv=$(oc get csv --all-namespaces | grep eleasticsearch-operator | grep Succeeded | wc -l)
+  num_elastic_csv=$(oc get csv --all-namespaces | grep elasticsearch-operator | grep Succeeded | wc -l)
   echo "Number of namespaces with elasticsearch-operator deployed successfully is $num_elastic_csv."
   if [[ $num_namespaces -ne $num_elastic_csv ]] ; then
     echo "Waiting for all namespaces to get elasticserach-operator deployed successfully"
