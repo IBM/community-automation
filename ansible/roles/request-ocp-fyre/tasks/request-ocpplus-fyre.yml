@@ -34,7 +34,6 @@
           - count: "{{ fyre_worker_quantity }}"
             cpu: "{{ fyre_worker_cpu }}"
             memory: "{{ fyre_worker_memory }}"
-            additional_disk: [ "{{ fyre_additional_disk_size }}"]
         master:
           - count: "{{ fyre_master_quantity }}"
             cpu: "{{ fyre_master_cpu }}"
