@@ -14,6 +14,21 @@ while [[ $operator_sleep_count -gt 0 ]]; do
     break
   fi
 done
+echo "Make sure Cluster Logging Operator in the openshift-logging namespace successfully"
+log_operator_sleep_count=15
+while [[ $log_operator_sleep_count -gt 0 ]]; do
+  log_operator_status=$(oc get csv -n openshift-logging | grep -e clusterlogging | grep -e Succeeded | tr -s ' ')
+  if [[ -z $log_operator_status ]] ; then
+    echo "Waiting for Cluster Logging Operator to be in the openshift-logging namespace successfully"
+    sleep 30s
+    ((log_operator_sleep_count--))
+    echo "log_operator_sleep_count = $log_operator_sleep_count"
+  else
+    echo "Cluster Logging Operator is in the openshift-logging namespace successfully."
+    break
+  fi
+done
+
 minor_version=$(oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.')
 echo "OCP Minor version is $minor_version"
 echo "Starting logging operand"
