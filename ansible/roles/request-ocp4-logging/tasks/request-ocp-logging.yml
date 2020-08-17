@@ -8,6 +8,10 @@
   with_items:
   - directory
 
+- name: Get ocp version major.minor
+  shell: "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
+  register: ocpversion
+
 - name: Generate OCP operator/operand install files
   template:
     src: "{{ item }}.j2"
@@ -17,8 +21,10 @@
   - ocp4-logging-operator.sh
   - ocp4-logging-operand.sh
   - logging-operand.yaml
+  - logging-operand0.yaml
   - elasticsearch-operator.yaml
   - logging-operator.yaml
+  - logging-rbac.yaml
 
 - name: Begin ocp logging operator install
   shell: "{{ logging_bastion_setup_dir }}/ocp4-logging-operator.sh"

@@ -14,6 +14,11 @@ while [[ $sleep_count -gt 0 ]]; do
     break
   fi
 done
+minor_version=$(oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.')
+if [[ $minor_version -lt 4 ]]; then
+  echo 'Doing rbac for ocp versions 4.3'
+  oc create -f {{ logging_bastion_setup_dir }}/logging-rbac.yaml
+fi
 echo "Starting cluster-logging operator "
 oc create -f {{ logging_bastion_setup_dir }}/logging-operator.yaml
 sleep_count=15

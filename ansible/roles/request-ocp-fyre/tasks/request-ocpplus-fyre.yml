@@ -18,14 +18,14 @@
       msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
 
   - name: Create Fyre stack
-    uri: 
+    uri:
       url: "{{fyreocpplus_ocpdeployurl}}"
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       validate_certs: False
       body_format: "json"
-      body: 
+      body:
         name : "{{ clusterName }}"
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
@@ -40,7 +40,7 @@
             memory: "{{ fyre_master_memory }}"
     register: fyrestatus
   - name: check fyre status
-    fail: 
+    fail:
       msg: "{{ fyrestatus }}"
     when: fyrestatus.json.status != 'success'
     changed_when: false
@@ -61,10 +61,10 @@
 
 - name: check for error status
   fail:
-   msg: 
+   msg:
    - "{{error_status.json.status}}"
    - "{{error_status.json.details}}"
-  when: 
+  when:
   - error_status.json.status is defined
   - (error_status.json.status) == 'error'
 
@@ -97,19 +97,19 @@
 
 - name: remove new host from localhost known_hosts ip
   command: "ssh-keygen -R {{ fyre_inf_public_ip }}"
-  changed_when: false 
+  changed_when: false
   # changed_when: false Technically not true but change is not particularly meaningful
   failed_when: false
   delegate_to: localhost
 - name: remove new host from localhost known_hosts
   command: "ssh-keygen -R {{ fyre_inf_node_name }}"
-  changed_when: false 
+  changed_when: false
   # changed_when: false Technically not true but change is not particularly meaningful
   failed_when: false
   delegate_to: localhost
 - name: remove new host from localhost known_hosts fqdn
-  command: "ssh-keygen -R {{ fyre_inf_node_name }}.fyre.ibm.com" 
-  changed_when: false 
+  command: "ssh-keygen -R {{ fyre_inf_node_name }}.fyre.ibm.com"
+  changed_when: false
   # changed_when: false Technically not true but change is not particularly meaningful
   failed_when: false
   delegate_to: localhost

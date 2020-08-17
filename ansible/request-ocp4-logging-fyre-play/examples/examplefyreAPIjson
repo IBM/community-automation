@@ -1,4 +1,4 @@
-#To create 4.4.6 OCP+Beta
+#To create 4.4.6 OCP+Beta using standard api
 curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/' -d '
 {
   "name": "<name, default will be picked from a pool>",
@@ -8,6 +8,13 @@ curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/oc
   "product_group_id": "<YourProductGroup",
   "fips": "no",
   "ssh_key":"<public ssh key to be added to inf node>",
+  "master": [
+    {
+      "count": "3",
+      "cpu": "8",
+      "memory": "16"
+    }
+  ],
   "worker": [
     {
       "count": "3",
@@ -20,7 +27,7 @@ curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/oc
   ]
 }'
 
-#To create 4.5.4 OCP cluster
+#To create 4.5.4 fyre OCP+Beta cluster using URL api
 curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/' -d '
 {
   "name": "ocpplus4.5.4logging",
@@ -45,4 +52,29 @@ curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/oc
       ]
     }
   ]
+}'
+# Since all fyre clusters created by URL based API only come with 4cpu/8G mem on master nodes, and redhat states they only support 8G/16G mem you must increase the size of the master nodes before continuing
+# Run this api command for each master node.
+curl -k -X PATCH -u 'fyre_api_username:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/<cluster_name>/<node_name>/resource' -d '
+{
+ "cpu": "8",
+ "memory": "16"
+}'
+
+#Example: Do 'oc get no | cut -f1 -d'.' | grep master' to get the list of the master node names.
+#Run curl for each master name.
+curl -k -X PATCH -u 'fyre_api_username:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/walt454cluster/master0/resource' -d '
+{
+ "cpu": "8",
+ "memory": "16"
+}'
+curl -k -X PATCH -u 'fyre_api_username:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/walt454cluster/master1/resource' -d '
+{
+ "cpu": "8",
+ "memory": "16"
+}'
+curl -k -X PATCH -u 'fyre_api_username:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/walt454cluster/master2/resource' -d '
+{
+ "cpu": "8",
+ "memory": "16"
 }'

@@ -1,3 +1,2 @@
 logging_bastion_setup_dir: ~/setup-files/ocp-logging-setup
 rendered_sc: "" #Storageclass to use for ocp logging PVCs. By default it will use the designated default storageclass.
-ocp_logging_version: 4.2 #Ocp logging version
