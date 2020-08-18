@@ -61,7 +61,7 @@ curl -k -X POST -u 'fyre_api_uid:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/oc
   ]
 }'
 
-# To update the master nodes of a already created  fyre cluster from  4cpu/8G mem on master nodes, to the redhat supported 8G/16G mem you must increase the size of the master nodes before continuing
+# To update the master nodes of a already created  fyre cluster from  4cpu/8G mem on master nodes, to the redhat supported 8G/16G mem 
 # Run this api command for each master node.
 curl -k -X PATCH -u 'fyre_api_username:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/<cluster_name>/<node_name>/resource' -d '
 {
