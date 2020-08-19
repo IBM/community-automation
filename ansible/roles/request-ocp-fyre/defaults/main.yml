@@ -18,3 +18,4 @@ fyre_master_memory: 8
 fyre_worker_quantity: 3
 fyre_worker_cpu: 4
 fyre_worker_memory: 16
+fyre_worker_additional_disk: 300
