@@ -3,10 +3,10 @@
 ## Overview
 
 - Will create an OCP 4.x cluster in fyre.
-  - Use `fyre_ocptype=ocp` for 4.1.x, 4.2.x or 4.3.x.
-    - The version of the cluster must match whats avaiable in fyre.ibm.com GUI Embers tab.
-  - Use `fyre_ocptype=ocpplus` for creating fyre OCP+beta 4.x clusters.
-    - The version of the cluster must match whats avaiable in fyre.ibm.com GUI OCP+beta tab.
+  - When using `fyre_ocptype=ocp` then for `ocpVersion=` you have the version options of 4.1 or 4.2 or 4.3.
+    - The version of the cluster must match the versions avaiable in fyre.ibm.com GUI Embers tab.
+  - When using `fyre_ocptype=ocpplus` this will create a fyre OCP+beta 4.x cluster.
+    - The `ocpVersion=` parm for the cluster must match the versions avaiable in fyre.ibm.com GUI OCP+beta tab.
     - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
 
 ## Assumptions:
