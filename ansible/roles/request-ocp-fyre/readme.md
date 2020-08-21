@@ -1,10 +1,17 @@
-# Request OCP Fyre
-This role create an OCP cluster in Fyre. Note this does not currently use the OCP+ api
-Will it is expected to run on a host with the following hostvars:
+# Request Fyre OCP 4.x cluster create.
+
+This role will create an OCP cluster in Fyre.
+- Expects ansible parm `clusterName=<name>`
+- For OCP 4.1, 4.2, or 4.3 it expects ansible parm `fyre_ocptype=ocp`
+- For OCP+Beta clusters it expects ansible parm `fyre_ocptype=ocpplus`
+  - Every OCP+Beta cluster by default will have an additional /dev/vdb disk of 300G.
+- Expects ansible parm `ocpVersion=4.5.4` must match a version supported in fyre.ibm.com GUI.
+
+Will it is expected to run on a host with the following hostvars set in inventory file:
 - fyreuser
 - fyreapikey
 
-The role expects to be supplied: 
+The role expects to be supplied:
  - clusterName
  - ocpVersion
  - fyre_ocp_inf_group (optional: defaults to 'ocp-clusters')
@@ -23,9 +30,8 @@ The roles behaves in the following way:
 The following is an example of how to run the role.
 ```
 - hosts: fyreApi
-  roles: 
+  roles:
   - role: request-ocp-fyre
     clusterName: "myfirstcluster"
     ocpVersion: "4.3"
 ```
-

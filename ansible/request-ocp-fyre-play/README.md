@@ -1,5 +1,13 @@
 # Ansible Playbook for creating an ocp cluster on fyre.
 
+## Overview
+
+- Will create an OCP 4.x cluster.
+  - Use `fyre_ocptype=ocp` for 4.1.0, 4.2.0 or 4.3.0.
+  - Use `fyre_ocptype=ocpplus` for creating fyre OCP+beta 4.x clusters.
+    - The version of the cluster must match whats avaiable in fyre.ibm.com GUI OCP+beta tab.
+    - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
+
 ## Assumptions:
 
  - You have capacity in fyre
