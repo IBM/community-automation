@@ -3,9 +3,7 @@
 ## Overview
 
 - Will create an OCP 4.x cluster in fyre.
-  - When using `fyre_ocptype=ocp` then for `ocpVersion=` you have the version options of 4.1 or 4.2 or 4.3.
-    - The version of the cluster must match the versions avaiable in fyre.ibm.com GUI Embers tab.
-  - When using `fyre_ocptype=ocpplus` this will create a fyre OCP+beta 4.x cluster.
+  - Using `fyre_ocptype=ocpplus` this will create a fyre OCP+beta 4.x cluster.
     - The `ocpVersion=` parm for the cluster must match the versions avaiable in fyre.ibm.com GUI OCP+beta tab.
     - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
 
@@ -28,11 +26,6 @@ cp examples/inventory .
 
 The playbook/role supports provisioning clusters at configurable ocpVersions and works with the OCP and OCP+ apis from fyre team
 These are controlled by the ocpVersion and fyre_ocptype variables respectively.
-
-e.g. ocpVersion=4.3.19
-fyre_ocptype=ocp or fyre_ocptype=ocpplus
-
-
 
 Once you have configured the `inventory` file, run the playbook using:
 
