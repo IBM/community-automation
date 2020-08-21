@@ -2,8 +2,8 @@
 
 This role will create an OCP cluster in Fyre.
 - Expects ansible parm `clusterName=<name>`
-- For OCP 4.1.0, 4.2.0, or 4.3.0 it expects ansible parm `fyre_ocptype=ocp`
-- For OCP+Beta clusters it expects ansible parm `fyre_ocptype=ocpplus`
+- For OCP 4.1.x, 4.2.x, or 4.3.x it expects ansible parm `fyre_ocptype=ocp`
+- For OCP+Beta 4.x clusters it expects ansible parm `fyre_ocptype=ocpplus`
   - Every OCP+Beta cluster by default will have an additional /dev/vdb disk of 300G.
 - Expects ansible parm `ocpVersion=<ocpVersion>` must match a version supported in fyre.ibm.com GUI OCP+Beta tab.
 
