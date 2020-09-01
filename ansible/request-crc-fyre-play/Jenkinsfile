@@ -11,6 +11,7 @@ def jobProps = [
 def paramsList = [
     string(name: 'stackName', description: 'name of fyre stack'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
+    string(name: 'crcarchive', defaultValue: 'http://9.46.68.100/crc-linux-amd64.tar.xz', description: 'url of source crc xz'),
     password(name: 'fyreapikey', description: 'fyre api key'),
     booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on crc host')
   ]
@@ -26,7 +27,7 @@ timestamps {
       checkout scm
       stage('Stage 1') {
         sh """
-          cp ./ansible/request-crc-fyre-play/examples/inventory ./ansible/request-crc-fyre-play/; ansible-playbook -i ./ansible/request-crc-fyre-play/inventory ./ansible/request-crc-fyre-play/request-crc-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e stackName=${params.stackName} -e noLog=false --vault-password-file ./ansible/roles/crc_start/files/crc_pull_pass -vvv
+          cp ./ansible/request-crc-fyre-play/examples/inventory ./ansible/request-crc-fyre-play/; ansible-playbook -i ./ansible/request-crc-fyre-play/inventory ./ansible/request-crc-fyre-play/request-crc-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e stackName=${params.stackName} -e noLog=false -e crc_download_src=${params.crcarchive} --vault-password-file ./ansible/roles/crc_start/files/crc_pull_pass -vvv
         """.stripIndent()
       }
    }
