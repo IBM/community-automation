@@ -1,4 +1,11 @@
 ---
+
+- name: check Fyre request status
+  command: 'ls -l -a ~/'
+  register: lsdir
+
+- debug: var=lsdir.stdout
+
 - set_fact:
    stackName: "crc-{{ 999999 | random }}"
   run_once: yes
@@ -18,8 +25,12 @@
 - meta: end_play
   when: (clusterStatus.stdout|from_json).status is not defined 
 
+
+- openssh_keypair:
+    path: id_rsa
+
 - name: get the public ssh id
-  shell: 'cat ~/.ssh/id_rsa.pub'
+  shell: 'cat id_rsa.pub'
   register: id_rsa_pub
 
 - name: create input json file
