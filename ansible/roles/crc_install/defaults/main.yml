@@ -1,3 +1,3 @@
 ---
-#crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"
-crc_download_src: "http://9.46.68.100/crc-linux-amd64.tar.xz"
+crc_download_src: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz"
+#crc_download_src: "http://9.46.68.100/crc-linux-amd64.tar.xz"

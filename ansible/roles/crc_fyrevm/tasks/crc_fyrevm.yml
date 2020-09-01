@@ -4,13 +4,15 @@
   command: 'whoami'
   register: whoamiX
 
-- debug: var=whoamiX.stdout
-
-- name: home dir
-  command: 'ls -l -a ~/'
-  register: lsdir
-
-- debug: var=lsdir.stdout
+- block:
+  - name: create ssh dir
+    file:
+     path: /home/jenkins/.ssh
+     state: directory
+     mode: '0700'
+  - openssh_keypair:
+     path: /home/jenkins/.ssh/id_rsa
+  when: whoamiX.stdout == 'jenkins'
 
 - set_fact:
    stackName: "crc-{{ 999999 | random }}"
@@ -31,17 +33,8 @@
 - meta: end_play
   when: (clusterStatus.stdout|from_json).status is not defined 
 
-- name: create ssh dir
-  file:
-   path: /home/jenkins/.ssh
-   state: directory
-   mode: '0700'
-
-- openssh_keypair:
-    path: /home/jenkins/.ssh/id_rsa
-
 - name: get the public ssh id
-  shell: 'cat /home/jenkins/.ssh/id_rsa.pub'
+  shell: 'cat ~/.ssh/id_rsa.pub'
   register: id_rsa_pub
 
 - name: create input json file
