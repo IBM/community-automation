@@ -35,7 +35,7 @@
   file:
    path: /home/jenkins/.ssh
    state: directory
-   mode: '0755'
+   mode: '0700'
 
 - openssh_keypair:
     path: /home/jenkins/.ssh/id_rsa
