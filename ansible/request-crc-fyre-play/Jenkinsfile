@@ -9,11 +9,11 @@ def jobProps = [
 ]
 
 def paramsList = [
-    string(name: "stackName", description: "name of fyre stack"),
-    string(name: "fyreuser", description: "username for accessing fyre api"),
-    password(name: "fyreapikey", description: "fyre api key"),
-    string(name: "crcarchive", defaultValue: "http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz", description: "url of source crc xz"),
-    booleanParam(name: "enableVNC", defaultValue: false, description: "configure VNC Server on crc host")
+    string(name: 'stackName', description: 'name of fyre stack'),
+    string(name: 'fyreuser', description: 'username for accessing fyre api'),
+    password(name: 'fyreapikey', description: 'fyre api key'),
+    string(name: 'crcarchive', defaultValue: 'http://svt-auto01.fyre.ibm.com/opt/crc-linux-amd64.tar.xz', description: 'url of source crc xz'),
+    booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on crc host')
   ]
 jobProps.push(parameters(paramsList))
 
