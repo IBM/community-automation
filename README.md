@@ -68,7 +68,7 @@ timestamps {
 
       stage('Recover Machine Config') {
         sh """
-          #!/bin/bash -e
+          set +x # hide sensitive info being echo'd to log
           cp ./ansible/recover-machine-config-play/examples/mc_vars.yml ./ansible/recover-machine-config-play/;\
           cp ./ansible/recover-machine-config-play/examples/inventory ./ansible/recover-machine-config-play/;\
           ansible-playbook -i ./ansible/recover-machine-config-play/inventory \
