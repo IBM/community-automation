@@ -15,6 +15,7 @@ Make sure your ansible client is at version 2.9 or greater
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
+|request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
 |request-ocp4-logging-fyre-play|Install OCP logging onto OCP+Beta Fyre clusters|Available| none|
@@ -22,7 +23,6 @@ Make sure your ansible client is at version 2.9 or greater
 |request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
-|recover-crc-fyre-play|Install Redhat Codeready Instance|WIP| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
 
 
@@ -68,6 +68,7 @@ timestamps {
 
       stage('Recover Machine Config') {
         sh """
+          #!/bin/bash -e
           cp ./ansible/recover-machine-config-play/examples/mc_vars.yml ./ansible/recover-machine-config-play/;\
           cp ./ansible/recover-machine-config-play/examples/inventory ./ansible/recover-machine-config-play/;\
           ansible-playbook -i ./ansible/recover-machine-config-play/inventory \
