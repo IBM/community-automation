@@ -16,31 +16,13 @@
   #START BLOCK
   - debug:
       msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
-
-  - name: Create Fyre stack
-    uri:
-      url: "{{fyreocpplus_ocpdeployurl}}"
-      method: "POST"
-      user: "{{ fyreuser }}"
-      password: "{{ fyreapikey }}"
-      validate_certs: False
-      body_format: "json"
-      body:
-        name : "{{ clusterName }}"
-        ocp_version: "{{ ocpVersion }}"
-        platform: "{{ ocpPlatform }}"
-        ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
-        worker:
-          - count: "{{ fyre_worker_quantity }}"
-            cpu: "{{ fyre_worker_cpu }}"
-            memory: "{{ fyre_worker_memory }}"
-            additional_disk:
-              - "{{ fyre_worker_additional_disk }}"
-        master:
-          - count: "{{ fyre_master_quantity }}"
-            cpu: "{{ fyre_master_cpu }}"
-            memory: "{{ fyre_master_memory }}"
-    register: fyrestatus
+  
+  - name: "Create OCPPlus in Fyre (Custom URLs)"
+    include_tasks: " create-ocpplus-custom-fyre.yml"
+    when: "ocpVersion == 'custom'"
+  - name: "Create OCPPlus in Fyre"
+    include_tasks: " create-ocpplus-normal-fyre.yml"
+    when: "ocpVersion != 'custom'"  
   - name: check fyre status
     fail:
       msg: "{{ fyrestatus }}"
