@@ -24,12 +24,12 @@
     - "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/latest-4.6/openshift-client-linux.tar.gz"
   - The additional parms for `custom` installations basically fill in sub directories of the URLs. Following are the additional parms:
     -`rhcos_version_path` - In the URLs above this parm would replace a section of the api parms  keranel_url, initramfs_url and metal_url URLs as follows:
-      - "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/\`<rhcos_version_path>\`/rhcos-installer-kernel-x86_64"
-      - "initramfs_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/\`<rhcos_version_path>\`/rhcos-installer-initramfs.x86_64.img"
-      - "metal_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/\`<rhcos_version_path>\`/rhcos-metal.x86_64.raw.gz"
+      - "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-kernel-x86_64"
+      - "initramfs_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-initramfs.x86_64.img"
+      - "metal_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-metal.x86_64.raw.gz"
     - `ocp_version_path`  - In the URLs above this parm would replace a section of the api parms install_url and client_url as follows:
-      - "install_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/\`<ocp_version_path>\`/openshift-install-linux.tar.gz"
-      - "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/\`<ocp_version_path>\`/openshift-client-linux.tar.gz"
+      - "install_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/<ocp_version_path>/openshift-install-linux.tar.gz"
+      - "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/<ocp_version_path>/openshift-client-linux.tar.gz"
   - Getting the right combination of `rhcos_version_path` and `ocp_version_path` can take some work. It is recommended to leave `rhcos_version_path` as one of the following versions and just do adjustments to the 'ocp_version_path'.
     - For OCP 4.6 installations use `rhcos_version_path=pre-release/latest`
     - For OCP 4.5 installations use `rhcos_version_path=4.5/latest`   
