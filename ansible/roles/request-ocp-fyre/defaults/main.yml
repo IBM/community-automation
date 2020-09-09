@@ -13,9 +13,9 @@ fyre_ocptype: "ocp"
 ocpPlatform: "x"
 
 fyre_master_quantity: 3
-fyre_master_cpu: 4
-fyre_master_memory: 8
+fyre_master_cpu: 8 
+fyre_master_memory: 16
 fyre_worker_quantity: 3
-fyre_worker_cpu: 8 
-fyre_worker_memory: 16
+fyre_worker_cpu: 16 
+fyre_worker_memory: 32
 fyre_worker_additional_disk: 300
