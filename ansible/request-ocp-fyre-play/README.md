@@ -23,7 +23,7 @@
     - "install_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/latest-4.6/openshift-install-linux.tar.gz"
     - "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp-dev-preview/latest-4.6/openshift-client-linux.tar.gz"
   - The additional parms for `custom` installations basically fill in sub directories of the URLs. Following are the additional parms:
-    -`rhcos_version_path` - In the URLs above this parm would replace a section of the api parms  keranel_url, initramfs_url and metal_url URLs as follows:
+    - `rhcos_version_path` - In the URLs above this parm would replace a section of the api parms  keranel_url, initramfs_url and metal_url URLs as follows:
       - "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-kernel-x86_64"
       - "initramfs_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-initramfs.x86_64.img"
       - "metal_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-metal.x86_64.raw.gz"
