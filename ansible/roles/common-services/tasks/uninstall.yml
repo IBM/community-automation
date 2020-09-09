@@ -1,0 +1,151 @@
+---
+# tasks file cp4 common services uninstall
+
+- name: uninstall - removing operandrequest/common-service
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc -n ibm-common-services delete operandrequest {{ cs_operator_project_name }} || true
+
+- name: uninstall - removing operandrequests
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    if [[ ! -z "$(oc get crd | grep operandrequests)" ]]; then
+      for request in $(oc -n ibm-common-services get operandrequests -o name); do
+        echo "Deleting ${request} ..."
+        oc -n ibm-common-services delete ${request} --ignore-not-found --timeout=60s
+      done
+      for request in $(oc -n ibm-common-services get operandrequests -o name); do
+        echo "Force deleting ${request} ..."        
+        oc -n ibm-common-services patch ${request} --type="json" -p '[{"op": "remove", "path":"/metadata/finalizers"}]'
+        oc -n ibm-common-services delete ${request} --ignore-not-found --timeout=10s
+      done
+    fi
+
+- name: uninstall - removing CRs
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    if [[ ! -z "$(oc get crd | grep operator.ibm.com)" ]]; then
+      for crd in $(oc get crd | grep operator.ibm.com | awk '{print $1}'); do
+        echo "Checking remaining CRs for ${crd} ..."
+        for cr in $(oc -n ibm-common-services get ${crd} -o name); do
+            echo "Deleting CR ${cr} ..."
+            oc -n ibm-common-services delete ${cr} --ignore-not-found --timeout=30s
+        done
+        for cr in $(oc -n ibm-common-services get ${crd} -o name); do
+            echo "Force deleting CR ${cr} ..."
+            oc -n ibm-common-services patch ${cr} --type json -p '[{ "op": "remove", "path": "/metadata/finalizers"}]'
+            oc -n ibm-common-services delete ${cr} --ignore-not-found --timeout=10s
+        done
+      done
+    fi
+
+- name: uninstall - validate CRs removal
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc -n ibm-common-services get --no-headers operandrequest | wc -l
+  register: operand_requests
+  until: operand_requests.stdout|int == 0
+  retries: 10
+  delay: 10
+
+- name: uninstall - remove operandconfig and operandregistry
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc -n ibm-common-services delete operandconfig {{ cs_operator_project_name }} || true
+    oc -n ibm-common-services delete operandregistry {{ cs_operator_project_name }} || true
+
+- name: uninstall - removing operators csv and subscriptions
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc -n ibm-common-services get csv,sub -o name | grep -v operand-deployment-lifecycle-manager | grep -v ibm-common-service-operator | while read CSTARGET; do
+      echo removing $CSTARGET
+      oc -n ibm-common-services delete $CSTARGET --ignore-not-found --timeout=5s
+    done
+
+- name: uninstall - removing cluster resources
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc delete --ignore-not-found=true --timeout=10s validatingwebhookconfiguration.admissionregistration.k8s.io/cert-manager-webhook
+    oc delete --ignore-not-found=true --timeout=10s mutatingwebhookconfiguration.admissionregistration.k8s.io/ibm-common-service-webhook-configuration
+    oc delete --ignore-not-found=true --timeout=10s securitycontextconstraints.security.openshift.io/management-ingress-scc
+    oc delete --ignore-not-found=true --timeout=10s securitycontextconstraints.security.openshift.io/nginx-ingress-scc
+
+- name: uninstall - remove ODLM 
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    for resource in $(oc -n openshift-operators get csv,sub -o name --ignore-not-found | grep operand-deployment-lifecycle-manager); do
+      oc -n openshift-operators delete ${resource} --ignore-not-found --timeout=30s
+    done
+    for resource in $(oc -n ibm-common-services get csv,sub -o name --ignore-not-found | grep operand-deployment-lifecycle-manager); do
+      oc -n ibm-common-services delete ${resource} --ignore-not-found --timeout=30s
+    done
+    for plan in $(oc -n ibm-common-services get installplans -o name); do
+      echo "Deleting ${plan} ..."
+      oc -n ibm-common-services delete ${plan} --ignore-not-found --timeout=10s
+    done
+
+- name: uninstall - remove catalog source
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc -n openshift-marketplace delete catalogsource opencloud-operators --ignore-not-found --timeout=10s
+
+- name: uninstall - remove common service operator 
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    if [[ ! -z "$(oc get ns {{ cs_operator_project_name }} --no-headers --ignore-not-found)" ]]; then
+        oc -n {{ cs_operator_project_name }} get csv -o name | grep ibm-common-service-operator | xargs oc -n {{ cs_operator_project_name }} delete --timeout=30s
+        oc -n {{ cs_operator_project_name }} delete sub ibm-common-service-operator --ignore-not-found --timeout=30s
+        for rolebinding in $(oc -n {{ cs_operator_project_name }} get rolebindings --no-headers --ignore-not-found | grep -v '^system:' | awk '{print $1}'); do
+            oc -n {{ cs_operator_project_name }} patch rolebinding ${rolebinding} --type json -p '[{ "op": "remove", "path": "/metadata/finalizers"}]'
+            oc -n {{ cs_operator_project_name }} delete rolebinding ${rolebinding} --ignore-not-found --timeout=30s
+        done
+    fi
+
+- name: uninstall - remove RBAC resource
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc delete ClusterRole ibm-common-service-webhook --ignore-not-found
+    oc delete ClusterRoleBinding ibm-common-service-webhook --ignore-not-found
+    oc delete RoleBinding ibmcloud-cluster-info -n kube-public --ignore-not-found
+    oc delete Role ibmcloud-cluster-info -n kube-public --ignore-not-found
+    oc delete RoleBinding ibmcloud-cluster-ca-cert -n kube-public --ignore-not-found
+    oc delete Role ibmcloud-cluster-ca-cert -n kube-public --ignore-not-found
+
+- name: uninstall - cleaning up project ibm-common-services
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    for CSTARGET in $(oc -n ibm-common-services get sub,csv -o name); do
+      echo removing $CSTARGET
+      oc -n ibm-common-services delete $CSTARGET --ignore-not-found --timeout=20s
+    done
+    for CSTARGET in $(oc -n ibm-common-services get all -o name); do
+      echo removing $CSTARGET
+      oc -n ibm-common-services delete $CSTARGET --ignore-not-found --timeout=20s
+    done
+
+- name: uninstall - cleaning up project common-service
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    for CSTARGET in $(oc -n {{ cs_operator_project_name }} get sub,csv -o name); do
+      echo removing $CSTARGET
+      oc -n {{ cs_operator_project_name }} delete $CSTARGET --ignore-not-found --timeout=20s
+    done
+    for CSTARGET in $(oc -n {{ cs_operator_project_name }} get all -o name); do
+      echo removing $CSTARGET
+      oc -n {{ cs_operator_project_name }} delete $CSTARGET --ignore-not-found --timeout=20s
+    done
+
+- name: uninstall - delete projects {{ cs_operator_project_name }} and ibm-common-services
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+      oc delete project {{ cs_operator_project_name }} ibm-common-services --ignore-not-found
+
+- name: uninstall - validate projects removal
+  when: ocp_projects.stdout.find('ibm-common-services') != -1
+  shell: |
+    oc projects | grep {{ cs_operator_project_name }} | wc -l
+  register: cs_projects
+  until: cs_projects.stdout|int == 0
+  retries: 30
+  delay: 10
+
