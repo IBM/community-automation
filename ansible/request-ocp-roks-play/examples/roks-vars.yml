@@ -1,0 +1,16 @@
+---
+ansible_python_interpreter: /usr/bin/python3
+cloudregion: "us-east" # Provide the resource i.e. us-south to use
+clusterName: "new-roks-cluster" # Provide a unique cluster name
+dataCenter: "wdc04" # Provide the data center (zone) to deploy to
+defaultPoolSize: 2 # Set the size of the default worker pool
+hardware: shared # shared for virtual workers
+kubeVersion: 4.4.17_openshift # kube version to use 
+machineType: "b2c.8x32" # machine flavor to use
+privateVLAN: 1234567 # Private VLAN to use, must be available
+publicVLAN: 2345678 # Public VLAN to use, optional
+resourceGroup: "default" # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
+workerCount: "2" # Set the size of the default worker pool
+icaccount: "1234567890123456" # Target the account to use
+entitlement: "cloud_pak" # Set entitlement to "cloud_pak" when deploying a cloud pak to the cluster otherwise you will be charged for OCP licenses
+apikey: "1234567890123456" # Set the api key here to use for IBM Cloud authentication
