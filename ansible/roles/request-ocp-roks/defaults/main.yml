@@ -1,5 +1,5 @@
 ---
 vars:
   hardware: shared
-  kubeVersion: 4.3_openshift
+  kubeVersion: 4.3.31_openshift
   workerCount: 2

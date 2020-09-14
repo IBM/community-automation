@@ -1,6 +1,6 @@
 ---
 - name: get-resource-group
-  ibmcloud.ibmcollection.ibm_resource_group_info:
+  ibm.cloudcollection.ibm_resource_group_info:
     name: "{{ resourceGroup }}"
     ibmcloud_api_key: "{{ apikey }}"
   register: output_resource_group
@@ -11,7 +11,7 @@
     resource_group: "{{ output_resource_group.resource }}"
     
 - name: create-cluster
-  ibmcloud.ibmcollection.ibm_container_cluster:
+  ibm.cloudcollection.ibm_container_cluster:
     disk_encryption: False
     machine_type: "{{ machineType }}"
     name: "{{ clusterName }}"
