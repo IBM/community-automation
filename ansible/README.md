@@ -35,6 +35,8 @@ Redhat recommends using the pip install method https://docs.ansible.com/ansible/
 ```
 brew install http://git.io/sshpass.rb
 ```
+**NOTE:** If installing `sshpass` with `brew` is not possible on your system, consult this useful article on [installing sshpass](https://thornelabs.net/posts/ansible-os-x-mavericks-you-must-install-the-sshpass-program.html)
+
 ### Ansible Install  
 ```
 brew install ansible

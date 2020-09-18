@@ -1,0 +1,41 @@
+---
+- name: 
+  uri:
+    url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/sha256sum.txt"
+    return_content: yes
+  register: rhcos_sha256sum
+- name: 
+  uri:
+    url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/{{ ocp_version_path }}/sha256sum.txt"
+    return_content: yes
+  register: ocp_sha256sum
+- name: Create Fyre stack (With custom urls)
+  uri:
+    url: "{{fyreocpplus_ocpdeployurl}}"
+    method: "POST"
+    user: "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    validate_certs: False
+    body_format: "json"
+    body:
+      name : "{{ clusterName }}"
+      platform: "{{ ocpPlatform }}"
+      fips: "no"
+      ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+      custom_ocp: "yes"
+      kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*kernel-x86_64.*') | list | first }}"
+      initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*initramfs.x86_64.*')  | list | first}}"
+      metal_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*metal.x86_64.*')  | list | first}}"
+      install_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/{{ ocp_version_path }}/{{ ocp_sha256sum.content.split() | select('match', '.*openshift-install-linux-.*') | list | first }}"
+      client_url: "https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/{{ ocp_version_path }}/{{ ocp_sha256sum.content.split() | select('match', '.*openshift-client-linux-.*') | list | first }}"
+      worker:
+        - count: "{{ fyre_worker_quantity }}"
+          cpu: "{{ fyre_worker_cpu }}"
+          memory: "{{ fyre_worker_memory }}"
+          additional_disk:
+            - "{{ fyre_worker_additional_disk }}"
+      master:
+        - count: "{{ fyre_master_quantity }}"
+          cpu: "{{ fyre_master_cpu }}"
+          memory: "{{ fyre_master_memory }}"
+  register: fyrestatus
