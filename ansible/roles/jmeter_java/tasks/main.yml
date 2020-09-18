@@ -1,0 +1,47 @@
+---
+
+- name: check if java dir
+  file:
+   path: "{{ javaDir }}"
+   state: directory
+   owner: "{{ jmeterUser }}"
+
+- name: find java exec
+  shell: "find {{ javaDir }} -type f -name java"
+  register: javaexec
+
+- name: check if java
+  stat:
+   path: "{{ javaexec.stdout }}"
+  register: isjava
+
+- block:
+  - name: retrieve Java
+    get_url:
+     url: "{{ javaArchive }}"
+     dest: /tmp/java.tgz
+
+  - name: install Java
+    unarchive:
+     src: /tmp/java.tgz
+     dest: "{{ javaDir }}"
+     remote_src: yes
+     owner: "{{ jmeterUser }}"
+
+  - name: get version
+    shell: "ls {{ javaDir }}"
+    register: jVersion
+
+  - name: remove temp java archive
+    file:
+     path: /tmp/java.tgz
+     state: absent
+
+  - name: java in user path
+    lineinfile:
+     path: "/home/{{ jmeterUser }}/.bashrc"
+     state: present
+     regexp: 'java'
+     line: 'export PATH="$PATH:{{ javaDir }}/{{ jVersion.stdout }}/bin"'
+     backup: yes
+  when: isjava.stat.exists == False
