@@ -1,0 +1,22 @@
+---
+- hosts: fyreApi
+  roles:
+  - role: jmeter_fyrevm
+
+- hosts: jmeter
+  vars:
+  - ansible_user: root
+  - crc_username: "{{ jmeterUser }}"
+  roles:
+  - role: jmeter_prereqs
+  - role: crc_user
+
+- hosts: jmeter
+  vars:
+  - javaDir: "/home/{{ jmeterUser }}/java"
+  - jmeterDir: "/home/{{ jmeterUser }}/jmeter"
+  roles:
+  - { role: vnc, when: vnc|bool }
+  - role: jmeter_java
+  - role: jmeter
+

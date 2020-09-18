@@ -1,0 +1,12 @@
+---
+
+- name: Install RHEL jmeter pre-reqs
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: latest
+  vars:
+   packages:
+   - rsync
+   - zip
+   - unzip

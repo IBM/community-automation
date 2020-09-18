@@ -1,0 +1,52 @@
+---
+
+- name: copy NEST common jmeter artifacts
+  copy:
+   src: "scripts/"
+   dest: "/home/{{ jmeterUser }}/"
+
+- name: check if jmeter dir
+  file:
+   path: "{{ jmeterDir }}"
+   state: directory
+   owner: "{{ jmeterUser }}"
+
+- name: find jmeter exec
+  shell: "find {{ jmeterDir }} -type f -name jmeter"
+  register: jmeterexec
+
+- name: check if jmeter
+  stat:
+   path: "{{ jmeterexec.stdout }}"
+  register: isjmeter
+
+- block:
+  - name: retrieve Jmeter
+    get_url:
+     url: "{{ jmeterArchive }}"
+     dest: /tmp/jmeter.tgz
+
+  - name: install Jmeter
+    unarchive:
+     src: /tmp/jmeter.tgz
+     dest: "{{ jmeterDir }}"
+     owner: "{{ jmeterUser }}"
+     remote_src: yes
+
+  - name: remove temp java archive
+    file:
+     path: /tmp/jmeter.tgz
+     state: absent
+
+  - name: get version
+    shell: "ls {{ jmeterDir }}"
+    register: jVersion
+
+  - name: jmeter in user path
+    lineinfile:
+     path: "/home/{{ jmeterUser }}/.bashrc"
+     state: present
+     regexp: 'jmeter'
+     line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
+     backup: yes
+  when: isjmeter.stat.exists == False
