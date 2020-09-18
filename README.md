@@ -24,6 +24,7 @@ Make sure your ansible client is at version 2.9 or greater
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
+|request-rhel-jmeter-fyre-play|Install Redhat Jmeter on Fyre|Availble| none|
 
 
 ## Supporting Roles
@@ -145,6 +146,8 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
     │   └── roles -> ../roles
     ├── request-ocp-fyre-play
     │   └── roles -> ../roles
+    ├── request-crc-fyre-play
+    │   └── roles -> ../roles
     ├── request-ocp-roks-play
     │   └── roles -> ../roles
     └── roles
@@ -197,6 +200,11 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
         │   ├── readme.md
         │   ├── tasks
         │   └── templates
+        ├── jmeter
+        ├── jmeter_fyrevm
+        ├── jmeter_java
+        ├── java
+        ├── jmeter_prereqs
         └── request-ocp-roks
             ├── defaults
             ├── readme.md
