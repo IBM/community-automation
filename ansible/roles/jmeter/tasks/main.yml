@@ -42,13 +42,12 @@
     shell: "ls {{ jmeterDir }}"
     register: jVersion
 
-  - name: jmeter in system path
+  - name: jmeter in user path
     lineinfile:
      create: yes
-     path: "/etc/profile.d/jmeterpath.sh"
+     path: ".bash_profile"
      state: present
      regexp: 'jmeter'
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
-     become: yes
   when: isjmeter.stat.exists == False

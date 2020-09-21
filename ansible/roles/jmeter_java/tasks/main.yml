@@ -37,13 +37,12 @@
      path: /tmp/java.tgz
      state: absent
 
-  - name: java in system path
+  - name: java in user path
     lineinfile:
      create: yes
-     path: "/etc/profile.d/javapath.sh"
+     path: ".bash_profile"
      state: present
      regexp: 'java'
      line: 'export PATH="$PATH:{{ javaDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
-     become: yes
   when: isjava.stat.exists == False
