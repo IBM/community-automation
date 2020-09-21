@@ -15,6 +15,7 @@
   get_url:
     url: '{{ ova_url }}'
     dest: '{{ local_target_folder }}'
+    mode: '777'
     force: yes
 
 - vmware_deploy_ovf:
@@ -34,7 +35,7 @@
   delegate_to: localhost
 
 - name: Download govc
-  get_url: url='http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ govc_prq }}/{{ govc_vers}}/{{ govc_dwld }}' dest='{{ local_target_folder }}'
+  get_url: url='http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ govc_prq }}/{{ govc_vers}}/{{ govc_dwld }}' dest='{{ local_target_folder }}' mode='777'
 
 - name: Unpackage  govc
   shell: "gzip -d {{ local_target_folder }}/{{ govc_dwld }}"
