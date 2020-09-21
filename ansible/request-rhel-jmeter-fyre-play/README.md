@@ -19,7 +19,9 @@ cp examples/inventory .
 
 The playbook/role supports a single Intel Fyre vm with 2cpu/2gb RHEL 8.x.  The stack name is randomly chosen unless overridden
 
-e.g. -e stackName=mycrcStack01
+e.g. -e stackName=jmeterstress01
+
+Do not use jmeter for the username as the lineinfile logic will fail to add jmeter to the path
 
 
 Once you have configured the `inventory` file, run the playbook using:
