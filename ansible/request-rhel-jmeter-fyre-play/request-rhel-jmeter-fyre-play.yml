@@ -16,7 +16,7 @@
   - javaDir: "/home/{{ jmeterUser }}/java"
   - jmeterDir: "/home/{{ jmeterUser }}/jmeter"
   roles:
-  - { role: vnc, when: vnc|bool }
   - role: jmeter_java
   - role: jmeter
+  - { role: vnc, when: vnc|bool }
 

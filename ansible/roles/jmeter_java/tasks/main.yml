@@ -39,7 +39,8 @@
 
   - name: java in user path
     lineinfile:
-     path: "/home/{{ jmeterUser }}/.bashrc"
+     create: yes
+     path: ".bash_profile"
      state: present
      regexp: 'java'
      line: 'export PATH="$PATH:{{ javaDir }}/{{ jVersion.stdout }}/bin"'

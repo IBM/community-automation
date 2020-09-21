@@ -44,7 +44,8 @@
 
   - name: jmeter in user path
     lineinfile:
-     path: "/home/{{ jmeterUser }}/.bashrc"
+     create: yes
+     path: ".bash_profile"
      state: present
      regexp: 'jmeter'
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
