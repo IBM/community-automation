@@ -37,9 +37,10 @@
      path: /tmp/java.tgz
      state: absent
 
-  - name: java in user path
+  - name: java in system path
     lineinfile:
-     path: "/home/{{ jmeterUser }}/.bashrc"
+     create: yes
+     path: "/etc/profile.d/javapath.sh"
      state: present
      regexp: 'java'
      line: 'export PATH="$PATH:{{ javaDir }}/{{ jVersion.stdout }}/bin"'
