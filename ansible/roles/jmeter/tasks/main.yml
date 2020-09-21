@@ -50,4 +50,5 @@
      regexp: 'jmeter'
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
+     become: yes
   when: isjmeter.stat.exists == False
