@@ -21,11 +21,11 @@
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
   - Ansible call to install the latest OCP 4.6 nightly
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your46clustername" -e "ocpVersion=custom" -e "rhcos_version_path=pre-release/latest" -e "ocp_version_path=ocp-dev-preview/latest-4.6"`
+    - `ansible-playbook  -i inventory request-ocp-cs-install.yml -e "clusterName=your46clustername" -e "ocpVersion=custom" -e "rhcos_version_path=pre-release/latest" -e "ocp_version_path=ocp-dev-preview/latest-4.6"`
   - Ansible call to install the stable patch level of OCP 4.5
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your45clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.5/latest" -e "ocp_version_path=ocp/stable-4.5"`
+    - `ansible-playbook  -i inventory request-ocp-cs-install.yml -e "clusterName=your45clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.5/latest" -e "ocp_version_path=ocp/stable-4.5"`
   - Ansible call to install the stable patch level of OCP 4.4
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your44clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.4/latest" -e "ocp_version_path=ocp/stable-4.4"`
+    - `ansible-playbook  -i inventory request-ocp-cs-install.yml -e "clusterName=your44clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.4/latest" -e "ocp_version_path=ocp/stable-4.4"`
 - So for installations that the previous ansible call templates do not satisfy here are some additional points to understand.
   - The `custom` installation uses under the covers a fairly complicated API call that involves 5 URLs to get the information it needs to do a correct installation. Following are examples of the api_parm:URLs it uses for the latest nightly 4.6 installation.
     - "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/latest/rhcos-installer-kernel-x86_64"
