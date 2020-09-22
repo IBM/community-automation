@@ -1,9 +1,10 @@
 ---
 - name: Install OCP+Beta Fyre cluster
   hosts: fyreApi
-  roles: request-ocp-fyre
+  roles:
+  - role: request-ocp-fyre
 
-- name: Install csi-cephfs and then common services onto OCP+Beta Fyre clusters
+- name: Install csi-cephfs and then common services onto OCP+Beta Fyre cluster
   hosts: ocp-clusters
   gather_facts: false
   roles:
