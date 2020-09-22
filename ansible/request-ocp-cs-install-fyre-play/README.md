@@ -51,19 +51,20 @@
  - You have capacity in fyre
  - Fyre is online
 
-## Setting up inventory
-
-- From the `request-ocp-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
-- Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
-- Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
-- Optionally remove `ansible_python_interpreter: /usr/bin/python3` if you have issues with python discovery
+## Setting up vars file and inventory
+- From the `request-ocp-cs-install-fyre-play` directory copy the sample inventory file at `examples/cs_vars_fyre.yml` to the  current directory.
+- From the `request-ocp-cs-install-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
+  - Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
+  - Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
+  - Optionally remove `ansible_python_interpreter: /usr/bin/python3` if you have issues with python discovery
 ```
+cp examples/cs_vars_fyre.yml .
 cp examples/inventory .
 ```
 
 ## Run playbook
 
-The playbook/role supports provisioning clusters at configurable ocpVersions and works with the OCP and OCP+ apis from fyre team
+The playbook/role supports provisioning clusters with OCP+ apis from fyre team.
 These are controlled by the ocpVersion and fyre_ocptype variables respectively.
 
 Once you have configured the `inventory` file, run the playbook using:
