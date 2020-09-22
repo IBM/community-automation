@@ -52,3 +52,5 @@ jmeter -v
 
 One can also vncviewer stackname_FQDN:5901
 password is : vncPassw0rd
+
+The default terminal does not login, thus the jmeter nor java commands are in the PATH.  Edit the terminal Preferences->Command and check 'Run command as login shell' and restart the terminal.
