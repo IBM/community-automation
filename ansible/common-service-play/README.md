@@ -6,6 +6,15 @@
  - oc login has been completed to the Openshift cluster.
  - Running on Ubuntu or Mac.
 
+
+ ## How to install oc client
+
+   - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
+   - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
+   - Extract: tar xf oc.tar.gz
+   - Move to /usr/local/bin: cp oc /usr/lcoal/bring
+   - Example oc login: `oc login https://api.your-cluster.purple-chesterfield.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
+
 ## Setting up inventory
 
 Make use of sample file at `examples/inventory`.
