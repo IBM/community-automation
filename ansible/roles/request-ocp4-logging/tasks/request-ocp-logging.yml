@@ -9,7 +9,7 @@
   - directory
 
 - name: Get ocp version major.minor
-  shell: "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
+  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
   register: ocpversion
 
 - name: Generate OCP operator/operand install files
@@ -27,7 +27,7 @@
   - logging-rbac.yaml
 
 - name: Begin ocp logging operator install
-  shell: "{{ logging_bastion_setup_dir }}/ocp4-logging-operator.sh"
+  shell: bash -lc "{{ logging_bastion_setup_dir }}/ocp4-logging-operator.sh"
   args:
       warn: false
   register: operator
@@ -37,7 +37,7 @@
     msg: "{{ operator.stdout_lines }}"
 
 - name: Begin ocp logging operand install
-  shell: "{{ logging_bastion_setup_dir }}/ocp4-logging-operand.sh"
+  shell: bash -lc "{{ logging_bastion_setup_dir }}/ocp4-logging-operand.sh"
   args:
       warn: false
   register: operand
