@@ -1,0 +1,1 @@
+rendered_sc: "@@@SCLASS@@@" #Storageclass to use for ocp logging PVCs. If left empty will use the designated default storageclass.
