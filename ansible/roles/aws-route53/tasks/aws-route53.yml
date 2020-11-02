@@ -37,9 +37,9 @@
   when: 'route_task == "delete"'
   block:
   - debug:
-      msg: "Running AWS dns delele...
+      msg: "Running AWS dns delele..."
 
-  - name: Retrieve the details for {{ api_dns }}
+  - name: "Retrieve the details for {{ api_dns }}"
       community.aws.route53:
         state: get
         zone: "{{ base_domain }}"
