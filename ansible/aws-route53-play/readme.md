@@ -7,10 +7,10 @@ copy inventory and vars file into play parent directory
 
 ```
 # cp examples/inventory .
-# cp examples/route53-vars.yml .
+# cp examples/aws-route53-vars.yml .
 ```
 
-edit **route53-vars** see file for details
+edit **aws-route53-vars.yml** see file for details
 
 add aws route53 ansible module
 ```
