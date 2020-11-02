@@ -1,6 +1,6 @@
 ---
 - name: add AWS route53 entry
-  when: '"add" in {{ route_task }}'
+  when: 'route_task == "add"'
   block:  
   - debug:
       msg: "Running AWS dns add..."
@@ -22,7 +22,7 @@
       record: "{{ apps_dns }}"
       type: A
       ttl: 60
-      value: "{{ apps_dns }}"
+      value: "{{ apps_ip }}"
       wait: yes
 
   - name: Retrieve the details for api server
@@ -34,7 +34,7 @@
     register: rec
 
 - name: delete AWS route53 entry
-  when: '"delete" in {{ route_task }}'
+  when: 'route_task == "delete"'
   block:
   - debug:
       msg: "Running AWS dns delele...
@@ -50,7 +50,7 @@
   - name: Deleting AWS api record
     community.aws.route53:
       state: absent
-      zone: "{{ basd_domain }}"
+      zone: "{{ base_domain }}"
       record: "{{ rec.set.record }}"
       ttl: "{{ rec.set.ttl }}"
       type: "{{ rec.set.type }}"
