@@ -1,3 +1,5 @@
+aws_access_key="<your AWS_ACCESS_KEY_ID>
+aws_secret_key="<your AWS_SECRET_ACCESS_KEY>
 base_domain="purple-chesterfield.com"
 clustername="openshift-4516"
 api_ip=9.46.68.90
