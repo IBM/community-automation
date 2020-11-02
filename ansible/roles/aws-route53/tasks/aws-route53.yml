@@ -40,12 +40,12 @@
       msg: "Running AWS dns delele..."
 
   - name: "Retrieve the details for {{ api_dns }}"
-      community.aws.route53:
-        state: get
-        zone: "{{ base_domain }}"
-        record: "{{ api_dns }}"
-        type: A
-      register: rec
+    community.aws.route53:
+      state: get
+      zone: "{{ base_domain }}"
+      record: "{{ api_dns }}"
+      type: A
+    register: rec
       
   - name: Deleting AWS api record
     community.aws.route53:
