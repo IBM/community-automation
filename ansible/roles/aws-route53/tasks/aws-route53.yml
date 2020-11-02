@@ -8,7 +8,7 @@
   - name: Add new api DNS record
     community.aws.route53:
       state: present
-      zone: {{ base_domain }}
+      zone: "{{ base_domain }}"
       record: "{{ api_dns }}"
       type: A
       ttl: 60
@@ -18,7 +18,7 @@
   - name: Add new apps DNS record
     community.aws.route53:
       state: present
-      zone: {{ base_domain }}
+      zone: "{{ base_domain }}"
       record: "{{ apps_dns }}"
       type: A
       ttl: 60
@@ -28,8 +28,8 @@
   - name: Retrieve the details for api server
     community.aws.route53:
       state: get
-      zone: {{ base_domain }}
-      record: {{ api_dns }}
+      zone: "{{ base_domain }}"
+      record: "{{ api_dns }}"
       type: A
     register: rec
 
@@ -42,7 +42,7 @@
   - name: Retrieve the details for {{ api_dns }}
       community.aws.route53:
         state: get
-        zone: {{ base_domain }}
+        zone: "{{ base_domain }}"
         record: "{{ api_dns }}"
         type: A
       register: rec
