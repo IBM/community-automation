@@ -1,6 +1,8 @@
  
 # AWS route53 EXAMPLE play
 
+This play will create 2 entries in AWS public Route53 hosted zone
+
 The role from this play will be comsumed by a AWS ansible play.  
 
 copy inventory and vars file into play parent directory
