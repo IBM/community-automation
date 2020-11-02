@@ -1,0 +1,7 @@
+base_domain="purple-chesterfield.com"
+clustername="openshift-4516"
+api_ip=9.46.68.90
+api_dns=api.{{ clustername }}.{{ base_domain }}
+apps_ip=9.46.68.91
+app_dns="*.apps.{{ cluster_name }}.{{ base_domain }}"
+route_task="add"

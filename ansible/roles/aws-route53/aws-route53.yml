@@ -1,0 +1,73 @@
+- name: add AWS route53 entry
+  when: '"add" in {{ route_task }}'
+  block:  
+  - debug:
+      msg: "Running AWS dns add..."
+
+  - name: Add new api DNS record
+    community.aws.route53:
+      state: present
+      zone: {{ base_domain }}
+      record: "{{ api_dns }}"
+      type: A
+      ttl: 60
+      value: "{{ api_ip }}"
+      wait: yes
+
+  - name: Add new apps DNS record
+    community.aws.route53:
+      state: present
+      zone: {{ base_domain }}
+      record: "{{ apps_dns }}"
+      type: A
+      ttl: 60
+      value: "{{ apps_dns }}"
+      wait: yes
+
+  - name: Retrieve the details for api server
+    community.aws.route53:
+      state: get
+      zone: {{ base_domain }}
+      record: {{ api_dns }}
+      type: A
+    register: rec
+
+- name: delete AWS route53 entry
+    when: '"delete" in {{ route_task }}'
+    block:
+    - debug:
+        msg: "Running AWS dns delele...
+
+    - name: Retrieve the details for {{ api_dns }}
+        community.aws.route53:
+          state: get
+          zone: {{ base_domain }}
+          record: "{{ api_dns }}"
+          type: A
+        register: rec
+      
+    - name: Deleting AWS api record
+      community.aws.route53:
+        state: absent
+        zone: "{{ basd_domain }}"
+        record: "{{ rec.set.record }}"
+        ttl: "{{ rec.set.ttl }}"
+        type: "{{ rec.set.type }}"
+        value: "{{ rec.set.value }}"
+
+    - name: Retrieve the details for {{ apps_dns }}
+      community.aws.route53:
+        state: get
+        zone: "{{ base_domain }}" 
+        record: "{{ apps_dns }}"
+        type: A
+        register: rec
+        
+    - name: Delete AWS apps record
+      community.aws.route53:
+        state: absent
+        zone: "{{ base_domain }}"
+        record: "{{ rec.set.record }}"
+        ttl: "{{ rec.set.ttl }}"
+        type: "{{ rec.set.type }}"
+        value: "{{ rec.set.value }}"
