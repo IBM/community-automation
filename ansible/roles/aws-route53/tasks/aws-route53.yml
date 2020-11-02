@@ -1,3 +1,4 @@
+---
 - name: add AWS route53 entry
   when: '"add" in {{ route_task }}'
   block:  
@@ -33,8 +34,8 @@
     register: rec
 
 - name: delete AWS route53 entry
-    when: '"delete" in {{ route_task }}'
-    block:
+  when: '"delete" in {{ route_task }}'
+  block:
     - debug:
         msg: "Running AWS dns delele...
 
