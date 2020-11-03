@@ -8,6 +8,8 @@
   - name: Add new api DNS record
     community.aws.route53:
       state: present
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ api_dns }}"
       type: A
@@ -18,6 +20,8 @@
   - name: Add new apps DNS record
     community.aws.route53:
       state: present
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ apps_dns }}"
       type: A
@@ -28,6 +32,8 @@
   - name: Retrieve the details for api server
     community.aws.route53:
       state: get
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ api_dns }}"
       type: A
@@ -42,6 +48,8 @@
   - name: "Retrieve the details for {{ api_dns }}"
     community.aws.route53:
       state: get
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ api_dns }}"
       type: A
@@ -50,6 +58,8 @@
   - name: Deleting AWS api record
     community.aws.route53:
       state: absent
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ rec.set.record }}"
       ttl: "{{ rec.set.ttl }}"
@@ -59,6 +69,8 @@
   - name: Retrieve the details for {{ apps_dns }}
     community.aws.route53:
       state: get
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}" 
       record: "{{ apps_dns }}"
       type: A
@@ -67,6 +79,8 @@
   - name: Delete AWS apps record
     community.aws.route53:
       state: absent
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       zone: "{{ base_domain }}"
       record: "{{ rec.set.record }}"
       ttl: "{{ rec.set.ttl }}"
