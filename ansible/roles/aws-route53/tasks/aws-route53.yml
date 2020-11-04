@@ -74,7 +74,7 @@
       zone: "{{ base_domain }}" 
       record: "{{ apps_dns }}"
       type: A
-      register: rec
+    register: rec
        
   - name: Delete AWS apps record
     community.aws.route53:
