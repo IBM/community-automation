@@ -2,11 +2,21 @@
 
 ## Overview
 - Will create an OCP 4.x cluster in fyre.
-  - Using `fyre_ocptype=ocpplus` this will create a fyre OCP+beta 4.x cluster.
+  - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
+  - Using `fyre_ocptype=ocpplus` this will create a fyre `OCP+` 4.x cluster.
     - The `ocpVersion=` parm
-      -  Set to the current versions available in the fyre.ibm.com GUI OCP+Beta tab.
-      -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
-    - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
+      -  Set to the current versions available in the fyre.ibm.com GUI `OCP+` tab.
+      -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See the following  `Custom installations additional information` section on detail for doing `custom` installs.
+    - All `OCP+` clusters are created with an additional /dev/vdb 300G disk on the worker nodes.
+  - Using `fyre_ocptype=quickburn` this will create a fyre `OCP+` 4.x  cluster against the QuickBurn quota.
+    - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
+    - The `ocpVersion=` parm
+      -  Set to the current versions available in the fyre.ibm.com GUI `QuickBurn` tab.    
+    - The `quickburn_ttl=` time-to-live parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified. Max value allowed is `36`.
+    - The `quickburn_size=` cluster size parm set to either medium or large. For both `medium or large` the master nodes have cpu 8 and ram of 16G. Default is `medium` if not specified.
+      - `medium` - workers are cpu 8 and ram 16G.
+      - `large` - workers are cpu 16 and ram 32G.
+    - All QuickBurn clusters are created with an additional /dev/vdb 200G disk on the worker nodes.
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
   - Ansible call to install the latest OCP 4.6 nightly
@@ -33,7 +43,7 @@
   - Getting the right combination of `rhcos_version_path` and `ocp_version_path` can take some work. It is recommended to leave `rhcos_version_path` as one of the following versions and just do adjustments to the 'ocp_version_path'.
     - For OCP 4.6 installations use `rhcos_version_path=pre-release/latest`
     - For OCP 4.5 installations use `rhcos_version_path=4.5/latest`   
-    - For OCP 4.4 installations use `rhcos_version_path=4.4/latest` 
+    - For OCP 4.4 installations use `rhcos_version_path=4.4/latest`
 
 ## Assumptions:
 
@@ -59,6 +69,11 @@ Once you have configured the `inventory` file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus"
+```
+## Run playbook for Quickburn
+
+```
+ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=quickburn" -e "quickburn_size=medium/large" -e quickburn_ttl=hoursToLive"
 ```
 
 This command will create an ocp plus cluster in fyre called myClusterName. If myClusterName already exists it will instead just define it to ansible.
