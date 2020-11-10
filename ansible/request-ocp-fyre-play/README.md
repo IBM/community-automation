@@ -12,7 +12,7 @@
     - The `quickburn_size=` parm set to either medium or large. Default is `medium` if not specified.
       - `medium` - workers are cpu 8 and memory 16G.
       - `large` - workers are cpu 16 and memory 32G.
-    - All OCP+beta clusters are created with an additional /dev/vdb 200G disk on the worker nodes.
+    - All Quickburn clusters are created with an additional /dev/vdb 200G disk on the worker nodes.
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
   - Ansible call to install the latest OCP 4.6 nightly
