@@ -8,7 +8,7 @@
       -  Set to the current versions available in the fyre.ibm.com GUI `OCP+` tab.
       -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See the following  `Custom installations additional information` section on detail for doing `custom` installs.
     - All `OCP+` clusters are created with an additional /dev/vdb 300G disk on the worker nodes.
-  - Using `fyre_ocptype=quickburn` this will create a fyre `OCP+` 4.x  cluster against the Quickburn quota.
+  - Using `fyre_ocptype=quickburn` this will create a fyre `OCP+` 4.x  cluster against the QuickBurn quota.
     - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
     - The `ocpVersion=` parm
       -  Set to the current versions available in the fyre.ibm.com GUI `QuickBurn` tab.    
