@@ -8,10 +8,10 @@
       -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
     - All OCP+beta clusters are created with an additional /dev/vdb 300G disk on the worker nodes.
   - Using `fyre_ocptype=quickburn` this will create a fyre OCP+beta 4.x  cluster against the quickburn quota.  
-    - The `quickburn_ttl=` parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified.
-    - The `quickburn_size=` parm set to either medium or large. Default is `medium` if not specified.
-      - `medium` - workers are cpu 8 and memory 16G.
-      - `large` - workers are cpu 16 and memory 32G.
+    - The `quickburn_ttl=` time-to-live parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified. Max value allowed is `36`.
+    - The `quickburn_size=` cluster size parm set to either medium or large. For both `medium/large` the master nodes have cpu 8 and ram of 16G. Default is `medium` if not specified.
+      - `medium` - workers are cpu 8 and ram 16G.
+      - `large` - workers are cpu 16 and ram 32G.
     - All Quickburn clusters are created with an additional /dev/vdb 200G disk on the worker nodes.
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
