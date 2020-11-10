@@ -6,7 +6,13 @@
     - The `ocpVersion=` parm
       -  Set to the current versions available in the fyre.ibm.com GUI OCP+Beta tab.
       -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
-    - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
+    - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.
+  - Using `fyre_ocptype=quickburn` this will create a fyre OCP+beta 4.x  cluster against the quickburn quota.  
+    - The `quickburn_ttl=` parm set to the number of hours you want the cluster to live.
+    - The `quickburn_size=` parm set to either medium or large.
+      - `medium` - workers are cpu 8 and memory 16G.
+      - `large` - workers are cpu 16 and memory 32G.
+
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
   - Ansible call to install the latest OCP 4.6 nightly
@@ -59,6 +65,11 @@ Once you have configured the `inventory` file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus"
+```
+## Run playbook for Quickburn
+
+```
+ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=quickburn" -e "quickburn_size=medium/large" -e quickburn_ttl=hoursToLive"
 ```
 
 This command will create an ocp plus cluster in fyre called myClusterName. If myClusterName already exists it will instead just define it to ansible.
