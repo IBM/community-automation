@@ -2,12 +2,16 @@
 
 ## Overview
 - Will create an OCP 4.x cluster in fyre.
+  - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
   - Using `fyre_ocptype=ocpplus` this will create a fyre OCP+beta 4.x cluster.
     - The `ocpVersion=` parm
       -  Set to the current versions available in the fyre.ibm.com GUI OCP+Beta tab.
       -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
     - All OCP+beta clusters are created with an additional /dev/vdb 300G disk on the worker nodes.
-  - Using `fyre_ocptype=quickburn` this will create a fyre OCP+beta 4.x  cluster against the quickburn quota.  
+  - Using `fyre_ocptype=quickburn` this will create a fyre OCP+beta 4.x  cluster against the quickburn quota.
+    - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
+    - The `ocpVersion=` parm
+      -  Set to the current versions available in the fyre.ibm.com GUI Quickburn tab.    
     - The `quickburn_ttl=` time-to-live parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified. Max value allowed is `36`.
     - The `quickburn_size=` cluster size parm set to either medium or large. For both `medium/large` the master nodes have cpu 8 and ram of 16G. Default is `medium` if not specified.
       - `medium` - workers are cpu 8 and ram 16G.
