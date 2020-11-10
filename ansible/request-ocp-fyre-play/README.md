@@ -8,8 +8,8 @@
       -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
     - All OCP+beta clusters are created with an additional /dev/vdb 300G disk.
   - Using `fyre_ocptype=quickburn` this will create a fyre OCP+beta 4.x  cluster against the quickburn quota.  
-    - The `quickburn_ttl=` parm set to the number of hours you want the cluster to live.
-    - The `quickburn_size=` parm set to either medium or large.
+    - The `quickburn_ttl=` parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified.
+    - The `quickburn_size=` parm set to either medium or large. Default is `medium` if not specified.
       - `medium` - workers are cpu 8 and memory 16G.
       - `large` - workers are cpu 16 and memory 32G.
 
@@ -39,7 +39,7 @@
   - Getting the right combination of `rhcos_version_path` and `ocp_version_path` can take some work. It is recommended to leave `rhcos_version_path` as one of the following versions and just do adjustments to the 'ocp_version_path'.
     - For OCP 4.6 installations use `rhcos_version_path=pre-release/latest`
     - For OCP 4.5 installations use `rhcos_version_path=4.5/latest`   
-    - For OCP 4.4 installations use `rhcos_version_path=4.4/latest` 
+    - For OCP 4.4 installations use `rhcos_version_path=4.4/latest`
 
 ## Assumptions:
 
