@@ -16,7 +16,7 @@
     mode: '0755'
 
 - name: Install ocs from channel {{ ocs_channel }}
-  shell: "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
   args:
       warn: false
   register: ocsinstall

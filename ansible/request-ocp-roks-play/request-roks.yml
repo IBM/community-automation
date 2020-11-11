@@ -6,5 +6,6 @@
     - ibm.cloudcollection
 
   tasks:
-    - import_role: 
+    - name: create roks cluster
+      import_role: 
         name: request-ocp-roks

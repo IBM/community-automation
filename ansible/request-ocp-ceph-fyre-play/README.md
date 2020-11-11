@@ -1,30 +1,30 @@
-# Ansible Playbook for creating an ocp cluster on fyre.
+# Ansible Playbook for creating an ocp with csi-cephfs cluster on fyre.
 
 ## Overview
-- Will create an OCP 4.x cluster in fyre.
-  - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
-  - Using `fyre_ocptype=ocpplus` this will create a fyre `OCP+` 4.x cluster.
-    - The `ocpVersion=` parm
-      -  Set to the current versions available in the fyre.ibm.com GUI `OCP+` tab.
-      -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See the following  `Custom installations additional information` section on detail for doing `custom` installs.
-    - All `OCP+` clusters are created with an additional /dev/vdb 300G disk on the worker nodes.
-  - Using `fyre_ocptype=quickburn` this will create a fyre `OCP+` 4.x  cluster against the QuickBurn quota.
-    - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
-    - The `ocpVersion=` parm
-      -  Set to the current versions available in the fyre.ibm.com GUI `QuickBurn` tab.    
-    - The `quickburn_ttl=` time-to-live parm set to the number of hours you want the cluster to live. Default is `12` hours if not specified. Max value allowed is `36`.
-    - The `quickburn_size=` cluster size parm set to either medium or large. For both `medium or large` the master nodes have cpu 8 and ram of 16G. Default is `medium` if not specified.
-      - `medium` - workers are cpu 8 and ram 16G.
-      - `large` - workers are cpu 16 and ram 32G.
-    - All QuickBurn clusters are created with an additional /dev/vdb 200G disk on the worker nodes.
+- Will create an OCP+beta cluster in fyre. See OCP+Beta cluster additional information.
+- Will install `csi-cephfs` onto the OCP+Beta cluster.
+  - Installs rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
+    - Will use the /dev/vdb drive on every worker node for csi-cephfs.
+    - Uses the default rook-ceph release v1.3.8. See release information here https://github.com/rook/rook/releases.
+    - Creates 3 storageClass
+      - `rook-cephfs` - File store (RWX)
+      - `rook-ceph-block` - Ceph Block storage (RWO)
+      - `csi-cephfs` - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as rook-cephfs.
+    - Sets csi-cephfs as the default storageclass.
+
+## OCP+Beta cluster additional information
+- The `ocpVersion=` parm
+  -  Set to the current versions available in the fyre.ibm.com GUI OCP+Beta tab.
+  -  Set to `custom` if you want to install a nightly or a patch level of a GA'd version. See following section on detail for doing `custom` installs.
+- All OCP+beta clusters are created with an additional /dev/vdb 300G disk.  
 ## Custom installations additional information
 - Using the `custom` installation gives you a wide variety of installation options, so much so, that it can be very easy to not set correct values when using it. So to start we are going to give you some templates for installation that we think will be most useful and then follow with more detail for those that need something more.
   - Ansible call to install the latest OCP 4.6 nightly
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your46clustername" -e "fyre_ocptype=ocpplus" -e "ocpVersion=custom" -e "rhcos_version_path=pre-release/latest" -e "ocp_version_path=ocp-dev-preview/latest-4.6"`
+    - `ansible-playbook  -i inventory request-ocp-ceph.yml -e "clusterName=your46clustername" -e "ocpVersion=custom" -e "rhcos_version_path=pre-release/latest" -e "ocp_version_path=ocp-dev-preview/latest-4.6"`
   - Ansible call to install the stable patch level of OCP 4.5
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your45clustername" -e "fyre_ocptype=ocpplus" -e "ocpVersion=custom" -e "rhcos_version_path=4.5/latest" -e "ocp_version_path=ocp/stable-4.5"`
+    - `ansible-playbook  -i inventory request-ocp-ceph.yml -e "clusterName=your45clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.5/latest" -e "ocp_version_path=ocp/stable-4.5"`
   - Ansible call to install the stable patch level of OCP 4.4
-    - `ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=your44clustername" -e "fyre_ocptype=ocpplus" -e "ocpVersion=custom" -e "rhcos_version_path=4.4/latest" -e "ocp_version_path=ocp/stable-4.4"`
+    - `ansible-playbook  -i inventory request-ocp-ceph.yml -e "clusterName=your44clustername" -e "ocpVersion=custom" -e "rhcos_version_path=4.4/latest" -e "ocp_version_path=ocp/stable-4.4"`
 - So for installations that the previous ansible call templates do not satisfy here are some additional points to understand.
   - The `custom` installation uses under the covers a fairly complicated API call that involves 5 URLs to get the information it needs to do a correct installation. Following are examples of the api_parm:URLs it uses for the latest nightly 4.6 installation.
     - "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/latest/rhcos-installer-kernel-x86_64"
@@ -50,30 +50,24 @@
  - You have capacity in fyre
  - Fyre is online
 
-## Setting up inventory
-
-- From the `request-ocp-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
-- Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
-- Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
-- Optionally remove `ansible_python_interpreter: /usr/bin/python3` if you have issues with python discovery
+## Setting up vars file and inventory
+- From the `request-ocp-ceph-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
+  - Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
+  - Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
+  - Optionally remove `ansible_python_interpreter: /usr/bin/python3` if you have issues with python discovery
 ```
 cp examples/inventory .
 ```
 
 ## Run playbook
 
-The playbook/role supports provisioning clusters at configurable ocpVersions and works with the OCP and OCP+ apis from fyre team
+The playbook/role supports provisioning clusters with OCP+ apis from fyre team.
 These are controlled by the ocpVersion and fyre_ocptype variables respectively.
 
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus"
-```
-## Run playbook for Quickburn
-
-```
-ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=quickburn" -e "quickburn_size=medium/large" -e quickburn_ttl=hoursToLive"
+ansible-playbook  -i inventory request-ocp-ceph.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion"
 ```
 
 This command will create an ocp plus cluster in fyre called myClusterName. If myClusterName already exists it will instead just define it to ansible.

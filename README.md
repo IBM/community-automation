@@ -15,6 +15,8 @@ Make sure your ansible client is at version 2.9 or greater
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
+|request-ocp-ceph-fyre-play|deploy fyre OCP+beta cluster with cephfs|Availalbe|none|
+|request-ocp-cs-install-fyre-play|deploy fyre OCP+beta cluster and install csi-cephfs and common-services|Availalbe|none|
 |request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|

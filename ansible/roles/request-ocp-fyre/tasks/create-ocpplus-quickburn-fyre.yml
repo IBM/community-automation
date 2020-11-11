@@ -1,0 +1,18 @@
+---
+  - name: Create Fyre Quickburn stack
+    uri:
+      url: "{{fyreocpplus_ocpdeployurl}}"
+      method: "POST"
+      user: "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      validate_certs: False
+      body_format: "json"
+      body:
+        name : "{{ clusterName }}"
+        ocp_version: "{{ ocpVersion }}"
+        platform: "{{ ocpPlatform }}"
+        ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+        quota_type: "quick_burn"
+        size: "{{ quickburn_size }}"
+        time_to_live: "{{ quickburn_ttl }}"
+    register: fyrestatus

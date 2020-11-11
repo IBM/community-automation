@@ -6,9 +6,7 @@
   register: output_resource_group
 
 - name: set-fact-resource-group-id
-  set_fact:
-    cacheable: yes
-    resource_group: "{{ output_resource_group.resource }}"
+  set_fact: rg="{{ output_resource_group.resource }}"
     
 - name: create-cluster
   ibm.cloudcollection.ibm_container_cluster:
@@ -22,7 +20,7 @@
     kube_version: "{{ kubeVersion }}"
     private_vlan_id: "{{ privateVLAN }}"
     public_vlan_id: "{{ publicVLAN }}"
-    resource_group_id: "{{ resource_group.id }}"
+    resource_group_id: "{{ rg.id }}"
     ibmcloud_api_key: "{{ apikey }}"
     account_guid: "{{ icaccount }}"
     entitlement: "{{ entitlement }}"

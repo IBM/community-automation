@@ -1,0 +1,2 @@
+---
+- include_tasks: python-install-fyre.yaml

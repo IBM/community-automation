@@ -1,2 +1,2 @@
 [bastion]
-fyre.inf.node.9dot.ip  ansible_connection=ssh  ansible_ssh_user=root  ansible_ssh_pass="fyre.root.pw"
+fyre.inf.node.9dot.ip  ansible_connection=ssh  ansible_ssh_user=root  ansible_ssh_pass="fyre.root.pw" ansible_ssh_common_args='-o StrictHostKeyChecking=no'
