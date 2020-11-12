@@ -27,6 +27,7 @@ Make sure your ansible client is at version 2.9 or greater
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
 |request-rhel-jmeter-fyre-play|Install Jmeter on Fyre RHEL 8|Availble| none|
+|aws-route53-play|Creaate DNS entries for VMWare and AWS IPI installs|Availble| none
 
 
 ## Supporting Roles
