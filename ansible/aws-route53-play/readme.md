@@ -45,7 +45,7 @@ add aws route53 ansible module
 
 ## add AWS record
 ```
-# ansible-playbook -i inventory aws-route53-play -e route_task="add" 
+# ansible-playbook -i inventory aws-route53-play.yml -e route_task="add" 
 ```
 
 ## delete AWS record
