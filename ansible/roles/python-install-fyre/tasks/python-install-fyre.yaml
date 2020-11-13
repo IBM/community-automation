@@ -3,7 +3,7 @@
 
 - name: Install python on fyre inf node
   # using raw here allows ansible to connect without using ansible shell which requires python
-  raw: "sudo yum update -y && sudo yum install -y python3 && sudo alternatives --set python /usr/bin/python3"
+  raw: "sudo yum update --nobest -y && sudo yum install -y python3 && sudo alternatives --set python /usr/bin/python3"
   register: pythoninstall
 
 - name: Viewing python install log
