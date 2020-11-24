@@ -1,0 +1,4 @@
+---
+"aws_access_key_id": {{ params.aws_access_key_id }} 
+"aws_secret_access_key": {{ params.aws_secret_access_key }}
+"task": {{ task }}
