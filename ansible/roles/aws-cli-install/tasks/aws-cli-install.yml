@@ -3,6 +3,8 @@
 - name: Download AWS CLI
   get_url:
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: "."
+    validate_certs: false
 
 - name: Unpack AWS CLI
   shell: |
