@@ -3,7 +3,7 @@
     vars_files:
       - admin-vars.yml
     roles:
-      - {{ cloud }}-cli-install
+      - "{{ cloud }}-cli-install"
       
   - name: "{{ admin_task }} an {{ cloud }} cluster"
     roles:
