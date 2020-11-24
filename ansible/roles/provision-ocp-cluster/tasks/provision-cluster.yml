@@ -1,5 +1,5 @@
 ---
-- name: create clusterdeployment based on template
+- name: create clusterdeployment CR based on template
   template:
     src: "{{ cloud }}-template.j2"
     dest: "{{ cloud }}-clusterdeployment-cr.yml"
