@@ -35,7 +35,7 @@ timestamps {
           -e aws_secret_access_key=${params.aws_secret_access_key} \
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
-          -e cluster_name=${params.aws_region} \
+          -e cluster_name=${params.cluster_name} \
           -e arch="linux"
         """.stripIndent()
       }
