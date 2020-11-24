@@ -1,11 +1,13 @@
 ---
 
 - name: check for oc client
-  command: which oc
+  command: ./oc version
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
   register: oc_installed
   ignore_errors: yes
 
-- name: insstall oc client
+- name: install oc client
   when: oc_installed.rc != 0
   block:
   - name: Download OCP CLI
@@ -15,11 +17,11 @@
       validate_certs: false
     vars:
       arch: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
-    
+
   - name: Unpack OCP CLI
     shell: |
       tar xf "openshift-client.tar.gz" oc kubectl
       chmod 0755 oc kubectl
     args:
-    # Suppress the warning about using 'tar'
+      # Suppress the warning about using 'tar'
       warn: false

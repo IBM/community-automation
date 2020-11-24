@@ -1,0 +1,11 @@
+---
+- name: create clusterdeployment based on template
+  template:
+    src: "{{ cloud }}-template.j2"
+    dest: "{{ cloud }}-clusterdeployment-cr.yml"
+    backup: true
+  register: template_results
+
+- name: Apply provision yaml to ACM/Hive cluster
+  shell: "echo oc apply {{ cloud }}-clusterdeployment-cr.yml"
+  register: provision_results
