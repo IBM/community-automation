@@ -27,7 +27,7 @@ timestamps {
 
       stage('Cluster admin') {
         sh """
-          cp ./ansible/ocp-cluster-admin-play/examples/mc_vars.yml ./ansible/ocp-cluster-admin-play/
+          cp ./ansible/ocp-cluster-admin-play/examples/admin_vars.yml ./ansible/ocp-cluster-admin-play/
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
