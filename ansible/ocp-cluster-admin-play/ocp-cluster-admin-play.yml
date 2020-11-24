@@ -2,12 +2,12 @@
   - name: Install aws-cli
     vars_files:
       - admin-vars.yml
-    include_role:
-      name: aws-cli-install
+    roles:
+      - {{ cloud }}-cli-install
       
   - name: "{{ admin_task }} an {{ cloud }} cluster"
-    include_role:
-      name: "{{ admin_task }}-{{ cloud }}-cluster"
+    roles:
+      - "{{ admin_task }}-{{ cloud }}-cluster"
     environment:
       AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
       AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
