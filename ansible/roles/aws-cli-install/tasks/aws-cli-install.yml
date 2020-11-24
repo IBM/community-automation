@@ -1,0 +1,14 @@
+---
+
+- name: Download AWS CLI
+  get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+
+- name: Unpack AWS CLI
+  shell: |
+    unzip -o "awscli-exe-linux-x86_64.zip" >/dev/null
+    sudo ./aws/install
+  args:
+    chdir: "{{ tools_dir }}"
+    # Suppress the warning about using 'unzip'
+    warn: false

@@ -1,0 +1,8 @@
+---
+  - name: Install aws-cli
+    include_role:
+      name: aws-cli-install
+      
+  - name: Start an AWS cluster
+    include_role:
+      name: start_aws_cluster
