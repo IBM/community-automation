@@ -9,7 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
-    choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Action to apply to cluster.'),
+    choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Public Cloud choice'),
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
     string(name: 'aws_region', description: 'AWS Region'),
