@@ -2,7 +2,7 @@
 ---
 - name: Start the cluster instances using AWS CLI
   shell: |
-    aws ec2 start-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Name,Values={{ cluster_name|truncate(21, False, '', 0) }}-*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
+    echo aws ec2 start-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Name,Values={{ cluster_name|truncate(21, False, '', 0) }}-*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
   register: aws_cli_result
   ignore_errors: yes
 
@@ -16,5 +16,5 @@
 
 - name: Approve any outstanding certificates
   shell:
-    oc get csr -o name | xargs oc adm certificate approve
+    echo oc get csr -o name | xargs oc adm certificate approve
   ignore_errors: yes

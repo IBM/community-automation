@@ -9,7 +9,7 @@
 ---
 - name: Stop instances using AWS CLI
   shell: |
-    aws ec2 stop-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Name,Values={{ cluster_name|truncate(21, False, '', 0) }}-*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
+    echo aws ec2 stop-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:Name,Values={{ cluster_name|truncate(21, False, '', 0) }}-*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
   register: aws_cli_result
   ignore_errors: yes
 
