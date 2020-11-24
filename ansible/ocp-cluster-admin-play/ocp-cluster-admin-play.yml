@@ -1,12 +1,13 @@
 ---
-  - hosts: bastion
   - name: Install aws-cli
+    hosts: bastion
     vars_files:
       - admin-vars.yml
     roles:
       - "{{ cloud }}-cli-install"
       
   - name: "{{ admin_task }} an {{ cloud }} cluster"
+    hosts: bastion
     roles:
       - "{{ admin_task }}-{{ cloud }}-cluster"
     environment:
