@@ -37,7 +37,7 @@ timestamps {
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
-          -e arch="linux"
+          -e arch="linux" \
           -e cloud="${params.cloud}"
         """.stripIndent()
       }
