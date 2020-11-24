@@ -10,6 +10,8 @@ def jobProps = [
 
 def paramsList = [
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
+    string(name: 'cluster_name', description: 'OCP Cluster Name'),
+    string(name: 'aws_region', description: 'AWS Region'),
     string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
     password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
   ]
@@ -31,7 +33,9 @@ timestamps {
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
           -e aws_access_key_id=${params.aws_access_key_id} \
           -e aws_secret_access_key=${params.aws_secret_access_key} \
-          -e task=${params.admin_task} \
+          -e admin_task=${params.admin_task} \
+          -e aws_region=${params.aws_region} \
+          -e cluster_name=${params.aws_region} \
           -e arch="linux"
         """.stripIndent()
       }
