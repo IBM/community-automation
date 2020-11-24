@@ -9,6 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
+    choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Action to apply to cluster.'),
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
     string(name: 'aws_region', description: 'AWS Region'),
@@ -37,6 +38,7 @@ timestamps {
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
           -e arch="linux"
+          -e cloud="${params.cloud}"
         """.stripIndent()
       }
    }
