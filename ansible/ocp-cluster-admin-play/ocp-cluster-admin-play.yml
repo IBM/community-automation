@@ -1,8 +1,10 @@
 ---
   - name: Install aws-cli
+    vars_files:
+      - admin-vars.yml
     include_role:
       name: aws-cli-install
       
-  - name: Start an AWS cluster
+  - name: {{ task }} an AWS cluster
     include_role:
-      name: start_aws_cluster
+      name: {{ task }}_aws_cluster
