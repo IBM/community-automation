@@ -2,3 +2,4 @@
 "aws_access_key_id": {{ params.aws_access_key_id }} 
 "aws_secret_access_key": {{ params.aws_secret_access_key }}
 "admin_task": {{ admin_task }}
+"cloud": {{ cloud }}
