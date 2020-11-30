@@ -12,9 +12,13 @@
   when: aws_cli_result.rc != 0
 
 - pause:
-    seconds: 120
+    seconds: "{{ startup_wait_time }} "
+
+- name: Login to OCP cluster
+  include_role: ocp-Login
 
 - name: Approve any outstanding certificates
   shell:
-    echo oc get csr -o name | xargs oc adm certificate approve
+    # oc login, require kubeadmin/kubeadmin_password
+    oc get csr -o name | xargs oc adm certificate approve
   ignore_errors: yes

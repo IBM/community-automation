@@ -3,3 +3,4 @@
 "aws_secret_access_key": "{{ params.aws_secret_access_key }}"
 "admin_task": "{{ admin_task }}"
 "cloud": "{{ cloud }}"
+"startup_wait_time": "startup_wait_time"
