@@ -1,5 +1,5 @@
 ---
-  - name: {{ admin_task }} an {{ cloud }} cluster
+  - name: "{{ admin_task }} an {{ cloud }} cluster"
     hosts: bastion
     vars_files:
       - admin-vars.yml
