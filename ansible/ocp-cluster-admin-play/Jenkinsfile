@@ -14,8 +14,9 @@ def paramsList = [
     string (name: 'startup_wait_time', defaultValue: '120', description: 'Update default if you believe your cluster needs more time to start'),
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
     string(name: 'aws_region', description: 'AWS Region'),
-    string(name: 'ocp_admin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
-    password(name: 'ocp_admin_password', description: 'ocp administrator password'),
+    string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
+    password(name: 'kubeadmin_password', description: 'ocp administrator password'),
+    string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port'),
     string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
     password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
   ]
@@ -42,8 +43,9 @@ timestamps {
           -e cluster_name=${params.cluster_name} \
           -e arch="linux" \
           -e startup_wait_time=${params.startup_wait_time} \
-          -e ocp_admin_user=${params.ocp_admin_user} \
-          -e ocp_admin_password=${params.ocp_admin_password} \
+          -e kubeadmin_user=${params.kubeadmin_user} \
+          -e kubeadmin_password=${params.kubeadmin_password} \
+          -e ocp_api_url=${params.ocp_api_url} \
           -e cloud="${params.cloud}"
         """.stripIndent()
       }

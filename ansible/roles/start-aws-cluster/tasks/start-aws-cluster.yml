@@ -17,8 +17,14 @@
 - name: Login to OCP cluster
   include_role: ocp-Login
 
+#- name: Retry oc login while waiting on cluster to start
+#  shell: oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} {{ api_api_url }}  --tls 
+#  register: result
+#  until: result.stdout.find("projects") != -1
+#  retries: 5
+#  delay: 10
+
 - name: Approve any outstanding certificates
   shell:
-    # oc login, require kubeadmin/kubeadmin_password
-    oc get csr -o name | xargs oc adm certificate approve
+    oc get csr --no-headers=true |  egrep -iv "approve|issued" | awk '{print $1}' | xargs -i oc adm certificate approve {}
   ignore_errors: yes
