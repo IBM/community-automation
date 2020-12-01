@@ -5,5 +5,5 @@
     PATH: ".:{{ ansible_env.PATH }}"
   register: results
   until: results.stdout.find("projects") != -1 
-  retries: 3
+  retries: "{{ login_retries }}"
   delay: 30
