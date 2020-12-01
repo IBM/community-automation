@@ -17,6 +17,7 @@ def paramsList = [
     string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
     password(name: 'kubeadmin_password', description: 'ocp administrator password'),
     string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port'),
+    string(name: 'login_retries', defaultValue: 10, description: 'Number of time to retry login while waiting on clusterr'),
     string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
     password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
   ]
@@ -46,6 +47,7 @@ timestamps {
           -e kubeadmin_user=${params.kubeadmin_user} \
           -e kubeadmin_password=${params.kubeadmin_password} \
           -e ocp_api_url=${params.ocp_api_url} \
+          -e login_retries=${params.login_retries} \
           -e cloud="${params.cloud}"
         """.stripIndent()
       }
