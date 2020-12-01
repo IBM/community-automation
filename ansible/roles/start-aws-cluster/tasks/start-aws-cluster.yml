@@ -14,12 +14,16 @@
     msg: "Cluster not found. Please check the cluster exists in AWS for this region: https://{{ aws_region }}.console.aws.amazon.com/vpc/home?region={{ aws_region }}#vpcs:sort=tag:clusterName"
   when: aws_cli_result.rc != 0
 
-- pause:
-    seconds: "{{ startup_wait_time }} "
+#- pause:
+#    seconds: "{{ startup_wait_time }} "
 
 - name: Login to OCP cluster
   include_role: 
-    name: ocp-Login
+    name: ocp-login
+  register: results
+  until: results.stdout.find("projects") != -1 
+  retries: 3
+  delay: 30
 
 #- name: Retry oc login while waiting on cluster to start
 #  shell: oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} {{ api_api_url }}  --tls 
