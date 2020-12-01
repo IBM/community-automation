@@ -17,17 +17,6 @@
 - name: Login to OCP cluster
   include_role: 
     name: ocp-login
-  register: results
-  until: results.stdout.find("projects") != -1 
-  retries: 3
-  delay: 30
-
-#- name: Retry oc login while waiting on cluster to start
-#  shell: oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} {{ api_api_url }}  --tls 
-#  register: result
-#  until: result.stdout.find("projects") != -1
-#  retries: 5
-#  delay: 10
 
 - name: Approve any outstanding certificates
   shell:
