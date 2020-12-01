@@ -11,9 +11,6 @@
     msg: "Cluster not found. Please check the cluster exists in AWS for this region: https://{{ aws_region }}.console.aws.amazon.com/vpc/home?region={{ aws_region }}#vpcs:sort=tag:clusterName"
   when: aws_cli_result.rc != 0
 
-#- pause:
-#    seconds: "{{ startup_wait_time }} "
-
 - name: Login to OCP cluster
   include_role: 
     name: ocp-login
