@@ -4,7 +4,7 @@
   get_url:
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
     dest: "."
-    mode: 755
+    mode: 0755
     validate_certs: false
 
 - name: Unpack AWS CLI
