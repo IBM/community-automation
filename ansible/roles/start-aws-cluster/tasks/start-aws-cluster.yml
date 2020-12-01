@@ -18,7 +18,8 @@
     seconds: "{{ startup_wait_time }} "
 
 - name: Login to OCP cluster
-  include_role: ocp-Login
+  include_role: 
+    name: ocp-Login
 
 #- name: Retry oc login while waiting on cluster to start
 #  shell: oc login -u {{ kubeadmin_user }} -p {{ kubeadmin_password }} {{ api_api_url }}  --tls 
