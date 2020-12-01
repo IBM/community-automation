@@ -11,7 +11,6 @@ def jobProps = [
 def paramsList = [
     choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Public Cloud choice'),
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
-    string (name: 'startup_wait_time', defaultValue: '120', description: 'Update default if you believe your cluster needs more time to start'),
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
     string(name: 'aws_region', description: 'AWS Region'),
     string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
@@ -43,7 +42,6 @@ timestamps {
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
           -e arch="linux" \
-          -e startup_wait_time=${params.startup_wait_time} \
           -e kubeadmin_user=${params.kubeadmin_user} \
           -e kubeadmin_password=${params.kubeadmin_password} \
           -e ocp_api_url=${params.ocp_api_url} \
