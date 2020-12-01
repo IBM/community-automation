@@ -3,9 +3,6 @@
 - name: Start the cluster instances using AWS CLI
   shell: |
     aws ec2 start-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:clusterName,Values={{ cluster_name|truncate(21, False, '', 0) }}*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
-  #environment: 
-  #  AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
-  #  AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
   register: aws_cli_result
   ignore_errors: yes
 
