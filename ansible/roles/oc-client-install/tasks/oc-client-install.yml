@@ -14,6 +14,7 @@
     get_url:
       url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ arch }}-{{ ocp_client_version }}.tar.gz"
       dest: "./openshift-client.tar.gz"
+      mode: '0755'
       validate_certs: false
     vars:
       arch: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
