@@ -1,0 +1,10 @@
+---
+    - hosts: localhost
+      vars_files:
+        - aws-route53-vars.yml
+      collections:
+        - community.aws
+    
+      tasks:
+        - import_role:
+            name: aws-route53

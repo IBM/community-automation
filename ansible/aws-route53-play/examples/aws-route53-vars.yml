@@ -1,0 +1,10 @@
+---
+aws_access_key: "<your AWS_ACCESS_KEY_ID>"
+aws_secret_key: "<your AWS_SECRET_ACCESS_KEY>"
+base_domain: "purple-chesterfield.com"
+clustername: "your cluster name"
+api_ip: "<your static ip for api server>"
+api_dns: "api.{{ clustername }}.{{ base_domain }}"
+apps_ip: "your static ip for apps url>"
+apps_dns: "*.apps.{{ clustername }}.{{ base_domain }}"
+route_task: "add"  # add|delete
