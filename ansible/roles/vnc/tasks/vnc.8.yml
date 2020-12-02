@@ -54,29 +54,35 @@
     state: directory
     recurse: yes
   with_items:
-  - ~/.config/systemd/user
   - ~/.vnc
 
-  # -depth 8 -geometry 1852x1100 macbook pro res
-  # ExecStart=/usr/bin/vncserver
-- name: vnc user config
-  command: "cp /usr/lib/systemd/user/vncserver@.service ~/.config/systemd/user/"
-  args:
-    warn: no
-  register: vncuserconfig
+    # -depth 8 -geometry 1852x1100 macbook pro res
+    # session=gnome
+    # geometry=1852x1100 # 1852x1100 macbook pro res
 
-- name: add vnc geometry
-  lineinfile:
-    path: "~/.config/systemd/user/vncserver@.service"
-    state: present
-    regexp: 'ExecStart=/usr/bin/vncserver %i'
-    line: "ExecStart=/usr/bin/vncserver -geometry 1852x1100 %i"
+  - name: add vnc user
+    lineinfile:
+     path: "/etc/tigervnc/vncserver.users"
+     state: present
+     regexp: ':1='
+     line: ":1={{ ansible_user }}"
+    become: yes
 
-- name: user reload
-  command: "systemctl --user daemon-reload"
-  args:
-    warn: no
-  register: userreload
+  - name: add vnc geometry
+    lineinfile:
+     path: "/etc/tigervnc/vncserver-config-defaults"
+     state: present
+     regexp: 'geometry='
+     line: "geometry=1852x1100"
+    become: yes
+
+  - name: add vnc session
+    lineinfile:
+     path: "/etc/tigervnc/vncserver-config-defaults"
+     state: present
+     regexp: 'session='
+     line: "session=gnome"
+    become: yes
 
 - name: vnc pass
   shell: "echo 'vncPassw0rd' | vncpasswd -f > ~/.vnc/passwd"
@@ -94,16 +100,10 @@
     msg: "{{ vncpass.stdout_lines }}"
 
 - name: user vnc enable
-  command: "systemctl --user enable vncserver@:1.service --now"
+  command: "systemctl enable vncserver@:1 --now"
   args:
     warn: no
   register: uservncenable
-
-- name: vnc user linger
-  command: "loginctl enable-linger {{ ansible_user }}"
-  args:
-    warn: no
-  register: userlinger
 
 - name: purge directories
   file:
