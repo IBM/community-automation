@@ -50,4 +50,9 @@
      regexp: 'jmeter'
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
+
+  - name: retrieve jmeter-plugin-manager.jar
+    get_url:
+     url: "{{ jmeterManagerPluginUrl }}"
+     dest: "{{ jmeterDir }}/{{ jVersion.stdout }}/lib/ext/jmeter-plugin-manager.jar"
   when: isjmeter.stat.exists == False
