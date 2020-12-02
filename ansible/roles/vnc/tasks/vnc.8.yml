@@ -56,33 +56,33 @@
   with_items:
   - ~/.vnc
 
-    # -depth 8 -geometry 1852x1100 macbook pro res
-    # session=gnome
-    # geometry=1852x1100 # 1852x1100 macbook pro res
+# -depth 8 -geometry 1852x1100 macbook pro res
+# session=gnome
+# geometry=1852x1100 # 1852x1100 macbook pro res
 
-  - name: add vnc user
-    lineinfile:
-     path: "/etc/tigervnc/vncserver.users"
-     state: present
-     regexp: ':1='
-     line: ":1={{ ansible_user }}"
-    become: yes
+- name: add vnc user
+  lineinfile:
+   path: "/etc/tigervnc/vncserver.users"
+   state: present
+   regexp: ':1='
+   line: ":1={{ ansible_user }}"
+  become: yes
 
-  - name: add vnc geometry
-    lineinfile:
-     path: "/etc/tigervnc/vncserver-config-defaults"
-     state: present
-     regexp: 'geometry='
-     line: "geometry=1852x1100"
-    become: yes
+- name: add vnc geometry
+  lineinfile:
+   path: "/etc/tigervnc/vncserver-config-defaults"
+   state: present
+   regexp: 'geometry='
+   line: "geometry=1852x1100"
+  become: yes
 
-  - name: add vnc session
-    lineinfile:
-     path: "/etc/tigervnc/vncserver-config-defaults"
-     state: present
-     regexp: 'session='
-     line: "session=gnome"
-    become: yes
+- name: add vnc session
+  lineinfile:
+   path: "/etc/tigervnc/vncserver-config-defaults"
+   state: present
+   regexp: 'session='
+   line: "session=gnome"
+  become: yes
 
 - name: vnc pass
   shell: "echo 'vncPassw0rd' | vncpasswd -f > ~/.vnc/passwd"
