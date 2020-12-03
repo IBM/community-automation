@@ -12,6 +12,7 @@ def paramsList = [
     choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Public Cloud choice'),
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
+    string(name: 'cluster_owner', description: 'email address of cluster owner'),
     string(name: 'aws_region', description: 'AWS Region'),
     string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
     password(name: 'kubeadmin_password', description: 'ocp administrator password'),
@@ -46,6 +47,7 @@ timestamps {
           -e kubeadmin_password=${params.kubeadmin_password} \
           -e ocp_api_url=${params.ocp_api_url} \
           -e login_retries=${params.login_retries} \
+          -e cluster_owner=${params.cluster_owner} \
           -e cloud="${params.cloud}"
         """.stripIndent()
       }
