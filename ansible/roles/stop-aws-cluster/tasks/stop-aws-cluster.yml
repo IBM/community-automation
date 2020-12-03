@@ -6,6 +6,7 @@
 # disclosure restricted by GSA ADP Schedule Contract with IBM Corp.
 
 # Stop a cluster in AWS
+# aws ec2 stop-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:clusterName,Values={{ cluster_name|truncate(21, False, '', 0) }}* Name=tag:Owner,Values={{ cluster_owner }}" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
 ---
 - name: Stop instances using AWS CLI
   shell: |
