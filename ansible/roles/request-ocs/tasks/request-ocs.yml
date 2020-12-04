@@ -15,8 +15,16 @@
     dest: "{{ ocs_bastion_setup_dir }}/ocs_install.sh"
     mode: '0755'
 
-- name: Install ocs from channel {{ ocs_channel }}
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
+- name: Get ocp version minor
+  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev | cut -f2 -d'.'"
+  register: ocpversion
+
+- name: Get ocs version major.minor
+  shell: bash -lc "[[  {{ ocpversion.stdout }} -gt 5 ]] && echo 'stable-4.5' || echo 'stable-4.4'"
+  register: ocsversion
+
+- name: Install ocs from channel {{ ocsversion.stdout }}
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocsversion.stdout }} {{ setdefault }}"
   args:
       warn: false
   register: ocsinstall
