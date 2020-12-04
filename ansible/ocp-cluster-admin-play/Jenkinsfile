@@ -25,6 +25,12 @@ jobProps.push(parameters(paramsList))
 
 properties(jobProps)
 
+environment {
+    AWS_CREDS = credentials('dummy-creds')
+    AWS_CREDS_USR = credentials("${params.aws_access_key_id}")
+    AWS_CREDS_PWD = credentials("${params.aws_secret_access_key}")
+}
+
 timestamps {
   ansiColor('xterm') {
     node ( 'kube_pod_slave' ) {
@@ -37,8 +43,8 @@ timestamps {
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
-          -e aws_access_key_id=${params.aws_access_key_id} \
-          -e aws_secret_access_key=${params.aws_secret_access_key} \
+          -e aws_access_key_id=${AWS_CREDS_USR} \
+          -e aws_secret_access_key=${AWS_CREDS_PWD} \
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
