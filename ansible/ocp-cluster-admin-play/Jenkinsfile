@@ -41,8 +41,8 @@ timestamps {
 
         environment {
              AWS_CREDS = credentials('dummy-creds')
-             AWS_CREDS_USR = credentials("${params.aws_access_key_id}")
-             AWS_CREDS_PWD = credentials("${params.aws_secret_access_key}")
+             AWS_CREDS_USR = "${params.aws_access_key_id}"
+             AWS_CREDS_PWD = "${params.aws_secret_access_key}"
         }
 
         sh """
