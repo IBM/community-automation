@@ -10,11 +10,11 @@
 ---
 - name: Stop instances using AWS CLI
   shell: |
-    aws ec2 stop-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:cluster,Values={{ cluster_name }}* Name=tag:Owner,Values={{ cluster_owner }}" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
+    aws ec2 stop-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:cluster,Values={{ cluster_name }}* Name=tag:owner,Values={{ cluster_owner }}" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
   register: aws_cli_result
   ignore_errors: yes
 
 - name: Exiting the ansible playbook if rc is not 0
   fail:
-    msg: "Cluster not found. Please check the cluster exists in AWS for this region: https://{{ aws_region }}.console.aws.amazon.com/vpc/home?region={{ cluster_metadata.aws.region }}#vpcs:sort=tag:clusterName, or cluster owner was not valid"
+    msg: "Cluster not found. Please check the cluster exists in AWS for this region: https://{{ aws_region }}.console.aws.amazon.com/vpc/home?region={{ aws_region }}#vpcs:sort=tag:cluster, or cluster owner was not valid"
   when: aws_cli_result.rc != 0
