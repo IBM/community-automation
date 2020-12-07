@@ -33,13 +33,8 @@ timestamps {
 
       stage('Cluster admin') {
 
-        environment {
-         AWS_CREDS = credentials('dummy-creds')
-         AWS_CREDS_USR = "${params.aws_access_key_id}"
-         AWS_CREDS_PSW = "${params.aws_secret_access_key}"
-        }
-        withEnv(["CREDENTIALID=${params.aws_access_key_id}", CREDENTIALS2=${params.aws_secret_access_key}]) {
-          withCredentials([string(credentialsId: "${CREDENTIALID}", variable: 'mypassword' )]) {
+        withEnv(['CREDENTIALID=${params.aws_access_key_id}, CREDENTIALS2=${params.aws_secret_access_key}']) {
+          withCredentials([string(credentialsId: '${CREDENTIALID}', variable: 'mypassword' )]) {
         //withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dummy-creds', usernameVariable: 'AWS_CREDS_USR', passwordVariable: 'AWS_CREDS_PSW']]) {
         //withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}, AWS_CREDS_PSW=${params.aws_secret_access_key']) {
 
