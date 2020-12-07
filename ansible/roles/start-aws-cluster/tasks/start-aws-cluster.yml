@@ -7,7 +7,7 @@
   register: aws_cli_result
   ignore_errors: yes
 
-- debug: msg="{{ lookup ('env', 'AWS_ACCESS_KEY_KEY') }}"
+- debug: msg="{{ lookup ('env', 'AWS_ACCESS_KEY_ID') }}"
 
 - name: Exiting the ansible playbook if rc is not 0
   fail:
