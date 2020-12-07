@@ -39,6 +39,10 @@ timestamps {
          AWS_CREDS_PSW = "${params.aws_secret_access_key}"
         }
 
+        withCredentials([usernameColonPassword(credentialsId: 'dummy-creds', variable: 'AWS_CREDS')])
+        withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}'])
+        withEnv(['AWS_CREDS_PSW=${params.aws_secret_access_key'])
+
         sh """
           cp ./ansible/ocp-cluster-admin-play/examples/admin-vars.yml ./ansible/ocp-cluster-admin-play/
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
