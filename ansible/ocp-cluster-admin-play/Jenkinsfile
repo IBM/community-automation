@@ -14,7 +14,7 @@ def paramsList = [
     string(name: 'cluster_name', description: 'OCP Cluster Name'),
     string(name: 'cluster_owner', description: 'email address of cluster owner'),
     string(name: 'aws_region', description: 'AWS Region'),
-    string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', desctiption: 'ocp administrator'),
+    string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', description: 'ocp administrator'),
     password(name: 'kubeadmin_password', description: 'ocp administrator password'),
     string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port'),
     string(name: 'login_retries', defaultValue: '10', description: 'Number of time to retry login while waiting on cluster'),
@@ -25,10 +25,6 @@ jobProps.push(parameters(paramsList))
 
 properties(jobProps)
 
-AWS_CREDS = credentials('dummy-creds')
-AWS_CREDS_USR = credentials("${params.aws_access_key_id}")
-AWS_CREDS_PWD = credentials("${params.aws_secret_access_key}")
-
 timestamps {
   ansiColor('xterm') {
     node ( 'kube_pod_slave' ) {
@@ -37,13 +33,19 @@ timestamps {
 
       stage('Cluster admin') {
 
+        environment {
+         AWS_CREDS = credentials('dummy-creds')
+         AWS_CREDS_USR = credentials("${params.aws_access_key_id}")
+         AWS_CREDS_PSW = credentials("${params.aws_secret_access_key}"
+        }
+
         sh """
           cp ./ansible/ocp-cluster-admin-play/examples/admin-vars.yml ./ansible/ocp-cluster-admin-play/
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
           -e aws_access_key_id=${AWS_CREDS_USR} \
-          -e aws_secret_access_key=${AWS_CREDS_PWD} \
+          -e aws_secret_access_key=${AWS_CREDS_PSW} \
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
