@@ -38,13 +38,13 @@ timestamps {
         //withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dummy-creds', usernameVariable: 'AWS_CREDS_USR', passwordVariable: 'AWS_CREDS_PSW']]) {
         //  withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}, AWS_CREDS_PSW=${params.aws_secret_access_key}']) {
 
-        wrap([$class: 'MaskPasswordsBuildWrapper',
-              varPasswordPairs: [
-                [password: "${params.aws_access_key_id}", var: 'AWS_CREDS_USR'],
-                [password: "${params.aws_secret_access_key}", var: 'AWS_CREDS_PSW'],
-                [password: "${params.kubeadmin_password}", var: 'KUBEADMIN_PSW']
-              ]
-        ]) {
+        //wrap([$class: 'MaskPasswordsBuildWrapper',
+        //      varPasswordPairs: [
+        //        [password: "${params.aws_access_key_id}", var: 'AWS_CREDS_USR'],
+        //        [password: "${params.aws_secret_access_key}", var: 'AWS_CREDS_PSW'],
+        //        [password: "${params.kubeadmin_password}", var: 'KUBEADMIN_PSW']
+        //      ]
+        //]) {
 
         sh """
           cp ./ansible/ocp-cluster-admin-play/examples/admin-vars.yml ./ansible/ocp-cluster-admin-play/
@@ -64,7 +64,7 @@ timestamps {
           -e cluster_owner=${params.cluster_owner} \
           -e cloud="${params.cloud}"
         """.stripIndent()
-        } //  end withcredentials()
+        //} //  end withcredentials()
       //} // end withenv()
      } // end stage
    }
