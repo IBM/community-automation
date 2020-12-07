@@ -16,7 +16,7 @@ def paramsList = [
     string(name: 'aws_region', description: 'AWS Region'),
     string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', description: 'ocp administrator'),
     password(name: 'kubeadmin_password', description: 'ocp administrator password'),
-    string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port'),
+    string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port (eg. api.<cluster_name>.purple-chesterfield.com:6443'),
     string(name: 'login_retries', defaultValue: '10', description: 'Number of time to retry login while waiting on cluster'),
     string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
     password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
