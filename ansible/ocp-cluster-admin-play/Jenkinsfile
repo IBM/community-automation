@@ -40,8 +40,7 @@ timestamps {
         }
 
         withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dummy-creds', usernameVariable: 'AWS_CREDS_USR', passwordVariable: 'AWS_CREDS_PSW']]) {
-        //withCredentials([usernameColonPassword(credentialsId: 'dummy-creds', variable: 'AWS_CREDS')]) {
-        withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}, AWS_CREDS_PSW=${params.aws_secret_access_key']) {
+        //withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}, AWS_CREDS_PSW=${params.aws_secret_access_key']) {
 
         sh """
           cp ./ansible/ocp-cluster-admin-play/examples/admin-vars.yml ./ansible/ocp-cluster-admin-play/
@@ -61,9 +60,9 @@ timestamps {
           -e cluster_owner=${params.cluster_owner} \
           -e cloud="${params.cloud}"
         """.stripIndent()
-        } // end withEnv()
+        //}  end withEnv()
       } // end withcreds()
-      }
+     } // end stage
    }
   }
 }
