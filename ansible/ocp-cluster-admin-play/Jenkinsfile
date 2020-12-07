@@ -34,7 +34,7 @@ timestamps {
       stage('Cluster admin') {
 
         //withEnv(['CREDENTIALID=${params.aws_access_key_id}, CREDENTIALS2=${params.aws_secret_access_key}']) {
-        withCredentials([usernamePassword(credentialsId: 'dummy-creds', variable: 'AWS_CREDS' )]) {
+        withCredentials([usernamePassword(credentialsId: 'dummy-creds', usernameVariable: 'AWS_CREDS_USR', passwordVariable: 'AWS_CREDS_PSW' )]) {
         //withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'dummy-creds', usernameVariable: 'AWS_CREDS_USR', passwordVariable: 'AWS_CREDS_PSW']]) {
           withEnv(['AWS_CREDS_USR=${params.aws_access_key_id}, AWS_CREDS_PSW=${params.aws_secret_access_key}']) {
 
@@ -43,8 +43,8 @@ timestamps {
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
-          -e aws_access_key_id=$AWS_CREDS_USR \
-          -e aws_secret_access_key=$AWS_CREDS_PSW \
+          -e aws_access_key_id=${AWS_CREDS_USR} \
+          -e aws_secret_access_key=${AWS_CREDS_PSW} \
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
