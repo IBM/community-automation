@@ -1,3 +1,9 @@
+# © Copyright IBM Corporation 2020
+#
+# Licensed Materials - Property of IBM
+#
+# US Government Users Restricted Rights - Use, duplication or
+# disclosure restricted by GSA ADP Schedule Contract with IBM Corp
 # Start a cluster in AWS
 ---
 #    aws ec2 start-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters "Name=tag:cluster,Values={{ cluster_name }}*" --query "Reservations[*].Instances[*].InstanceId" --region {{ aws_region }} --output text)
@@ -6,8 +12,6 @@
     aws ec2 start-instances --region {{ aws_region }} --instance-ids $(aws ec2 describe-instances --filters Name=tag:cluster,Values={{ cluster_name }}* Name=tag:owner,Values={{ cluster_owner }} --query Reservations[*].Instances[*].InstanceId --region {{ aws_region }} --output text)
   register: aws_cli_result
   ignore_errors: yes
-
-- debug: msg="{{ lookup ('env', 'AWS_ACCESS_KEY_ID') }}"
 
 - name: Exiting the ansible playbook if rc is not 0
   fail:
