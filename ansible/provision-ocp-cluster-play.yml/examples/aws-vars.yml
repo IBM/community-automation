@@ -1,0 +1,5 @@
+---
+AWS_ACCESS_KEY_ID: asdfasdf
+AWS_SECRET_ACCESS_KEY: asdfasdfadsfasd
+WORKER_VM_SIZE: m4.xlarge
+MASTER_VM_SIZE: m4.xlarge
