@@ -47,8 +47,8 @@ timestamps {
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
-          -e aws_access_key_id=${AWS_CREDS_USR} \
-          -e aws_secret_access_key=${AWS_CREDS_PSW} \
+          -e aws_access_key_id=$AWS_CREDS_USR \
+          -e aws_secret_access_key=$AWS_CREDS_PSW \
           -e admin_task=${params.admin_task} \
           -e aws_region=${params.aws_region} \
           -e cluster_name=${params.cluster_name} \
