@@ -4,9 +4,3 @@
 "aws_region": " "  # eg. us-east-1
 "admin_task": " " # stop|start
 "cloud": " " # aws|azure|google
-"cluster_name": "<cluster name>"
-"cluster_owner": "<cluster owner email>"
-"kubeadmin_user": "kubeadmin"
-"kubeadmin_password": " "
-"ocp_api_url": "api.<cluster_name>.<domain>:6443" . # eg. api.ocp46-cluster-01.purple-chesterfield.com:6443
-"login_retries": "10" .  # number of attempts to login to cluster while waiting for cluster to start.
