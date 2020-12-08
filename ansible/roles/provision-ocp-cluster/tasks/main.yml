@@ -1,0 +1,3 @@
+- name: import tasks
+  import_tasks: provision-cluster.yml
+  run_once: true
