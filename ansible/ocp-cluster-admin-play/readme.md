@@ -11,6 +11,10 @@
 - AWS credentials
 
 ## usage
+Jenkins job  
+https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/job/cluster-ops/job/ocp-cluster-admin/job/master/build?delay=0sec
+
+From ocp-cluster-admin-play folder
 ```
 cp examples/inventory .
 cp examples/admin-vars.yml .
