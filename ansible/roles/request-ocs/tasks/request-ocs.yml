@@ -16,11 +16,11 @@
     mode: '0755'
 
 - name: Get ocp version minor
-  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev | cut -f2 -d'.'"
+  shell: "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev | cut -f2 -d'.'"
   register: ocpversion
 
 - name: Get ocs version major.minor
-  shell: bash -lc "[[  {{ ocpversion.stdout }} -gt 5 ]] && echo 'stable-4.5' || echo 'stable-4.4'"
+  shell:  "if [  {{ ocpversion.stdout }} -gt 5 ]; then echo 'stable-4.5'; else echo 'stable-4.4'; fi"
   register: ocsversion
 
 - name: Install ocs from channel {{ ocsversion.stdout }}
