@@ -8,7 +8,7 @@ Credits
 Requirements
 ------------
 
- - Running OCP 4.x AWS or VMware cluster is needed
+ - Running OCP 4.4.15 or greater on AWS or VMware cluster is needed
  - Min of 3 worker nodes per cluster.
  - Min sum of worker CPU must be 48 CPUs.
  - oc client installed.
@@ -28,7 +28,7 @@ How to install oc client
 Default parameters set in the defaults/main.yml
 ------------------
 
-    - ocs_channel: stable-4.4 # Channel to pull ocs from, it should match the OCP version.
+    - ocs_channel: stable-4.5 # Channel to pull ocs from, it should match the OCP version.
     - ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Working dir for running the ocs_install.sh
     - setdefault: false  # Make the ocs cephfs storageclass the default or not.
 
