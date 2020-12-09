@@ -15,7 +15,7 @@
     dest: "{{ ocs_bastion_setup_dir }}/ocs_install.sh"
     mode: '0755'
 
-- name: Install ocs from channel {{ ocsversion.stdout }}
+- name: Install ocs from channel {{ ocs_channel }}
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
   args:
       warn: false
