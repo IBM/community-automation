@@ -97,6 +97,52 @@ do
 done
 oc -n ${namespc} get deployment ocs-operator
 
+function wait_ocs_operator_ready() {
+  echo "check ocs operator status"
+  ns=openshift-storage
+  index=0
+  while true; do
+    status_pod=$(oc get pods -n $ns --no-headers --ignore-not-found | grep ocs-operator | grep '1/1' | wc -l | sed 's/^ *//')
+    status_csv=$(oc get csv -n $ns --no-headers --ignore-not-found | grep Succeeded | wc -l | sed 's/^ *//')
+    status_deploy=$(oc get deploy -n $ns --no-headers --ignore-not-found | grep '1/1' | wc -l | sed 's/^ *//')
+    if [[ $status_pod -eq 1 && $status_csv -eq 1 && $status_deploy -eq 3 ]]; then
+      echo "It took $index minutes to finish ocs operator installation."
+      echo "OCS operator installed successfully. Now deploy storage cluster. Please wait a few minutes."
+      break
+    fi
+    sleep 60
+    index=$(( index + 1 ))
+    if [[ $index -eq 20 ]]; then
+      echo "Install failed, please check."
+      break
+    fi
+  done
+}
+
+function wait_storagecluster_ready() {
+  echo "Verify storage cluster installation status..."
+  ns=openshift-storage
+  index=0
+  while true; do
+    ocs_status_pod=$(oc -n $ns get pod -l "name=ocs-operator" -o jsonpath='{.items[0].status.phase}' && echo '')
+    cr_phase=$(oc -n $ns get storagecluster ocs-storagecluster -o jsonpath='{.status.phase}{"\n"}')
+    sc_ceph=$(oc get sc --no-headers | grep ocs-storagecluster | wc -l | sed 's/^ *//')
+    sc_noobaa=$(oc get sc --no-headers | grep noobaa | wc -l | sed 's/^ *//')
+    if [[ $ocs_status_pod == "Running" && $cr_phase == "Ready" && $sc_ceph -eq 2 && $sc_noobaa -eq 1 ]]; then
+      echo "It took $index minutes to finish deploy storagecluster."
+      echo "Storage cluster deploy successfully. OCS storageclass is ready"
+      oc get sc 
+      break
+    fi
+    sleep 60
+    index=$(( index + 1 ))
+    if [[ $index -eq 20 ]]; then
+      echo "Storage cluster deploy failed, please check."
+      oc get pods -n $ns
+      break
+    fi
+  done
+}
 # nCounter=0
 # until [ $( oc -n ${namespc} get deployment noobaa-operator --no-headers -o=custom-columns=LABEL:.status.readyReplicas) -ge 1 ]
 # do
