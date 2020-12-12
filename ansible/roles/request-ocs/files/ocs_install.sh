@@ -56,46 +56,45 @@ spec:
   sourceNamespace: openshift-marketplace
 EOF
 
+# counter=0
+# until [ "$(oc get ClusterServiceVersion -n ${namespc} -o json | jq -r '.items[] | select(.spec.displayName=="OpenShift Container Storage") | .metadata.name')" != "" ]
+# do
+#   echo "Waiting for CSV to be created: ${date}"
+#   oc get ClusterServiceVersion -n ${namespc}
+#   sleep 2
+#   ((counter ++))
+#   if [ $counter -eq 180 ]; then
+#    exit 1
+#   fi
+# done
+# csvname=$(oc get ClusterServiceVersion -n ${namespc} -o json | jq -r '.items[] | select(.spec.displayName=="OpenShift Container Storage") | .metadata.name')
+# echo "csvname=${csvname}"
 
-counter=0
-until [ "$(oc get ClusterServiceVersion -n ${namespc} -o json | jq -r '.items[] | select(.spec.displayName=="OpenShift Container Storage") | .metadata.name')" != "" ]
-do
-  echo "Waiting for CSV to be created: ${date}"
-  oc get ClusterServiceVersion -n ${namespc}
-  sleep 2
-  ((counter ++))
-  if [ $counter -eq 180 ]; then
-   exit 1
-  fi
-done
-csvname=$(oc get ClusterServiceVersion -n ${namespc} -o json | jq -r '.items[] | select(.spec.displayName=="OpenShift Container Storage") | .metadata.name')
-echo "csvname=${csvname}"
+# counter=0
+# until [ "$(oc get ClusterServiceVersion -n ${namespc} ${csvname} --no-headers -o=custom-columns=LABEL:.status.phase)" == "Succeeded" ]
+# do
+#   echo "Waiting for CSV to succeed: $(date)"
+#   oc get ClusterServiceVersion -n ${namespc} ${csvname}
+#   sleep 10
+#   ((counter ++))
+#   if [ $counter -eq 180 ]; then
+#    exit 1
+#   fi
+# done
+# oc get ClusterServiceVersion -n ${namespc} ${csvname}
 
-counter=0
-until [ "$(oc get ClusterServiceVersion -n ${namespc} ${csvname} --no-headers -o=custom-columns=LABEL:.status.phase)" == "Succeeded" ]
-do
-  echo "Waiting for CSV to succeed: $(date)"
-  oc get ClusterServiceVersion -n ${namespc} ${csvname}
-  sleep 10
-  ((counter ++))
-  if [ $counter -eq 180 ]; then
-   exit 1
-  fi
-done
-oc get ClusterServiceVersion -n ${namespc} ${csvname}
-
-opCounter=0
-until [ $( oc -n ${namespc} get deployment ocs-operator --no-headers -o=custom-columns=LABEL:.status.readyReplicas) -ge 1 ]
-do
-  echo "Waiting for OCS Operator pod to come up: $(date)"
-  oc -n ${namespc} get deployment ocs-operator
-  sleep 10
-  ((opCounter ++))
-  if [ $opCounter -eq 60 ]; then
-   exit 1
-  fi
-done
-oc -n ${namespc} get deployment ocs-operator
+# opCounter=0
+# until [ $( oc -n ${namespc} get deployment ocs-operator --no-headers -o=custom-columns=LABEL:.status.readyReplicas) -ge 1 ]
+# do
+#   echo "Waiting for OCS Operator pod to come up: $(date)"
+#   oc -n ${namespc} get deployment ocs-operator
+#   sleep 10
+#   ((opCounter ++))
+#   if [ $opCounter -eq 60 ]; then
+#    exit 1
+#   fi
+# done
+# oc -n ${namespc} get deployment ocs-operator
 
 function wait_ocs_operator_ready() {
   echo "check ocs operator status"
@@ -118,31 +117,9 @@ function wait_ocs_operator_ready() {
     fi
   done
 }
+wait_ocs_operator_ready
 
-function wait_storagecluster_ready() {
-  echo "Verify storage cluster installation status..."
-  ns=openshift-storage
-  index=0
-  while true; do
-    ocs_status_pod=$(oc -n $ns get pod -l "name=ocs-operator" -o jsonpath='{.items[0].status.phase}' && echo '')
-    cr_phase=$(oc -n $ns get storagecluster ocs-storagecluster -o jsonpath='{.status.phase}{"\n"}')
-    sc_ceph=$(oc get sc --no-headers | grep ocs-storagecluster | wc -l | sed 's/^ *//')
-    sc_noobaa=$(oc get sc --no-headers | grep noobaa | wc -l | sed 's/^ *//')
-    if [[ $ocs_status_pod == "Running" && $cr_phase == "Ready" && $sc_ceph -eq 2 && $sc_noobaa -eq 1 ]]; then
-      echo "It took $index minutes to finish deploy storagecluster."
-      echo "Storage cluster deploy successfully. OCS storageclass is ready"
-      oc get sc 
-      break
-    fi
-    sleep 60
-    index=$(( index + 1 ))
-    if [[ $index -eq 20 ]]; then
-      echo "Storage cluster deploy failed, please check."
-      oc get pods -n $ns
-      break
-    fi
-  done
-}
+
 # nCounter=0
 # until [ $( oc -n ${namespc} get deployment noobaa-operator --no-headers -o=custom-columns=LABEL:.status.readyReplicas) -ge 1 ]
 # do
@@ -198,26 +175,52 @@ spec:
     resources: {}
 EOF
 
-# check if storage classes have been created
-echo "checking for Storage Classes"
-scCounter=0
-rc=1
-until [ $rc -eq 0 ]
-do
-  echo "Waiting for storage classes to come up: $(date)"
-  sleep 10
-  ((scCounter ++))
-  if [ $scCounter -eq 60 ]; then
-   exit 1
-  fi
-  oc get sc --no-headers | cut -f1 -d' ' | grep noobaa >/dev/null
-  rc=$?
-done
-oc get sc
-echo "setDefault = $setDefault"
-if [ "$setDefault" == "True" ]; then
-   defStgClass=$(oc get sc -o json | jq -r '.items[].metadata | select(.annotations["storageclass.kubernetes.io/is-default-class"] == "true") | .name')
-   oc patch storageclass $defStgClass -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
-   oc patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-   oc get sc
-fi
+# # check if storage classes have been created
+# echo "checking for Storage Classes"
+# scCounter=0
+# rc=1
+# until [ $rc -eq 0 ]
+# do
+#   echo "Waiting for storage classes to come up: $(date)"
+#   sleep 10
+#   ((scCounter ++))
+#   if [ $scCounter -eq 60 ]; then
+#    exit 1
+#   fi
+#   oc get sc --no-headers | cut -f1 -d' ' | grep noobaa >/dev/null
+#   rc=$?
+# done
+# oc get sc
+# echo "setDefault = $setDefault"
+# if [ "$setDefault" == "True" ]; then
+#    defStgClass=$(oc get sc -o json | jq -r '.items[].metadata | select(.annotations["storageclass.kubernetes.io/is-default-class"] == "true") | .name')
+#    oc patch storageclass $defStgClass -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+#    oc patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+#    oc get sc
+# fi
+
+function wait_storagecluster_ready() {
+  echo "Verify storage cluster installation status..."
+  ns=openshift-storage
+  index=0
+  while true; do
+    ocs_status_pod=$(oc -n $ns get pod -l "name=ocs-operator" -o jsonpath='{.items[0].status.phase}' && echo '')
+    cr_phase=$(oc -n $ns get storagecluster ocs-storagecluster -o jsonpath='{.status.phase}{"\n"}')
+    sc_ceph=$(oc get sc --no-headers | grep ocs-storagecluster | wc -l | sed 's/^ *//')
+    sc_noobaa=$(oc get sc --no-headers | grep noobaa | wc -l | sed 's/^ *//')
+    if [[ $ocs_status_pod == "Running" && $cr_phase == "Ready" && $sc_ceph -eq 2 && $sc_noobaa -eq 1 ]]; then
+      echo "It took $index minutes to finish deploy storagecluster."
+      echo "Storage cluster deploy successfully. OCS storageclass is ready"
+      oc get sc 
+      break
+    fi
+    sleep 60
+    index=$(( index + 1 ))
+    if [[ $index -eq 20 ]]; then
+      echo "Storage cluster deploy failed, please check."
+      oc get pods -n $ns
+      break
+    fi
+  done
+}
+wait_storagecluster_ready
