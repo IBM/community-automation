@@ -1,0 +1,5 @@
+---
+AWS_ACCESS_KEY_ID: " "  # your AWS_ACCESS_KEY_ID
+AWS_SECRET_ACCESS_KEY: " " . # your AWS_SECRET_ACCESS_KEY
+WORKER_VM_SIZE: m5.xlarge # size of worker VM instances
+MASTER_VM_SIZE: m5.xlarge # sice of master VM instances

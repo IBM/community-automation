@@ -1,0 +1,13 @@
+---
+"roks_api_token": ""  # ROKS TOKEN for instance of ACM/HIVE
+"roks_ocp_api_url": "" # ROKS URL of ACM/HIVE
+"admin_task": "provision" # delete|provsion
+"kubeadmin_user": "kubeadmin"
+"kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
+"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
+"cloud": "aws"
+"CLUSTER_NAME": "<cluster_name>"
+"SSH_PUBLIC_KEY": "<public key>"
+"BASE_DOMAIN": "purple-chesterfield.com"
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.1-x86_64"
+"PULL_SECRET": "<pull_secret>"
