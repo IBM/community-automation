@@ -212,6 +212,13 @@ function wait_storagecluster_ready() {
       echo "It took $index minutes to finish deploy storagecluster."
       echo "Storage cluster deploy successfully. OCS storageclass is ready"
       oc get sc 
+      echo "setDefault = $setDefault"
+      if [ "$setDefault" == "True" ]; then
+         defStgClass=$(oc get sc -o json | jq -r '.items[].metadata | select(.annotations["storageclass.kubernetes.io/is-default-class"] == "true") | .name')
+         oc patch storageclass $defStgClass -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+         oc patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+         oc get sc
+      fi
       break
     fi
     sleep 60
