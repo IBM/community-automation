@@ -8,4 +8,4 @@
   roles:
     # used to login into RHACM/HIVE cluster
     - ocp-login
-    - "provision-ocp-cluster"
+    - provision-ocp-cluster

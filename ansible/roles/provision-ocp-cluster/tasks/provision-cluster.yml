@@ -6,7 +6,7 @@
       template:
         src: "{{ cloud }}-template.j2"
         dest: "{{ cloud }}-clusterdeployment-cr.yml"
-        backup: true
+        backup: false
       register: template_results
 
     - name: Create Namespace based on cluster name
@@ -71,8 +71,9 @@
      until: 'check_cluster_results.rc != 0'
      retries: 30
      delay: 60
-     ignore_errors: yes
+     failed_when: '"not found" not in check_cluster_results.stderr'
 
    - name: delete namespace when left behind
      shell: "oc delete namespace {{ CLUSTER_NAME }}"
-     ignore_errors: yes
+     register: delete_namespace_results
+     failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'

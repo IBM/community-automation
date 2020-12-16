@@ -1,10 +1,11 @@
 ---
-"roks_api_token": ""  # ROKS TOKEN for instance of ACM/HIVE
-"roks_ocp_api_url": "" # ROKS URL of ACM/HIVE
-"admin_task": "provision" # delete|provsion
+# ACM/HIVE Cluster Information
 "kubeadmin_user": "kubeadmin"
 "kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
 "ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
+
+# Deployment Details
+"admin_task": "provision" # delete|provsion
 "cloud": "aws"
 "CLUSTER_NAME": "<cluster_name>"
 "SSH_PUBLIC_KEY": "<public key>"
