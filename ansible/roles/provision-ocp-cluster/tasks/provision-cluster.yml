@@ -56,7 +56,7 @@
     - debug: msg="{{ console_url.stdout }}"
 
     - name: save install log locally
-      shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive > ocp_install.log"
+      shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive > {{ CLUSTER_NAME }}_ocp_install.log"
 
 - name: Deleting OCP cluster
   when: 'admin_task == "delete"'
