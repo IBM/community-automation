@@ -9,3 +9,4 @@
     # used to login into RHACM/HIVE cluster
     - ocp-login
     - provision-ocp-cluster
+    - {{ cloud }}-add-tags

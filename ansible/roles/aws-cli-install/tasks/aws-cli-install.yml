@@ -8,7 +8,7 @@
   ignore_errors: yes
 
 - name: install AWS CLI
-  when: ' "Usage" not in aws_installed.stdout'
+  when: '"usage" not in aws_installed.stderr'
   block: 
   - name: download
   get_url:
