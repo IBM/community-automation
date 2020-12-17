@@ -7,6 +7,16 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 rm -rf rook
 echo "Doing clone of rook release $rookRelease"
 git clone https://github.com/rook/rook.git -b $rookRelease
+# if rook-ceph is version 1.5, then need to create/apply crd
+majorRelease=$(echo ${rookRelease:0:4})
+if [[ $majorRelease != "v1.4" ]]
+then
+  echo "Doing crds.yaml"
+  oc create -f rook/cluster/examples/kubernetes/ceph/crds.yaml
+  echo "crds.yaml exit $?"
+else
+  echo "No reason to apply crds.yaml as file may not exist"
+fi
 echo "Doing common.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
 echo "common.yaml exit $?"
