@@ -1,0 +1,4 @@
+---
+- name: add tags to aws cluster
+  shell: "aws ec2 create-tags --tags Key=cluster,Value={{ CLUSTER_NAME }} Key=owner,Value={{ owner }} --region {{ aws_region }}  --resources $(aws ec2 describe-instances --filters Name=tag:Name,Values={{ CLUSTER_NAME }}* --query Reservations[*].Instances[*].InstanceId --region {{ aws_region }}  --output text)"
+  register: add_tags_results
