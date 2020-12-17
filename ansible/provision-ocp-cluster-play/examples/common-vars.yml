@@ -4,10 +4,23 @@
 "kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
 "ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
 
+"CLUSTER_NAME": "<cluster_name>"
+
+# cluster tagging details
+"owner_tag": "owner" # owner| Owner (Azure)
+"owner_tag_value": "email address" # for Google clusters use FirstNameLastName
+"cluster_tag": "{{ CLUSTER_NAME }}"
+"team_tag": "team"
+"team_tag_value": "Content" # DBA|Content|CP4MCM|CP4I|Edge|CP4Apps|Netcool
+"usage_tag": "temp" # temp|demo|infra (long term use, must be reviewed regularly)
+"usage_description_tag": "Usage_desc"
+"usage_description_value": "your description"
+"review_tag": "Review_freq" # Review_freq|Delete_date (Azure)
+"review_tag_value": "YYYY-MM-DD" # 3day|week|month|quater|half|YYYY-MM-DD (Azure)
+
 # Deployment Details
 "admin_task": "provision" # delete|provsion
 "cloud": "aws"
-"CLUSTER_NAME": "<cluster_name>"
 "SSH_PUBLIC_KEY": "<public key>"
 "BASE_DOMAIN": "purple-chesterfield.com"
 "OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.1-x86_64"
