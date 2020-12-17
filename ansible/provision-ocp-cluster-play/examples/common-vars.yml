@@ -16,7 +16,7 @@
 "usage_description_tag": "Usage_desc"
 "usage_description_value": "your description"
 "review_tag": "Review_freq" # Review_freq|Delete_date (Azure)
-"review_tag_value": "YYYY-MM-DD" # 3day|week|month|quater|half|YYYY-MM-DD (Azure)
+"review_tag_value": "3day" # 3day|week|month|quater|half|YYYY-MM-DD (Azure)
 
 # Deployment Details
 "admin_task": "provision" # delete|provsion

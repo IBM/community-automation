@@ -22,7 +22,7 @@ items:
       aws:
         credentialsSecretRef:
           name: {{ CLUSTER_NAME }}-aws-creds
-        region: us-east-1
+        region: {{ AWS_REGION }}
     provisioning:
       imageSetRef:
         name: {{ CLUSTER_NAME }}-imageset
@@ -92,7 +92,7 @@ items:
         - 172.30.0.0/16
       platform:
         aws:
-          region: us-east-1
+          region: {{ AWS_REGION }}
       pullSecret: {{ PULL_SECRET }}
       sshKey: {{ SSH_PUBLIC_KEY }}
   type: Opaque

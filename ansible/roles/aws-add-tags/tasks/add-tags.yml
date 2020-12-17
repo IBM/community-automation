@@ -7,8 +7,8 @@
   Key={{ usage_tag }},Value={{ usage_tag_value }} \
   Key={{ usage_description_tag }},Value=\"{{ usage_description_tag_value }}\" \
   Key={{ review_tag }},Value={{ review_tag_value }} \
-  --region {{ aws_region }}  --resources $(aws ec2 describe-instances \
+  --region {{ AWS_REGION }}  --resources $(aws ec2 describe-instances \
   --filters Name=tag:Name,Values={{ cluster_tag_value }}* \
   --query Reservations[*].Instances[*].InstanceId \
-  --region {{ aws_region }}  --output text)"
+  --region {{ AWS_REGION }}  --output text)"
   register: add_tags_results
