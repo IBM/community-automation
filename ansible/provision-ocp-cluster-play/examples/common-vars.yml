@@ -9,8 +9,9 @@
 # cluster tagging details
 "owner_tag": "owner" # owner| Owner (Azure)
 "owner_tag_value": "email address" # for Google clusters use FirstNameLastName
-"cluster_tag": "{{ CLUSTER_NAME }}"
-"team_tag": "team"
+"cluster_tag": "cluster"  # this tag will be used by the Stop/Start community jenkins job.
+"cluster_tag_value": " {{ CLUSTER_NAME }}"
+"team_tag": "team" # "Team" when Azure"
 "team_tag_value": "Content" # DBA|Content|CP4MCM|CP4I|Edge|CP4Apps|Netcool
 "usage_tag": "temp" # temp|demo|infra (long term use, must be reviewed regularly)
 "usage_description_tag": "Usage_desc"
@@ -19,9 +20,9 @@
 "review_tag_value": "3day" # 3day|week|month|quater|half|YYYY-MM-DD (Azure)
 
 # Deployment Details
-"admin_task": "provision" # delete|provsion
-"cloud": "aws"
+"admin_task": "provision" # delete|provision
+"cloud": "aws"  # aws|google|azure|vsphere (AWS only at the moment)
 "SSH_PUBLIC_KEY": "<public key>"
 "BASE_DOMAIN": "purple-chesterfield.com"
-"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.1-x86_64"
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.8-x86_64"
 "PULL_SECRET": "<pull_secret>"
