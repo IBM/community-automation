@@ -13,7 +13,8 @@
 "cluster_tag_value": " {{ CLUSTER_NAME }}"
 "team_tag": "team" # "Team" when Azure"
 "team_tag_value": "Content" # DBA|Content|CP4MCM|CP4I|Edge|CP4Apps|Netcool
-"usage_tag": "temp" # temp|demo|infra (long term use, must be reviewed regularly)
+"usage_tag": "Usage" 
+"usage_tag_value": "temp" # temp|demo|infra (long term use, must be reviewed regularly)
 "usage_description_tag": "Usage_desc"
 "usage_description_value": "your description"
 "review_tag": "Review_freq" # Review_freq|Delete_date (Azure)
