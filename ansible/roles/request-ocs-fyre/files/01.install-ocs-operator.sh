@@ -1,12 +1,13 @@
 #!/bin/bash
+my_dir=$(dirname $(readlink -f $0))
+source $my_dir/config
 
-. ./config
 
 WHOAMI=$(oc whoami)
 if [[ $? > 0 ]]
 then
     oc login -u $OC_USERNAME -p $OC_PASSWORD
-    if [[ $? > 0 ]] 
+    if [[ $? > 0 ]]
     then
         echo "Unable to login to Openshift cluster with given credentials. Update config file with correct credentials."
         exit 1

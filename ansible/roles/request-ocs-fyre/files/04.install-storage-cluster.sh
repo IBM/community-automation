@@ -1,12 +1,13 @@
 #!/bin/bash
 
-. ./config
+my_dir=$(dirname $(readlink -f $0))
+source $my_dir/config
 
 WHOAMI=$(oc whoami)
 if [[ $? > 0 ]]
 then
     oc login -u $OC_USERNAME -p $OC_PASSWORD
-    if [[ $? > 0 ]] 
+    if [[ $? > 0 ]]
     then
         echo "Unable to login to Openshift cluster with given credentials. Update config file with correct credentials."
         exit 1
@@ -44,7 +45,7 @@ done
 
 echo "Setting ocs-storagecluster-ceph-rbd storage class as default"
 
-oc patch sc ocs-storagecluster-ceph-rbd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}' 
+oc patch sc ocs-storagecluster-ceph-rbd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 echo -n "Waiting for pods in openshift-storage project."
 
@@ -64,4 +65,3 @@ do
 done
 echo
 echo "Openshift Container Storage Setup complete."
-
