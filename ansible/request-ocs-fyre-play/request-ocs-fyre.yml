@@ -2,8 +2,5 @@
 - name: Install ocs 4.5 on fyre OCP+Beta env
   hosts: bastion
   gather_facts: no
-  hosts: bastion
-  tasks:
-  - name: request-ocs-fyre
-    include_role:
-      name: request-ocs-fyre
+  roles:
+  - request-ocs-fyre
