@@ -16,7 +16,7 @@ fi
 
 echo "Creating Storage Cluster."
 
-oc apply -f ocs/04.storage-cluster.yaml
+oc apply -f $my_dir/ocs/04.storage-cluster.yaml
 
 if [ ! $? -eq 0 ]
 then

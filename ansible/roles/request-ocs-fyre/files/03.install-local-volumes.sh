@@ -13,7 +13,7 @@ then
     fi
 fi
 
-cp ocs/03.local-volumes.yaml ${TMPFILE}
+cp $my_dir/ocs/03.local-volumes.yaml ${TMPFILE}
 
 for device in $DEVICES
 do

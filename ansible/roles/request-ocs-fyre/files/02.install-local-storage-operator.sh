@@ -17,7 +17,7 @@ fi
 
 echo "Installing Local Storage Operator."
 
-oc apply -f ocs/02.local-storage-operator.yaml
+oc apply -f $my_dir/ocs/02.local-storage-operator.yaml
 
 if [ ! $? -eq 0 ]
 then

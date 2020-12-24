@@ -16,7 +16,7 @@ fi
 
 echo "Installing Openshift Container Storage Operator."
 
-oc apply -f ocs/01.ocs-operator.yaml
+oc apply -f $my_dir/ocs/01.ocs-operator.yaml
 
 if [ ! $? -eq 0 ]
 then
