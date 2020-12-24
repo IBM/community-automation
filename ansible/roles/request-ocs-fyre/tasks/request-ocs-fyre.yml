@@ -15,12 +15,53 @@
     dest: "{{ ocs_bastion_setup_dir }}/"
     mode: '0755'
 
-- name: Install ocs from channel {{ ocs_channel }}
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/install-all.sh"
+- name: Install labels
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.label-nodes.sh"
   args:
       warn: false
-  register: ocsinstall
+  register: installlabels
 
-- name: Viewing ocs install log
+- name: Viewing labels install log
   debug:
-    msg: "{{ ocsinstall.stdout_lines }}"
+    msg: "{{ installlabels.stdout_lines }}"
+
+- name: Install ocs operator
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/01.install-ocs-operator.sh"
+  args:
+      warn: false
+  register: ocsoperator
+
+- name: Viewing ocs operator install log
+  debug:
+    msg: "{{ ocsoperator.stdout_lines }}"
+
+- name: Install local-storage-operator
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/02.install-local-storage-operator.sh"
+  args:
+      warn: false
+  register: localstore
+
+- name: Viewing local-storage-operator log
+  debug:
+    msg: "{{ localstore.stdout_lines }}"
+
+
+- name: Install local-volumes
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
+  args:
+      warn: false
+  register: localvolumes
+
+- name: Viewing local-volumes log
+  debug:
+    msg: "{{ localvolumes.stdout_lines }}"
+
+- name: Install storage cluster
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
+  args:
+      warn: false
+  register: storagecluster
+
+- name: Viewing storage cluster install log
+  debug:
+    msg: "{{ storagecluster.stdout_lines }}"
