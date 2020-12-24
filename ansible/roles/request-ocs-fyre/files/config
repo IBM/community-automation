@@ -1,0 +1,8 @@
+# If you're not already logged in to OCP with administrative user, provide credentials
+OC_USERNAME="kubeadmin"
+OC_PASSWORD=""
+# List devices on worker nodes you want to back your OCS setup with.
+DEVICES="/dev/vdb /dev/vdc"
+
+# Less relevant settings goes here:
+TMPFILE=/tmp/local-volumes.yaml
