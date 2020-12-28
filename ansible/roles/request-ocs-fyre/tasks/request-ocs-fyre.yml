@@ -19,7 +19,7 @@
   register: localstore_version
 
 - name: Get ocs channel
-  shell: bash -lc "if [ {{ oc_version.stdout }} -eq '4.6' ]; then echo 'stable-4.6'; else echo 'stable-4.5'; fi"
+  shell: bash -lc "if [ {{ oc_version.stdout }} == 4.6 ]; then echo 'stable-4.6'; else echo 'stable-4.5'; fi"
   register: ocs_channel
 
 - name: Generate OCS install files
