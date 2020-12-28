@@ -6,7 +6,6 @@ oc get sc
 default_sc="{{ setdefault }}"
 echo "This is the default $default_sc"
 if [ "$default_sc" == "True" ]; then
-   oc patch storageclass ocs-storagecluster-ceph-rbd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
    oc patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
    echo "After storageclasses"
    oc get sc

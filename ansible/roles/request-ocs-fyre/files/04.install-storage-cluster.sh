@@ -8,48 +8,26 @@ oc apply -f $my_dir/04.storage-cluster.yaml
 
 if [ ! $? -eq 0 ]
 then
-    echo "There was an error installing Local Volumes."
+    echo "There was an error installing storage-cluster."
     exit 1
 fi
 
-echo -n "Waiting for RBD storage class creation."
-
-sleep 5
-
-COUNTER=30
-SC=$(oc get sc ocs-storagecluster-ceph-rbd -o name 2> /dev/null)
-while [[ $SC != "storageclass.storage.k8s.io/ocs-storagecluster-ceph-rbd" ]]
+# check if storage classes have been created
+echo "Checking for noobaa Storage Class"
+scCounter=0
+rc=1
+until [ $rc -eq 0 ]
 do
-    COUNTER=$(( ${COUNTER} -1 ))
-    if [ "$COUNTER" -lt 1 ]
-    then
-        echo "Max retries reached, exiting..."
-        exit 1
-    fi
-    sleep 5
-    echo -n .
-    SC=$(oc get sc ocs-storagecluster-ceph-rbd -o name 2> /dev/null)
+  echo "Waiting for noobaa storage class to come up $(date)"
+  sleep 10
+  ((scCounter ++))
+  if [ $scCounter -eq 60 ]; then
+   echo "noobaa storageclass never became available."
+   exit 1
+  fi
+  oc get sc --no-headers | cut -f1 -d' ' | grep noobaa >/dev/null
+  rc=$?
 done
 
-echo "Setting ocs-storagecluster-ceph-rbd storage class as default"
-
-oc patch sc ocs-storagecluster-ceph-rbd -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-
-echo -n "Waiting for pods in openshift-storage project."
-
-COUNTER=100
-POD_COUNT=$(oc get pod -n openshift-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
-while [ ${POD_COUNT} -gt 0 ]
-do
-    COUNTER=$(( ${COUNTER} -1 ))
-    if [ "$COUNTER" -lt 1 ]
-    then
-        echo "Max retries reached, exiting..."
-        exit 1
-    fi
-    sleep 5
-    echo -n .
-    POD_COUNT=$(oc get pod -n openshift-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
-done
 echo
 echo "Openshift Container Storage Setup complete."
