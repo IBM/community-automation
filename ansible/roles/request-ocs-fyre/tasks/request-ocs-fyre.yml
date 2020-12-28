@@ -14,7 +14,7 @@
   register: ocs_version
 
 - name: Get localstore version
-  shell: bash -lc "echo "{{ ocs_version.stdout }}"
+  shell: bash -lc "echo {{ ocs_version.stdout }}"
   register: localstore_version
 
 - name: Get ocs channel
