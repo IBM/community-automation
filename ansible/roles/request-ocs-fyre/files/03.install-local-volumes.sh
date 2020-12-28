@@ -1,36 +1,16 @@
 #!/bin/bash
+
 my_dir=$(dirname $(readlink -f $0))
-source $my_dir/config
-
-WHOAMI=$(oc whoami)
-if [[ $? > 0 ]]
-then
-    oc login -u $OC_USERNAME -p $OC_PASSWORD
-    if [[ $? > 0 ]]
-    then
-        echo "Unable to login to Openshift cluster with given credentials. Update config file with correct credentials."
-        exit 1
-    fi
-fi
-
-cp $my_dir/ocs/03.local-volumes.yaml ${TMPFILE}
-
-for device in $DEVICES
-do
-    echo "        - ${device}" >> ${TMPFILE}
-done
 
 echo "Creating Local Volumes."
 
-oc apply -f ${TMPFILE}
+oc apply -f $my_dir/ocs/03.local-volumes.yaml
 
 if [ ! $? -eq 0 ]
 then
     echo "There was an error installing Local Volumes."
     exit 1
 fi
-
-rm -f ${TMPFILE}
 
 echo -n "Waiting for Local Volumes to be created."
 sleep 10

@@ -1,0 +1,4 @@
+#ocs_channel: "stable-4.5"
+#ocs_device: "/dev/vdb"
+#ocs_bastion_setup_dir: ~/setup-files/ocs-setup
+#setdefault: true

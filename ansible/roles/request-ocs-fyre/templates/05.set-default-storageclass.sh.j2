@@ -1,0 +1,10 @@
+#!/bin/bash
+
+my_dir=$(dirname $(readlink -f $0))
+
+oc get sc
+default_sc="{{ setDefault }}"
+if [ "$default_sc" == "true" ]; then
+   oc patch storageclass ocs-storagecluster-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+   oc get sc
+fi

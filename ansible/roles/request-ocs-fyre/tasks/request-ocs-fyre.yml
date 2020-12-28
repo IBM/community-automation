@@ -9,7 +9,31 @@
   with_items:
   - directory
 
-- name: Copy ocs 4.5 scripts to dest
+- name: Get ocs version major.minor
+  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
+  register: ocs_version
+
+- name: Get localstore version
+  shell: bash -lc "echo "{{ ocs_version.stdout }}"
+  register: localstore_version
+
+- name: Get ocs channel
+  shell: bash -lc "echo 'stable-{{ ocs_version.stdout }}'"
+  register: ocs_channel
+
+- name: Generate OCS install files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
+  with_items:
+  - 01.ocs-operator.yaml
+  - 02.local-storage-operator.yaml
+  - 03.local-volumes.yaml
+  - 04.storage-cluster.yaml
+  - 05.set-default-storageclass.sh
+
+- name: Copy ocs scripts to dest
   copy:
     src: files/
     dest: "{{ ocs_bastion_setup_dir }}/"
@@ -45,7 +69,6 @@
   debug:
     msg: "{{ localstore.stdout_lines }}"
 
-
 - name: Install local-volumes
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
   args:
@@ -56,12 +79,22 @@
   debug:
     msg: "{{ localvolumes.stdout_lines }}"
 
-- name: Install storage cluster
+- name: Install storage storagecluster
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
   args:
       warn: false
   register: storagecluster
 
-- name: Viewing storage cluster install log
+- name: Viewing storage cluster log
   debug:
     msg: "{{ storagecluster.stdout_lines }}"
+
+- name: Set default storageclass to ocs-storagecluster-cephfs: {{ setdefault }}
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/05.set-default-storageclass.sh"
+  args:
+      warn: false
+  register: storageclass
+
+- name: Viewing set default storageclass log
+  debug:
+    msg: "{{ storageclass.stdout_lines }}"
