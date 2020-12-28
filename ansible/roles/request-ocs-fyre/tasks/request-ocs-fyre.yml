@@ -18,14 +18,8 @@
   when: oc_version.stdout is version('4.5', '<=')
   register: localstore_version
 
-- name: Get ocs channel 4.5 and 4.4
-  shell: bash -lc "echo stable-4.5"
-  when: oc_version.stdout is version('4.5', '<=')
-  register: ocs_channel
-
-- name: Get ocs channel 4.6 or greater
-  shell: bash -lc "echo stable-4.6"
-  when: oc_version.stdout is version('4.6', '>=')
+- name: Get ocs channel
+  shell: bash -lc "if [ {{ oc_version.stdout }} -eq '4.6' ]; then echo 'stable-4.6'; else echo 'stable-4.5'; fi"
   register: ocs_channel
 
 - name: Generate OCS install files
