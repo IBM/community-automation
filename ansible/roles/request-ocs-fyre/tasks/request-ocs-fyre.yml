@@ -11,14 +11,21 @@
 
 - name: Get ocs version major.minor
   shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
-  register: ocs_version
+  register: oc_version
 
 - name: Get localstore version
-  shell: bash -lc "echo {{ ocs_version.stdout }}"
+  shell: bash -lc "echo 4.5"
+  when: oc_version.stdout is version('4.5', '<=')
   register: localstore_version
 
-- name: Get ocs channel
-  shell: bash -lc "echo 'stable-{{ ocs_version.stdout }}'"
+- name: Get ocs channel 4.5 and 4.4
+  shell: bash -lc "echo stable-4.5"
+  when: oc_version.stdout is version('4.5', '<=')
+  register: ocs_channel
+
+- name: Get ocs channel 4.6 or greater
+  shell: bash -lc "echo stable-4.6"
+  when: oc_version.stdout is version('4.6', '>=')
   register: ocs_channel
 
 - name: Generate OCS install files
