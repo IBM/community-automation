@@ -4,7 +4,7 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Creating Local Volumes."
 
-oc apply -f $my_dir/ocs/03.local-volumes.yaml
+oc apply -f $my_dir/03.local-volumes.yaml
 
 if [ ! $? -eq 0 ]
 then

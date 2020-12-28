@@ -89,7 +89,7 @@
   debug:
     msg: "{{ storagecluster.stdout_lines }}"
 
-- name: Set default storageclass to ocs-storagecluster-cephfs: {{ setdefault }}
+- name: Set default storageclass to ocs-storagecluster-cephfs {{ setdefault }}
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/05.set-default-storageclass.sh"
   args:
       warn: false

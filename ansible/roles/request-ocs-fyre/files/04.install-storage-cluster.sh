@@ -4,7 +4,7 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Creating Storage Cluster."
 
-oc apply -f $my_dir/ocs/04.storage-cluster.yaml
+oc apply -f $my_dir/04.storage-cluster.yaml
 
 if [ ! $? -eq 0 ]
 then

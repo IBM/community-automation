@@ -4,7 +4,7 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Installing Openshift Container Storage Operator."
 
-oc apply -f $my_dir/ocs/01.ocs-operator.yaml
+oc apply -f $my_dir/01.ocs-operator.yaml
 
 if [ ! $? -eq 0 ]
 then

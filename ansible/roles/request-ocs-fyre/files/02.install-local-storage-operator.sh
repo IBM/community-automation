@@ -4,7 +4,7 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Installing Local Storage Operator."
 
-oc apply -f $my_dir/ocs/02.local-storage-operator.yaml
+oc apply -f $my_dir/02.local-storage-operator.yaml
 
 if [ ! $? -eq 0 ]
 then
