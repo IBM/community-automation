@@ -22,9 +22,9 @@
     local_storage_namespace: openshift-local-storage
   when: oc_version.stdout is version('4.6', '<=')
 
-- name: Viewing local_storage_namespace log
+- name: Viewing local_storage_namespace
   debug:
-    msg: "Openshift local_storage_namespace is {{ openshift-local-storage }}"
+    msg: "Openshift local_storage_namespace is {{ local_storage_namespace }}"
 
 - name: Get ocs channel
   shell: bash -lc "if [ {{ oc_version.stdout }} == 4.6 ]; then echo 'stable-4.6'; else echo 'stable-4.5'; fi"
