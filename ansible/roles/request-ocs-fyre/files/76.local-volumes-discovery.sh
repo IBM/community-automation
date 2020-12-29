@@ -9,10 +9,10 @@ nodes=$(oc get node -o name | grep worker | awk -F'/' '{print $2}')
 echo "Labeling nodes for storage usage"
 for node in $nodes
 do
-    echo "              - ${node}" >> $my_dir/76.local-volume-discovery.yaml
+    echo "              - ${node}" >> $my_dir/76.local-volumes-discovery.yaml
 done
 
-oc apply -f $my_dir/76.local-volume-discovery.yaml
+oc apply -f $my_dir/76.local-volumes-discovery.yaml
 
 if [ ! $? -eq 0 ]
 then
