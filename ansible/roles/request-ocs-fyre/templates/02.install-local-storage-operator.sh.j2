@@ -19,7 +19,7 @@ csv_name=$(oc get csv -n {{ local_storage_namespace }} -o name | awk -F"/" '{pri
 
 COUNTER=60
 STATUS=$(oc get csv -n {{ local_storage_namespace }} | rev | cut -f1 -d' ' | rev | tr -d' ')
-while [ $STATUS != "Succeeded" ]
+while [[ $STATUS != "Succeeded" ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
