@@ -3,3 +3,5 @@ ocs_bastion_setup_dir: ~/setup-files/ocs-setup
 setdefault: true
 local_storage_namespace: local-storage
 device_set: ocs-deviceset
+localstore_version: "4.5"
+ocs_channel: "stable-4.5"
