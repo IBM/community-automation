@@ -17,9 +17,9 @@ sleep 5
 oc project openshift-storage
 ###
 csv_counter=30
-csv=$(oc get csv)
+csv=$(oc get csv --no-headers=true)
 rc_csv=$?
-echo "csv is $csv"
+echo "csv is ${csv}"
 echo "rc_csv is $rc_csv"
 echo "Checking for ocs operator csv "
 while [[ $rc_csv -eq 1 ]]
@@ -38,7 +38,7 @@ do
 done
 
 csv_name=$(oc get csv -o name | awk -F"/" '{print $2}')
-echo "csv_name is $csv_name"
+echo "csv_name is ${csv_name}"
 echo -n "Waiting for Openshift Container Storage Operator to be ready."
 COUNTER=60
 STATUS=$(oc get csv --no-headers=true | rev | cut -f1 -d' ' | rev | tr -d ' ')
