@@ -115,6 +115,7 @@
 - name: OCS 4.6 create volumeset
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/76.local-volume-set.sh"
   when: oc_version.stdout is version('4.6', '>=')
+  args:
       warn: false
   register: volumeset
 
