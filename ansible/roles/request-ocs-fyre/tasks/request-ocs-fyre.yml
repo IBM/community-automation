@@ -47,13 +47,25 @@
     dest: "{{ ocs_bastion_setup_dir }}/"
     mode: '0755'
 
+- name: Check CPUs
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.check-cpus.sh"
+  args:
+      warn: false
+  register: checkcpus
+
+- name: Output available CPUs
+  debug:
+    msg: "{{ checkcpus.stdout_lines }}"
+
 - name: Install labels
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.label-nodes.sh"
   args:
       warn: false
+  when: oc_version.stdout is version('4.5', '<=')
   register: installlabels
 
 - name: Viewing labels install log
+  when: oc_version.stdout is version('4.5', '<=')
   debug:
     msg: "{{ installlabels.stdout_lines }}"
 
