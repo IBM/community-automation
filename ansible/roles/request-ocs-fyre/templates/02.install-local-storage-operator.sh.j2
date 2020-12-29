@@ -31,5 +31,6 @@ do
     echo -n .
     STATUS=$(oc get csv $csv_name -n {{ local_storage_namespace }} -o jsonpath={.status.phase})
     echo "${STATUS}"
+    echo $STATUS
 done
 echo

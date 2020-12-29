@@ -30,6 +30,7 @@ do
     sleep 10
     echo -n .
     STATUS=$(oc get csv $csv_name -n openshift-storage -o jsonpath={.status.phase})
-    echo "$STATUS"
+    echo "${STATUS}"
+    echo $STATUS
 done
 echo
