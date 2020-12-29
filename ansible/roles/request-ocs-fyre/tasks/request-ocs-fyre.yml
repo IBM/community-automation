@@ -18,15 +18,11 @@
   when: oc_version.stdout is version('4.5', '<=')
   register: localstore_version
 
-- name: Set localstore namespace depending on version
-  vars:
-    local-storage-namespace: local-storage
-  tasks:
-    - name: Namespace version 4.6
-      set_fact:
-        local-storage-namespace: openshift-local-storage
-      when: oc_version.stdout is version('4.6', '<=')
+- name: Setup local storage namespace depending on version 4.6
+  set_fact:
+    local-storage-namespace: openshift-local-storage
   shell: bash -lc "echo {{ local-storage-namespace }}"
+  when: oc_version.stdout is version('4.6', '<=')
   register: localstore_namespace
 
 - name: Viewing local-storage-namespace log
