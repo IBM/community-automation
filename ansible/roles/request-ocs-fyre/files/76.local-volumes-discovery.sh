@@ -12,7 +12,7 @@ do
     echo "              - ${node}" >> $my_dir/76.local-volumes-discovery.yaml
 done
 
-oc apply -f $my_dir/76.local-volumes-discovery.yaml
+oc create -f $my_dir/76.local-volumes-discovery.yaml
 
 if [ ! $? -eq 0 ]
 then
@@ -21,11 +21,13 @@ then
 fi
 
 sleep 10
+
 #Wait for diskmaker pods for each worker
 NUM_WORKERS=$(oc get no --no-headers=true | grep  worker | awk -F'/' '{print $2}' | wc -l)
 echo "Waiting for diskmaker pods to come up for all nodes "
+oc project openshift-local-storage
 COUNTER=60
-POD_COUNT=$(oc get pod -n openshift-local-storage --no-headers=true | grep diskmaker | grep Running | wc -l)
+POD_COUNT=$(oc get pod --no-headers=true | grep diskmaker | grep Running | wc -l)
 while [ ${POD_COUNT} -eq ${NUM_WORKERS} ]
 do
     COUNTER=$(( ${COUNTER} -1 ))
@@ -36,5 +38,5 @@ do
     fi
     sleep 5
     echo -n .
-    POD_COUNT=$(oc get pod -n openshift-local-storage --no-headers=true | grep diskmaker | grep Running | wc -l)
+    POD_COUNT=$(oc get pod --no-headers=true | grep diskmaker | grep Running | wc -l)
 done
