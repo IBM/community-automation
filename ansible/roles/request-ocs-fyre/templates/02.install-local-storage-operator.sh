@@ -15,10 +15,10 @@ fi
 echo -n "Waiting for Local Storage Operator to be ready."
 sleep 5
 
-csv_name=$(oc get csv -n local-storage -o name | awk -F"/" '{print $2}')
+csv_name=$(oc get csv -n {{ local_storage_namespace }} -o name | awk -F"/" '{print $2}')
 
 COUNTER=30
-STATUS=$(oc get csv $csv_name -n local-storage -o jsonpath={.status.phase})
+STATUS=$(oc get csv $csv_name -n  {{ local_storage_namespace }} -o jsonpath={.status.phase})
 while [[ "${STATUS}" != "Succeeded" ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
@@ -29,6 +29,6 @@ do
     fi
     sleep 5
     echo -n .
-    STATUS=$(oc get csv $csv_name -n local-storage -o jsonpath={.status.phase})
+    STATUS=$(oc get csv $csv_name -n {{ local_storage_namespace }} -o jsonpath={.status.phase})
 done
 echo
