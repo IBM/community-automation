@@ -14,29 +14,13 @@ fi
 
 
 sleep 5
-ns_counter=30
-oc get namespaces openshift-storage
-rc=$?
-echo "Checking for namespace openshift-storage "
-while [[ $rc -eq 1 ]]
-do
-    ns_counter=$(( ${ns_counter} -1 ))
-    if [ "$ns_counter" -lt 1 ]
-    then
-        echo "Max retries reached for openshift-storage namespace check, exiting..."
-        exit 1
-    fi
-    sleep 5
-    oc get namespaces openshift-storage
-    rc=$?
-    echo $rc
-    echo -n .
-done
 oc project openshift-storage
 ###
 csv_counter=30
-oc get csv
+csv=$(oc get csv)
 rc_csv=$?
+echo "csv is $csv"
+echo "rc_csv is $rc_csv"
 echo "Checking for ocs operator csv "
 while [[ $rc_csv -eq 1 ]]
 do
