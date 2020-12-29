@@ -17,7 +17,7 @@ sleep 5
 
 csv_name=$(oc get csv -n {{ local_storage_namespace }} -o name | awk -F"/" '{print $2}')
 
-COUNTER=30
+COUNTER=60
 STATUS=$(oc get csv $csv_name -n  {{ local_storage_namespace }} -o jsonpath={.status.phase})
 while [[ "${STATUS}" != "Succeeded" ]]
 do

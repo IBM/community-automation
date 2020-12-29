@@ -1,5 +1,5 @@
 ---
-- name: Install ocs 4.5 on fyre OCP+Beta env
+- name: Install ocs on fyre OCP+Beta env
   hosts: bastion
   gather_facts: no
   roles:
