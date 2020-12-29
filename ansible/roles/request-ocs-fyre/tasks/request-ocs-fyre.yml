@@ -48,7 +48,7 @@
     dest: "{{ ocs_bastion_setup_dir }}/"
     mode: '0755'
 
-- name: Check CPUs
+- name: Check for Min CPUs of 48
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.check-cpus.sh"
   args:
       warn: false
@@ -58,7 +58,7 @@
   debug:
     msg: "{{ checkcpus.stdout_lines }}"
 
-- name: Install labels
+- name: Install OCS labels on worker nodes
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.label-nodes.sh"
   args:
       warn: false
@@ -68,34 +68,34 @@
   debug:
     msg: "{{ installlabels.stdout_lines }}"
 
-- name: Install ocs operator
+- name: Install OCS operator
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/01.install-ocs-operator.sh"
   args:
       warn: false
   register: ocsoperator
 
-- name: Viewing ocs operator install log
+- name: Viewing OCS operator install log
   debug:
     msg: "{{ ocsoperator.stdout_lines }}"
 
-- name: Install local-storage-operator
+- name: Install local storage operator
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/02.install-local-storage-operator.sh"
   args:
       warn: false
   register: localstore
 
-- name: Viewing local-storage-operator log
+- name: Viewing local storage operator log
   debug:
     msg: "{{ localstore.stdout_lines }}"
 
-- name: Install local-volumes for OCS 4.5 or older
+- name: Install local volumes for OCS 4.5 or older
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
   when: oc_version.stdout is version('4.5', '<=')
   args:
       warn: false
   register: localvolumes
 
-- name: Viewing local-volumes log
+- name: Viewing local volumes log
   when: oc_version.stdout is version('4.5', '<=')
   debug:
     msg: "{{ localvolumes.stdout_lines }}"
@@ -112,29 +112,29 @@
   debug:
     msg: "{{ autovolumediscovery.stdout_lines }}"
 
-- name: OCS 4.6 create volumeset
+- name: OCS 4.6 create localvolumeset
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/76.local-volume-set.sh"
   when: oc_version.stdout is version('4.6', '>=')
   args:
       warn: false
   register: volumeset
 
-- name: Viewing local-volumes-set log
+- name: Viewing localvolumeset log
   when: oc_version.stdout is version('4.6', '>=')
   debug:
     msg: "{{ volumeset.stdout_lines }}"
 
-- name: Install storage storagecluster
+- name: Install storagecluster
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
   args:
       warn: false
   register: storagecluster
 
-- name: Viewing storage cluster log
+- name: Viewing storagecluster log
   debug:
     msg: "{{ storagecluster.stdout_lines }}"
 
-- name: Set default storageclass to ocs-storagecluster-cephfs {{ setdefault }}
+- name: Set default storageclass to {{ default_sc }}  {{ setdefault }}
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/05.set-default-storageclass.sh"
   args:
       warn: false

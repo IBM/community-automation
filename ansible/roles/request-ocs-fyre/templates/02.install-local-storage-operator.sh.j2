@@ -18,7 +18,7 @@ sleep 5
 oc project {{ local_storage_namespace }}
 ###
 csv_counter=30
-csv=$(oc get csv --no-headers=true)
+oc get csv --no-headers=true
 rc_csv=$?
 echo -n "Checking for csv "
 while [[ $rc_csv -eq 1 ]]
