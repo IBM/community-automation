@@ -21,14 +21,10 @@
 - set_fact:
     local_storage_namespace: openshift-local-storage
   when: oc_version.stdout is version('4.6', '>=')
-  debug:
-    msg: "Openshift local_storage_namespace is {{ local_storage_namespace }}"
 
 - set_fact:
     device_set: ocs-deviceset-localblock
   when: oc_version.stdout is version('4.6', '>=')
-  debug:
-    msg: "Openshift storage cluster device set is {{ device_set }}"
 
 - name: Get ocs channel
   shell: bash -lc "if [ {{ oc_version.stdout }} == 4.6 ]; then echo 'stable-4.6'; else echo 'stable-4.5'; fi"
