@@ -141,6 +141,5 @@
   register: storageclass
 
 - name: Viewing set default storageclass log
-  args:
   debug:
     msg: "{{ storageclass.stdout_lines }}"
