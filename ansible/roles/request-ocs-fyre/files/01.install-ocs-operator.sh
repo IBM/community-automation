@@ -27,8 +27,9 @@ do
         echo "Max retries reached, exiting..."
         exit 1
     fi
-    sleep 5
+    sleep 10
     echo -n .
     STATUS=$(oc get csv $csv_name -n openshift-storage -o jsonpath={.status.phase})
+    echo "$STATUS"
 done
 echo
