@@ -24,7 +24,7 @@ sleep 10
 
 #Wait for diskmaker pods for each worker
 NUM_WORKERS=$(oc get no --no-headers=true | grep  worker | awk -F'/' '{print $2}' | wc -l)
-echo -n "Waiting for pver pods to come up for all nodes "
+echo -n "Waiting for pv pods to come up for all nodes "
 COUNTER=60
 PV_COUNT=$(oc get pv --no-headers=true | grep local-pv | grep Available | wc -l)
 while [[ $PV_COUNT -ne $NUM_WORKERS ]]

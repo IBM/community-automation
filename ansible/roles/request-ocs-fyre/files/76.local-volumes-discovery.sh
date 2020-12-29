@@ -26,7 +26,7 @@ sleep 10
 NUM_WORKERS=$(oc get no --no-headers=true | grep  worker | awk -F'/' '{print $2}' | wc -l)
 
 oc project openshift-local-storage
-echo -n "Waiting for diskmaker-discovery pods to come up for all nodes "
+echo -n "Waiting for diskmaker-discovery pods to come up for all worker nodes "
 COUNTER=60
 POD_COUNT=$(oc get pod --no-headers=true | grep diskmaker-discovery | grep Running | wc -l)
 while [[ $POD_COUNT -ne $NUM_WORKERS ]]

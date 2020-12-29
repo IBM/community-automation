@@ -18,7 +18,7 @@ scCounter=0
 rc=1
 until [ $rc -eq 0 ]
 do
-  echo "Waiting for noobaa storage class to come up $(date)"
+  echo "Waiting for noobaa storageclass to come up $(date)"
   sleep 10
   ((scCounter ++))
   if [ $scCounter -eq 60 ]; then
