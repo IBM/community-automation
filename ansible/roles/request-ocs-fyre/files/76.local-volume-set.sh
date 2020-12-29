@@ -28,7 +28,6 @@ NUM_WORKERS=$(oc get no --no-headers=true | grep  worker | awk -F'/' '{print $2}
 echo "Waiting for diskmaker pods to come up for all nodes "
 COUNTER=60
 PV_COUNT=$(oc get pv --no-headers=true | grep local-pv | grep Available | wc -l)
- | grep diskmaker | grep Running | wc -l)
 while [ ${PV_COUNT} -eq ${NUM_WORKERS} ]
 do
     COUNTER=$(( ${COUNTER} -1 ))

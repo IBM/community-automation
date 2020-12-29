@@ -19,7 +19,7 @@ csv_name=$(oc get csv -n openshift-storage -o name | awk -F"/" '{print $2}')
 
 COUNTER=60
 STATUS=$(oc get csv $csv_name -n openshift-storage -o jsonpath={.status.phase})
-while [[ "${STATUS}" != "Succeeded" ]]
+while [[ $STATUS != "Succeeded" ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
@@ -30,7 +30,7 @@ do
     sleep 10
     echo -n .
     STATUS=$(oc get csv $csv_name -n openshift-storage -o jsonpath={.status.phase})
-    echo "${STATUS}"
-    echo $STATUS
+    echo "First ${STATUS}"
+    echo "Second $STATUS"
 done
 echo
