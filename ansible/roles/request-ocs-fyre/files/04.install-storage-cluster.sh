@@ -6,7 +6,7 @@ echo "Creating Storage Cluster."
 
 oc apply -f $my_dir/04.storage-cluster.yaml
 
-if [ ! $? -eq 0 ]
+if [ ! $? -eq 0 ];
 then
     echo "There was an error installing storage-cluster."
     exit 1

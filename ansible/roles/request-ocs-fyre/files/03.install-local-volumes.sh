@@ -17,7 +17,7 @@ sleep 10
 
 COUNTER=30
 POD_COUNT=$(oc get pod -n local-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
-while [ ${POD_COUNT} -gt 0 ]
+while [ $POD_COUNT -gt 0 ]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]

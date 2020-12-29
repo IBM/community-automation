@@ -16,7 +16,7 @@ oc create -f $my_dir/76.local-volumes-discovery.yaml
 
 if [ ! $? -eq 0 ]
 then
-    echo "There was an error installing Local Volumes."
+    echo "There was an error installing Local Volumes Discovery."
     exit 1
 fi
 
@@ -33,7 +33,7 @@ do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
     then
-        echo "Max retries reached, exiting..."
+        echo "Max retries checking for Local Volumes Discovery diskmaker pod reached, exiting..."
         exit 1
     fi
     sleep 5

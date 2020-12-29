@@ -17,7 +17,7 @@ oc apply -f $my_dir/76.local-volume-set.yaml
 
 if [ ! $? -eq 0 ]
 then
-    echo "There was an error installing Local Volumes."
+    echo "There was an error installing Local Volume Sets."
     exit 1
 fi
 
@@ -28,12 +28,12 @@ NUM_WORKERS=$(oc get no --no-headers=true | grep  worker | awk -F'/' '{print $2}
 echo "Waiting for diskmaker pods to come up for all nodes "
 COUNTER=60
 PV_COUNT=$(oc get pv --no-headers=true | grep local-pv | grep Available | wc -l)
-while [ ${PV_COUNT} -eq ${NUM_WORKERS} ]
+while [ $PV_COUNT -eq ${NUM_WORKERS} ]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
     then
-        echo "Max retries reached, exiting..."
+        echo "Max retries for pv check reached, exiting..."
         exit 1
     fi
     sleep 5
