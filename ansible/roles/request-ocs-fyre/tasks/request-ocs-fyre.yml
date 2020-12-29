@@ -14,7 +14,7 @@
   register: oc_version
 
 - set_fact:
-    localstore_version: 4.6
+    localstore_version: "4.6"
   when: oc_version.stdout is version('4.6', '>=')
 
 - set_fact:
@@ -26,7 +26,7 @@
   when: oc_version.stdout is version('4.6', '>=')
 
 - set_fact:
-    ocs_channel: stable-4.6
+    ocs_channel: "stable-4.6"
   when: oc_version.stdout is version('4.6', '>=')
 
 - name: Generate OCS install files
