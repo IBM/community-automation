@@ -20,7 +20,7 @@
 
 - set_fact:
     local_storage_namespace: openshift-local-storage
-  when: oc_version.stdout is version('4.6', '<=')
+  when: oc_version.stdout is version('4.6', '>=')
 
 - name: Viewing local_storage_namespace
   debug:
