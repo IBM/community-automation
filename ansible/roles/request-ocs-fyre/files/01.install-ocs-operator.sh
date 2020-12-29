@@ -18,7 +18,7 @@ sleep 5
 csv_name=$(oc get csv -n openshift-storage -o name | awk -F"/" '{print $2}')
 
 COUNTER=60
-STATUS=$(oc get csv -n openshift-storage | rev | cut -f1 -d' ' | rev | tr -d' ')
+STATUS=$(oc get csv -n openshift-storage --no-headers=true | rev | cut -f1 -d' ' | rev | tr -d ' ')
 while [[ $STATUS != "Succeeded" ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
@@ -28,7 +28,7 @@ do
         exit 1
     fi
     sleep 10
-    STATUS=$(oc get csv -n openshift-storage | rev | cut -f1 -d' ' | rev | tr -d' ')
+    STATUS=$(oc get csv -n openshift-storage --no-headers=true | rev | cut -f1 -d' ' | rev | tr -d ' ')
     echo $STATUS
     echo -n .
 done
