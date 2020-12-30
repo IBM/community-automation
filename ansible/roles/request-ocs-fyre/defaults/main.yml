@@ -1,11 +1,11 @@
 #Variables for specific user needs
 ocs_bastion_setup_dir: ~/setup-files/ocs-setup
 setdefault: true  #Set parm defatul_sc as default storageclass when true
-default_sc: "ocs-storagecluster-cephfs"
+default_sc: ocs-storagecluster-cephfs
 #Do not change the following ... dynamically changed to 4.6 values when "oc version" is 4.6 or greater
 local_storage_namespace: local-storage
 device_set: ocs-deviceset
-localstore_version: "4.5"
-ocs_channel: "stable-4.5"
+localstore_version: 4.5
+ocs_channel: stable-4.5
 #Change only if you know what your doing with the fyre API to create additional disks
-ocs_device: "/dev/vdb"
+ocs_device: /dev/vdb
