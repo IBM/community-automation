@@ -13,6 +13,10 @@
   shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
   register: oc_version
 
+- name: Get number of workers
+  shell: bash -lc "oc get no --no-headers=true | cut -f1 -d' ' | grep worker | wc -l"
+  register: num_workers
+
 - set_fact:
     localstore_version: "4.6"
   when: oc_version.stdout is version('4.6', '>=')

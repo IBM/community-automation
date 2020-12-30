@@ -23,5 +23,5 @@ spec:
         status: {}
       name: {{ device_set }}
       placement: {}
-      replica: 3
+      replica: {{ num_workers.stdout }}
       resources: {}
