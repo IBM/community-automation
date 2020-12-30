@@ -1,43 +1,57 @@
-# Ansible Playbook for installing csi-cephfs onto Fyre OCP+Beta clusters.
+# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters.
 
 ## Overview
 
-- Installs rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
-- Default rook-ceph release is v1.4.7. See release information here https://github.com/rook/rook/releases.
-- Creates 3 storageClass
-  - rook-cephfs - File store (RWX)
-  - rook-ceph-block - Ceph Block storage (RWO)
-  - csi-cephfs - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as rook-cephfs.
-- Sets csi-cephfs as the default storageclass.
+- Installs Openshift Container Storage (OCS) on fyre 4.4, 4.5 and 4.6 or newer clusters (`Takes between 8 and 10 minutes`).
+  - It can install using the `fyre inf` node. Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
+    - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need your fyre root and user PW to use.
+  - It can install using a `local ubuntu VM` using `oc login`. Run oc login locally on an ubuntu VM and copy from examples to current dir the `inventory_local`, renaming to `inventroy`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the ubuntu VM.
+- To install OCS on Fyre `bare metal` clusters requires clusters with follow min requirements.
+  - Min of 3 worker nodes.
+  - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 8 worker nodes then each worker needs of min of 8 CPUs.
+  - Each worker must have 64G of memory.
+  - Each worker must have an `additional disk` on it (/dev/vdb disk). The sum of all `additional disks` across all workers will be the total amount of OCS storage you will have available. Min amount across all workers is 500G.
+    - Example, you have 3 workers with `additional disks` of 500G then you have total OCS storage of 1.5T.
+  - The only current way to create Fyre clusters with the resources needed for OCS is by two ways.
+    - Use the Fyre API to create an OCP cluster. See example of API use in the examples folder, `example_fyre_api`.
+    - Create an OCP cluster using the Ansible play in this repo called `request-ocp-fyre-play`.
+- Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
+  - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the catalog.
+  - Currently, on any cluster greater or equal to OCP 4.6, it will install OCS `stable-4.6` (current latest version of OCS) and Local Storage operator `4.6`. When a newer OCS version comes out then this code will need updating.
+- OCS creates the following 4 storageclass's
+  - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
+  - `ocs-storagecluster-ceph-rgw` - Bucket storage
+  - `ocs-storagecluster-cephfs` - File storage (RWX)
+  - `openshift-storage.noobaa.io` - Object storage
+- Sets `ocs-storagecluster-cephfs` as the default storageclass. This is configurable, change the `examples/ocs_install_vars.yaml` file and move to current dir if you want something different.
 
 ## Assumptions:
 
- - A healthy Fyre OCP+Beta OpenShift 4.4.3 cluster or later in running state.
- - The OCP cluster must have 3 master nodes and at least 3 worker nodes.
- - You must have a fyre root password for your cluster to access the inf node with-in your OCP cluster.
+ - Ansible 2.9 or later installed, with python3.
+ - A healthy Fyre OCP+ OpenShift 4.4 or newer cluster in running state.
+  - Min 3 worker nodes with /dev/vdb additional storage, 16 CPS and 64G mem.
+ - oc client installed and oc login done to OCP cluster, if running local on ubuntu VM.
+ - Fyre root user password if running on cluster `inf` node.
 
-## Setting up inventory
+## How to install oc client
 
-- From the `csi-cephfs-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
-- Modify `fyre.inf.node.9dot.ip` variable in the `inventory` file with the 9dot ip of the inf node in your fyre OCP+Beta cluster.
-- Modify `fyre.root.pw` variable in the `inventory` file  with your fyre root password.
-
-```
-cp examples/inventory .
-```
+  - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
+  - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
+  - Extract: tar xf oc.tar.gz
+  - Move to /usr/local/bin: cp oc /usr/local/bin
+  - Example oc login: `oc login https://api.ocp446ocs.cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
 
 ## Run playbook
-
 
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory csi-cephfs.yml
+ansible-playbook  -i inventory request-ocs-fyre.yml
 ```
-or to pass a new rook-ceph release
+or pass parameters (This example sets storageclass ocs-storagecluster-ceph-rbd as the default storageclass)
 
 ```
-ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "rook_cephfs_release=v1.4.7"
+ansible-playbook  -i inventory request-ocs-fyre.yml --extra-vars "default_sc=ocs-storagecluster-ceph-rbd"
 ```
 
 License
