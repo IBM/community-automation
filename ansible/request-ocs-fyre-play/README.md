@@ -8,7 +8,7 @@
   - It can install using a `local ubuntu VM` using `oc login`. Run oc login locally on an ubuntu VM and copy from examples to current dir the `inventory_local`, renaming to `inventroy`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the ubuntu VM.
 - To install OCS on Fyre `bare metal` clusters requires clusters with follow min requirements.
   - Min of 3 worker nodes.
-  - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 8 worker nodes then each worker needs of min of 8 CPUs.
+  - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 6 worker nodes then each worker needs of min of 8 CPUs.
   - Each worker must have 64G of memory.
   - Each worker must have an `additional disk` on it (/dev/vdb disk). The sum of all `additional disks` across all workers will be the total amount of OCS storage you will have available. Min amount across all workers is 500G.
     - Example, you have 3 workers with `additional disks` of 500G then you have total OCS storage of 1.5T.
