@@ -23,6 +23,7 @@ Make sure your ansible client is at version 2.9 or greater
 |request-ocp4-logging-fyre-play|Install OCP logging onto OCP+Beta Fyre clusters|Available| none|
 |request-ocp4-logging-play|Install OCP logging onto OCP 4.x clusters|Available| none|
 |request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
+|request-ocs-fyre-play|Install Openshift Container Storage (OCS) on OCP+ Fyre clusters|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|

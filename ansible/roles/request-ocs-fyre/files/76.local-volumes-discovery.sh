@@ -41,3 +41,5 @@ do
     echo -n .
     POD_COUNT=$(oc get pod --no-headers=true | grep diskmaker-discovery | grep Running | wc -l)
 done
+echo
+echo "Local Volume Discovery Completed"

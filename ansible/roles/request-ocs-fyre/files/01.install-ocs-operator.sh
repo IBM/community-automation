@@ -51,3 +51,4 @@ do
     echo -n .
 done
 echo
+echo "OCS Operator Installed"

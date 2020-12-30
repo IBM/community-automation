@@ -31,8 +31,8 @@
  - Ansible 2.9 or later installed, with python3.
  - A healthy Fyre OCP+ OpenShift 4.4 or newer cluster in running state.
   - Min 3 worker nodes with /dev/vdb additional storage, 16 CPS and 64G mem.
- - oc client installed and oc login done to OCP cluster, if running local on ubuntu VM.
- - Fyre root user password if running on cluster `inf` node.
+ - oc client installed and oc login done to OCP cluster, if running local using `examples/inventory_local` on ubuntu VM.
+ - Fyre root user password, if running remote mode using `examples/inventory_remote_inf_node`, on cluster `inf` node.
 
 ## How to install oc client
 
@@ -49,7 +49,7 @@ Once you have configured the `inventory` file, run the playbook using:
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml
 ```
-or pass parameters (This example sets storageclass ocs-storagecluster-ceph-rbd as the default storageclass)
+or pass parameters (This example sets storageclass `ocs-storagecluster-ceph-rbd` as the default storageclass)
 
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml --extra-vars "default_sc=ocs-storagecluster-ceph-rbd"

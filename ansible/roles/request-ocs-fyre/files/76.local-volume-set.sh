@@ -39,3 +39,5 @@ do
     echo -n .
     PV_COUNT=$(oc get pv --no-headers=true | grep local-pv | grep Available | wc -l)
 done
+echo
+echo "Local Volume Set created"
