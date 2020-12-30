@@ -15,8 +15,9 @@
   - The only current way to create Fyre clusters with the resources needed for OCS is by two ways.
     - Use the Fyre API to create an OCP cluster. See example of API use in the examples folder, `example_fyre_api`.
     - Create an OCP cluster using the Ansible play in this repo called `request-ocp-fyre-play`.
+- Dynamically installs the Local Storage operator found in the `OperatorHub` to create a base `localblock` storageclass, which uses the /dev/vdb `addtional disks` on each worker node, for OCS to use.
 - Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
-  - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the catalog.
+  - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the `OperatorHub` catalog.
   - Currently, on any cluster greater or equal to OCP 4.6, it will install OCS `stable-4.6` (current latest version of OCS) and Local Storage operator `4.6`. When a newer OCS version comes out then this code will need updating.
 - OCS creates the following 4 storageclass's
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
