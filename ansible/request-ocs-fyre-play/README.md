@@ -44,7 +44,7 @@
 
 ## Run playbook
 
-Once you have configured the `inventory` file, run the playbook using:
+Once you have configured the `inventory` file, and/or done a `oc login`, run the playbook using:
 
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml
