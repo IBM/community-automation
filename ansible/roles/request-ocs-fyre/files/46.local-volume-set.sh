@@ -9,10 +9,10 @@ nodes=$(oc get node | grep worker | cut -f1 -d' ')
 
 for node in $nodes
 do
-    echo "              - ${node}" >> $my_dir/76.local-volume-set.yaml
+    echo "              - ${node}" >> $my_dir/46.local-volume-set.yaml
 done
 
-oc apply -f $my_dir/76.local-volume-set.yaml
+oc apply -f $my_dir/46.local-volume-set.yaml
 
 if [ ! $? -eq 0 ]
 then

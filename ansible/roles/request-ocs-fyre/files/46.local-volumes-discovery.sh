@@ -9,10 +9,10 @@ nodes=$(oc get node | grep worker | cut -f1 -d' ')
 echo "Adding nodes to local-volumes-discovery yaml"
 for node in $nodes
 do
-    echo "              - ${node}" >> $my_dir/76.local-volumes-discovery.yaml
+    echo "              - ${node}" >> $my_dir/46.local-volumes-discovery.yaml
 done
 
-oc create -f $my_dir/76.local-volumes-discovery.yaml
+oc create -f $my_dir/46.local-volumes-discovery.yaml
 
 if [ ! $? -eq 0 ]
 then
