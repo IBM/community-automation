@@ -105,7 +105,7 @@
     msg: "{{ localvolumes.stdout_lines }}"
 
 - name: OCS 4.6 auto discovery of local volumes
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/76.local-volumes-discovery.sh"
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volumes-discovery.sh"
   when: oc_version.stdout is version('4.6', '>=')
   args:
       warn: false
@@ -117,7 +117,7 @@
     msg: "{{ autovolumediscovery.stdout_lines }}"
 
 - name: OCS 4.6 create localvolumeset
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/76.local-volume-set.sh"
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volume-set.sh"
   when: oc_version.stdout is version('4.6', '>=')
   args:
       warn: false
