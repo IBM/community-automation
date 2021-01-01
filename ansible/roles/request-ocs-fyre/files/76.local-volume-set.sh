@@ -5,7 +5,7 @@ my_dir=$(dirname $(readlink -f $0))
 echo "Create Volume Set."
 
 
-nodes=$(oc get node -o name | grep worker | awk -F'/' '{print $2}')
+nodes=$(oc get node | grep worker | cut -f1 -d' ')
 
 for node in $nodes
 do

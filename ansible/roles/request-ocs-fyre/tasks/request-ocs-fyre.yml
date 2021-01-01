@@ -14,7 +14,7 @@
   register: oc_version
 
 - name: Get number of workers
-  shell: bash -lc "oc get no --no-headers=true | cut -f1 -d' ' | grep worker | wc -l"
+  shell: bash -lc "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l"
   register: num_workers
 
 - set_fact:
