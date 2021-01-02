@@ -3,5 +3,5 @@ default_sc: ocs-storagecluster-cephfs # OCS storageclass to set as the default.
 
 # Change to the additional disk definition for your cluster type.
 # Only used for OCP 4.5 or 4.4 clusters when OCS 4.5 is installed.
-# Not used for OCP 4.6 clusters when OCS 4.6 is installed.
-ocs_device: /dev/vdb # First additional disk drive definition.
+# Not used for OCP 4.6 clusters or newer when OCS 4.6 is installed.
+ocs_device: /dev/sdb # First additional disk drive definition.

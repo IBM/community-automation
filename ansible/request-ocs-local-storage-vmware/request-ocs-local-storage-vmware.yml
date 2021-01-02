@@ -1,5 +1,5 @@
 ---
-- name: Install ocs on fyre OCP+Beta env
+- name: Install OCS on VMware clusters using local storageclass
   hosts: bastion
   gather_facts: no
   roles:
