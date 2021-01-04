@@ -1,0 +1,19 @@
+apiVersion: local.storage.openshift.io/v1alpha1
+kind: LocalVolumeSet
+metadata:
+  name: localblock
+spec:
+  storageClassName: localblock
+  volumeMode: Block
+  maxDeviceCount: 10 # optional, limit devices provisioned per node
+  deviceInclusionSpec:
+    deviceTypes: # list of types to allow
+      - disk
+    deviceMechanicalProperty:
+      - Rotational
+  nodeSelector:
+    nodeSelectorTerms:
+      - matchExpressions:
+          - key: kubernetes.io/hostname
+            operator: In
+            values:

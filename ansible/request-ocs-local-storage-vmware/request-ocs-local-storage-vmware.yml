@@ -1,0 +1,6 @@
+---
+- name: Install OCS on VMware clusters using local storageclass
+  hosts: bastion
+  gather_facts: no
+  roles:
+  - request-ocs-local-storage

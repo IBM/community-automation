@@ -1,0 +1,34 @@
+# You must provide your fyre_api_user_name and fyre_api_token, found in your accounting information on the fyre.ibm.com GUI.
+# This only can be use for OCP+ clusters. See api information here: https://w3.ibm.com/w3publisher/fyre/ocp/ocp-apis
+# For this API the ocp_version can only be the same as what is available through the fyre.ibm.com GUI here: https://fyre.ibm.com/ocp.
+# This OCS automation is only supported running on X platforms, so you must use platform : "x".
+# You need to provide your groups product_group_id, which can be found in your fyre.ibm.com accounting information.
+# Once you have filled in the correct information, copy and paste into any linux VM (I've only used on ubuntu, so others are at your own risk).
+
+curl -k -X POST -u 'fyre_api_user_name:fyre_api_key' 'https://ocpapi.svl.ibm.com/v1/ocp/' -d '
+{
+  "name": "ocp466ocs",
+  "description": "OCP+Beta 4.6.6 X (intel) cluster for ocs test",
+  "ocp_version": "4.6.6",
+  "platform": "x",
+  "product_group_id": "<your_groups_id>",
+  "fips": "no",
+  "ssh_key":"/root/.ssh/id_rsa",
+  "master": [
+    {
+      "count": "3",
+      "cpu": "8",
+      "memory": "16"
+    }
+  ],
+  "worker": [
+    {
+      "count": "3",
+      "cpu": "16",
+      "memory": "64",
+      "additional_disk": [
+        "500"
+      ]
+    }
+  ]
+}'

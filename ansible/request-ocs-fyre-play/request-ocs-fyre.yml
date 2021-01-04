@@ -1,0 +1,6 @@
+---
+- name: Install ocs on fyre OCP+ env
+  hosts: bastion
+  gather_facts: no
+  roles:
+  - request-ocs-local-storage
