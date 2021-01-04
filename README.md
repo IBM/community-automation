@@ -25,6 +25,7 @@ Make sure your ansible client is at version 2.9 or greater
 |request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
 |request-ocs-fyre-play|Install Openshift Container Storage (OCS) on OCP+ Fyre clusters|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
+|request-ocs-local-storage-vmware|Install Openshift Container Storage (OCS) on VMware OCP clusters|Available| none|
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
 |request-rhel-jmeter-fyre-play|Install Jmeter on Fyre RHEL 8|Availble| none|
