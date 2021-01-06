@@ -1,0 +1,2 @@
+---
+  - include_tasks: install-google-client.yml

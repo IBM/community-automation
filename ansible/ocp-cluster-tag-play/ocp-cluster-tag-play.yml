@@ -1,6 +1,7 @@
 ---
   - name: "{{ admin_task }} an {{ cloud }} cluster"
     hosts: bastion
+    gather_facts: no
     vars_files:
       - tag-vars.yml
     environment: 

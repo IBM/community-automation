@@ -1,0 +1,5 @@
+---
+- name: Installing google auth and requests
+  shell: "pip3 install requests google-auth"
+  register: pip_install_results
+

@@ -1,0 +1,16 @@
+---
+common_tags: "Key=cluster,Value={{ CLUSTER_NAME }} \
+    Key=team,Value={{ team_tag_value }} \
+    Key=Usage,Value={{ usage_tag_value }} \
+    Key=usage_desc,Value=\"{{ usage_description_tag_value }}\" \
+    Key=Review_freq,Value=3day"
+
+content_aws_tags: "Key=owner,Value={{ owner_tag_value }}"
+
+content_google_tags: "Key=owner,Value={{ owner_tag_value }}"
+
+content_azure_tags: "Key=Owner,Value={{ owner_tag_value }} \
+    Key=Delete_date,Value={{ azure_delete_date }} \
+    Key=Team,Value={{ team_tag_value }}"
+
+content_vsphere_tags: ""

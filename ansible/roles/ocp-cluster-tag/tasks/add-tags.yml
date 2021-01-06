@@ -19,6 +19,22 @@
 - name: add Google tags to cluster
   when: 'cloud == "google"'
   block:
+  vars: 
+    service_account_file: /workspace/creds.gcp.json
+    project: ashworth-test
+    auth_kind: serviceaccount
+    scopes: "https://www.googleapis.com/auth/compute"
+
+  - name: Allocate an IP Address
+    gcp_compute_address:
+      state: present
+      name: 'test-address1'
+      region: 'us-west1'
+      project: "{{ project }}"
+      auth_kind: "{{ auth_kind }}"
+      service_account_file: "{{ service_account_file }}"
+      scopes: "{{ scopes }}"
+
   - name: Calling google client to add tags
     shell: "echo calling google client..."
     register: google_client_results
