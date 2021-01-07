@@ -70,6 +70,13 @@ Once you have configured the `inventory` file, run the playbook using:
 ```
 ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus"
 ```
+
+With ocp_var.yml file. Copy examples/ocp_vars_example.yml to current as ocp_vars.yml and run the playbook using:
+
+```
+ansible-playbook  -i inventory request-ocp-fyre-play.yml -e "clusterName=myClusterName" -e "ocpVersion=desiredVersion" -e "fyre_ocptype=ocpplus" -e  @ocp_vars.yml
+```
+
 ## Run playbook for Quickburn
 
 ```
