@@ -14,8 +14,16 @@
   register: oc_version
 
 - name: Get number of workers
-  shell: bash -lc "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l"
+  shell: bash -lc "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l)"
   register: num_workers
+
+- set_fact:
+    device_multiplier: 2
+  when: quickburn
+
+- name: Get number of PVs
+  shell: bash -lc "echo '{{ num_workers.stdout }}*{{ device_multiplier }}' | bc -l"
+  register: num_pvs
 
 - set_fact:
     localstore_version: "4.6"
@@ -42,9 +50,27 @@
   - 01.ocs-operator.yaml
   - 02.install-local-storage-operator.sh
   - 02.local-storage-operator.yaml
-  - 03.local-volumes.yaml
   - 04.storage-cluster.yaml
   - 05.set-default-storageclass.sh
+  - 46.local-volume-set.sh
+
+- name: Generate local-volumes for not quickburn OCS 4.5
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
+  when: not quickburn and oc_version.stdout is version('4.5', '<=')
+  with_items:
+  - 03.local-volumes.yaml
+
+- name: Generate local-volumes for quickburn OCS 4.5
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
+  when: quickburn and oc_version.stdout is version('4.5', '<=')
+  with_items:
+  - 03.local-volumes-qb.yaml
 
 - name: Copy OCS scripts to dest
   copy:

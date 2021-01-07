@@ -9,3 +9,7 @@ localstore_version: 4.5
 ocs_channel: stable-4.5
 ### Change to the additional definition for your cluster type. Only need for OCP 4.5 or 4.4. Not used on OCP 4.6 clusters.
 ocs_device: /dev/vdb
+device_multiplier: 1 #Do not change
+## For quickburn clusters only
+ocs_device_2: /dev/vdc
+quickburn: false #Do not change
