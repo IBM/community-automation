@@ -1,4 +1,4 @@
-# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters.
+# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters and Quickburn large clusters.
 
 ## Overview
 
@@ -53,6 +53,11 @@ or pass parameters (This example sets storageclass `ocs-storagecluster-ceph-rbd`
 
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml -e "default_sc=ocs-storagecluster-ceph-rbd"
+```
+
+Playbook run example for `Quickburn` clusters
+```
+ansible-playbook  -i inventory request-ocs-fyre.yml -e "quickburn=true"
 ```
 
 Playbook run example if using ocs_install_vars.yaml
