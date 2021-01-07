@@ -8,7 +8,7 @@ spec:
   monDataDirHostPath: /var/lib/rook
   storageDeviceSets:
     - config: {}
-      count: 1
+      count: {{ num_devices }
       dataPVCTemplate:
         metadata:
           creationTimestamp: null
@@ -23,5 +23,5 @@ spec:
         status: {}
       name: {{ device_set }}
       placement: {}
-      replica: {{ num_pvs.stdout }}
+      replica: {{ num_workers.stdout }}
       resources: {}

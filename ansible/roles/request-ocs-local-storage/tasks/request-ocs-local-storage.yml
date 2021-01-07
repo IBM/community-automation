@@ -18,11 +18,11 @@
   register: num_workers
 
 - set_fact:
-    device_multiplier: 2
+    num_devices: 2
   when: quickburn
 
 - name: Get number of PVs
-  shell: bash -lc "echo '{{ num_workers.stdout }}*{{ device_multiplier }}' | bc -l"
+  shell: bash -lc "echo '{{ num_workers.stdout }}*{{ num_devices }}' | bc -l"
   register: num_pvs
 
 - set_fact:
