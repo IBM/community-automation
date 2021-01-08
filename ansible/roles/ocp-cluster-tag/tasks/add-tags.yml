@@ -2,19 +2,22 @@
 - name: add AWS tags to cluster
   when: 'cloud == "aws"'
   block:
-  - name: Calling aws client to add tags
-    shell: "aws ec2 create-tags --tags \
-    Key={{ cluster_tag }},Value={{ cluster_tag_value }} \
-    Key={{ owner_tag }},Value={{ owner_tag_value }} \
-    Key={{ team_tag }},Value={{ team_tag_value }} \
-    Key={{ usage_tag }},Value={{ usage_tag_value }} \
-    Key={{ usage_description_tag }},Value=\"{{ usage_description_tag_value }}\" \
-    Key={{ review_tag }},Value={{ review_tag_value }} \
-    --region {{ AWS_REGION }}  --resources $(aws ec2 describe-instances \
-    --filters Name=tag:Name,Values={{ cluster_tag_value }}* \
-    --query Reservations[*].Instances[*].InstanceId \
-    --region {{ AWS_REGION }}  --output text)"
-    register: add_aws_tags_results
+  - name: get instances based on tag Name (CLUSTER_NAME)
+      community.aws.ec2_instance_info:
+        filters:
+          "tag:Name": "{{ CLUSTER_NAME }}"
+      register: tag_results
+
+  - name: add tags
+    amazon.aws.ec2_tag:
+      region: '{{ region }}'
+      resource: '{{ item.instance_id }}'
+      state: present
+      tags:
+        "{{ my_cluster_tags }}"
+    loop: '{{ tag_results.instances }}'
+    loop_control:
+      label: '{{ item.instance_id }}'
 
 - name: add Google tags to cluster
   when: 'cloud == "google"'
@@ -36,7 +39,8 @@
       scopes: "{{ scopes }}"
 
   - name: Calling google client to add tags
-    shell: "echo calling google client..."
+    community.general.gce_labels:
+      labels: { label1: test, label2: test2 }
     register: google_client_results
 
 - name: add Azure tags to cluster
