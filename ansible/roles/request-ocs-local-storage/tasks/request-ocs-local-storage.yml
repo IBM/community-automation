@@ -18,6 +18,14 @@
   register: num_workers
 
 - set_fact:
+    num_devices: 2
+  when: quickburn
+
+- name: Get number of PVs
+  shell: bash -lc "echo \"$(({{ num_workers.stdout }}*{{ num_devices }}))\""
+  register: num_pvs
+
+- set_fact:
     localstore_version: "4.6"
   when: oc_version.stdout is version('4.6', '>=')
 
@@ -45,6 +53,7 @@
   - 03.local-volumes.yaml
   - 04.storage-cluster.yaml
   - 05.set-default-storageclass.sh
+  - 46.local-volume-set.sh
 
 - name: Copy OCS scripts to dest
   copy:
@@ -91,6 +100,10 @@
 - name: Viewing local storage operator log
   debug:
     msg: "{{ localstore.stdout_lines }}"
+
+- name: Add extra quickburn device
+  shell: bash -lc "echo \"        - {{ ocs_device_2 }}\" >> {{ ocs_bastion_setup_dir }}/03.local-volumes.yaml"
+  when: quickburn and oc_version.stdout is version('4.5', '<=')
 
 - name: Install local volumes for OCS 4.5 or older
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"

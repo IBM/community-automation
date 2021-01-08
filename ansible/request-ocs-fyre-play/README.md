@@ -1,4 +1,4 @@
-# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters.
+# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters and Quickburn large clusters.
 
 ## Overview
 
@@ -19,6 +19,7 @@
 - Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
   - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the `OperatorHub` catalog.
   - Currently, on any cluster greater or equal to OCP 4.6, it will install OCS `stable-4.6` (current latest version of OCS) and Local Storage operator `4.6`. When a newer OCS version comes out then this code will need updating.
+- Quickburn large cluster support. Use additon of `-e quickburn=true` to ansible play call.
 - OCS creates the following 4 storageclass's
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
@@ -53,6 +54,11 @@ or pass parameters (This example sets storageclass `ocs-storagecluster-ceph-rbd`
 
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml -e "default_sc=ocs-storagecluster-ceph-rbd"
+```
+
+Playbook run example for `Quickburn` clusters
+```
+ansible-playbook  -i inventory request-ocs-fyre.yml -e "quickburn=true"
 ```
 
 Playbook run example if using ocs_install_vars.yaml
