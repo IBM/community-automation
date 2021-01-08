@@ -41,6 +41,10 @@
     ocs_channel: "stable-4.6"
   when: oc_version.stdout is version('4.6', '>=')
 
+- name: Add extra quickburn device
+  shell: bash -lc "echo \"        - {{ ocs_device_2 }} >> files/03.local-volumes.yaml\""
+  when: quickburn and oc_version.stdout is version('4.5', '<=')
+
 - name: Generate OCS install files from templates and copy to dest
   template:
     src: "{{ item }}.j2"
@@ -100,10 +104,6 @@
 - name: Viewing local storage operator log
   debug:
     msg: "{{ localstore.stdout_lines }}"
-
-- name: Add extra quickburn device
-  shell: bash -lc "echo \"        - {{ ocs_device_2 }} >> {{ ocs_bastion_setup_dir }}/03.local-volumes.yaml\""
-  when: quickburn and oc_version.stdout is version('4.5', '<=')
 
 - name: Install local volumes for OCS 4.5 or older
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
