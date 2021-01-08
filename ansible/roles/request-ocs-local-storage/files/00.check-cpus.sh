@@ -4,9 +4,9 @@ my_dir=$(dirname $(readlink -f $0))
 
 cat /etc/os-release | grep Ubuntu
 if [ $? -eq 0 ]; then
-   apt install jq -y > /dev/null 
+   apt install jq -y
 else
-   yum install jq -y > /dev/null
+   yum install jq -y 
 fi
 CPUS=$(oc get node -o json | jq -r '.items[] | select(.metadata.labels["node-role.kubernetes.io/worker"] != null) | .status.capacity.cpu' | awk '{s+=$1} END {print s}')
 echo "Worker CPUs is total $CPUS. "

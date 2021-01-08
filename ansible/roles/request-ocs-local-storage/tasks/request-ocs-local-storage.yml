@@ -50,27 +50,10 @@
   - 01.ocs-operator.yaml
   - 02.install-local-storage-operator.sh
   - 02.local-storage-operator.yaml
+  - 03.local-volumes.yaml
   - 04.storage-cluster.yaml
   - 05.set-default-storageclass.sh
   - 46.local-volume-set.sh
-
-- name: Generate local-volumes for not quickburn OCS 4.5
-  template:
-    src: "{{ item }}.j2"
-    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
-    mode: '0755'
-  when: not quickburn and oc_version.stdout is version('4.5', '<=')
-  with_items:
-  - 03.local-volumes.yaml
-
-- name: Generate local-volumes for quickburn OCS 4.5
-  template:
-    src: "{{ item }}.j2"
-    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
-    mode: '0755'
-  when: quickburn and oc_version.stdout is version('4.5', '<=')
-  with_items:
-  - 03.local-volumes-qb.yaml
 
 - name: Copy OCS scripts to dest
   copy:
@@ -118,6 +101,10 @@
   debug:
     msg: "{{ localstore.stdout_lines }}"
 
+- name: Add extra quickburn device
+  shell: bash -lc "echo \"        - {{ ocs_device_2 }} >> {{ ocs_bastion_setup_dir }}/03.local-volumes.yaml\""
+  when: quickburn and oc_version.stdout is version('4.5', '<=')
+
 - name: Install local volumes for OCS 4.5 or older
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
   when: oc_version.stdout is version('4.5', '<=')
@@ -126,7 +113,7 @@
   register: localvolumes
 
 - name: Viewing local volumes log
-  when: oc_version.stdout is version('4.5', '<=')
+  when: not quickburn and oc_version.stdout is version('4.5', '<=')
   debug:
     msg: "{{ localvolumes.stdout_lines }}"
 
