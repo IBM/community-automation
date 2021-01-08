@@ -42,7 +42,7 @@
   when: oc_version.stdout is version('4.6', '>=')
 
 - name: Add extra quickburn device
-  shell: bash -lc "echo \"        - {{ ocs_device_2 }} >> templates/03.local-volumes.yaml.j2\""
+  shell: bash -lc "echo \"        - {{ ocs_device_2 }}\" >> templates/03.local-volumes.yaml.j2"
   when: quickburn and oc_version.stdout is version('4.5', '<=')
 
 - name: Generate OCS install files from templates and copy to dest
