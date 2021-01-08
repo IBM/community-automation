@@ -3,10 +3,10 @@
   when: 'cloud == "aws"'
   block:
   - name: get instances based on tag Name (CLUSTER_NAME)
-      community.aws.ec2_instance_info:
-        filters:
-          "tag:Name": "{{ CLUSTER_NAME }}"
-      register: tag_results
+    community.aws.ec2_instance_info:
+      filters:
+        "tag:Name": "{{ CLUSTER_NAME }}"
+    register: tag_results
 
   - name: add tags
     amazon.aws.ec2_tag:
