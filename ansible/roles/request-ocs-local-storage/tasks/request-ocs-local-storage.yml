@@ -113,7 +113,7 @@
   register: localvolumes
 
 - name: Viewing local volumes log
-  when: not quickburn and oc_version.stdout is version('4.5', '<=')
+  when: oc_version.stdout is version('4.5', '<=')
   debug:
     msg: "{{ localvolumes.stdout_lines }}"
 
