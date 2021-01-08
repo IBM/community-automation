@@ -9,14 +9,6 @@
   with_items:
   - directory
 
-- name: Install jq on Redhat
-  shell: bash -lc "yum install jq -y > /dev/null"
-  when: ansible_facts['os_family'] == "RedHat"
-
-- name: Install jq on Unbuntu
-  shell: bash -lc "apt install jq -y > /dev/null"
-  when: ansible_facts['os_family'] == "Debian"
-
 - name: Get ocs version major.minor
   shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
   register: oc_version
@@ -30,7 +22,7 @@
   when: quickburn
 
 - name: Get number of PVs
-  shell: bash -lc "echo '{{ num_workers.stdout }}*{{ num_devices }}' | bc -l"
+  shell: bash -lc "echo \"$(({{ num_workers.stdout }}*{{ num_devices }}))\""
   register: num_pvs
 
 - set_fact:
