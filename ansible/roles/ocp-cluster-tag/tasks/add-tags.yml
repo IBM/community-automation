@@ -5,7 +5,7 @@
   - name: get instances based on tag Name (CLUSTER_NAME)
     community.aws.ec2_instance_info:
       filters:
-        "tag:Name": "{{ CLUSTER_NAME }}"
+        "tag:Name": "{{ CLUSTER_NAME }}*"
     register: tag_results
 
   - name: add tags
