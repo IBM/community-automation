@@ -14,7 +14,7 @@
       resource: '{{ item.instance_id }}'
       state: present
       tags:
-        "{{ my_cluster_tags }}"
+        "{{ cluster_tags }}"
     loop: '{{ tag_results.instances }}'
     loop_control:
       label: '{{ item.instance_id }}'
@@ -22,21 +22,24 @@
 - name: add Google tags to cluster
   when: 'cloud == "google"'
   block:
-  vars: 
-    service_account_file: /workspace/creds.gcp.json
-    project: ashworth-test
-    auth_kind: serviceaccount
-    scopes: "https://www.googleapis.com/auth/compute"
+  - name: get info on an instance
+    gcp_compute_instance_info:
+      zone: "{{ google_zone }}"
+      filters:
+         - name = "{{ google_instance_filter }}*
+      project: "{{ google_project }}"
+      auth_kind: "{{ google_auth_kind }}"
+      service_account_file: "{{ google_account_file }}"
+    register: gce_results
 
-  - name: Allocate an IP Address
-    gcp_compute_address:
-      state: present
-      name: 'test-address1'
-      region: 'us-west1'
-      project: "{{ project }}"
-      auth_kind: "{{ auth_kind }}"
-      service_account_file: "{{ service_account_file }}"
-      scopes: "{{ scopes }}"
+  - debug:
+      msg: "{{ gce_results }}"
+
+  - debug:
+      msg: "{{ item.name }}"
+    loop: "{{ gce_results.resources }}"
+    loop_control:
+      label: "{{ item.name }}"
 
   - name: Calling google client to add tags
     community.general.gce_labels:

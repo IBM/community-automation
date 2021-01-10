@@ -1,1 +1,6 @@
 ---
+"google_project": "YOUR_GOOGLE_PROJECT"   # example: oceanic-guard-191815
+"google_zone": "YOUR_GOOGLE_ZONE"
+"google_auth_kind: "serviceaccount"
+"google_instance_filter": "filter_specific_instances"
+"google_account_file": "YOUR_ACCOUNT_JSON_FILE_REFERENCE"  #  example: "/workspace/creds.gcp.json"
