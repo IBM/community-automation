@@ -21,7 +21,7 @@
 #   values: "3day|week|month|quarter|half|YYYY-MM-DD (Azure)"
 #
 # content team tags "{ cluster: {{ CLUSTER_NAME }}, owner: someone@us.ibm.com, team: Content, Usage: temp, Usage_desc: your_description, Review_frequency: week }"
-"cluster_tags:": "{ cluster: {{ CLUSTER_NAME }}, owner: someone@us.ibm.com }"
+"cluster_tags": "{ cluster: {{ CLUSTER_NAME }}, owner: someone@us.ibm.com }"
 
 # Deployment Details
 "admin_task": "provision" # delete|provision
