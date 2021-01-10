@@ -20,7 +20,7 @@
       label: '{{ item.instance_id }}'
 
 - name: add Google tags to cluster
-  when: 'cloud == "google"'
+  when: 'cloud == "google" and admin_task == "provision"'
   block:
   - name: get info on an instance
     gcp_compute_instance_info:
@@ -47,14 +47,14 @@
     register: google_client_results
 
 - name: add Azure tags to cluster
-  when: 'cloud == "azure"'
+  when: 'cloud == "azure" and admin_task == "provision"'
   block:
   - name: Calling azure client to add tags
     shell: "echo calling azure client..."
     register: azure_client_results
 
 - name: add ibmcloud tags to cluster
-  when: 'cloud == "ibmcloud"'
+  when: 'cloud == "ibmcloud" and admin_task == "provision"'
   block:
   - name: Calling ibmcloud client to add tags
     shell: "echo calling ibmcloud client..."
