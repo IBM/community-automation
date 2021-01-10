@@ -1,6 +1,6 @@
 ---
 - name: add AWS tags to cluster
-  when: 'cloud == "aws"'
+  when: 'cloud == "aws" and admin_task == "provision"'
   block:
   - name: get instances based on tag Name (CLUSTER_NAME)
     community.aws.ec2_instance_info:
