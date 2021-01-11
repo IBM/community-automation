@@ -16,6 +16,11 @@ This provisioning play is used to create OCP cluster on all cloud (AWS,vsphere, 
 - know your cloud credentials
 - If you want to use with VMWare, the RHACM or Hive OCP instance must live inside your vCenter in order for the Redhat OCP IPI installer to work properly. 
 
+## Supporting roles
+See the following readmes for details about the roles
+- [ocp-login](https://https://github.com/IBM/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
+- [ocp-cluster-tag](https://github.com/rayashworth/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
+
 ## Tagging clusters
 
 Details on tagging your cluster can be found at the following link.  
@@ -50,6 +55,11 @@ cp examples/\<cloud\>-vars.yaml .
 ```
 
 edit common-vars.yaml and **\<cloud\>**-vars.yaml
+
+Run the collection install command
+```
+# ansible-galaxy collection install -r requirements.yml
+``
 
 ## Create cluster
 

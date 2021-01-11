@@ -9,4 +9,9 @@
     # used to login into RHACM/HIVE cluster
     - ocp-login
     - provision-ocp-cluster
-    - ocp-cluster-tag
+
+tasks:
+  - name: Include tag role when provisioning 
+    include_role:
+      name: ocp-cluster-tag
+    when: 'admin_task == "provision"'  
