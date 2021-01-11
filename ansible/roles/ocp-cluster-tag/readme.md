@@ -11,6 +11,8 @@ Create the following file in your play
         source: https://galaxy.ansible.com
       - name: community.aws
         source: https://galaxy.ansible.com
+      - name: google.cloud
+        source: https://galaxy.ansible.com
 ```
 
 Run the collection install command
@@ -29,4 +31,7 @@ Google prereq
 # pip3 insetall google-api-python-client
 # pip3 install google-auth
 # pip3 insteall google-auth-httplib2
+
+Azure prereq
+
 ```

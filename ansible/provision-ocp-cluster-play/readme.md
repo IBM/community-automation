@@ -23,21 +23,10 @@ See the following readmes for details about the roles
 
 ## Tagging clusters
 
-Details on tagging your cluster can be found at the following link.  
+Example tags can be found at the following link.  (Used by content team)
 [Interal IBM Playbook](https://playbook.cloudpaklab.ibm.com/public-cloud-management/#Info_Needed_for_Tags)
 
-Tag settings can be found in common-vars.yml  
-
-**Current tags** used by cleanup script
-| Tag  | Values  | Description  |
-|---|---|---|
-| owner  | email   | on google use FirstnameLastname  |
-| cluster  | name of cluster |   |
-| Review_freq  |   | 3day,week,month,quarter, half   |
-| Usage |     | temp, demo, infra (long term, must be reviewed regularly ) |
-| Usage_desc | description | |
-| team | team name | "Team" when Azure |
-| Delete_date | YYYY-MM-DD | Azure ONLY |
+Tag settings can be found in common-vars.yml. See vars file for tag details
 
 ## Important files
 
@@ -48,6 +37,7 @@ Tag settings can be found in common-vars.yml
 ## variable files to be edited
 
 copy appropriate files from the examples folder to the parent play folder
+
 ```
 cp exampeles/inventory .
 cp examples/common-vars.yaml .
