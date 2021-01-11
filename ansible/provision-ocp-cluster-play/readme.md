@@ -49,7 +49,7 @@ edit common-vars.yaml and **\<cloud\>**-vars.yaml
 Run the collection install command
 ```
 # ansible-galaxy collection install -r requirements.yml
-``
+```
 
 ## Create cluster
 
