@@ -10,7 +10,7 @@
 
   - name: add tags
     amazon.aws.ec2_tag:
-      region: '{{ region }}'
+      region: '{{ AWS_REGION }}'
       resource: '{{ item.instance_id }}'
       state: present
       tags:
