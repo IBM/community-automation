@@ -1,0 +1,17 @@
+#!/bin/bash
+
+my_dir=$(dirname $(readlink -f $0))
+
+def_sc="{{ setdefault }}"
+if [ "$def_sc" == "True" ]; then
+   current_default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
+   if [[ -z $current_default_storage_class ]]; then
+     echo "No default storage class defined"
+   else
+     echo "Set storageclass $current_default_storage_class to not be default"
+     oc patch storageclass $current_default_storage_class -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
+   fi
+   echo "Set storageclass {{ default_sc }} to be the default."
+   oc patch storageclass {{ default_sc }} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+   oc get sc
+fi

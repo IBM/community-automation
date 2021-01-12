@@ -1,3 +1,3 @@
-ocs_channel: stable-4.4
+ocs_channel: "stable-4.5"
 ocs_bastion_setup_dir: ~/setup-files/ocs-setup
 setdefault: false

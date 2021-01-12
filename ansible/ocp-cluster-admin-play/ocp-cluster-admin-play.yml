@@ -1,13 +1,11 @@
 ---
-  - name: Install aws-cli
+  - name: "{{ admin_task }} an {{ cloud }} cluster"
+    hosts: bastion
     vars_files:
       - admin-vars.yml
-    include_role:
-      name: aws-cli-install
-      
-  - name: {{ task }} an AWS cluster
-    include_role:
-      name: {{ task }}_aws_cluster
-    environment:
-      AWS_ACCESS_KEY_ID: ".:{{ aws_access_key_id }}"
-      AWS_SECRET_ACCESS_KEY: ".:{{ aws_secret_access_key }}"
+    environment: 
+      AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+      AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    roles:
+      - "{{ cloud }}-cli-install"
+      - "{{ admin_task }}-{{ cloud }}-cluster"

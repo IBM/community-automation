@@ -155,15 +155,17 @@ EOF
 # check if storage classes have been created
 echo "checking for Storage Classes"
 scCounter=0
-until [ $( oc get sc | grep openshift | wc -l) -ge 3 ]
+rc=1
+until [ $rc -eq 0 ]
 do
   echo "Waiting for storage classes to come up: $(date)"
-  oc get sc
   sleep 10
   ((scCounter ++))
   if [ $scCounter -eq 60 ]; then
    exit 1
   fi
+  oc get sc --no-headers | cut -f1 -d' ' | grep noobaa >/dev/null
+  rc=$?
 done
 oc get sc
 echo "setDefault = $setDefault"

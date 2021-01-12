@@ -1,3 +1,2 @@
-cs_channel: stable-4.4 # OCS changel
 ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Default dir to copy scripts into
 setdefault: true # Set ocs cephfs storageclass as default

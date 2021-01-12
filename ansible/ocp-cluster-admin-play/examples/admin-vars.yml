@@ -1,0 +1,6 @@
+---
+"aws_access_key_id": "AWS_ACCESS_KEY_ID" 
+"aws_secret_access_key": "AWS_SECCRET_ACCESS_KEY"
+"aws_region": " "  # eg. us-east-1
+"admin_task": " " # stop|start
+"cloud": " " # aws|azure|google

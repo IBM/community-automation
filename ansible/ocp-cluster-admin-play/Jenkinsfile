@@ -9,7 +9,15 @@ def jobProps = [
 ]
 
 def paramsList = [
+    choice(name: 'cloud', choices: ['aws', 'google', 'azure'], description: 'Public Cloud choice'),
     choice(name: 'admin_task', choices: ['start', 'stop'], description: 'Action to apply to cluster.'),
+    string(name: 'cluster_name', description: 'OCP Cluster Name'),
+    string(name: 'cluster_owner', description: 'email address of cluster owner'),
+    string(name: 'aws_region', description: 'AWS Region'),
+    string(name: 'kubeadmin_user', defaultValue: 'kubeadmin', description: 'ocp administrator'),
+    password(name: 'kubeadmin_password', description: 'ocp administrator password'),
+    string(name: 'ocp_api_url', description: 'url for ocp apiserver, including port (eg. api.<cluster_name>.purple-chesterfield.com:6443'),
+    string(name: 'login_retries', defaultValue: '10', description: 'Number of time to retry login while waiting on cluster'),
     string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
     password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
   ]
@@ -24,17 +32,36 @@ timestamps {
       checkout scm
 
       stage('Cluster admin') {
+
+        wrap([$class: 'MaskPasswordsBuildWrapper',
+              varPasswordPairs: [
+                [password: "${params.aws_access_key_id}", var: 'AWS_CREDS_USR'],
+                [password: "${params.aws_secret_access_key}", var: 'AWS_CREDS_PSW'],
+                [password: "${params.kubeadmin_password}", var: 'KUBEADMIN_PSW']
+              ]
+        ]) {
+
         sh """
-          cp ./ansible/ocp-cluster-admin-play/examples/mc_vars.yml ./ansible/ocp-cluster-admin-play/
+          cp ./ansible/ocp-cluster-admin-play/examples/admin-vars.yml ./ansible/ocp-cluster-admin-play/
           cp ./ansible/ocp-cluster-admin-play/examples/inventory ./ansible/ocp-cluster-admin-play/
           ansible-playbook -i ./ansible/ocp-cluster-admin-play/inventory \
           ./ansible/ocp-cluster-admin-play/ocp-cluster-admin-play.yml \
           -e aws_access_key_id=${params.aws_access_key_id} \
           -e aws_secret_access_key=${params.aws_secret_access_key} \
-          -e task=${params.admin_task} \
-          -e arch="linux"
+          -e admin_task=${params.admin_task} \
+          -e aws_region=${params.aws_region} \
+          -e cluster_name=${params.cluster_name} \
+          -e arch="linux" \
+          -e kubeadmin_user=${params.kubeadmin_user} \
+          -e kubeadmin_password=${params.kubeadmin_password} \
+          -e ocp_api_url=${params.ocp_api_url} \
+          -e login_retries=${params.login_retries} \
+          -e cluster_owner=${params.cluster_owner} \
+          -e cloud="${params.cloud}"
         """.stripIndent()
-      }
+        } //  end withcredentials()
+      //} // end withenv()
+     } // end stage
    }
   }
 }

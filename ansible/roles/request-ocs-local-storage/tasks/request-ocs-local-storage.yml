@@ -1,0 +1,162 @@
+---
+# tasks ocs  install
+
+- name: Create ocs setup directory
+  file:
+    path: "{{ ocs_bastion_setup_dir }}"
+    state: "{{ item }}"
+    mode: '0755'
+  with_items:
+  - directory
+
+- name: Get ocs version major.minor
+  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
+  register: oc_version
+
+- name: Get number of workers
+  shell: bash -lc "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l"
+  register: num_workers
+
+- set_fact:
+    num_devices: 2
+  when: quickburn
+
+- name: Get number of PVs
+  shell: bash -lc "echo \"$(({{ num_workers.stdout }}*{{ num_devices }}))\""
+  register: num_pvs
+
+- set_fact:
+    localstore_version: "4.6"
+  when: oc_version.stdout is version('4.6', '>=')
+
+- set_fact:
+    local_storage_namespace: openshift-local-storage
+  when: oc_version.stdout is version('4.6', '>=')
+
+- set_fact:
+    device_set: ocs-deviceset-localblock
+  when: oc_version.stdout is version('4.6', '>=')
+
+- set_fact:
+    ocs_channel: "stable-4.6"
+  when: oc_version.stdout is version('4.6', '>=')
+
+- name: Generate OCS install files from templates and copy to dest
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
+    mode: '0755'
+  with_items:
+  - 01.ocs-operator.yaml
+  - 02.install-local-storage-operator.sh
+  - 02.local-storage-operator.yaml
+  - 03.local-volumes.yaml
+  - 04.storage-cluster.yaml
+  - 05.set-default-storageclass.sh
+  - 46.local-volume-set.sh
+
+- name: Copy OCS scripts to dest
+  copy:
+    src: files/
+    dest: "{{ ocs_bastion_setup_dir }}/"
+    mode: '0755'
+
+- name: Check for Min CPUs of 48
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.check-cpus.sh"
+  args:
+      warn: false
+  register: checkcpus
+
+- name: Output available CPUs
+  debug:
+    msg: "{{ checkcpus.stdout_lines }}"
+
+- name: Install OCS labels on worker nodes
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.label-nodes.sh"
+  args:
+      warn: false
+  register: installlabels
+
+- name: Viewing labels install log
+  debug:
+    msg: "{{ installlabels.stdout_lines }}"
+
+- name: Install OCS operator
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/01.install-ocs-operator.sh"
+  args:
+      warn: false
+  register: ocsoperator
+
+- name: Viewing OCS operator install log
+  debug:
+    msg: "{{ ocsoperator.stdout_lines }}"
+
+- name: Install local storage operator
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/02.install-local-storage-operator.sh"
+  args:
+      warn: false
+  register: localstore
+
+- name: Viewing local storage operator log
+  debug:
+    msg: "{{ localstore.stdout_lines }}"
+
+- name: Add extra quickburn device
+  shell: bash -lc "echo \"        - {{ ocs_device_2 }}\" >> {{ ocs_bastion_setup_dir }}/03.local-volumes.yaml"
+  when: quickburn and oc_version.stdout is version('4.5', '<=')
+
+- name: Install local volumes for OCS 4.5 or older
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
+  when: oc_version.stdout is version('4.5', '<=')
+  args:
+      warn: false
+  register: localvolumes
+
+- name: Viewing local volumes log
+  when: oc_version.stdout is version('4.5', '<=')
+  debug:
+    msg: "{{ localvolumes.stdout_lines }}"
+
+- name: OCS 4.6 auto discovery of local volumes
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volumes-discovery.sh"
+  when: oc_version.stdout is version('4.6', '>=')
+  args:
+      warn: false
+  register: autovolumediscovery
+
+- name: Viewing auto discovery of local-volumes log
+  when: oc_version.stdout is version('4.6', '>=')
+  debug:
+    msg: "{{ autovolumediscovery.stdout_lines }}"
+
+- name: OCS 4.6 create localvolumeset
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volume-set.sh"
+  when: oc_version.stdout is version('4.6', '>=')
+  args:
+      warn: false
+  register: volumeset
+
+- name: Viewing localvolumeset log
+  when: oc_version.stdout is version('4.6', '>=')
+  debug:
+    msg: "{{ volumeset.stdout_lines }}"
+
+- name: Install storagecluster
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
+  args:
+      warn: false
+  register: storagecluster
+
+- name: Viewing storagecluster log
+  debug:
+    msg: "{{ storagecluster.stdout_lines }}"
+
+- name: Set default storageclass to {{ default_sc }}  {{ setdefault }}
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/05.set-default-storageclass.sh"
+  args:
+      warn: false
+  register: storageclass
+
+- name: Viewing set default storageclass log
+  debug:
+    msg: "{{ storageclass.stdout_lines }}"

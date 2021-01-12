@@ -1,2 +1,1 @@
-cs_channel: "@@@VERSION@@@" # OCS changel
 setdefault: "@@@SCDEDAULT@@@" # Set ocs cephfs storageclass as default

@@ -3,7 +3,7 @@
 ## Overview
 
 
-- Installs `Openshift Contianer Storage 4.4` by default onto an AWS or VMware OCP cluster.
+- Installs `Openshift Contianer Storage 4.5` by default onto a OCP 4.4.15 or greater AWS or VMware OCP cluster.
 - Creates 3 storageclasses
    - `ocs-storagecluster-ceph-rbd` for block storage
    - `ocs-storagecluster-cephfs` for file storage
