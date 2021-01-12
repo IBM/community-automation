@@ -3,7 +3,7 @@
 ## Overview
 
 - Installs Openshift Container Storage (OCS) on fyre 4.4, 4.5 and 4.6 or newer clusters (`Takes between 8 and 10 minutes`).
-  To begin clone this repository to a VM that meets the ansible requirements specified here, https://github.com/wkrapohl/community-automation/tree/master/ansible. Then cd to the request-ocs-fyre-play dir.
+  To begin clone this repository to a VM that meets the ansible requirements specified in README here, https://github.com/wkrapohl/community-automation/tree/master/ansible. Then cd to the request-ocs-fyre-play dir.
   - Install using the `fyre inf` node.
     - Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
        - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need to enter into the inventory file your fyre root user PW  and inf IP.
