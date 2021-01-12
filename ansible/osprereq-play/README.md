@@ -3,7 +3,7 @@
 ## Assumptions:
 
 - Fyre systems do not have unzip. This is the basic install of that package
-- Check the roles/osprereqs/*.yml to review the actual list of packages
+- Check the roles/osprereqs/tasks/*.yml to review the actual list of packages
 
 ## Setting up inventory
 
