@@ -1,0 +1,7 @@
+[hosts]
+rhel1.fyre.ibm.com
+sles1.fyre.ibm.com
+ub1.fyre.ibm.com
+
+[hosts:vars]
+ansible_user=root
