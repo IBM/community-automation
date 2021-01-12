@@ -3,10 +3,14 @@
 ## Overview
 
 - Installs Openshift Container Storage (OCS) on fyre 4.4, 4.5 and 4.6 or newer clusters (`Takes between 8 and 10 minutes`).
-  - Install using the `fyre inf` node. Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
-    - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need your fyre root user PW to use.
-  - Install using a `local ubuntu VM` using `oc login`. To run oc login locally on an ubuntu VM to your fyre cluster, copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the ubuntu VM.
-- To install OCS on Fyre `bare metal` clusters requires clusters with follow min requirements.
+  To begin clone this repository to a VM that meets the ansible requirements specified here, https://github.com/wkrapohl/community-automation/tree/master/ansible. Then cd to the request-ocs-fyre-play dir.
+  - Install using the `fyre inf` node.
+    - Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
+       - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need to enter into the inventory file your fyre root user PW  and inf IP.
+  - Install using a `local  ubuntu VM` using `oc login`.
+    - Run oc login locally on local VM to your fyre cluster.
+    - Copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the local VM.
+- To install OCS on Fyre `bare metal` clusters requires clusters with follow min resource requirements.
   - Min of 3 worker nodes.
   - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 6 worker nodes then each worker needs of min of 8 CPUs.
   - Each worker should have 64G of memory, but 32G will allow you to do a min install.
