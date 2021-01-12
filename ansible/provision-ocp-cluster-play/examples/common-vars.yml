@@ -29,4 +29,4 @@
 "SSH_PUBLIC_KEY": "<public key>"
 "BASE_DOMAIN": "purple-chesterfield.com"
 "OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.8-x86_64"
-"PULL_SECRET": "<pull_secret>"
+"PULL_SECRET": '<pull_secret>'

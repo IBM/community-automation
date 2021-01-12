@@ -34,6 +34,8 @@ items:
         name: {{ CLUSTER_NAME }}-imageset
       installConfigSecretRef:
         name: {{ CLUSTER_NAME }}-install-config
+    pullSecretRef:
+      name: {{ CLUSTER_NAME }}-pull-secret
   status: {}
 - apiVersion: hive.openshift.io/v1
   kind: MachinePool
@@ -94,9 +96,18 @@ items:
           password: {{ VCENTER_PASSWORD }}
           username: {{ VCENTER_ADMIN_USER }}
           vCenter:  {{ VCENTER_SERVER }}
-      pullSecret: {{ PULL_SECRET }}
+      pullSecret: ""
       sshKey: {{ SSH_PUBLIC_KEY }}
   type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-pull-secret
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    .dockerconfigjson: '{{ PULL_SECRET }}'
+  type: kubernetes.io/dockerconfigjson
 - apiVersion: v1
   kind: Secret
   metadata:
