@@ -3,20 +3,20 @@
 ## Overview
 
 - Installs Openshift Container Storage (OCS) on fyre 4.4, 4.5 and 4.6 or newer clusters (`Takes between 8 and 10 minutes`).
-  - It can install using the `fyre inf` node. Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
+  - Install using the `fyre inf` node. Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
     - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need your fyre root user PW to use.
-  - It can install using a `local ubuntu VM` using `oc login`. To run oc login locally on an ubuntu VM, copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the ubuntu VM.
+  - Install using a `local ubuntu VM` using `oc login`. To run oc login locally on an ubuntu VM to your fyre cluster, copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the ubuntu VM.
 - To install OCS on Fyre `bare metal` clusters requires clusters with follow min requirements.
   - Min of 3 worker nodes.
   - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 6 worker nodes then each worker needs of min of 8 CPUs.
-  - Each worker should have 64G of memory, but 32G will allow you to install.
+  - Each worker should have 64G of memory, but 32G will allow you to do a min install.
   - Each worker must have an `additional disk` on it (/dev/vdb disk). The sum of all `additional disks` across all workers will be the total amount of OCS storage you will have available. Min amount across all workers is 200G.
     - Example, you have 3 workers with `additional disks` of 500G then you have total OCS storage of 1.5T.
-  - To create Fyre clusters with the resources needed for OCS by one of the following ways.
-    - Use the fyre.ibm.com GUI OCP+ cluster option with large size selected. This is the smallest cluster you can use with OCS on it.
-    - Use the Fyre API to create an OCP+ cluster. See example of API use in the examples folder, `example_fyre_api`.
-    - Create an OCP+ cluster using the Ansible play in this repo called `request-ocp-fyre-play`. Use the example folder the  ocp_vars_example.yaml to modify the size of the cluster.
-    - From fyre.ibm.com use the Quickburn large cluster support. Use the additon of `-e quickburn=true` to the ansible play call.  
+- To create Fyre clusters with the resources needed for OCS, use one of the following methods.
+  - Use the fyre.ibm.com GUI OCP+ cluster option with large size selected. This is the smallest cluster you can use with OCS on it.
+  - Use the Fyre API to create an OCP+ cluster. See example of API use in the examples folder, `example_fyre_api`.
+  - Create an OCP+ cluster using the Ansible play in this repo called `request-ocp-fyre-play`. Use from the example folder the  `ocp_vars_example.yaml` to modify the size of the cluster.
+  - From fyre.ibm.com use the Quickburn large cluster support. Use the additon of `-e quickburn=true` to the ansible play call.  
 - Dynamically installs the Local Storage operator found in the `OperatorHub` to create a base `localblock` storageclass, which uses the /dev/vdb `addtional disk` on each worker node, for OCS to use.
 - Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
   - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the `OperatorHub` catalog.
