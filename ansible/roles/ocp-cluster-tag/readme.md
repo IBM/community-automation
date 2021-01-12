@@ -3,9 +3,12 @@
 Details about tagging can be found at the followign playbook link  
 https://playbook.cloudpaklab.ibm.com/public-cloud-management/
 
-Create the following file in your play
+## NOTES
 
-NOTE: ansible playbook was run on Ubuntu 18.04
+- ansible playbook was run on Ubuntu 18.04
+- This role only works with AWS at this time.
+
+Create a file called requirements.yml containing the following content
 
 ```
 ---
@@ -38,6 +41,14 @@ Google prereq
 Azure prereq
 
 ```
+
+## Variables used for tagging
+
+- cluster_tags
+- AWS_REGION
+- cloud (aws, google, azure, vsphere)
+- AWS_ACCESS_KEY_ID
+- AWS_SECRET_ACCESS_KE
 
 ## Cluster tag variable
 The cluster tag variable is a set of 1 to many key/value pairs as follows

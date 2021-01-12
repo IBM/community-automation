@@ -14,10 +14,12 @@ This provisioning play is used to create OCP cluster on all cloud (AWS,vsphere, 
 
 - An instance of RHACM or Hive
 - know your cloud credentials
-- If you want to use with VMWare, the RHACM or Hive OCP instance must live inside your vCenter in order for the Redhat OCP IPI installer to work properly. 
+- If you want to use with VMWare, the RHACM or Hive OCP instance must live inside your vCenter in order to install into your vCenter. The Redhat OCP IPI installer does not work if RHACM/hive is outside the vCenter.  However the hive instance in your vCenter can install to public clouds (AWS, google, azure)
 
 ## Supporting roles
+
 See the following readmes for details about the roles
+
 - [ocp-login](https://https://github.com/IBM/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
 - [ocp-cluster-tag](https://github.com/rayashworth/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
 
