@@ -38,3 +38,10 @@ Google prereq
 Azure prereq
 
 ```
+
+## Cluster tag variable
+The cluster tag variable is a set of 1 to many key/value pairs as follows
+
+```
+"cluster_tags": { cluster: <cluster_name>, owner: <email>, etc... }
+```
