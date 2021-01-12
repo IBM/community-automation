@@ -27,7 +27,7 @@ NUM_LOCAL_PVS={{ num_pvs.stdout }}
 echo -n "Waiting for pv pods to come up for all nodes "
 COUNTER=60
 PV_COUNT=$(oc get pv --no-headers=true | grep local-pv | grep Available | wc -l)
-while [[ $PV_COUNT -ne $NUM_LOCAL_PVS ]]
+while [[ $PV_COUNT -lt $NUM_LOCAL_PVS ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
