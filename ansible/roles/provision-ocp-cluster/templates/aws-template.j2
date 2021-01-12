@@ -28,8 +28,8 @@ items:
         name: {{ CLUSTER_NAME }}-imageset
       installConfigSecretRef:
         name: {{ CLUSTER_NAME }}-install-config
-      pullSecretRef:
-        name: {{ CLUSTER_NAME }}-pull-secret
+    pullSecretRef:
+      name: {{ CLUSTER_NAME }}-pull-secret
   status: {}
 - apiVersion: hive.openshift.io/v1
   kind: MachinePool
