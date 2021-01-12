@@ -9,17 +9,19 @@
 - To install OCS on Fyre `bare metal` clusters requires clusters with follow min requirements.
   - Min of 3 worker nodes.
   - Total CPUs across all workers must total 48 CPUs. For example if you have only three worker nodes then you require each worker to have 16 CPUs each. If you have 6 worker nodes then each worker needs of min of 8 CPUs.
-  - Each worker must have 64G of memory.
-  - Each worker must have an `additional disk` on it (/dev/vdb disk). The sum of all `additional disks` across all workers will be the total amount of OCS storage you will have available. Min amount across all workers is 500G.
+  - Each worker should have 64G of memory, but 32G will allow you to install.
+  - Each worker must have an `additional disk` on it (/dev/vdb disk). The sum of all `additional disks` across all workers will be the total amount of OCS storage you will have available. Min amount across all workers is 200G.
     - Example, you have 3 workers with `additional disks` of 500G then you have total OCS storage of 1.5T.
-  - The only current way to create Fyre clusters with the resources needed for OCS is by two ways.
-    - Use the Fyre API to create an OCP cluster. See example of API use in the examples folder, `example_fyre_api`.
-    - Create an OCP cluster using the Ansible play in this repo called `request-ocp-fyre-play`.
+  - To create Fyre clusters with the resources needed for OCS by one of the following ways.
+    - Use the fyre.ibm.com GUI OCP+ cluster option with large size selected. This is the smallest cluster you can use with OCS on it.
+    - Use the Fyre API to create an OCP+ cluster. See example of API use in the examples folder, `example_fyre_api`.
+    - Create an OCP+ cluster using the Ansible play in this repo called `request-ocp-fyre-play`. Use the example folder the  ocp_vars_example.yaml to modify the size of the cluster.
+    - From fyre.ibm.com use the Quickburn large cluster support. Use the additon of `-e quickburn=true` to the ansible play call.  
 - Dynamically installs the Local Storage operator found in the `OperatorHub` to create a base `localblock` storageclass, which uses the /dev/vdb `addtional disk` on each worker node, for OCS to use.
 - Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
   - On OCP 4.4 and 4.5 clusters it will install and run the `stable-4.5` OCS operator and the `4.5` Local Storage operator found in the `OperatorHub` catalog.
   - Currently, on any cluster greater or equal to OCP 4.6, it will install OCS `stable-4.6` (current latest version of OCS) and Local Storage operator `4.6`. When a newer OCS version comes out then this code will need updating.
-- Quickburn large cluster support. Use additon of `-e quickburn=true` to ansible play call.
+
 - OCS creates the following 4 storageclass's
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
@@ -45,7 +47,7 @@
 
 ## Run playbook
 
-Once you have configured the `inventory` file, and done a `oc login`, run the playbook using:
+Once you have configured the `inventory` file, or done a `oc login`, run the playbook using:
 
 ```
 ansible-playbook  -i inventory request-ocs-fyre.yml
