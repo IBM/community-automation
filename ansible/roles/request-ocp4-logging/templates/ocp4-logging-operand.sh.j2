@@ -29,7 +29,7 @@ while [[ $log_operator_sleep_count -gt 0 ]]; do
   fi
 done
 
-minor_version=$(oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.')
+minor_version=$(oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.' | rev)
 echo "OCP Minor version is $minor_version"
 echo "Starting logging operand"
 cp {{ logging_bastion_setup_dir }}/logging-operand.yaml.template {{ logging_bastion_setup_dir }}/logging-operand.yaml
