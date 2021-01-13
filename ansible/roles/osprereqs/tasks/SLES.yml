@@ -22,5 +22,5 @@
    state: present
   vars:
    packages:
-   - 'zip'
+   - 'xorg-x11-xauth'
 

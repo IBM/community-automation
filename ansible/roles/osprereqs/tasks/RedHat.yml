@@ -27,5 +27,5 @@
    skip_broken: yes
   vars:
    packages:
-   - 'zip'
+   - 'xorg-x11-xauth'
 
