@@ -11,7 +11,7 @@ Make sure your ansible client is at version 2.9 or greater
 
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
-|common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none
+|common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none|
 |common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
