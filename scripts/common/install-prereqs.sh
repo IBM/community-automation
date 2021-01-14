@@ -4,7 +4,7 @@
 apt -y update
 apt -y upgrade
 apt-get -y remove --purge ansible
-apt-add-repository ppa:ansible/ansible
+apt-add-repository -y ppa:ansible/ansible
 apt -y update
 apt -y install ansible
 
