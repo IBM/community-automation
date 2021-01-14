@@ -11,10 +11,11 @@
     - name: Add deadsnakes
       ansible.builtin.apt_repository:
         repo: ppa:deadsnakes
+      when: ansible_distribution == 'Ubuntu'
 
     - name: install python3 ubuntu
       raw: apt -y update && apt install -y python3.9
-      when: check_python.rc != 0
+      when: check_python.rc != 0 and ansible_distribution == 'Ubuntu'
 
     - name: check pip3
       raw: test -e /usr/local/bin/pip3
@@ -24,7 +25,7 @@
 
     - name: install pip3  ubuntu
       raw: apt -y update && apt install -y python3-pip
-      when: python3_pip.rc != 0
+      when: python3_pip.rc != 0 and ansible_distribution == 'Ubuntu'
 
     - name: install required pyhon libaries
       pip:
