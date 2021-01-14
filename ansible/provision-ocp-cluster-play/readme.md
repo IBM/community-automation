@@ -6,9 +6,10 @@ This provisioning play is used to create OCP cluster on all cloud (AWS,vsphere, 
 
 ## How to use
 
+- You can use a shared instance of ACM or Hive, (internal to IBM, contact Ray Ashworth Or Walt Krapohl for details)  
+alternatively
 - You can install hive on your own OCP cluster [Hive Repository](https://github.com/openshift/hive)
 - You can install Redhat Advanced Cluster Management on your OCP cluster [Installing RHACM operator](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.0/html-single/install/index#installing-red-hat-advanced-cluster-management-from-the-console)
-- You can use a shared instance of ACM or Hive, (internal to IBM, contact Ray Ashworth Or Walt Krapohl for details)
 
 ## Prereqs
 
@@ -30,11 +31,15 @@ Example tags can be found at the following link.  (Used by content team)
 
 Tag settings can be found in common-vars.yml. See vars file for tag details
 
+## Top level folder
+
+community-automation/ansible/provision-ocp-cluster-play
+
 ## Important files
 
 - examples/inventory  # example inventory file, rarely changes
-- examples/**\<cloud\>**-vars.yaml # Contains cloud specific variables
-- examples/common-vars.yaml # contains details about your provisioning request
+- examples/**CLOUD_REF**-vars.yml # Contains cloud specific variables ( example: **aws-vars**.yml )
+- examples/common-vars.yml # contains details about your provisioning request
 
 ## variable files to be edited
 
@@ -62,11 +67,19 @@ ansible-playbook -i inventory provision-ocp-cluster-play.yml
 
 When choosing to add variables to command line
 ```
-ansible-playbook -i inventory provision-ocp-cluster-play.yml -e "admin_task=provision" -e "cloud=aws" 
+ansible-playbook -i inventory provision-ocp-cluster-play.yml -e "CLSUTER_NAME=your_cluster_name" -e "admin_task=provision" -e "cloud=aws" 
 ```
 
 ## Destroy cluster
 
+Following pulls cluster name from common-vars.yml
+
 ```
 ansible-playbook -i inventory provision-ocp-cluster-play.yml -e "admin_task=delete" 
+```
+
+Following uses command line to specify extra params that will overwrite what is in common-var.yml
+
+```
+ansible-playbook -i inventory provision-ocp-cluster-play.yml -e "CLSUTER_NAME=your_cluster_name" -e "admin_task=delete" -e "cloud=aws"
 ```

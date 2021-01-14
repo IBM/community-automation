@@ -45,7 +45,7 @@ items:
       aws:
         rootVolume:
           iops: 100
-          size: 22
+          size: {{ WORKER_VOLUME_SIZE }}
           type: gp2
         type: {{ WORKER_VM_SIZE }}  # m4.xlarge
     replicas: 3
@@ -66,9 +66,9 @@ items:
           aws:
             rootVolume:
               iops: 100
-              size: 22
+              size: {{ WORKER_VOLUME_SIZE }}
               type: gp2
-            type: {{ WORKER_VM_SIZE }}  # m4.xlarge
+            type: {{ WORKER_VM_SIZE }}  
         replicas: 3
       controlPlane:
         name: master
@@ -76,7 +76,7 @@ items:
           aws:
             rootVolume:
               iops: 100
-              size: 22
+              size: {{ MASTER_VOLUME_SIZE }}
               type: gp2
             type: {{ MASTER_VM_SIZE }} 
         replicas: 3

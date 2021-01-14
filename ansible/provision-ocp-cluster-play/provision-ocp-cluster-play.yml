@@ -5,6 +5,11 @@
     - common-vars.yml
     - "{{ cloud }}-vars.yml"
 
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+    PATH: ".:{{ ansible_env.PATH }}"
+
   roles:
     # used to login into RHACM/HIVE cluster
     - role: ocp-login

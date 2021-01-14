@@ -34,9 +34,9 @@ AWS prereq
 # pip3 install botocore
 
 Google prereq
-# pip3 insetall google-api-python-client
+# pip3 install google-api-python-client
 # pip3 install google-auth
-# pip3 insteall google-auth-httplib2
+# pip3 install google-auth-httplib2
 
 Azure prereq
 
@@ -48,7 +48,7 @@ Azure prereq
 - AWS_REGION
 - cloud (aws, google, azure, vsphere)
 - AWS_ACCESS_KEY_ID
-- AWS_SECRET_ACCESS_KE
+- AWS_SECRET_ACCESS_KEY
 
 ## Cluster tag variable
 The cluster tag variable is a set of 1 to many key/value pairs as follows
