@@ -1,0 +1,39 @@
+---
+- name: Install prereqs
+  hosts: bastion
+  tasks:
+    - name: Check for Python
+      raw: test -e /usr/bin/python3
+      changed_when: false
+      failed_when: false
+      register: check_python
+
+    - name: Add deadsnakes
+      ansible.builtin.apt_repository:
+        repo: ppa:deadsnakes
+
+    - name: install python3 ubuntu
+      raw: apt -y update && apt install -y python3.9
+      when: check_python.rc != 0
+
+    - name: check pip3
+      raw: test -e /usr/local/bin/pip3
+      changed_when: false
+      failed_when: false
+      register: python3_pip
+
+    - name: install pip3  ubuntu
+      raw: apt -y update && apt install -y python3-pip
+      when: python3_pip.rc != 0
+
+    - name: install required pyhon libaries
+      pip:
+        name:
+         - boto
+         - boto3
+         - botocore
+         - six
+         - google-auth
+         - google-api-python-client
+         - google-auth-httplib2
+        executable: pip3
