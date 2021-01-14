@@ -4,6 +4,7 @@
   block:
   - name: get instances based on tag Name (CLUSTER_NAME)
     community.aws.ec2_instance_info:
+      region: '{{ AWS_REGION }}'
       filters:
         "tag:Name": "{{ CLUSTER_NAME }}*"
     register: tag_results
