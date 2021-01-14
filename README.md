@@ -5,12 +5,19 @@ This repo represents the Community Automation effort where teams can contribute 
 
 ## Prereq
 
-Make sure your ansible client is at version 2.9 or greater
+## requirements
+
+The following will setup your ubuntu VM with all prereqs  
+see [install-prereq script](http://github.com/IBM/community-automation/scripts/common/README.md)  
+see [prereq-play](http://github.com/IBM/community-automation/ansible/prereq-play/README.md)
+
+Ansible should be at version 2.9 or greater
 
 ## Play list
 
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
+|prereq-play|Install all prereq's for using this repo|Availalbe| none|
 |common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none|
 |common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
@@ -43,6 +50,14 @@ Make sure your ansible client is at version 2.9 or greater
 |ocp-cluster-tag|tags your cluster| Available | working on AWS only at this time|
 |aws-route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
 |deploy-ova-vmware| deploy redhat coreos image to vmware|Availalbe|
+
+## Scripts
+
+Scripts can be found in **ansible/scripts** folder
+
+|script|Description| sub folder |status | comments|
+|------|-----------|------------|--------|---------|
+|install-prereq.sh|Install all prereq's on install client VM|common/|Available| none|
 
 ## Jenkins
 

@@ -5,42 +5,13 @@ https://playbook.cloudpaklab.ibm.com/public-cloud-management/
 
 ## NOTES
 
-- ansible playbook was run on Ubuntu 18.04
+- ansible playbook was run on Ubuntu 16.04 and 18.04
 - This role only works with AWS at this time.
 
-Create a file called requirements.yml containing the following content
+## requirements
 
-```
----
-    collections:
-      - name: community.general
-        source: https://galaxy.ansible.com
-      - name: community.aws
-        source: https://galaxy.ansible.com
-      - name: google.cloud
-        source: https://galaxy.ansible.com
-```
-
-Run the collection install command
-```
-# ansible-galaxy collection install -r requirements.yml
-```
-
-```
-AWS prereq
-# pip3 install --upgrade six
-# pip3 install boto
-# pip3 install boto3
-# pip3 install botocore
-
-Google prereq
-# pip3 install google-api-python-client
-# pip3 install google-auth
-# pip3 install google-auth-httplib2
-
-Azure prereq
-
-```
+see [install-prereq script](http://github.com/IBM/community-automation/scripts/common/README.md)
+see [prereq-play](http://github.com/IBM/community-automation/ansible/prereq-play/README.md)
 
 ## Variables used for tagging
 
@@ -48,10 +19,13 @@ Azure prereq
 - AWS_REGION
 - cloud (aws, google, azure, vsphere)
 - AWS_ACCESS_KEY_ID
+- aws_access_key
 - AWS_SECRET_ACCESS_KEY
+- aws_secret_key
 
 ## Cluster tag variable
-The cluster tag variable is a set of 1 to many key/value pairs as follows
+
+The cluster tag variable is a set of 1 to many key/value pairs as follows (eg. key1: value1, key2: value2)
 
 ```
 "cluster_tags": { cluster: <cluster_name>, owner: <email>, etc... }
