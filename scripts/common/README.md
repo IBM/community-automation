@@ -9,5 +9,5 @@ install-prereqs.sh is used to setup an ansible install client VM.   It will ensu
 **Testid on ubuntu 16.04 and 18.04**  TODO: add other distro's  
 To execute as root
 ```
-sudo install-prereqs.sh
+sudo scripts/common/install-prereqs.sh
 ```
