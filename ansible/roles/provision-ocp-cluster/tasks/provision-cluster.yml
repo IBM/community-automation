@@ -77,3 +77,11 @@
      shell: "oc delete namespace {{ CLUSTER_NAME }}"
      register: delete_namespace_results
      failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
+
+- debug:
+    msg:
+     - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
+     - "OCP Admin Console: {{ console_url.stdout }}"
+     - "API URL: https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
+     - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
+  when: 'admin_task == "provision"'
