@@ -1,0 +1,27 @@
+---
+
+# simple interface with no fancy options should work for any ansible supported OS
+- name: remove packages
+  become: true
+  ignore_errors: true
+  action: >
+   {{ ansible_pkg_mgr }} state=absent update_cache=yes name=adobe,containers,samba,valgrind
+
+- name: install packages
+  become: true
+  ignore_errors: true
+  action: >
+   {{ ansible_pkg_mgr }} state=present update_cache=yes name=zip,unzip
+
+
+- name: enable /etc/ssh/sshd_config X11Forwarding yes
+  lineinfile:
+   path: '/etc/ssh/sshd_config'
+   state: present
+   regexp: 'X11Forwarding no'
+   line: 'X11Forwarding yes'
+  become: yes
+
+- name: restart sshd
+  command: "systemctl restart sshd"
+  become: yes

@@ -1,0 +1,26 @@
+---
+# specific OS supports wildcards
+- name: remove extraneous packages
+  become: yes
+  ignore_errors: yes
+  zypper:
+   name: "{{ packages }}"
+   state: absent
+  vars:
+   packages:
+   - "adobe*"
+   - "containers*"
+   - "java*"
+   - "samba*"
+   - "valgrind*"
+   - "tignervnc"
+
+- name: install packages
+  become: yes
+  zypper:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - 'xorg-x11-xauth'
+
