@@ -12,9 +12,9 @@ apt -y install ansible
 file_location=$(find . -type f -name install-prereqs.sh | grep .) && cd "$(dirname $file_location)" || { echo "could not find install-prereqs.sh"; exit 1; }
 
 # install ansible modules
-ansible-galaxy collection install -r ../../../ansible/prereq-play/requirements.yml
+ansible-galaxy collection install -r ../../ansible/prereq-play/requirements.yml
 
 # update and install python libraries
-ansible-playbook -i inventory ../../../ansible/prereq-play/prereq-play.yml
+ansible-playbook -i ../../inventory ../../ansible/prereq-play/prereq-play.yml
 
 echo "Install and updates complete."
