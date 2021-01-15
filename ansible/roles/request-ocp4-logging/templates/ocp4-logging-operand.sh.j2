@@ -3,7 +3,7 @@
 echo "Make sure cluster-logging-operator is Running"
 operator_sleep_count=15
 while [[ $operator_sleep_count -gt 0 ]]; do
-  operator_status=$(oc  get po -n openshift-logging | grep  -e  cluster-logging-operator | grep -e Running | tr -s ' ')
+  operator_status=$(oc  get po -n openshift-logging --no-headers=true | grep  -e  cluster-logging-operator | grep -e Running | tr -s ' ')
   if [[ -z $operator_status ]] ; then
     echo "Waiting for cluster-logging-operator to go to  Running state"
     sleep 30s
@@ -14,19 +14,22 @@ while [[ $operator_sleep_count -gt 0 ]]; do
     break
   fi
 done
-echo "Make sure Cluster Logging Operator in the openshift-logging namespace successfully"
-log_operator_sleep_count=15
-while [[ $log_operator_sleep_count -gt 0 ]]; do
-  log_operator_status=$(oc get csv -n openshift-logging | grep -e clusterlogging | grep -e Succeeded | tr -s ' ')
-  if [[ -z $log_operator_status ]] ; then
-    echo "Waiting for Cluster Logging Operator to be in the openshift-logging namespace successfully"
-    sleep 30s
-    ((log_operator_sleep_count--))
-    echo "log_operator_sleep_count = $log_operator_sleep_count"
-  else
-    echo "Cluster Logging Operator is in the openshift-logging namespace successfully."
-    break
-  fi
+
+echo -n "Waiting for CLuster Logging Operator  to be ready."
+COUNTER=60
+STATUS=$(oc get csv --no-headers=true -n openshift-logging | grep clusterlogging | rev | cut -f1 -d' ' | rev | tr -d ' ')
+while [[ "$STATUS" != "Succeeded" ]]
+do
+    COUNTER=$(( $COUNTER -1 ))
+    if [ "$COUNTER" -lt 1 ]
+    then
+        echo "Max retries reached, exiting..."
+        exit 1
+    fi
+    sleep 10
+    STATUS=$(oc get csv --no-headers=true -n openshift-logging | grep clusterlogging | rev | cut -f1 -d' ' | rev | tr -d ' ')
+    echo -n $STATUS
+    echo -n .
 done
 
 minor_version=$(oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.' | rev)
@@ -34,7 +37,7 @@ echo "OCP Minor version is $minor_version"
 echo "Starting logging operand"
 cp {{ logging_bastion_setup_dir }}/logging-operand.yaml.template {{ logging_bastion_setup_dir }}/logging-operand.yaml
 if [[  -z "{{ rendered_sc }}" ]] ; then
-  default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
+  default_storage_class=$(oc get sc --no-headers=true | grep -e default | cut -f1 -d' ' | tr -s ' ')
   echo "default_storage_class is $default_storage_class"
   if [[ -z $default_storage_class ]]; then
     echo "No default storage class defined or ocp_logging_storageclass defined in tfvars to use for cluster logging operand"
@@ -64,7 +67,7 @@ fi
 echo "Wait for fluentd daemonset to become available"
 sleep_count=15
 while [[ $sleep_count -gt 0 ]]; do
-  ds_status=$(oc  get ds --all-namespaces | grep  -e  fluentd | tr -s ' ')
+  ds_status=$(oc  get ds --all-namespaces --no-headers=true | grep  -e  fluentd | tr -s ' ')
   if [[ -z $ds_status ]] ; then
     echo "Waiting for daemonset fluentd"
     sleep 5s

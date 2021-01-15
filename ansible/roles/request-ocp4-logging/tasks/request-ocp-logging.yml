@@ -13,12 +13,12 @@
   register: ocpversion
 
 - set_fact:
-    log_version: {{ ocpversion.stdout }}
+    log_version: "{{ ocpversion.stdout }}"
   when: ocpversion.stdout is version('4.5', '<=')
-  
+
 - name: Check for nightly, rc, or fc and set appropriately to ocp_logging 4.6 most current right now.
   shell: bash -lc "echo 4.6"
-  when: ocversion.stdout is version('4.6', '>=')
+  when: ocpversion.stdout is version('4.6', '>=')
   register: ocp_logging_version
 
 - name: Generate OCP operator/operand install files

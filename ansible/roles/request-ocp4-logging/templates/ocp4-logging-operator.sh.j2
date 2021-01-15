@@ -4,7 +4,7 @@ echo "Starting elasticsearch operator"
 oc create -f {{ logging_bastion_setup_dir }}/elasticsearch-operator.yaml
 sleep_count=15
 while [[ $sleep_count -gt 0 ]]; do
-  subs_status=$(oc  get subs --all-namespaces | grep  -e  elasticsearch | tr -s ' ')
+  subs_status=$(oc  get subs --all-namespaces --no-headers=true | grep  -e  elasticsearch | tr -s ' ')
   if [[ -z $subs_status ]] ; then
     echo "Waiting for Subscription to elasticsearch"
     sleep 1m
@@ -14,11 +14,29 @@ while [[ $sleep_count -gt 0 ]]; do
     break
   fi
 done
+
+echo -n "Waiting for Openshift ElasticSearch Operator to be ready."
+COUNTER=60
+STATUS=$(oc get csv --no-headers=true -n openshift-logging | grep elasticsearch | rev | cut -f1 -d' ' | rev | tr -d ' ')
+while [[ "$STATUS" != "Succeeded" ]]
+do
+    COUNTER=$(( $COUNTER -1 ))
+    if [ "$COUNTER" -lt 1 ]
+    then
+        echo "Max retries reached, exiting..."
+        exit 1
+    fi
+    sleep 10
+    STATUS=$(oc get csv --no-headers=true -n openshift-logging | grep elasticsearch | rev | cut -f1 -d' ' | rev | tr -d ' ')
+    echo -n $STATUS
+    echo -n .
+done
+
 e_sleep_count=30
-num_namespaces=$(oc get namespaces | grep -v STATUS | wc -l)
+num_namespaces=$(oc get namespaces --no-headers=true | grep -v STATUS | wc -l)
 echo "Number of namespaces is $num_namespaces"
 while [[ $e_sleep_count -gt 0  ]]; do
-  num_elastic_csv=$(oc get csv --all-namespaces | grep elasticsearch-operator | grep Succeeded | wc -l)
+  num_elastic_csv=$(oc get csv --all-namespaces --no-headers=true | grep elasticsearch-operator | grep Succeeded | wc -l)
   echo "Number of namespaces with elasticsearch-operator deployed successfully is $num_elastic_csv."
   if [[ $num_namespaces -ne $num_elastic_csv ]] ; then
     echo "Waiting for all namespaces to get elasticserach-operator deployed successfully"
@@ -31,7 +49,7 @@ while [[ $e_sleep_count -gt 0  ]]; do
   fi
 done
 
-minor_version=$(oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.')
+minor_version=$(oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement | rev | cut -f2 -d'.' | rev)
 if [[ $minor_version -lt 4 ]]; then
   echo 'Doing rbac for ocp versions 4.3'
   oc create -f {{ logging_bastion_setup_dir }}/logging-rbac.yaml
@@ -40,7 +58,7 @@ echo "Starting cluster-logging operator "
 oc create -f {{ logging_bastion_setup_dir }}/logging-operator.yaml
 sleep_count=15
 while [[ $sleep_count -gt 0 ]]; do
-  subs_status=$(oc  get subs --all-namespaces | grep  -e  cluster-logging | tr -s ' ')
+  subs_status=$(oc  get subs --all-namespaces --no-headers=true | grep  -e  cluster-logging | tr -s ' ')
   if [[ -z $subs_status ]] ; then
     echo "Waiting for Subscription to cluster-logging"
     sleep 1m
