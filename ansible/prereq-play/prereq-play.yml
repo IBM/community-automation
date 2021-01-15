@@ -27,6 +27,10 @@
       raw: apt -y update && apt install -y python3-pip
       when: python3_pip.rc != 0 and ansible_distribution == 'Ubuntu'
 
+    - name: update pip3
+      raw: pip3 install --upgrade pip
+      when: ansible_distribution == 'Ubuntu'
+
     - name: install required pyhon libaries
       pip:
         name:
