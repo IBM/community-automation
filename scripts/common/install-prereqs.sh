@@ -8,6 +8,9 @@ apt-add-repository -y ppa:ansible/ansible
 apt -y update
 apt -y install ansible
 
+# run from script location
+file_location=$(find . -type f -name install-prereqs.sh | grep .) && cd "$(dirname $file_location)" || { echo "could not find install-prereqs.sh"; exit 1; }
+
 # install ansible modules
 ansible-galaxy collection install -r ../../../ansible/prereq-play/requirements.yml
 
