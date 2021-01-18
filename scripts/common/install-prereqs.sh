@@ -1,9 +1,12 @@
 #!/bin/bash
 
 # install ansible 2.9+
+
+[[ $(ansible --version | head -1 | awk '{ print $2 }' | cut -d . -f1-2) == 2.10 ]] && { echo "ansible at correct version"; exit 0; } || true
+
 sudo apt -y update
 sudo apt -y upgrade
-sudo apt-get -y remove --purge ansible
+sudo apt -y remove --purge ansible
 sudo apt-add-repository -y ppa:ansible/ansible
 sudo apt -y update
 sudo apt -y install ansible
