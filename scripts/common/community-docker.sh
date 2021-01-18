@@ -14,5 +14,5 @@ docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/invento
 # open docker container to execute plays
 docker exec -it "$container_name" bash
 
-echo "When you exec from docker conatiner, here is how to stop the container"
+echo "When you exit from docker conatiner $container_name, here is how to stop the container"
 echo "docker stop $container_name"
