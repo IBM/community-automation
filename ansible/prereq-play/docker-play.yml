@@ -1,0 +1,16 @@
+---
+- name: Install prereqs play
+  hosts: bastion
+  tasks:
+    - name: install required pyhon libaries
+      pip:
+        name:
+         - boto
+         - boto3
+         - botocore
+         - six
+         - google-auth
+         - google-api-python-client
+         - google-auth-httplib2
+        executable: pip3
+      ignore_errors: yes
