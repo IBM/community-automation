@@ -82,6 +82,6 @@
     msg:
      - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
      - "OCP Admin Console: {{ console_url.stdout }}"
-     - "API URL: https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
+     - "Cluster API: api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
      - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
   when: 'admin_task == "provision"'
