@@ -3,15 +3,27 @@
 ## Introduction
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
-## Prereq
+## How to run playbooks
 
-## requirements
+- clone this community repo
+- decide on your run option.  Docker or personal run client (eg. VM)
 
-The following will setup your ubuntu VM with all prereqs  
-see [install-prereq script](http://github.com/IBM/community-automation/scripts/common/README.md)  
-see [prereq-play](http://github.com/IBM/community-automation/ansible/prereq-play/README.md)
+**NOTE:** the 2 options will ensure proper version of ansible.  Ansible version should be 2.9 or higher.
 
-Ansible should be at version 2.9 or greater
+### Docker Option
+
+From the repo home folder "community-automation", run the following command which will leave you at a linux prompt ready to run the ansible playbooks. [README](http://github.com/IBM/community-automation/scripts/common/README.md)
+
+```
+# scripts/common/community-docker.sh
+```
+
+### Personal install client (VM)
+From the repo home folder "community-autommation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](http://github.com/IBM/community-automation/scripts/common/README.md)  
+
+```
+# scripts/common/install-prereqs.sh
+```
 
 ## Play list
 
