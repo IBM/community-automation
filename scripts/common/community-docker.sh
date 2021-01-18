@@ -4,7 +4,7 @@ repo_dir="$(pwd)"
 play_dir=/tmp/community-automation/ansible/prereq-play
 container_name="community_auto_bash"
 # start docker container and pass environment variables
-docker run --name "$container_name" -v $repo_dir/community-automation:/tmp/community-automation --rm -i -t -d ubuntu sleep 120m
+docker run --name "$container_name" -v "$repo_dir":/tmp/community-automation --rm -i -t -d ubuntu sleep 120m
 
 # install pre-reqs
 docker exec -it "$container_name" bash -c "apt -y update; apt -y install python3 python3-pip git curl wget sudo jq gpg; pip3 install --upgrade pip; pip3 install ansible"
