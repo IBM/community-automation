@@ -11,3 +11,9 @@ To execute as root, non root users will need sudo access
 ```
 sudo scripts/common/install-prereqs.sh
 ```
+
+## community docker script
+
+```
+scripts/common/community-docker.sh
+```
