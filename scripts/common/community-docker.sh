@@ -7,7 +7,7 @@ set -o pipefail
 
 source rhel8-functions.sh
 
-[[ $(cat /etc/redhat-release | grep '8.') ]] && rhel8_support $@ || true
+[[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
 
 repo_dir="$(pwd)"
 play_dir=/tmp/community-automation/ansible/prereq-play
@@ -18,7 +18,7 @@ docker run --name "$container_name" -v "$repo_dir":/tmp/community-automation --r
 # install pre-reqs
 docker exec -it "$container_name" bash -c "apt -y update; apt -y install python3 python3-pip git curl wget sudo jq gpg; pip3 install --upgrade pip; pip3 install ansible"
 docker exec -it "$container_name" bash -c "ansible-galaxy collection install -r $play_dir/requirements.yml"
-docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/inventory $play_dir/docker-play.yml"
+docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/inventory $play_dir/prereq-play.yml"
 
 # open docker container to execute plays
 docker exec -it "$container_name" bash
