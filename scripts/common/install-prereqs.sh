@@ -20,7 +20,7 @@ if [ $ansible_installed == false ]; then
   sudo apt -y install python3 python3-pip; \
   sudo add-apt-repository -y add ppa:ansible2.10; \
   sudo apt -y update; \
-  sudo pip3 -y install ansible; } || true
+  sudo pip3 install ansible; } || true
 
   # clear bash cache
   hash -r
