@@ -9,11 +9,13 @@ set -o pipefail
 
 [[ $(cat /etc/redhat-release | grep '8.') ]] && rhel8_support $@ || true
 
-[[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]]  && sudo apt -y update \
-sudo apt -y upgrade \
-sudo apt -y remove --purge ansible \ 
-sudo apt -y install python3 python3-pip \
-sudo pip3 -y install ansible || true
+[[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]]  && { sudo apt -y update; \
+sudo apt -y upgrade; \
+sudo apt -y remove --purge ansible; \
+sudo apt -y install python3 python3-pip; \
+sudo add-apt-repository -y add ppa:ansible2.10; \
+sudo apt -y update; \
+sudo pip3 -y install ansible; } || true
 
 # check for python3 version 3.6.9
 [[ $(python3 --version | awk '{ print $2 }') == "3.6.9" ]] && { echo "correct version of python installed"; exit 0; }|| true
