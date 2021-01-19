@@ -19,13 +19,17 @@ RHEL8
 ## community docker script
 community-docker.sh will create and run a ubuntu docker container with all prereq's where all playbooks can be run.
 
+**NOTES:**
+
+- RHEL8 users, requires sudo
+- You may need to do a **docker logout** before you begin.
+
+
 **Tested on MAC (big sur), Ubunutu 16.04/18.04, and RHEL 7/8**
 
 ```
 # scripts/common/community-docker.sh
 ```
-
-**NOTE:** RHEL8 users, requires sudo
 
 ```
 # scripts/common/community-docker.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWORD
