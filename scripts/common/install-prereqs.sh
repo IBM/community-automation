@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# bash best practices
+set -o errexit
+set -o nounset
+set -o pipefail
+
 [[ $(ansible --version | head -1 | awk '{ print $2 }' | cut -d . -f1-2) == 2.10 ]] && { echo "ansible at correct version"; exit 0; } || true
 
 [[ $(cat /etc/redhat-release | grep '8.') ]] && rhel8_support $@ || true
