@@ -11,7 +11,7 @@ ansible_installed=false
 
 if [ $ansible_installed == false ]; then
 # check rhel 8 and update/install
-[[ -f /etc/redhat-release ]] && [[ $(cat /etc/redhat-release | grep '8.') ]] && rhel8_support $@ || true
+[[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
 
 # check ubuntu and update/install
 [[ -f /etc/os-release ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { sudo apt -y update; \
