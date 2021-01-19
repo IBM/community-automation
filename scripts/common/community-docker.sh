@@ -5,7 +5,7 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-source rhel8-functions.sh
+source scripts/common/rhel8-functions.sh
 
 [[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
 
