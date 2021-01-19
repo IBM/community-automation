@@ -8,14 +8,14 @@
       failed_when: false
       register: check_python
 
+    - name: install python3 ubuntu
+      raw: apt -y update && apt install -y python3.9
+      when: check_python.rc != 0 and ansible_distribution == 'Ubuntu'
+
     - name: Add deadsnakes
       ansible.builtin.apt_repository:
         repo: ppa:deadsnakes
       when: ansible_distribution == 'Ubuntu'
-
-    - name: install python3 ubuntu
-      raw: apt -y update && apt install -y python3.9
-      when: check_python.rc != 0 and ansible_distribution == 'Ubuntu'
 
     - name: check pip3
       raw: test -e /usr/local/bin/pip3
