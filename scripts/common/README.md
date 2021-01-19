@@ -11,6 +11,9 @@ install-prereqs.sh is used to setup an ansible install client VM.   It will ensu
 
 ```
 # scripts/common/install-prereqs.sh
+
+RHEL8
+# scripts/common/install-prereqs.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWORD
 ```
 
 ## community docker script
