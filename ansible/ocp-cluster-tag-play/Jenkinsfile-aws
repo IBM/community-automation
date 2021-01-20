@@ -1,0 +1,54 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'cluster_name', description: 'OCP Cluster Name'),
+    string(name: 'cluster_tags', description: '(eg. { cluster; YOUR_CLUSTER_NAME, owner: YOUR_EMAIL, NAME: VALUE } )'
+    string(name: 'aws_region', description: 'AWS Region'),
+    string(name: 'aws_access_key_id', description: 'Your AWS access key ID, required'),
+    password(name: 'aws_secret_access_key', description: 'Your AWS secret access key, required')
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'kube_pod_slave' ) {
+
+      checkout scm
+
+      stage('Cluster admin') {
+
+        wrap([$class: 'MaskPasswordsBuildWrapper',
+              varPasswordPairs: [
+                [password: "${params.aws_access_key_id}", var: 'AWS_CREDS_USR'],
+                [password: "${params.aws_secret_access_key}", var: 'AWS_CREDS_PSW']
+              ]
+        ]) {
+
+        sh """
+          cp ./ansible/ocp-cluster-tag-play/examples/tag-vars.yml ./ansible/ocp-cluster-tag-play/
+          cp ./ansible/ocp-cluster-tag-play/examples/inventory ./ansible/ocp-cluster-tag-play/
+          ansible-playbook -i ./ansible/ocp-cluster-tag-play/inventory \
+          ./ansible/ocp-cluster-tag-play/ocp-cluster-tag-play.yml \
+          -e aws_access_key=${params.aws_access_key_id} \
+          -e aws_secret_key=${params.aws_secret_access_key} \
+          -e AWS_REGION=${params.aws_region} \
+          -e CLUSTER_NAME=${params.cluster_name} \
+          -e cluster_tags=${params.cluster_tags} \
+          -e cloud="aws"
+        """.stripIndent()
+        } //  end withcredentials()
+      //} // end withenv()
+     } // end stage
+   }
+  }
+}

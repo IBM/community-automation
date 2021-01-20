@@ -4,7 +4,8 @@ aws_access_key: "YOUR AWS ACCESS KEY ID"
 AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
 AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key}}
 cloud: "aws"
-
+CLUSTER_NAME: ""
+AWS_REGION: "us-east-1"
 # cluster tagging details the following detailed tags are used by the weekly cleanup scripts.  If your
 # cluster is not under the account that is affected by the cleanup script you can use whatever tags you want 
 # by following the same structure shown in the example
