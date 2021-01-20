@@ -39,12 +39,12 @@ timestamps {
           cp ./ansible/ocp-cluster-tag-play/examples/inventory ./ansible/ocp-cluster-tag-play/
           ansible-playbook -i ./ansible/ocp-cluster-tag-play/inventory \
           ./ansible/ocp-cluster-tag-play/ocp-cluster-tag-play.yml \
-          -e aws_access_key=${params.aws_access_key_id} \
-          -e aws_secret_key=${params.aws_secret_access_key} \
-          -e AWS_REGION=${params.aws_region} \
-          -e CLUSTER_NAME=${params.cluster_name} \
-          -e cluster_tags=${params.cluster_tags} \
-          -e cloud="aws"
+          -e "aws_access_key=${params.aws_access_key_id}" \
+          -e "aws_secret_key=${params.aws_secret_access_key}" \
+          -e "AWS_REGION=${params.aws_region}" \
+          -e "CLUSTER_NAME=${params.cluster_name}" \
+          -e "cluster_tags=${params.cluster_tags}" \
+          -e "cloud=aws"
         """.stripIndent()
         } //  end withcredentials()
       //} // end withenv()
