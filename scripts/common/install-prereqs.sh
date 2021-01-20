@@ -7,7 +7,7 @@ set -o pipefail
 
 ansible_installed=false
 # check for ansible version
-[[ $(which ansible) ]] && [[ $(ansible --version | head -1 | awk '{ print $2 }' | cut -d . -f1-2) == 2.10 ]] && { echo "ansible at correct version"; ansible_install=true ; } || true
+[[ $(which ansible) ]] && [[ $(ansible --version | head -1 | awk '{ print $2 }' | cut -d . -f1-2) == "2.10" ]] && { echo "ansible at correct version"; ansible_install=true ; } || true
 
 if [ $ansible_installed == false ]; then
 # check rhel 8 and update/install
