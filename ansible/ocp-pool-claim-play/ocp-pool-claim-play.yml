@@ -1,0 +1,9 @@
+---
+  - name: "Claim an OCP cluster from pool"
+    hosts: bastion
+    gather_facts: no
+    vars_files:
+      - pool-vars.yml
+
+    roles:
+      - ocp_pool_claim
