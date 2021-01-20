@@ -1,15 +1,15 @@
 ---
-- name: add AWS tags to cluster
+- name: tagging AWS cluster
   when: 'cloud == "aws" and admin_task == "provision"'
   block:
-  - name: get instances based on tag Name (CLUSTER_NAME)
+  - name: get instances based on tag Name "{{ CLUSTER_NAME }}"
     community.aws.ec2_instance_info:
       region: '{{ AWS_REGION }}'
       filters:
         "tag:Name": "{{ CLUSTER_NAME }}*"
     register: tag_results
 
-  - name: add tags
+  - name: add AWS tags to each instance
     amazon.aws.ec2_tag:
       region: '{{ AWS_REGION }}'
       resource: '{{ item.instance_id }}'
