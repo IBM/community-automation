@@ -1,0 +1,11 @@
+---
+- name: claim a cluster from pool "{{ pool_name }}"
+    template:
+      src: "claim-template.j2"
+      dest: "clusterclaim-cr.yml"
+      backup: false
+    register: template_result
+
+- name: deploy cluster claim
+  shell: oc apply -f clusterclaim.cr.yml
+  register: claim_results
