@@ -46,7 +46,7 @@
       shell: "oc project {{ CLUSTER_NAME }}"
 
     - name: Get admin password for kubeadmin
-      shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') --to=/tmp; cat /tmp/password"
+      shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') --to=/tmp > /dev/null; cat /tmp/password"
       register: kubeadmin_password
     - debug: msg="{{ kubeadmin_password.stdout }}"
 
