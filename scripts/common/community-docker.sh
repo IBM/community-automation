@@ -7,7 +7,11 @@ set -o pipefail
 
 source scripts/common/rhel8-functions.sh
 
+# check for RHEL8
 [[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
+
+# check ubuntu and update/install
+[[ -f /etc/os-release ]] && [[ $(cat /etc/os-release | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && apt install -y docker.io || true
 
 repo_dir="$(pwd)"
 play_dir=/tmp/community-automation/ansible/prereq-play
