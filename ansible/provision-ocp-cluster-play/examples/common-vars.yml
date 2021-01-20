@@ -4,7 +4,7 @@
 "kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
 "ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
 
-"CLUSTER_NAME": "<cluster_name>"
+"CLUSTER_NAME": "<cluster_name>"  # limit to 21 characters on AWS, limit has not been researched on other platforms.
 
 # cluster tagging details the following detailed tags are used by the weekly cleanup scripts.  If your
 # cluster is not under the account that is affected by the cleanup script you can use whatever tags you want 
