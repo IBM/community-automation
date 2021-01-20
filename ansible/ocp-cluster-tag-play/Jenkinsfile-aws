@@ -37,6 +37,7 @@ timestamps {
         sh """
           cp ./ansible/ocp-cluster-tag-play/examples/tag-vars.yml ./ansible/ocp-cluster-tag-play/
           cp ./ansible/ocp-cluster-tag-play/examples/inventory ./ansible/ocp-cluster-tag-play/
+          ansible-galaxy collection install -r ./ansible/ocp-cluster-tag-play/requirements.yml
           ansible-playbook -i ./ansible/ocp-cluster-tag-play/inventory \
           ./ansible/ocp-cluster-tag-play/ocp-cluster-tag-play.yml \
           -e "aws_access_key=${params.aws_access_key_id}" \
