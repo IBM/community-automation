@@ -45,7 +45,7 @@ timestamps {
           -e "aws_secret_key=${params.aws_secret_access_key}" \
           -e "AWS_REGION=${params.aws_region}" \
           -e "CLUSTER_NAME=${params.cluster_name}" \
-          -e \\'{ \\"cluster_tags\\": ${params.cluster_tags} }\\' \
+          -e \\'\\{ \\"cluster_tags\\": ${params.cluster_tags} \\}\\' \
           -e "admin_task=provision" \
           -e "cloud=aws"
         """.stripIndent()
