@@ -17,7 +17,7 @@ if [ $ansible_installed == false ]; then
 [[ -f /etc/os-release ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { sudo apt -y update; \
   sudo apt -y upgrade; \
   sudo apt -y remove --purge ansible; \
-  sudo apt -y install python3 python3-pip; \
+  sudo apt -y install python3 python3-pip sshpass; \
   sudo add-apt-repository -y add ppa:ansible2.10; \
   sudo apt -y update; \
   sudo pip3 install ansible; } || true
