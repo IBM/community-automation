@@ -47,11 +47,15 @@ copy appropriate files from the examples folder to the parent play folder
 
 ```
 cp exampeles/inventory .
-cp examples/common-vars.yaml .
-cp examples/\<cloud\>-vars.yaml .
+cp examples/common-vars.yml .
+cp examples/<cloud>-vars.yml .
+   where <cloud> is aws|google|azure
 ```
 
-edit common-vars.yaml and **\<cloud\>**-vars.yaml
+## edit variable files
+
+- edit common-vars.yml 
+- edit **\<cloud\>**-vars.yml
 
 Run the collection install command
 ```
