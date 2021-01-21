@@ -1,11 +1,59 @@
 ---
 - name: claim a cluster from pool "{{ pool_name }}"
-    template:
-      src: "claim-template.j2"
-      dest: "clusterclaim-cr.yml"
-      backup: false
-    register: template_result
+  when: 'admin_task == "claim"'
+  block: 
+    - name: creating clusterclaim CR
+      template:
+        src: "claim-template.j2"
+        dest: "clusterclaim-cr.yml"
+        backup: false
+      register: template_result
 
-- name: deploy cluster claim
-  shell: oc apply -f clusterclaim.cr.yml
-  register: claim_results
+    - name: deploy cluster claim
+      shell: oc apply -f clusterclaim-cr.yml
+      register: claim_results
+
+    - name: check for claim readiness, wait up to 1 hour
+      shell: "./oc get clusterclaim {{ claim_name }}  -n {{ pool_namespace }} -o yaml"
+      register: ready_results
+      until: 'ready_results.stdout.find("message: Cluster is running") != -1'
+      retries: 60
+      delay: 60
+
+    - name: get claim namespace
+      shell: "./oc get clusterclaim {{ claim_name }} -n {{ pool_name }}  -o json | jq -r '.spec.namespace'"
+      register: ns_results
+
+    - name: get kubeadmin password
+      shell: "./oc extract secret/$(./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{.spec.clusterMetadata.adminSecretRef.name}') -n {{ ns_results.stdout }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
+      register: password_results
+
+    - name: get console web url
+      shell: "./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
+      register: console_url
+
+    - name: run post install
+      when: 'post_install == "true"'
+      block:
+        - name: pull git repo
+          git:
+            repo: "{{ repo_url }}"
+            dest: "/tmp/"
+        - name: execute post install
+          shell: "pushd; cd /tmp/{{ repo_name }}; echo \"run script\"; popd"
+          register: post_results
+
+    - debug:
+        msg:
+         - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
+         - "OCP Admin Console: {{ console_url.stdout }}"
+         - "Cluster API: api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443"
+         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443"
+
+- name: Release claim "{{ claim_name }}"
+  when: 'admin_task =="release"'
+  block: 
+    - name: Releasing the claim "{{ claim_name }}"
+      shell: "./oc delete clusterclaim {{ claim_name }} -n {{ pool_namespace }}"
+      register: release_results
+  

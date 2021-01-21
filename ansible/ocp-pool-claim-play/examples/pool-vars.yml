@@ -4,6 +4,9 @@
 "kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
 "ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
 
+"admin_task": "claim"  # claim|release
 "pool_name": ""
 "pool_namespace": ""
 "claim_name": ""
+"repo_name": ""
+"repo_url": ""

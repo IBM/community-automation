@@ -14,6 +14,8 @@ This repo represents the Community Automation effort where teams can contribute 
 
 From the repo home folder "community-automation", run the following command which will leave you at a linux prompt ready to run the ansible playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)
 
+**MAC** users need to install docker to run this option
+
 ```
 # cd community-automation
 # scripts/common/community-docker.sh
@@ -35,7 +37,7 @@ From the repo home folder "community-autommation", run the following command whi
 
 # RHEL 8
 # cd community-automation
-# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+# scripts/common/install-prereqs.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
 ```
 
 ## Play list

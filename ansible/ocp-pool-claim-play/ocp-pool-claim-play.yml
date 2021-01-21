@@ -1,9 +1,14 @@
 ---
   - name: "Claim an OCP cluster from pool"
     hosts: bastion
-    gather_facts: no
+    gather_facts: yes
     vars_files:
       - pool-vars.yml
 
+    environment:
+      PATH: ".:{{ ansible_env.PATH }}"
+
     roles:
+      - oc-client-install
+      - ocp-login
       - ocp_pool_claim

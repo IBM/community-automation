@@ -24,6 +24,8 @@ RHEL8
 ## community docker script
 community-docker.sh will create and run a ubuntu docker container with all prereq's where all playbooks can be run.
 
+**MAC** users need to install docker to run this option
+
 **NOTES:**
 
 - RHEL8 users, non-root users need sudo access
