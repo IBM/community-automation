@@ -1,0 +1,62 @@
+---
+- name: tagging AWS cluster
+  when: 'cloud == "aws" and admin_task == "provision"'
+  block:
+  - name: get instances based on tag Name "{{ CLUSTER_NAME }}"
+    community.aws.ec2_instance_info:
+      region: '{{ AWS_REGION }}'
+      filters:
+        "tag:Name": "{{ CLUSTER_NAME }}*"
+    register: tag_results
+
+  - name: add AWS tags to each instance
+    amazon.aws.ec2_tag:
+      region: '{{ AWS_REGION }}'
+      resource: '{{ item.instance_id }}'
+      state: present
+      tags:
+        "{{ cluster_tags }}"
+    loop: '{{ tag_results.instances }}'
+    loop_control:
+      label: '{{ item.instance_id }}'
+
+- name: add Google tags to cluster
+  when: 'cloud == "google" and admin_task == "provision"'
+  block:
+  - name: get info on an instance
+    gcp_compute_instance_info:
+      zone: "{{ google_zone }}"
+      filters:
+         - name = "{{ google_instance_filter }}*
+      project: "{{ google_project }}"
+      auth_kind: "{{ google_auth_kind }}"
+      service_account_file: "{{ google_account_file }}"
+    register: gce_results
+
+  - debug:
+      msg: "{{ gce_results }}"
+
+  - debug:
+      msg: "{{ item.name }}"
+    loop: "{{ gce_results.resources }}"
+    loop_control:
+      label: "{{ item.name }}"
+
+  - name: Calling google client to add tags
+    community.general.gce_labels:
+      labels: { label1: test, label2: test2 }
+    register: google_client_results
+
+- name: add Azure tags to cluster
+  when: 'cloud == "azure" and admin_task == "provision"'
+  block:
+  - name: Calling azure client to add tags
+    shell: "echo calling azure client..."
+    register: azure_client_results
+
+- name: add ibmcloud tags to cluster
+  when: 'cloud == "ibmcloud" and admin_task == "provision"'
+  block:
+  - name: Calling ibmcloud client to add tags
+    shell: "echo calling ibmcloud client..."
+    register: ibmcloud_client_results

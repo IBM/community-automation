@@ -10,7 +10,7 @@
   - directory
 
 - name: Get ocs version major.minor
-  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
+  shell: bash -lc "oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
   register: oc_version
 
 - name: Get number of workers

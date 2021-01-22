@@ -1,0 +1,26 @@
+# cluster tagging details
+aws_secret_key: "YOUR AWS SECRET KEY"
+aws_access_key: "YOUR AWS ACCESS KEY ID"
+AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key}}"
+
+cloud: "aws"
+CLUSTER_NAME: ""
+AWS_REGION: "us-east-1"
+
+# cluster tagging details the following detailed tags are used by the weekly cleanup scripts.  If your
+# cluster is not under the account that is affected by the cleanup script you can use whatever tags you want 
+# by following the same structure shown in the example
+# "owner_tag": "owner" # owner| Owner (Azure)
+# "owner_tag_value": "email address" # for Google clusters use FirstNameLastName
+# "cluster_tag": "CLUSTER_NAME"  # this tag will be used by the Stop/Start community jenkins job.
+# "team_tag": "team" # "Team" when Azure"
+#  values: "DBA|Content|CP4MCM|CP4I|Edge|CP4Apps|Netcool"
+# "Usage:" 
+#   values:  "temp|demo|infra (long term use, must be reviewed regularly)"
+# "Usage_desc:"
+# "Review_freq:" or "Delete_date:" (Azure)
+#   values: "3day|week|month|quarter|half|YYYY-MM-DD (Azure)"
+#
+# content team tags "{ cluster: {{ CLUSTER_NAME }}, owner: someone@us.ibm.com, team: Content, Usage: temp, Usage_desc: your_description, Review_frequency: week }"
+"cluster_tags": { cluster: "{{ CLUSTER_NAME }}", owner: someone@us.ibm.com }

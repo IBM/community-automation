@@ -1,0 +1,2 @@
+---
+- include_tasks: ocp-pool-claim.yml

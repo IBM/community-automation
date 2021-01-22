@@ -2,5 +2,5 @@
 - name: Install OCP logging onto a fyre OCP+Beta 4.x cluster
   hosts: bastion
   roles:
-  - csi-cephfs-fyre
+  - request-ocs-local-storage
   - request-ocp4-logging
