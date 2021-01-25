@@ -21,7 +21,7 @@
       delay: 60
 
     - name: get claim namespace
-      shell: "./oc get clusterclaim {{ claim_name }} -n {{ pool_name }}  -o json | jq -r '.spec.namespace'"
+      shell: "./oc get clusterclaim {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
       register: ns_results
 
     - name: get kubeadmin password
@@ -32,16 +32,11 @@
       shell: "./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
       register: console_url
 
-    - name: run post install
-      when: 'post_install == "true"'
-      block:
-        - name: pull git repo
-          git:
-            repo: "{{ repo_url }}"
-            dest: "/tmp/"
-        - name: execute post install
-          shell: "pushd; cd /tmp/{{ repo_name }}; echo \"run script\"; popd"
-          register: post_results
+    - name: set facts
+      set_facts:
+        kubeadmin_password: "{{ password_results.stdout }}"
+        cluster_api: "{{ api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443" 
+        cluster_name: "{{ console_url.split('.')[1] }}"
 
     - debug:
         msg:

@@ -1,0 +1,17 @@
+    - name: run post install
+      when: 'post_install == "true"'
+      block:
+        - name: get "{{ repo_name }}" repo
+          git:
+            repo: "{{ repo_url }}"
+            dest: "/tmp/{{ repo_name }}"
+            key_file: "{{ ssh_private_key_file }}"
+            accept_hostkey: yes
+            force: yes
+
+        - name: execute post install
+          shell: "pushd .; cd {{ script_location }}; {{ script_command }}; popd"
+          register: post_results
+          until: 'post_results.stdout.find("{{ success_message }}") != -1'
+          retries: 60
+          delay: 60

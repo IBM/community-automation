@@ -4,11 +4,12 @@
     gather_facts: yes
     vars_files:
       - pool-vars.yml
+      - custom-vars.yml
 
     environment:
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
       - oc-client-install
-      - ocp-login
+      - ocp-login # login to hive cluster
       - ocp_pool_claim

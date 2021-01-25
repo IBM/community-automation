@@ -31,4 +31,5 @@ echo "When you exit from docker conatiner $container_name, here is how to stop t
 echo "docker stop $container_name"
 
 echo "To restart your docker container"
+echo "docker start $container_name"
 echo "docker exec -it $container_name bash"

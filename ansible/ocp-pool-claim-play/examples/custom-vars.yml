@@ -1,0 +1,7 @@
+# add viables that you can pass to your post install script
+
+"var1": "myvarValue"
+"var2": "myvarValue2"
+
+
+"success_message": "[INFO] Success. End of ocp post install and test"
