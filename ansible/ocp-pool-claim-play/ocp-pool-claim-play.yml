@@ -13,3 +13,22 @@
       - oc-client-install
       - ocp-login # login to hive cluster
       - ocp_pool_claim
+
+    tasks:
+      - name: login to claimed cluster
+        include_role:
+          name: ocp-login
+        when: 'post_install == "true" and admin_task == "claim"'
+
+      - debug:
+          msg: "{{ console_url.stdout }}"
+
+      - name: setup ocs storage
+        include_role:
+          name: request-ocs
+        when: 'ocs_storage == "true" and admin_task == "claim"'
+
+      - name: post install
+        include_role:
+          name: post_install
+        when: 'admin_task == "claim" and post_install == "true"'

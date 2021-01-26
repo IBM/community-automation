@@ -25,7 +25,7 @@
       register: ns_results
 
     - name: get kubeadmin password
-      shell: "./oc extract secret/$(./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{.spec.clusterMetadata.adminSecretRef.name}') -n {{ ns_results.stdout }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
+      shell: "./oc extract secret/$(./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ ns_results.stdout }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
       register: password_results
 
     - name: get console web url
@@ -35,15 +35,16 @@
     - name: set facts
       set_facts:
         kubeadmin_password: "{{ password_results.stdout }}"
-        cluster_api: "{{ api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443" 
-        cluster_name: "{{ console_url.split('.')[1] }}"
+        kubeadmin_user: "kubeadmin"
+        ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
+        cluster_name: "{{ console_url.split('.')[2] }}"
 
     - debug:
         msg:
          - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
          - "OCP Admin Console: {{ console_url.stdout }}"
-         - "Cluster API: api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443"
-         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.split('.')[1] }}.{{ console_url.split('.')[2] }}:6443"
+         - "Cluster API: api.{{ console_url.split('.',2)[2] }}:6443"
+         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://{{ ocp_api_url }}:6443 --insecure-skip-tls-verify=true"
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
