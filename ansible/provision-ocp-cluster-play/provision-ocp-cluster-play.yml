@@ -18,7 +18,7 @@
     - role: provision-ocp-cluster
     - role: ocp-cluster-tag
       when: 'admin_task == "provision" and cloud != "vsphere"'
-  task:
+  tasks:
     - set_fact:
         route_task: "delete"
       when: 'cloud == "vsphere" and admin_task == "delete"'

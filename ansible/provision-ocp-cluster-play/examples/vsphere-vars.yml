@@ -1,9 +1,9 @@
 ---
 #Keep single quotes where indicated and dowble quotes where indicated
 #VCENTER_BASE64_SSL_CERTIFICATE is cut/paste of actual certificate within the single quotes
-"VCENTER_CLUSTERNAME": "ICO01"
-"VCENTER_DATACENTER": "IOCDCPC1"
-"VCENTER_DATASOURCE": "ICOVCPC-RSX6-101"
+"VCENTER_CLUSTERNAME": "<vcenter cluster like ICO01>"
+"VCENTER_DATACENTER": "<vcenter datacenter like IOCDCPC1>"
+"VCENTER_DATASOURCE": "<vcenter datasource like ICOVCPC-RSX6-101>"
 "VCENTER_NETWORK": "<network id like VIS232>"
 "VCENTER_SERVER": "xxxxxx.rtp.raleigh.ibm.com"
 "VCENTER_PASSWORD": '<password>'
@@ -21,7 +21,7 @@
 "aws_access_key": "<your AWS_ACCESS_KEY_ID>"
 "aws_secret_key": "<your AWS_SECRET_ACCESS_KEY>"
 "api_ip": "<your static ip for api server>"
-"apps_ip": "your static ip for apps url>"
+"apps_ip": "<your static ip for apps url>"
 #Route53 No changes needed to the following
 "base_domain": "{{ BASE_DOMAIN }}"
 "clustername": "{{ CLUSTER_NAME }}"
