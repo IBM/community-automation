@@ -25,7 +25,7 @@ docker exec -it "$container_name" bash -c "ansible-galaxy collection install -r 
 docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/inventory $play_dir/prereq-play.yml"
 
 # open docker container to execute plays
-docker exec -it "$container_name" bash
+docker exec -it -w /tmp/community-automation "$container_name" bash
 
 echo "When you exit from docker conatiner $container_name, here is how to stop the container"
 echo "docker stop $container_name"
