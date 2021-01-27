@@ -1,4 +1,9 @@
 ---
+    - name: clean up previous repo
+      ansible.builtin.file:
+        path: "/{{ local_repo_location }}/{{ repo_name }}"
+        state: absent
+
     - name: cloning your github repo {{ repo_name }}
       git:
        repo: "{{ repo_url }}"
