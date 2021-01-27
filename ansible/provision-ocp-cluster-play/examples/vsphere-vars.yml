@@ -5,10 +5,10 @@
 "VCENTER_DATACENTER": "<vcenter datacenter like IOCDCPC1>"
 "VCENTER_DATASOURCE": "<vcenter datasource like ICOVCPC-RSX6-101>"
 "VCENTER_NETWORK": "<network id like VIS232>"
-"VCENTER_SERVER": "xxxxxx.rtp.raleigh.ibm.com"
+"VCENTER_SERVER": "<vCenter dns name like xxxxxx.rtp.raleigh.ibm.com>"
 "VCENTER_PASSWORD": '<password>'
 "VCENTER_ADMIN_USER": "<vcenter_admin like xxxx@icovcpc65.rtp>"
-"VCENTER_BASE64_SSL_CERTIFICATE": '<vcnenter_cert>'
+"VCENTER_BASE64_SSL_CERTIFICATE": '<vcenter_cert>'
 #Master and Worker nodes sizes
 "MASTER_CPUS": "10"
 "MASTER_MEMORY": "32768"
