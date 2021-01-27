@@ -22,10 +22,12 @@
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
-      - ocp-login # cluster claim
-        when: 'post_install == "true" and admin_task == "claim"' 
+      - ocp-login # claimed cluster login
+        when: post_install == "true" and admin_task == "claim"
       - request-ocs
-        when: 'ocs_storage == "true" and admin_task == "claim"' 
+        when: ocs_storage == "true" and admin_task == "claim"
+      - clone_repo
+        when: post_install == "true" and admin_task == "claim"
       - post_install
-        when: 'admin_task == "claim" and post_install == "true"' 
+        when: admin_task == "claim" and post_install == "true"
         

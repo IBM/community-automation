@@ -32,31 +32,24 @@
       shell: "./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
       register: console_url
 
-    - name: set facts
-      set_facts:
-        kubeadmin_password: "{{ password_results.stdout }}"
-        kubeadmin_user: "kubeadmin"
-        ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
-        cluster_name: "{{ console_url.split('.')[2] }}"
-
-     - name: Add inf host to group
-       no_log: "True"
-       add_host:
-        name: "{{ cluster_name }}"
+    - name: Add inf host to group
+      no_log: "True"
+      add_host:
+        name: "{{ console_url.split('.')[2] }}"
         groups: "ocp_claimed_cluster"
         ansible_connection: "local"
         kubeadmin_password: "{{ password_results.stdout }}"
         kubeadmin_user: "kubeadmin"
         ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
         cluster_name: "{{ console_url.split('.')[2] }}"
-       changed_when: false
+      changed_when: false
 
     - debug:
         msg:
          - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
          - "OCP Admin Console: {{ console_url.stdout }}"
          - "Cluster API: api.{{ console_url.split('.',2)[2] }}:6443"
-         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://{{ ocp_api_url }}:6443 --insecure-skip-tls-verify=true"
+         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.split('.',2)[2] }}":6443 --insecure-skip-tls-verify=true"
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
