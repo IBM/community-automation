@@ -35,21 +35,22 @@
     - name: Add inf host to group
       no_log: "True"
       add_host:
-        name: "{{ console_url.split('.')[2] }}"
+        name: "{{ console_url.stdout.split('.')[2] }}"
         groups: "ocp_claimed_cluster"
         ansible_connection: "local"
+        ansible_python_interpreter: "/usr/bin/python3"
         kubeadmin_password: "{{ password_results.stdout }}"
         kubeadmin_user: "kubeadmin"
-        ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
-        cluster_name: "{{ console_url.split('.')[2] }}"
+        ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+        cluster_name: "{{ console_url.stdout.split('.')[2] }}"
       changed_when: false
 
     - debug:
         msg:
          - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
          - "OCP Admin Console: {{ console_url.stdout }}"
-         - "Cluster API: api.{{ console_url.split('.',2)[2] }}:6443"
-         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.split('.',2)[2] }}":6443 --insecure-skip-tls-verify=true"
+         - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}":6443 --insecure-skip-tls-verify=true"
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
