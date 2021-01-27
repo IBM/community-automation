@@ -2,7 +2,7 @@
 - name: Install prereqs
   hosts: bastion
   roles:
-    - oc-client-instal
+    - oc-client-install
   tasks:
     - name: install required pyhon libaries
       pip:
