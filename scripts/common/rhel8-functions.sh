@@ -1,6 +1,6 @@
 # RHEL 8 functions
 
-function usage () {
+function usage_rhel8 () {
   echo "When using RHEL 8, you must provide redhat credentials"
   echo "--redhat_username YOUR_REDHAT_USERNAME"
   echo "--redhat_password YOUR_REDHAT_PASSWORD"
@@ -9,7 +9,7 @@ function usage () {
 function rhel8_support () {
   local num_of_params=4
 
-  [[ $# -lt $num_of_params ]] && { usage ; exit 1; } || true
+  [[ $# -lt $num_of_params ]] && { usage_rhel8 ; exit 1; } || true
 
   # Set the parameters
   while test $# -gt 0; do
