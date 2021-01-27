@@ -1,10 +1,9 @@
 ---
   - name: "Claim an OCP cluster from pool"
-    hosts: bastion
+    hosts: hive_instance
     gather_facts: yes
     vars_files:
       - pool-vars.yml
-      - custom-vars.yml
 
     environment:
       PATH: ".:{{ ansible_env.PATH }}"
@@ -14,21 +13,19 @@
       - ocp-login # login to hive cluster
       - ocp_pool_claim
 
-    tasks:
-      - name: login to claimed cluster
-        include_role:
-          name: ocp-login
-        when: 'post_install == "true" and admin_task == "claim"'
+  - name: "setup claimed ocp cluster"
+    hosts: ocp_claimed_cluster
+    vars_files:
+      - custom-vars.yml
 
-      - debug:
-          msg: "{{ console_url.stdout }}"
+    environment:
+      PATH: ".:{{ ansible_env.PATH }}"
 
-      - name: setup ocs storage
-        include_role:
-          name: request-ocs
-        when: 'ocs_storage == "true" and admin_task == "claim"'
-
-      - name: post install
-        include_role:
-          name: post_install
-        when: 'admin_task == "claim" and post_install == "true"'
+    roles:
+      - ocp-login # cluster claim
+        when: 'post_install == "true" and admin_task == "claim"' 
+      - request-ocs
+        when: 'ocs_storage == "true" and admin_task == "claim"' 
+      - post_install
+        when: 'admin_task == "claim" and post_install == "true"' 
+        

@@ -39,6 +39,18 @@
         ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
         cluster_name: "{{ console_url.split('.')[2] }}"
 
+     - name: Add inf host to group
+       no_log: "True"
+       add_host:
+        name: "{{ cluster_name }}"
+        groups: "ocp_claimed_cluster"
+        ansible_connection: "local"
+        kubeadmin_password: "{{ password_results.stdout }}"
+        kubeadmin_user: "kubeadmin"
+        ocp_api_url: "api.{{ console_url.split('.',2)[2] }}"
+        cluster_name: "{{ console_url.split('.')[2] }}"
+       changed_when: false
+
     - debug:
         msg:
          - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
