@@ -22,8 +22,10 @@ function rhel8_support () {
   sudo subscription-manager register --username "$redhat_username" --password "$redhat_password"
   sudo subscription-manager attach --auto
   sudo subscription-manager repos --enable ansible-2.9-for-rhel-8-x86_64-rpms
-  sudo yum module install -y container-tools
-  sudo yum install -y podman-docker
-  sudo podman login registry.redhat.io --username "$redhat_username" --password "$redhat_password"
+  sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+  sudo dnf install docker-ce
+  #sudo yum module install -y container-tools
+  #sudo yum install -y podman-docker
+  #sudo podman login registry.redhat.io --username "$redhat_username" --password "$redhat_password"
   echo "[INFO] redhat 8 support complete."
 }

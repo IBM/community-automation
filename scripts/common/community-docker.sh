@@ -14,6 +14,7 @@ function usage () {
 }
 
 # Set the parameters
+saved_params="$@"
 ssh_priv_key="$HOME/.ssh/id_rsa"
 ssh_pub_key="$HOME/.ssh/id_rsa.pub"
 while test $# -gt 0; do
@@ -24,6 +25,7 @@ while test $# -gt 0; do
   shift
 done
 
+set -- $saved_params
 source scripts/common/rhel8-functions.sh
 
 # check for RHEL8
@@ -51,6 +53,7 @@ docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/invento
 
 echo "########################################################################################"
 echo "When you exit from docker conatiner $container_name, here is how to stop the container"
+echo " for RHEL host, cd to /tmp/community-automation after container starts"
 echo "docker stop $container_name"
 
 echo "To restart your docker container"
@@ -58,5 +61,5 @@ echo "docker start $container_name"
 echo "docker exec -it $container_name bash"
 echo "########################################################################################"
 
-# open docker container to execute plays
-docker exec -it -w "$container_home_dir" "$container_name" bash
+# open docker container to execute plays.  -w does not work on RHEL
+[[ ! -f /etc/redhat-release ]] && docker exec -it -w "$container_home_dir" "$container_name" bash || docker exec -it "$container_name" bash

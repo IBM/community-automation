@@ -30,6 +30,7 @@ community-docker.sh will create and run a ubuntu docker container with all prere
 
 - RHEL8 users, non-root users need sudo access
 - You may need to do a **docker logout** before you begin.
+- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
 
 **Tested on MAC (big sur), Ubunutu 16.04/18.04, and RHEL 7/8**
@@ -37,18 +38,27 @@ community-docker.sh will create and run a ubuntu docker container with all prere
 ```
 # cd community-automation
 # scripts/common/community-docker.sh
+
+# Options to include your own ssh keys
+# scripts/common/community-docker.sh --ssh_priv_key ~/.ssh/my_id_rsa --ssh_pub_key ~/.ssh/my_id_rsa.pub
+#   --ssh_priv_key and --ssh_pub_key can be from any location
 ```
+
+
 
 ```
 # RHEL 8
 # cd community-automation
 # scripts/common/community-docker.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWORD
+# options to include your own ssh keys
+# scripts/common/community-docker.sh -ssh_priv_key YOUR_PRIVATE_KEY -- ssh_pub_key YOUR_PUBLIC_KEY -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWORD
 ```
 
 ## Re-enter docker container
 
 ```
-# docker exec -it community_auto_bash bash
+NOTE: -w is whatever you used for your working directory
+# docker exec -it -w /tmp/community-automation community_auto_bash bash
 ```
 
 ## Stop the docker container
@@ -61,5 +71,12 @@ community-docker.sh will create and run a ubuntu docker container with all prere
 
 ```
 # docker start community_auto_bash
-# docker exec -it community_auto_bash bash
+NOTE: -w is whatever you used for your working directory
+# docker exec -it -w /tmp/community-automation community_auto_bash bash
+```
+
+## to remove container
+
+```
+# docker rm community_auto_bash
 ```
