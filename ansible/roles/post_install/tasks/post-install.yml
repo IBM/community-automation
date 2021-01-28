@@ -8,6 +8,8 @@
 
     - name: execute post install
       shell: "pushd .; cd {{ script_location }}; {{ script_command }}; popd"
+      args:
+        executable: /bin/bash
       register: post_results
       until: 'post_results.stdout.find("{{ success_message }}") != -1'
       retries: 60

@@ -1,3 +1,4 @@
 "ssh_private_key_file": "~/.ssh/id_rsa"
 "local_repo_location": "/tmp"
 "repo_branch": "master"
+"temp_branch": "test_branch"

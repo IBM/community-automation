@@ -12,3 +12,9 @@
        key_file: "{{ ssh_private_key_file }}"
        accept_hostkey: yes
        force: yes
+    
+    - name: creating new repo_branch
+      shell: "pushd .; cd {{ local_repo_location }}; git checkout -b {{ temp_branch }}; popd"
+      args:
+        executable: /bin/bash
+      register: branch_results
