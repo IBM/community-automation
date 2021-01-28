@@ -6,12 +6,14 @@ set -o nounset
 set -o pipefail
 
 ansible_installed=false
+docker_install="false"
 # check for ansible version
 [[ $(which ansible) ]] && [[ $(ansible --version | head -1 | awk '{ print $2 }' | cut -d . -f1-2) == "2.10" ]] && { echo "ansible at correct version"; ansible_installed=true ; } || true
 
 if [ $ansible_installed == false ]; then
 # check rhel 8 and update/install
 [[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
+
 # check ubuntu and update/install
 [[ -f /etc/os-release ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { sudo apt -y update; \
   sudo apt -y upgrade; \

@@ -15,6 +15,7 @@ function usage () {
 
 # Set the parameters
 saved_params="$@"
+docker_install="true"
 ssh_priv_key="$HOME/.ssh/id_rsa"
 ssh_pub_key="$HOME/.ssh/id_rsa.pub"
 while test $# -gt 0; do
