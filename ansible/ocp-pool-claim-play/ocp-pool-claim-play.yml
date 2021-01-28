@@ -25,7 +25,7 @@
 
     roles:
       - role: ocp-login # claimed cluster login
-        when: post_install == "true" and admin_task == "claim"
+        when: admin_task == "claim"
 
       - role: request-ocs
         when: ocs_storage == "true" and admin_task == "claim"
