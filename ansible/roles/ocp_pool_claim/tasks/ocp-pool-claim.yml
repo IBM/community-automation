@@ -50,7 +50,7 @@
          - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
          - "OCP Admin Console: {{ console_url.stdout }}"
          - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
-         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}":6443 --insecure-skip-tls-verify=true"
+         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
