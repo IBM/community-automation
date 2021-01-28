@@ -13,6 +13,20 @@
        accept_hostkey: yes
        force: yes
     
+    - name: update git config with email address
+      community.general.git_config:
+        name: user.email
+        repo: /{{ local_repo_location }}/{{ repo_name }}
+        scope: local
+        value: '{{ git_user_email }}'
+
+    - name: update git config with name
+      community.general.git_config:
+        name: user.name
+        repo: /{{ local_repo_location }}/{{ repo_name }}
+        scope: local
+        value: '{{ git_user_name }}'
+
     - name: creating new repo_branch
       shell: "pushd .; cd {{ local_repo_location }}; git checkout -b {{ temp_branch }}; popd"
       args:
