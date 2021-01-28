@@ -53,7 +53,6 @@ docker exec -it "$container_name" bash -c "ansible-playbook -i $play_dir/invento
 
 echo "########################################################################################"
 echo "When you exit from docker conatiner $container_name, here is how to stop the container"
-echo " for RHEL host, cd to /tmp/community-automation after container starts"
 echo "docker stop $container_name"
 
 echo "To restart your docker container"
@@ -62,4 +61,4 @@ echo "docker exec -it $container_name bash"
 echo "########################################################################################"
 
 # open docker container to execute plays.  -w does not work on RHEL
-[[ ! -f /etc/redhat-release ]] && docker exec -it -w "$container_home_dir" "$container_name" bash || docker exec -it "$container_name" bash
+docker exec -it -w "$container_home_dir" "$container_name" bash
