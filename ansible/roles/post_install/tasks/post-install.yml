@@ -1,4 +1,7 @@
 ---
+- name: run post install
+  when: 'post_install == "true"'
+  block:
     - name: check pods readiness
       shell: "oc --no-headers=true get pods --all-namespaces | grep -v -E \"Comp|Run\""
       register: pod_check
@@ -7,13 +10,13 @@
       delay: 60
       ignore_errors: yes
 
-    - name: execute post install
+    - name: execute post operations
       shell: "pushd .; export GITHUB_USER={{ GITHUB_USER }}; export GITHUB_TOKEN={{ GITHUB_TOKEN }}; cd /{{ local_repo_location }}/{{ repo_name }}/{{ script_location }}; git branch; ./ocp_postinstall.sh --version {{ ocp_version }} --arch {{ arch }} --regenventry_name {{ env_name }} --usagetag {{ usage }}  --master_ip {{ ocp_api_url }}  --product {{ product }} --port 6443 --cluster_user kubeadmin --cluster_pass {{ kubeadmin_password }} --ocpapiurl {{ ocp_api_url }}  --ocpadminpassword {{ kubeadmin_password }}; popd"
       args:
         executable: /bin/bash
-      register: post_results
       async: 3600
-      pull: 0
+      poll: 0
+      register: post_results
 
     - name: Check on post install script, wait up to 2 hours
       async_status:
@@ -23,4 +26,3 @@
       # until: 'success_message|string not in post_results.stdout'
       retries: 120
       delay: 60
-
