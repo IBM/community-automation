@@ -28,7 +28,7 @@
         value: '{{ git_user_name }}'
 
     - name: creating new repo_branch
-      shell: "pushd .; cd {{ local_repo_location }}; git checkout -b {{ temp_branch }}; popd"
+      shell: "pushd .; cd /{{ local_repo_location }}/{{ repo_name }}; git checkout -b {{ temp_branch }}; popd"
       args:
         executable: /bin/bash
       register: branch_results

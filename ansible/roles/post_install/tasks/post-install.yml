@@ -5,6 +5,7 @@
       until: 'pod_check.stdout == ""'
       retries: 30
       delay: 60
+      ignore_errors: yes
 
     - name: execute post install
       shell: "pushd .; export GITHUB_USER={{ GITHUB_USER }}; export GITHUB_TOKEN={{ GITHUB_TOKEN }}; cd /{{ local_repo_location }}/{{ repo_name }}/{{ script_location }}; git branch; ./ocp_postinstall.sh --version {{ ocp_version }} --arch {{ arch }} --regenventry_name {{ env_name }} --usagetag {{ usage }}  --master_ip {{ ocp_api_url }}  --product {{ product }} --port 6443 --cluster_user kubeadmin --cluster_pass {{ kubeadmin_password }} --ocpapiurl {{ ocp_api_url }}  --ocpadminpassword {{ kubeadmin_password }}; popd"
@@ -23,5 +24,3 @@
       retries: 120
       delay: 60
 
-    - debug:
-        msg: "{{ post_results.stdout_lines }}"
