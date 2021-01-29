@@ -6,7 +6,7 @@ These scripts are intended to be used by a broad group of teams
 
 install-prereqs.sh is used to setup an ansible install client VM.   It will ensure the correct version of ansible is installed and it will add python3 and several python3 libraries.  After the script complete you should be able to run most of the existing ansible playbooks without any additional updates.  
 
-**Tested on ubuntu 16.04,18.04 and 20.04**  
+**Tested on ubuntu 16.04,18.04,20.04 and RHEL 7/8**  
 **NOTES:**
 
 - non-root users will need sudo access
@@ -33,8 +33,7 @@ community-docker.sh will create and run a ubuntu docker container with all prere
 - You may need to do a **docker logout** before you begin.
 - default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
-
-**Tested on MAC (big sur), Ubunutu 16.04/18.04, and RHEL 7/8**
+**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
 
 ```
 # cd community-automation
@@ -44,8 +43,6 @@ community-docker.sh will create and run a ubuntu docker container with all prere
 # scripts/common/community-docker.sh --ssh_priv_key ~/.ssh/my_id_rsa --ssh_pub_key ~/.ssh/my_id_rsa.pub
 #   --ssh_priv_key and --ssh_pub_key can be from any location
 ```
-
-
 
 ```
 # RHEL 8
