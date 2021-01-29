@@ -2,7 +2,7 @@
     - name: check pods readiness
       shell: "oc --no-headers=true get pods --all-namespaces | grep -v -E \"Comp|Run\""
       register: pod_check
-      until: 'pod_check.stdout == ""'
+      until: 'pod_check.rc == 1'
       retries: 30
       delay: 60
       ignore_errors: yes
