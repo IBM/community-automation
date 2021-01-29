@@ -45,12 +45,17 @@
         cluster_name: "{{ console_url.stdout.split('.')[2] }}"
       changed_when: false
 
-    - debug:
-        msg:
-         - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
-         - "OCP Admin Console: {{ console_url.stdout }}"
-         - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
-         - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
+    - name: create output details
+      lineinfile:
+        path: output_details.log
+        line: "{{ item }}"
+        create: yes
+        mode: 0755
+      with_items:
+        - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
+        - "OCP Admin Console: {{ console_url.stdout }}"
+        - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+        - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
