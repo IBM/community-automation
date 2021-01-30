@@ -11,8 +11,9 @@
 
 "git_user_email": "ashworth@us.ibm.com"
 "git_user_name": "ashworth"
-"post_install": "true"  # true|false
-"ocs_storage": "true"   # true|false
+"post_install": "false"  # true|false
+"ocs_storage": "false"   # true|false
+"ocp_logging": "false"   # true|false
 "ocp_version": "4.6.0.0"
 "arch": "x"
 "env_name": "ocp468-test"

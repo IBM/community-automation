@@ -41,6 +41,9 @@
       - role: request-ocs
         when: ocs_storage == "true" and admin_task == "claim"
 
+      - role: request-ocp4-logging
+        when: ocp_logging == "true" and admin_task == "claim"
+
       - role: clone_repo
         when: post_install == "true" and admin_task == "claim"
 
