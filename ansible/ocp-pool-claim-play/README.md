@@ -17,7 +17,8 @@ from the ocp-pool-claim-play folder
 ```
 # cp examples/* .
 ```
-edit custom-vars.yml
+
+edit custom-vars.yml  
 edit pool-vars.yml
 
 ## Running the play
