@@ -5,10 +5,6 @@
 "ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
 
 "admin_task": "claim"  # claim|release
-"pool_name": ""
-"pool_namespace": ""
-"claim_name": ""
-"repo_name": ""
-"temp_repo:": ""   # leave blank, if not needed
-"repo_url": ""
-"ssh_private_key_file": "{{ playbook_dir }}/your_ssh_private_key"
+"pool_name": ""   # the name of the cluster pool
+"pool_namespace": ""   # the cluster pool namespace
+"claim_name": ""   # a unique name of your choice

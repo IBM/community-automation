@@ -1,7 +1,21 @@
-# add viables that you can pass to your post install script
+# vars specific to your scripts
+# this is a sample used by the content devops team
 
-"var1": "myvarValue"
-"var2": "myvarValue2"
+"GITHUB_TOKEN": ""
+"GITHUB_USER": ""
+"repo_url": "git@github.ibm.com:IBMPrivateCloud/content-tools.git"
+"repo_name": "content-tools"
+"temp_branch": "new_branch" # temporary branch used at runtime
+"script_location": "infrastructure/scripts/ocp_postinstall/bin"
+"ssh_private_key_file": "{{ playbook_dir }}/id_rsa"
 
-
-"success_message": "[INFO] Success. End of ocp post install and test"
+"git_user_email": "ashworth@us.ibm.com"
+"git_user_name": "ashworth"
+"post_install": "true"  # true|false
+"ocs_storage": "true"   # true|false
+"ocp_version": "4.6.0.0"
+"arch": "x"
+"env_name": "ocp468-test"
+"usage": "contentdev"  # regression|contentdev
+"product": "rhocp"
+"sftp_key": "/root/.ssh/id_rsa"  # update if you use a different key

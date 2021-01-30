@@ -23,6 +23,5 @@
         jid: "{{ post_results.ansible_job_id }}"
       register: job_result
       until: job_result.finished
-      # until: 'success_message|string not in post_results.stdout'
       retries: 120
       delay: 60

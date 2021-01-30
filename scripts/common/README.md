@@ -24,7 +24,7 @@ RHEL8
 
 ## using docker/podman
 
-**MAC** users need to install docker to run this option
+**MAC/RHEL7** users need to install docker to run this option
 
 **NOTES:**
 
@@ -35,6 +35,8 @@ RHEL8
 **Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
 
 ```
+
+# RHEL 7: sudo systemctl start docker; sudo yum install -y docker
 # docker run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
 NOTE: RHEL 8
