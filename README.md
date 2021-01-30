@@ -12,17 +12,32 @@ This repo represents the Community Automation effort where teams can contribute 
 
 ### Docker Option
 
-From the repo home folder "community-automation", run the following command which will leave you at a linux prompt ready to run the ansible playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)
+A public docker image has been create with all prereq's for running playbooks.
 
-**MAC** users need to install docker to run this option
+**MAC/RHEL7** users need to install docker to run this option
+
+**NOTES:**
+
+- On RHEL8 use podman
+- You may need to do a **docker logout** before you begin.
+- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+
+**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
 
 ```
-# cd community-automation
-# scripts/common/community-docker.sh
+# RHEL 7: sudo systemctl start docker; sudo yum install -y docker
+# docker run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
-# RHEL 8
-# cd community-automation
-# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+NOTE: RHEL 8
+# podman run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
+
+# if you setup the parameters for a play ahead of time, you can directly call the playbook
+
+# docker run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest ansible-playbook -i ansible/YOURE-PLAY/inventory  ansible/YOUR_PLAY/playbook.yml
+
+NOTE: RHEL 8
+
+# podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest ansible-playbook ansible/YOUR_PLAY/inventory  ansible/YOUR_PLAY/playbook.yml
 ```
 
 ### Personal install client (VM)
