@@ -47,7 +47,7 @@
 
     - name: create output details
       lineinfile:
-        path: output_details.log
+        path: cluster_details.log
         line: "{{ item }}"
         create: yes
         mode: 0755
