@@ -52,6 +52,9 @@ NOTE: RHEL 8
 
 # docker run -v /root/.ssh/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory YOUR_PLAYBOOK/YOUR_PLAYZBOOK.yml"
 
+SAMPLE with parameter passing
+# docker run -v /root/.ssh/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i ocp-pool-claim-play/inventory ocp-pool-claim-play/ocp-pool-claim-play.yml -e \"admin_task=claim\""
+
 NOTE: RHEL 8
 
 # podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAY/inventory  YOUR_PLAY/YOUR_PLAYBOOK.yml"
