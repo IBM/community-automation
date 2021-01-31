@@ -33,11 +33,11 @@ NOTE: RHEL 8
 
 # if you setup the parameters for a play ahead of time, you can directly call the playbook
 
-# docker run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest ansible-playbook -i ansible/YOURE-PLAY/inventory  ansible/YOUR_PLAY/playbook.yml
+# docker run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAY/playbook.yml"
 
 NOTE: RHEL 8
 
-# podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest ansible-playbook ansible/YOUR_PLAY/inventory  ansible/YOUR_PLAY/playbook.yml
+# podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory  YOUR_PLAYBOOK/playbook.yml"
 ```
 
 ### Personal install client (VM)
