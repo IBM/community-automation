@@ -2,6 +2,12 @@
 
 These scripts are intended to be used by a broad group of teams
 
+## clone community repo
+
+```
+# git clone git@github.com/IBM/community-automation
+```
+
 ## Personal client VM prereq script
 
 install-prereqs.sh is used to setup an ansible install client VM.   It will ensure the correct version of ansible is installed and it will add python3 and several python3 libraries.  After the script complete you should be able to run most of the existing ansible playbooks without any additional updates.  
