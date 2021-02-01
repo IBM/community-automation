@@ -3,7 +3,7 @@
     hosts: hive_instance
     gather_facts: yes
     vars_files:
-      - pool-vars.yml
+      - pool_vars.yml
 
     environment:
       ANSIBLE_STDOUT_CALLBACK: debug
@@ -26,7 +26,7 @@
   - name: "setup claimed ocp cluster"
     hosts: ocp_claimed_cluster
     vars_files:
-      - custom-vars.yml
+      - "{{ post_install_role }}"_vars.yml
 
     environment:
       ANSIBLE_STDOUT_CALLBACK: debug
@@ -47,7 +47,7 @@
       - role: clone_repo
         when: post_install == "true" and admin_task == "claim"
 
-      - role: post_install
+      - role: "{{ post_install_role }}"
         when: post_install == "true" and admin_task == "claim"        
 
     tasks:

@@ -1,8 +1,10 @@
 # Claiming a cluster from a cluster pool
-This play assumes you have installed "Hive" on an OCP cluster or you are using the shared "Hive" instance.  
+This playbook assumes you have installed "Hive" on an OCP cluster or you are using the shared "Hive" instance.  
 Contact Ray Ashworth or Walt Krapohl for shared "Hive" details
 
-This play is an example of claiming a cluster and running post installation steps.
+This playbook is used to claim a cluster from a cluster pool.
+
+It is assumed that you will create a post install role for your team that may not be the same as other teams roles.
 
 ## prereq's
 
@@ -15,10 +17,11 @@ This play is an example of claiming a cluster and running post installation step
 
 from the ocp-pool-claim-play folder
 ```
-# cp examples/* .
+# cp examples/inventory .
+# cp examples/YOUR_ROLE_VARS_FILE_vars.yml
 ```
 
-edit custom-vars.yml  
+edit YOUR_ROLE_VARS_FILE_vars.yml  
 edit pool-vars.yml
 
 ## Running the play

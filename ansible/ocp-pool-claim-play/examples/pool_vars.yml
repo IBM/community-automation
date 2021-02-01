@@ -10,3 +10,5 @@
 "pool_name": ""   # the name of the cluster pool
 "pool_namespace": ""   # the cluster pool namespace
 "claim_name": ""   # a unique name of your choice
+
+"post_install_role": ""  # a role containing tasks specific to your team.
