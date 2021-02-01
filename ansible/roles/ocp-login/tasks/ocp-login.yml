@@ -7,3 +7,4 @@
   until: results.stdout.find("projects") != -1 
   retries: "{{ login_retries }}"
   delay: 30
+  changed_when: false
