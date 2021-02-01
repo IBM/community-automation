@@ -5,15 +5,23 @@
 "GITHUB_USER": ""
 "repo_url": "git@github.ibm.com:IBMPrivateCloud/content-tools.git"
 "repo_name": "content-tools"
-"temp_branch": "new_branch" # temporary branch used at runtime
-"script_location": "infrastructure/scripts/ocp_postinstall/bin"
-"ssh_private_key_file": "{{ playbook_dir }}/id_rsa"
+#"repo_branch": "" # default "master"
+#"temp_branch": "h" # default is test_branch temporary branch used at runtime
+#"local_repo_location": ""   # default /tmp 
+# "ssh_private_key_file": "{{ playbook_dir }}/id_rsa" . # default is ~/.ssh/id_rsa*
 
 "git_user_email": "ashworth@us.ibm.com"
 "git_user_name": "ashworth"
+
 "post_install": "false"  # true|false
 "ocs_storage": "false"   # true|false
 "ocp_logging": "false"   # true|false
+"script_name": "YOUR_SCRIPT_CALL"  # (eg. ./my_postinstall.sh)
+
+# example: infrastructure/scripts/ocp_postinstall/bin"
+"script_location": "PATH_TO_YOUR_SCRIPT"  # this will be combined with your git repo location  
+
+"ocp_client_version": "4.6.8" # best to match your ocp version
 "ocp_version": "4.6.0.0"
 "arch": "x"
 "env_name": "ocp468-test"
