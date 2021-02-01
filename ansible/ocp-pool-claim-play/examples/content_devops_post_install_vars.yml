@@ -10,6 +10,8 @@
 #"local_repo_location": ""   # default /tmp 
 # "ssh_private_key_file": "{{ playbook_dir }}/id_rsa" . # default is ~/.ssh/id_rsa*
 
+"post_install_role": "content_devops_post_install"
+
 "git_user_email": "ashworth@us.ibm.com"
 "git_user_name": "ashworth"
 

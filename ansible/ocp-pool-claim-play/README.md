@@ -18,10 +18,11 @@ It is assumed that you will create a post install role for your team that may no
 from the ocp-pool-claim-play folder
 ```
 # cp examples/inventory .
-# cp examples/YOUR_ROLE_VARS_FILE_vars.yml
+# cp examples/pool-vars.yml .
+# cp examples/YOUR_ROLE_VARS_FILE_vars.yml custom-vars.yml
 ```
 
-edit YOUR_ROLE_VARS_FILE_vars.yml  
+edit custom-vars.yml  
 edit pool-vars.yml
 
 ## Running the play
