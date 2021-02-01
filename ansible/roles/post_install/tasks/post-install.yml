@@ -11,7 +11,9 @@
       ignore_errors: yes
 
     - name: execute post operations
-      shell: "pushd .; export GITHUB_USER={{ GITHUB_USER }}; export GITHUB_TOKEN={{ GITHUB_TOKEN }}; cd /{{ local_repo_location }}/{{ repo_name }}/{{ script_location }}; git branch; ./ocp_postinstall.sh --version {{ ocp_version }} --arch {{ arch }} --regenventry_name {{ env_name }} --usagetag {{ usage }}  --master_ip {{ ocp_api_url }}  --product {{ product }} --port 6443 --cluster_user kubeadmin --cluster_pass {{ kubeadmin_password }} --ocpapiurl {{ ocp_api_url }}  --ocpadminpassword {{ kubeadmin_password }}; popd"
+      shell: 
+        cmd: "export GITHUB_USER={{ GITHUB_USER }}; export GITHUB_TOKEN={{ GITHUB_TOKEN }}; timeout 3600s {{ script_name }} --version {{ ocp_version }} --arch {{ arch }} --regenventry_name {{ env_name }} --usagetag {{ usage }}  --master_ip {{ ocp_api_url }}  --product {{ product }} --port 6443 --cluster_user kubeadmin --cluster_pass {{ kubeadmin_password }} --ocpapiurl {{ ocp_api_url }}  --ocpadminpassword {{ kubeadmin_password }}"
+        chdir: "/{{ local_repo_location }}/{{ repo_name }}/{{ script_location }}" 
       args:
         executable: /bin/bash
       async: 3600
