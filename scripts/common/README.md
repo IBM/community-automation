@@ -43,19 +43,19 @@ RHEL8
 ```
 
 # RHEL 7: sudo systemctl start docker; sudo yum install -y docker
-# docker run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# docker run -v /PATH_TO_REPOSITORY:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
 NOTE: RHEL 8
-# podman run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# podman run -v /PATH_TO_REPOSITORY:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
 # if you setup the parameters for a play ahead of time, you can directly call the playbook
 
-# docker run -v /root/.ssh/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory YOUR_PLAYBOOK/YOUR_PLAYZBOOK.yml"
+# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory YOUR_PLAYBOOK/YOUR_PLAYZBOOK.yml"
 
 SAMPLE with parameter passing
-# docker run -v /root/.ssh/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i ocp-pool-claim-play/inventory ocp-pool-claim-play/ocp-pool-claim-play.yml -e \"admin_task=claim\""
+# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i ocp-pool-claim-play/inventory ocp-pool-claim-play/ocp-pool-claim-play.yml -e \"admin_task=claim\""
 
 NOTE: RHEL 8
 
-# podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAY/inventory  YOUR_PLAY/YOUR_PLAYBOOK.yml"
+# podman run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAY/inventory  YOUR_PLAY/YOUR_PLAYBOOK.yml"
 ```
