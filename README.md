@@ -26,18 +26,18 @@ A public docker image has been create with all prereq's for running playbooks.
 
 ```
 # RHEL 7: sudo systemctl start docker; sudo yum install -y docker
-# docker run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# docker run -v /YOUR_REPO_PATH:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
 NOTE: RHEL 8
-# podman run -v $repo_dir:community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# podman run -v /YOUR_REPO_PATH:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
 
 # if you setup the parameters for a play ahead of time, you can directly call the playbook
 
-# docker run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAY/playbook.yml"
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAY/playbook.yml"
 
 NOTE: RHEL 8
 
-# podman run -v $repo_dir:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory  YOUR_PLAYBOOK/playbook.yml"
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory  YOUR_PLAYBOOK/playbook.yml"
 ```
 
 ### Personal install client (VM)
