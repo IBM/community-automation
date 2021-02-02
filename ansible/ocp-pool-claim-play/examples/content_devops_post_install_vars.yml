@@ -8,9 +8,8 @@
 #"repo_branch": "" # default "master"
 #"temp_branch": "h" # default is test_branch temporary branch used at runtime
 #"local_repo_location": ""   # default /tmp 
-# "ssh_private_key_file": "{{ playbook_dir }}/id_rsa" . # default is ~/.ssh/id_rsa*
+"ssh_private_key_file": "~/.ssh/id_rsa" . # default is ~/.ssh/id_rsa*
 
-"post_install_role": "content_devops_post_install"
 
 "git_user_email": "ashworth@us.ibm.com"
 "git_user_name": "ashworth"
@@ -19,16 +18,16 @@
 "ocp_logging": "false"   # true|false   - add OCP logging
 
 "post_install": "false"  # true|false   - call your post install role listed below
-"post_install_role": ""  # a role containing tasks specific to your team.
+"post_install_role": "content_devops_post_install"  # a role containing tasks specific to your team.
 
 "script_name": "YOUR_SCRIPT_CALL"  # (eg. ./my_postinstall.sh)
 # example: infrastructure/scripts/ocp_postinstall/bin"
 "script_location": "PATH_TO_YOUR_SCRIPT"  # this will be combined with your git repo location  
 
 "ocp_client_version": "4.6.8" # best to match your ocp version
-"ocp_version": "4.6.0.0"
+"ocp_version": "4.6.0.0" # value used in regression.env file
 "arch": "x"
-"env_name": "ocp468-test"
-"usage": "contentdev"  # regression|contentdev
+"env_name": "ocp468-test"  # unique name
+"usage": "contentdev"  # regression|contentdev|build
 "product": "rhocp"
-"sftp_key": "/root/.ssh/id_rsa"  # update if you use a different key
+"sftp_key": "~/.ssh/id_rsa"  # update if you use a different key

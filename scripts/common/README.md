@@ -34,7 +34,7 @@ RHEL8
 
 **NOTES:**
 
-- On RHEL8 use podman
+- RHEL8 uses podman
 - You may need to do a **docker logout** before you begin.
 - default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
@@ -42,11 +42,11 @@ RHEL8
 
 ```
 
-# RHEL 7: sudo systemctl start docker; sudo yum install -y docker
-# docker run -v /PATH_TO_REPOSITORY:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# RHEL 7: sudo yum install -y docker; sudo systemctl start docker
+# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh  -i -t quay.io/rayashworth/community-ansible:latest
 
 NOTE: RHEL 8
-# podman run -v /PATH_TO_REPOSITORY:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# podman run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh  -i -t quay.io/rayashworth/community-ansible:latest
 
 # if you setup the parameters for a play ahead of time, you can directly call the playbook
 
