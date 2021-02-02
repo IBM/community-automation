@@ -15,12 +15,13 @@
 "git_user_email": "ashworth@us.ibm.com"
 "git_user_name": "ashworth"
 
-"post_install": "false"  # true|false
-"ocs_storage": "false"   # true|false
-"ocp_logging": "false"   # true|false
+"ocs_storage": "false"   # true|false   - add OCS storage
+"ocp_logging": "false"   # true|false   - add OCP logging
+
+"post_install": "false"  # true|false   - call your post install role listed below
+"post_install_role": ""  # a role containing tasks specific to your team.
 
 "script_name": "YOUR_SCRIPT_CALL"  # (eg. ./my_postinstall.sh)
-
 # example: infrastructure/scripts/ocp_postinstall/bin"
 "script_location": "PATH_TO_YOUR_SCRIPT"  # this will be combined with your git repo location  
 
