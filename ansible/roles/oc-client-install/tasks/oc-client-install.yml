@@ -26,3 +26,19 @@
     args:
       # Suppress the warning about using 'tar'
       warn: false
+
+  - name: Copy oc command to local bin
+    ansible.builtin.copy:
+      src: oc
+      dest: /usr/local/bin/oc
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy kubectl to local bin
+    ansible.builtin.copy:
+      src: kubectl
+      dest: /usr/local/bin/kubectl
+      owner: root
+      group: root
+      mode: '0755'
