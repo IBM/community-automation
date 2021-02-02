@@ -20,6 +20,7 @@ from the ocp-pool-claim-play folder
 # cp examples/inventory .
 # cp examples/pool-vars.yml .
 # cp examples/YOUR_ROLE_VARS_FILE_vars.yml custom-vars.yml
+       NOTE: see example-template-vars.yml to build YOUR_ROLE_VARS_var.yml vars file 
 ```
 
 edit custom-vars.yml  
