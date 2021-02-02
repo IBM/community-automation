@@ -3,7 +3,7 @@
     hosts: hive_instance
     gather_facts: yes
     vars_files:
-      - pool_vars.yml
+      pool-vars.yml
 
     environment:
       ANSIBLE_STDOUT_CALLBACK: debug
@@ -26,7 +26,7 @@
   - name: "setup claimed ocp cluster"
     hosts: ocp_claimed_cluster
     vars_files:
-      - "{{ post_install_role }}"_vars.yml
+      custom-vars.yml
 
     environment:
       ANSIBLE_STDOUT_CALLBACK: debug
