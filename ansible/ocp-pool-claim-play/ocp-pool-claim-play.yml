@@ -29,7 +29,6 @@
       custom-vars.yml
 
     environment:
-      ANSIBLE_STDOUT_CALLBACK: debug
       GITHUB_TOKEN: "{{ GITHUB_TOKEN }}"
       GITHUB_USER: "{{ GITHUB_USER }}"
       PATH: ".:{{ ansible_env.PATH }}"
