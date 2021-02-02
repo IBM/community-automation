@@ -1,6 +1,16 @@
 ---
 
-- name: Download AWS CLI
+- name: check for oc client
+  command: aws 
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+  register: aws_installed
+  ignore_errors: yes
+
+- name: install AWS CLI
+  when: '"usage" not in aws_installed.stderr'
+  block: 
+  - name: download
   get_url:
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
     dest: "."

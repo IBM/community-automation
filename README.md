@@ -3,13 +3,43 @@
 ## Introduction
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
-## Prereq
-Make sure your ansible client is at version 2.9 or greater
+## How to run playbooks
+
+- clone this community repo
+- decide on your run option.  Docker or personal run client (eg. VM)
+
+**NOTE:** the 2 options will ensure proper version of ansible.  Ansible version should be 2.9 or higher.
+
+### Docker Option
+
+From the repo home folder "community-automation", run the following command which will leave you at a linux prompt ready to run the ansible playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)
+
+```
+# scripts/common/community-docker.sh
+
+# RHEL 8
+# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+```
+
+### Personal install client (VM)
+
+**NOTE:** This only need to be run once.
+
+From the repo home folder "community-autommation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
+
+```
+# scripts/common/install-prereqs.sh
+
+# RHEL 8
+# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+```
 
 ## Play list
+
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
-|common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none
+|prereq-play|Install all prereq's for using this repo|Availalbe| none|
+|common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none|
 |common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
@@ -29,18 +59,31 @@ Make sure your ansible client is at version 2.9 or greater
 |recover-machine-config-play|Recover machine-config, not rolling out|Available| none|
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
 |request-rhel-jmeter-fyre-play|Install Jmeter on Fyre RHEL 8|Availble| none|
-|aws-route53-play|Creaate DNS entries for VMWare and AWS IPI installs|Availble| none
-
+|aws-route53-play|Creaate DNS entries for VMWare and AWS IPI installs|Availble| none |
+|provision-ocp-cluster-play| deploy OCP clusters via hive instance on OCP cluster| Availalbe | AWS only at this time |
 
 ## Supporting Roles
+
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
 |ocp-login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
 |oc-client-install|installs oc command| Available | is automatic when using ocp-login role|
+|ocp-cluster-tag|tags your cluster| Available | working on AWS only at this time|
+|aws-route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
+|deploy-ova-vmware| deploy redhat coreos image to vmware|Availalbe|
+
+## Scripts
+
+Scripts can be found in **ansible/scripts** folder
+
+|script|Description| sub folder |status | comments|
+|------|-----------|------------|--------|---------|
+|install-prereq.sh|Install all prereq's on install client VM|common/|Available| none|
 
 ## Jenkins
 
 ### Create your jenkins file
+
 The "Jenkinsfile" should live in your top play folder  
 Here is sample ( [Jenkinsfile-example](ansible/Jenkinsfile-example) ). You will update the paramList and the stage() sections. The rest is static for now.  
 ```
@@ -91,7 +134,9 @@ timestamps {
   }
 }
 ```
+
 ### Setting up your jenkins job
+
 [Community Jenkins Server](https://hyc-ibm-automation-guild-team-jenkins.swg-devops.com/)  
 Login to jenkins server  
 Navigate to "**Cluster Ops**"  
@@ -102,6 +147,7 @@ Enter "**community-pipeline-template**" in the "Copy from" field.
 Select "**OK**"
 
 ### edit job settings
+
 Select "**Single repository & branch**" from "**Add Source**" dropdown.  
 Enter your branch name in the "**Name**" field.  Should be "master" most of the time.  
 Update Credentials, using github username and token.  Working to get a FUNCTIONAL_ID.  
@@ -109,11 +155,12 @@ Under "**Build Configuration**" update "**Script Path**"
 Select "**Save**"
 
 ## Ansible
+
 [Ansible Documentation](https://docs.ansible.com/ansible/latest/user_guide/index.html)
 
 ## Folder Structure
-The folder structure was taken from the [ansible best practices document](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
 
+The folder structure was taken from the [ansible best practices document](https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html)
 
 The following is a snippet to help understand the folder structure and how we are using it.  
 We have plays and roles, and each are at the top level under ansible/.  
@@ -122,7 +169,6 @@ Play folders end in -play, while the machine role would contain the playname wit
 There will be roles without a corresponding play folder, these roles would be common function that could be shared across plays
 
 To ensure we can load the roles correctly you will notice a symbolic link to the top roles directory.  This is a work around until ansible collections become available.
-
 
 ```
 └── ansible
@@ -217,7 +263,6 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
             └── templates
 ```
 
-#
 ## Common Repositories
 
 Terraform Automation (VMWare, AWS, Google, and Azure)
@@ -226,8 +271,8 @@ https://github.ibm.com/ICP-DevOps/tf_openshift_4
 Some useful tools (cluster recovery scripts)  
 https://github.ibm.com/ICP-DevOps/tf_openshift_4_tools
 
-
 ## ROKS Automation
+
 ROKS info being provided until an ansible solution can be worked out in this community repo  
 
 DTEs ROKS Provisioning Tooling https://github.ibm.com/dte/roksprovisioning - See the README.md and I included an installer script to get started.

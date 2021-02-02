@@ -33,7 +33,7 @@ metadata:
   name: "elasticsearch-operator"
   namespace: "openshift-operators-redhat"
 spec:
-  channel: "{{ ocpversion.stdout }}"
+  channel: "{{ log_version }}"
   installPlanApproval: "Automatic"
   source: "redhat-operators"
   sourceNamespace: "openshift-marketplace"

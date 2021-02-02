@@ -1,0 +1,11 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterClaim
+metadata:
+  name: "{{ claim_name }}" 
+  namespace: "{{ pool_namespace }}"
+spec:
+  clusterPoolName: "{{ pool_name }}"
+  subjects:
+    - kind: Group
+      apiGroup: rbac.authorization.k8s.io
+      name: 'system:masters'

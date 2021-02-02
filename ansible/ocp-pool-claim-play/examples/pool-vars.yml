@@ -1,0 +1,9 @@
+---
+# ACM/HIVE Cluster Information
+"kubeadmin_user": "kubeadmin"
+"kubeadmin_password": "" # AWS public ACM/Hive Instance aquired from content devops team
+"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # AWS public ACM api URL
+
+"pool_name": ""
+"pool_namespace": ""
+"claim_name": ""

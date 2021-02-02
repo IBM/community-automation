@@ -1,0 +1,10 @@
+---
+    collections:
+      - name: community.general
+        source: https://galaxy.ansible.com
+      - name: community.aws
+        source: https://galaxy.ansible.com
+      - name: amazon.aws
+        source: https://galaxy.ansible.com
+      - name: google.cloud
+        source: https://galaxy.ansible.com

@@ -9,8 +9,17 @@
   - directory
 
 - name: Get ocp version major.minor
-  shell: bash -lc "oc version | grep Server | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
+  shell: bash -lc "oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev"
   register: ocpversion
+
+- set_fact:
+    log_version: "{{ ocpversion.stdout }}"
+  when: ocpversion.stdout is version('4.5', '<=')
+
+- name: Check for nightly, rc, or fc and set appropriately to ocp_logging 4.6 most current right now.
+  shell: bash -lc "echo 4.6"
+  when: ocpversion.stdout is version('4.6', '>=')
+  register: ocp_logging_version
 
 - name: Generate OCP operator/operand install files
   template:
