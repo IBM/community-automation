@@ -40,7 +40,7 @@
   - name: java in system path
     lineinfile:
      create: yes
-     path: "/etc/profile.d/jmeter_java.sh
+     path: "/etc/profile.d/jmeter_java.sh"
      state: present
      regexp: 'java'
      line: 'export PATH="{{ javaDir }}/{{ jVersion.stdout }}/bin:$PATH"'
