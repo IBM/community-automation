@@ -45,4 +45,5 @@
      regexp: 'java'
      line: 'export PATH="{{ javaDir }}/{{ jVersion.stdout }}/bin:$PATH"'
      backup: yes
+    become: yes
   when: isjava.stat.exists == False
