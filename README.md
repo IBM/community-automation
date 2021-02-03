@@ -1,6 +1,7 @@
 # CloudPak Community Automation
 
 ## Introduction
+
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
 ## How to run playbooks
