@@ -32,13 +32,13 @@ Make sure docker or podman(RHEL 8) is installed and running on your workstation
 ### calling with playbook, assumes all vars are set in vars files
 
 ```
-# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
 ```
 
 ### using param passing, a mix of vars files, and command line vars
 
 ```
-# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
 ```
 
 ## RHEL 8
@@ -50,13 +50,13 @@ Make sure docker or podman(RHEL 8) is installed and running on your workstation
 ### calling with playbook, assumes all vars are set in vars files
 
 ```
-# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
 ```
 
 ### using param passing, a mix of vars files, and command line vars
 
 ```
-# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\"
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\"
 ```
 
 ### Personal install client (VM)
