@@ -16,6 +16,7 @@
       state: present
       tags:
         "{{ cluster_tags }}"
+        cluster_name: "{{ CLUSTER_NAME }}"
     loop: '{{ tag_results.instances }}'
     loop_control:
       label: '{{ item.instance_id }}'
