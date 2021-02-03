@@ -2,7 +2,7 @@
 - name: tagging AWS cluster
   when: 'cloud == "aws" and admin_task == "provision"'
   block:
-  - name: get instances based on tag Name "{{ CLUSTER_NAME }}"
+  - name: get instances based on tag Name 
     community.aws.ec2_instance_info:
       region: '{{ AWS_REGION }}'
       filters:

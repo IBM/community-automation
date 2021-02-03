@@ -6,7 +6,6 @@
       pool-vars.yml
 
     environment:
-      ANSIBLE_STDOUT_CALLBACK: debug
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
@@ -29,8 +28,6 @@
       custom-vars.yml
 
     environment:
-      GITHUB_TOKEN: "{{ GITHUB_TOKEN }}"
-      GITHUB_USER: "{{ GITHUB_USER }}"
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
@@ -48,6 +45,9 @@
 
       - role: "{{ post_install_role }}"
         when: post_install == "true" and admin_task == "claim"        
+      
+      - role: ocp-cluster-tag
+        when: admin_task == "claim"
 
     tasks:
 
