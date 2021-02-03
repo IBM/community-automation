@@ -28,7 +28,6 @@
       custom-vars.yml
 
     environment:
-      CLUSTER_NAME: "{{ cluster_name }}"
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
@@ -48,6 +47,8 @@
         when: post_install == "true" and admin_task == "claim"        
       
       - role: ocp-cluster-tag
+        vars:
+          CLUSTER_NAME: "{{ cluster_name }}"
         when: admin_task == "claim"
 
     tasks:
