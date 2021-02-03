@@ -23,38 +23,60 @@ Make sure docker or podman(RHEL 8) is installed and running on your workstation
 
 ## MAC, Ubuntu, and RHEL 7 users
 
+### Creates a bash command line to the container ready to run playbooks
+
 ```
 # docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
 ```
 
-### calling with playbook, assumes all vars are set in vars files
+### Calling with playbook, assumes all vars are set in vars files, exits the container when complete
 
 ```
-# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml"
+
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml
 ```
 
-### using param passing, a mix of vars files, and command line vars
+### Using param passing, a mix of vars files, and command line vars, exits the container when complete
 
 ```
-# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml" -e \"rook_cephfs_release=v1.4.7\""
 ```
 
 ## RHEL 8
 
+### Creates a bash command line to the container ready to run playbooks
+
 ```
 # podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
 ```
 
-### calling with playbook, assumes all vars are set in vars files
+### Calling with playbook, assumes all vars are set in vars files, exits the container when complete
 
 ```
-# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml"
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml"
 ```
 
-### using param passing, a mix of vars files, and command line vars
+### Using param passing, a mix of vars files, and command line vars, exits the container when complete
 
 ```
-# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\
+# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory <YOUR_PLAYBOOK_FOLDER>/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml" -e \"rook_cephfs_release=v1.4.7\""
 ```
 
 ## Personal client VM prereq script
