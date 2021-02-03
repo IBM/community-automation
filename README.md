@@ -14,30 +14,49 @@ This repo represents the Community Automation effort where teams can contribute 
 
 A public docker image has been create with all prereq's for running playbooks.
 
-**MAC/RHEL7** users need to install docker to run this option
+Make sure docker or podman(RHEL 8) is installed and running on your workstation
 
 **NOTES:**
 
-- On RHEL8 use podman
 - You may need to do a **docker logout** before you begin.
 - default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
 **Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
 
+## MAC, Ubuntu, and RHEL 7 users
+
 ```
-# RHEL 7: sudo systemctl start docker; sudo yum install -y docker
-# docker run -v /YOUR_REPO_PATH:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
 
-NOTE: RHEL 8
-# podman run -v /YOUR_REPO_PATH:/community-automation -i -t quay.io/rayashworth/community-ansible:latest
+### calling with playbook, assumes all vars are set in vars files
 
-# if you setup the parameters for a play ahead of time, you can directly call the playbook
+```
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+```
 
-# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAY/playbook.yml"
+### using param passing, a mix of vars files, and command line vars
 
-NOTE: RHEL 8
+```
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+```
 
-# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory  YOUR_PLAYBOOK/playbook.yml"
+## RHEL 8
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
+
+### calling with playbook, assumes all vars are set in vars files
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+```
+
+### using param passing, a mix of vars files, and command line vars
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\"
 ```
 
 ### Personal install client (VM)
@@ -65,15 +84,15 @@ From the repo home folder "community-autommation", run the following command whi
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
-|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
-|request-ocp-ceph-fyre-play|deploy fyre OCP+beta cluster with cephfs|Availalbe|none|
-|request-ocp-cs-install-fyre-play|deploy fyre OCP+beta cluster and install csi-cephfs and common-services|Availalbe|none|
+|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ |Availalbe|none|
+|request-ocp-ceph-fyre-play|deploy fyre OCP+ cluster with cephfs|Availalbe|none|
+|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common-services|Availalbe|none|
 |request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
-|request-ocp4-logging-fyre-play|Install OCP logging onto OCP+Beta Fyre clusters|Available| none|
+|request-ocp4-logging-fyre-play|Install OCP logging onto OCP+ Fyre clusters|Available| none|
 |request-ocp4-logging-play|Install OCP logging onto OCP 4.x clusters|Available| none|
-|request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
+|request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+ Cluster|Available| none|
 |request-ocs-fyre-play|Install Openshift Container Storage (OCS) on OCP+ Fyre clusters|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |request-ocs-local-storage-vmware|Install Openshift Container Storage (OCS) on VMware OCP clusters|Available| none|

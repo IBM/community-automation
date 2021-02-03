@@ -8,6 +8,55 @@ These scripts are intended to be used by a broad group of teams
 # git clone git@github.com/IBM/community-automation
 ```
 
+## using docker/podman
+
+A public docker image has been create with all prereq's for running playbooks.
+
+Make sure docker or podman(RHEL 8) is installed and running on your workstation
+
+**NOTES:**
+
+- You may need to do a **docker logout** before you begin.
+- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+
+**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
+
+## MAC, Ubuntu, and RHEL 7 users
+
+```
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
+
+### calling with playbook, assumes all vars are set in vars files
+
+```
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+```
+
+### using param passing, a mix of vars files, and command line vars
+
+```
+# docker run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\""
+```
+
+## RHEL 8
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
+
+### calling with playbook, assumes all vars are set in vars files
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml"
+```
+
+### using param passing, a mix of vars files, and command line vars
+
+```
+# podman run -v /YOUR_REPO_PATH:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR-PLAY/inventory  YOUR_PLAYBOOK/playbook.yml -e \"var1=value1\" -e \"var2=value2\
+```
+
 ## Personal client VM prereq script
 
 install-prereqs.sh is used to setup an ansible install client VM.   It will ensure the correct version of ansible is installed and it will add python3 and several python3 libraries.  After the script complete you should be able to run most of the existing ansible playbooks without any additional updates.  
@@ -25,37 +74,4 @@ install-prereqs.sh is used to setup an ansible install client VM.   It will ensu
 
 RHEL8
 # cd community-automation
-# scripts/common/install-prereqs.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWORD
-```
-
-## using docker/podman
-
-**MAC/RHEL7** users need to install docker to run this option
-
-**NOTES:**
-
-- RHEL8 uses podman
-- You may need to do a **docker logout** before you begin.
-- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
-
-**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
-
-```
-
-# RHEL 7: sudo yum install -y docker; sudo systemctl start docker
-# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh  -i -t quay.io/rayashworth/community-ansible:latest
-
-NOTE: RHEL 8
-# podman run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh  -i -t quay.io/rayashworth/community-ansible:latest
-
-# if you setup the parameters for a play ahead of time, you can directly call the playbook
-
-# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i YOUR_PLAYBOOK/inventory YOUR_PLAYBOOK/YOUR_PLAYZBOOK.yml"
-
-SAMPLE with parameter passing
-# docker run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i ocp-pool-claim-play/inventory ocp-pool-claim-play/ocp-pool-claim-play.yml -e \"admin_task=claim\""
-
-NOTE: RHEL 8
-
-# podman run -v /PATH_TO_REPOSITORY:/community-automation -v ~/.ssh:/root/.ssh -i -t community-ansible:latest -c "ansible-playbook -i YOUR_PLAY/inventory  YOUR_PLAY/YOUR_PLAYBOOK.yml"
-```
+# scripts/common/install-prereqs.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWOR
