@@ -1,18 +1,19 @@
-# vars specific to your scripts
-# this is a sample used by the content devops team
+##############################################################
+# content devops vars file
+#
+# This file can be saved locally and replaced for reuse
+##############################################################
 
 "GITHUB_TOKEN": ""
 "GITHUB_USER": ""
+"git_user_email": "{{ GITHUB_USER }}"
+"git_user_name": ""  # your github username
 "repo_url": "git@github.ibm.com:IBMPrivateCloud/content-tools.git"
 "repo_name": "content-tools"
 #"repo_branch": "" # default "master"
 #"temp_branch": "h" # default is test_branch temporary branch used at runtime
 #"local_repo_location": ""   # default /tmp 
 "ssh_private_key_file": "~/.ssh/id_rsa" . # default is ~/.ssh/id_rsa*
-
-
-"git_user_email": "ashworth@us.ibm.com"
-"git_user_name": "ashworth"
 
 "ocs_storage": "false"   # true|false   - add OCS storage
 "ocp_logging": "false"   # true|false   - add OCP logging
@@ -24,6 +25,16 @@
 # example: infrastructure/scripts/ocp_postinstall/bin"
 "script_location": "PATH_TO_YOUR_SCRIPT"  # this will be combined with your git repo location  
 
+# for clsuter tagging
+"AWS_REGION": "us-east-1"
+"cloud": "aws"
+"aws_access_key": ""   # your AWS_ACCESS_KEY_ID
+"aws_secret_key": ""   # your AWS_SECRET_ACCESS_KEY
+"AWS_ACCESS_KEY_ID": "{{ aws_access_key }}"
+"AWS_SECERET_ACCESS_KEY": "{{ aws_secret_key }}"
+"cluster_tag": { owner: email@us.ibm.com, Usage: demo, Review_freq: Week, Team: contentdev }
+
+# post details for helper.sh
 "ocp_client_version": "4.6.8" # best to match your ocp version
 "ocp_version": "4.6.0.0" # value used in regression.env file
 "arch": "x"
