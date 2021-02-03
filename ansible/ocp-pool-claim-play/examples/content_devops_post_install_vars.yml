@@ -32,6 +32,7 @@
 "aws_secret_key": ""   # your AWS_SECRET_ACCESS_KEY
 "AWS_ACCESS_KEY_ID": "{{ aws_access_key }}"
 "AWS_SECERET_ACCESS_KEY": "{{ aws_secret_key }}"
+# Below the "cluster_name:" tag will be dynamically added by the tagging role
 "cluster_tag": { owner: email@us.ibm.com, Usage: demo, Review_freq: Week, Team: contentdev }
 
 # post details for helper.sh
