@@ -28,12 +28,13 @@
 # for clsuter tagging
 "AWS_REGION": "us-east-1"
 "cloud": "aws"
+# "tag_task": ""  # default is "add"
 "aws_access_key": ""   # your AWS_ACCESS_KEY_ID
 "aws_secret_key": ""   # your AWS_SECRET_ACCESS_KEY
 "AWS_ACCESS_KEY_ID": "{{ aws_access_key }}"
 "AWS_SECERET_ACCESS_KEY": "{{ aws_secret_key }}"
 # Below the "cluster_name:" tag will be dynamically added by the tagging role
-"cluster_tag": { owner: email@us.ibm.com, Usage: demo, Review_freq: Week, Team: contentdev }
+"cluster_tags": { owner: email@us.ibm.com, Usage: demo, Review_freq: Week, Team: contentdev }
 
 # post details for helper.sh
 "ocp_client_version": "4.6.8" # best to match your ocp version

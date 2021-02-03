@@ -1,6 +1,6 @@
 ---
 - name: tagging AWS cluster
-  when: 'cloud == "aws" and admin_task == "provision"'
+  when: 'cloud == "aws" and tag_task == "add"'
   block:
   - name: get instances based on tag Name 
     community.aws.ec2_instance_info:
@@ -15,14 +15,13 @@
       resource: '{{ item.instance_id }}'
       state: present
       tags:
-        "{{ cluster_tags }}"
-        cluster_name: "{{ CLUSTER_NAME }}"
+        "{{ cluster_tags | combine({ 'cluster_name': CLUSTER_NAME }) }}"
     loop: '{{ tag_results.instances }}'
     loop_control:
       label: '{{ item.instance_id }}'
 
 - name: add Google tags to cluster
-  when: 'cloud == "google" and admin_task == "provision"'
+  when: 'cloud == "google" and tag_task == "add"'
   block:
   - name: get info on an instance
     gcp_compute_instance_info:
@@ -49,14 +48,14 @@
     register: google_client_results
 
 - name: add Azure tags to cluster
-  when: 'cloud == "azure" and admin_task == "provision"'
+  when: 'cloud == "azure" and tag_task == "add"'
   block:
   - name: Calling azure client to add tags
     shell: "echo calling azure client..."
     register: azure_client_results
 
 - name: add ibmcloud tags to cluster
-  when: 'cloud == "ibmcloud" and admin_task == "provision"'
+  when: 'cloud == "ibmcloud" and tag_task == "add"'
   block:
   - name: Calling ibmcloud client to add tags
     shell: "echo calling ibmcloud client..."
