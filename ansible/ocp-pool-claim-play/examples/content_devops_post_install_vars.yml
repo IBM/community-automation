@@ -13,7 +13,7 @@
 #"repo_branch": "" # default "master"
 #"temp_branch": "h" # default is test_branch temporary branch used at runtime
 #"local_repo_location": ""   # default /tmp 
-"ssh_private_key_file": "~/.ssh/id_rsa" . # default is ~/.ssh/id_rsa*
+"ssh_private_key_file": "~/.ssh/id_rsa" # default is ~/.ssh/id_rsa*
 
 "ocs_storage": "false"   # true|false   - add OCS storage
 "ocp_logging": "false"   # true|false   - add OCP logging
