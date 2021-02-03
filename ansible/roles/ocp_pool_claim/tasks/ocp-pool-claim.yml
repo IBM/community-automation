@@ -45,6 +45,12 @@
         cluster_name: "{{ console_url.stdout.split('.')[2] }}"
       changed_when: false
 
+    - name: Remove previous log file
+      ansible.builtin.file:
+        path: cluster_details.log
+        state: absent
+      changed_when: false
+
     - name: create output details
       lineinfile:
         path: cluster_details.log
