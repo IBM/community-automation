@@ -28,6 +28,7 @@
       custom-vars.yml
 
     environment:
+      CLUSTER_NAME: "{{ cluster_name }}"
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
