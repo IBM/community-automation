@@ -1,0 +1,73 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+apiVersion: db2u.databases.ibm.com/v1
+kind: Db2uCluster
+metadata:
+  name: db2u-sample-db
+  namespace: "{{ db2_namespace }}"
+spec:
+  version: "11.5.5.0-cn1"
+  size: 1
+  license:
+    accept: true
+  account:
+    privileged: true
+    imagePullSecrets:
+    - ibm-registry
+#  affinity:
+#    nodeAffinity:
+#      requiredDuringSchedulingIgnoredDuringExecution:
+#        nodeSelectorTerms:
+#          - matchExpressions:
+#              - key: database
+#                operator: In
+#                values:
+#                  - db2u-affinity
+#  tolerations:
+#  - key: "database"
+#    operator: "Equal"
+#    value: "db2u-affinity"
+#    effect: "NoSchedule"
+  environment:
+    dbType: db2oltp
+    database:
+      name: sampledb
+      dbConfig:
+        LOGSECOND: "35"
+    instance:
+      registry:
+        DB2_FMP_RUN_AS_CONNECTED_USER: "YES"
+      dbmConfig:
+        DIAGSIZE: "100"
+
+  podConfig:
+    db2u:
+      resource:
+        db2u:
+          requests:
+            cpu: 2
+            memory: 4Gi
+          limits:
+            cpu: 2
+            memory: 4Gi
+  storage:
+    - name: meta
+      type: "create"
+      spec:
+        storageClassName: "{{ storageClassName }}"
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 10Gi
+    - name: data
+      type: "create"
+      spec:
+        storageClassName: "{{ storageClassName }}"
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 100Gi
