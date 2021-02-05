@@ -1,9 +1,10 @@
 ---
 - name: "OCP login"
-  command: 'oc login -u "{{ kubeadmin_user }}" -p "{{ kubeadmin_password }}" https://"{{ ocp_api_url }}" --insecure-skip-tls-verify=true'
+  command: 'oc login -u "{{ kubeadmin_user }}" -p "{{ kubeadmin_password }}" https://"{{ ocp_api_url }}:{{ ocp_api_port }}" --insecure-skip-tls-verify=true'
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
   register: results
   until: results.stdout.find("projects") != -1 
   retries: "{{ login_retries }}"
   delay: 30
+  changed_when: false

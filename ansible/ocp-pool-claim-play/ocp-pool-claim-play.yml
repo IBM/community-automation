@@ -1,9 +1,62 @@
 ---
   - name: "Claim an OCP cluster from pool"
-    hosts: bastion
-    gather_facts: no
+    hosts: hive_instance
+    gather_facts: yes
     vars_files:
-      - pool-vars.yml
+      pool-vars.yml
+
+    environment:
+      PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
+      - oc-client-install
+      - ocp-login # login to hive cluster
       - ocp_pool_claim
+
+    tasks:
+      - name: Display cluster details
+        command: cat cluster_details.log
+        register: cluster_details
+
+      - name: Print details
+        debug:
+          msg: "{{ cluster_details.stdout }}"
+
+  - name: "setup claimed ocp cluster"
+    hosts: ocp_claimed_cluster
+    vars_files:
+      custom-vars.yml
+
+    environment:
+      PATH: ".:{{ ansible_env.PATH }}"
+
+    roles:
+      - role: ocp-login # claimed cluster login
+        when: admin_task == "claim"
+
+      - role: request-ocs
+        when: ocs_storage == "true" and admin_task == "claim"
+
+      - role: request-ocp4-logging
+        when: ocp_logging == "true" and admin_task == "claim"
+
+      - role: clone_repo
+        when: post_install == "true" and admin_task == "claim"
+
+      - role: "{{ post_install_role }}"
+        when: post_install == "true" and admin_task == "claim"        
+      
+      - role: ocp-cluster-tag
+        vars:
+          CLUSTER_NAME: "{{ cluster_name }}"
+        when: admin_task == "claim"
+
+    tasks:
+
+      - name: Display cluster details
+        command: cat cluster_details.log
+        register: cluster_details
+
+      - name: Print details
+        debug:
+          msg: "{{ cluster_details.stdout }}"

@@ -1,8 +1,9 @@
 # OCP login
 Used to login to OCP clusters prior to running command line tasks.  This play role will also install a copy of the oc client.
 
-## Expects the following
+## Expects the following variables
 
-- kubeadmin user
-- kubeadmin password
-- ocp api URL with port number  (example: "api.my-cluster.purple-chesterfield.com:6443")
+- kubeadmin_user
+- kubeadmin_password
+- ocp_api_url   (example: "api.my-cluster.purple-chesterfield.com")
+- ocp_api_port ( OPTIONAL, defaults to 6443 )

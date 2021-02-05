@@ -1,6 +1,7 @@
 # CloudPak Community Automation
 
 ## Introduction
+
 This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
 
 ## How to run playbooks
@@ -12,13 +13,72 @@ This repo represents the Community Automation effort where teams can contribute 
 
 ### Docker Option
 
-From the repo home folder "community-automation", run the following command which will leave you at a linux prompt ready to run the ansible playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)
+A public docker image has been create with all prereq's for running playbooks.
+
+Make sure docker or podman(RHEL 8) is installed and running on your workstation
+
+**NOTES:**
+
+- You may need to do a **docker logout** before you begin.
+- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+
+**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
+
+## MAC, Ubuntu, and RHEL 7 users
+
+### Creates a bash command line to the container ready to run playbooks
+```
+# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
+
+### Calling a playbook, assumes all vars are set in vars files, exits the container when complete
 
 ```
-# scripts/common/community-docker.sh
+# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml"
 
-# RHEL 8
-# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml"
+```
+
+### Using param passing, a mix of vars files, and command line vars, exits the container when complete
+
+```
+# docker run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml -e \"var1=value1\" -e \"var2=value1\""
+
+EXAMPLE:
+# docker run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml" -e "var1=value1"
+```
+
+## RHEL 8
+
+### Creates a bash command line to the container ready to run playbooks
+
+```
+# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest
+```
+
+### Calling with playbook, assumes all vars are set in vars files, exits the container when complete
+
+```
+# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml"
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml" 
+```
+
+### Using param passing, a mix of vars files, and command line vars, exits the container when complete
+
+```
+# podman run -v /<YOUR_REPO_ABSOLUTE_PATH>:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i <YOUR_PLAYBOOK_FOLDER>/inventory  <YOUR_PLAYBOOK_FOLDER>/playbook.yml -e \"var1=value1\" -e \"var2=value2\"
+
+EXAMPLE:
+# podman run -v /Users/ashworth/projects/community-automation:/community-automation -v ~/.ssh:/root/.ssh -i -t quay.io/rayashworth/community-ansible:latest -c "ansible-playbook -i csi-cephfs-fyre-play/inventory  csi-cephfs-fyre-play/csi-cephfs.yml" -e \"rook_cephfs_release=v1.4.7\""
 ```
 
 ### Personal install client (VM)
@@ -28,10 +88,12 @@ From the repo home folder "community-automation", run the following command whic
 From the repo home folder "community-autommation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
 
 ```
+# cd community-automation
 # scripts/common/install-prereqs.sh
 
 # RHEL 8
-# scripts/common/community-docker.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
+# cd community-automation
+# scripts/common/install-prereqs.sh -u YOUR_RH_USERNAME -p YOUR_RH_PASSWORD
 ```
 
 ## Play list
@@ -44,15 +106,15 @@ From the repo home folder "community-autommation", run the following command whi
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
-|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ beta|Availalbe|none|
-|request-ocp-ceph-fyre-play|deploy fyre OCP+beta cluster with cephfs|Availalbe|none|
-|request-ocp-cs-install-fyre-play|deploy fyre OCP+beta cluster and install csi-cephfs and common-services|Availalbe|none|
+|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ |Availalbe|none|
+|request-ocp-ceph-fyre-play|deploy fyre OCP+ cluster with cephfs|Availalbe|none|
+|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common-services|Availalbe|none|
 |request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
-|request-ocp4-logging-fyre-play|Install OCP logging onto OCP+Beta Fyre clusters|Available| none|
+|request-ocp4-logging-fyre-play|Install OCP logging onto OCP+ Fyre clusters|Available| none|
 |request-ocp4-logging-play|Install OCP logging onto OCP 4.x clusters|Available| none|
-|request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+Beta Cluster|Available| none|
+|request-ocpplus-cluster-transfer-fyre-play|Transfer OCP+ Cluster|Available| none|
 |request-ocs-fyre-play|Install Openshift Container Storage (OCS) on OCP+ Fyre clusters|Available| none|
 |request-ocs-play|Install Openshift Container Storage AWS or VMware|Available| none|
 |request-ocs-local-storage-vmware|Install Openshift Container Storage (OCS) on VMware OCP clusters|Available| none|
