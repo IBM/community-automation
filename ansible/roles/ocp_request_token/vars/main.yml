@@ -1,0 +1,4 @@
+---
+kubeadmin_user: "<admin user for the OCP cluster>"
+kubeadmin_password: "<admin user for the OCP cluster>"
+ocp_api_url: "https://<ocp api host>:6443"

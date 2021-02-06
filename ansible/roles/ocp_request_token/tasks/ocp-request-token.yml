@@ -1,0 +1,10 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+- name: Log in (obtain access token)
+  community.okd.openshift_auth:
+    username: "{{ kubeadmin_user }}"
+    password: "{{ kubeadmin_password }}"
+  register: openshift_auth_results

@@ -1,0 +1,7 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+# tasks file for ocp-request-token
+- include_tasks: ocp-request-token.yml

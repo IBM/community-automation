@@ -1,0 +1,16 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  annotations:
+    olm.providedAPIs: Db2uCluster.v1.db2u.databases.ibm.com,Db2uHadr.v1alpha1.db2u.databases.ibm.com,Db2uHelmMigration.v1alpha1.db2u.databases.ibm.com,Formation.v1.db2u.databases.ibm.com,FormationLock.v1.db2u.databases.ibm.com
+  generateName: db2-
+  generation: 1
+  name: db2-qpx28
+  namespace: "{{ db2_namespace }}"
+spec:
+  targetNamespaces:
+    - "{{ db2_namespace }}"

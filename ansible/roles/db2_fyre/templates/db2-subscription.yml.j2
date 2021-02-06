@@ -1,0 +1,18 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: db2u-operator
+  namespace: {{ db2_namespace }}
+  labels:
+    operators.coreos.com/db2u-operator.db2: ''
+spec:
+  channel: v1.0
+  installPlanApproval: Automatic
+  name: db2u-operator
+  source: ibm-operator-catalog
+  sourceNamespace: openshift-marketplace
+  startingCSV: db2u-operator.v1.0.2
