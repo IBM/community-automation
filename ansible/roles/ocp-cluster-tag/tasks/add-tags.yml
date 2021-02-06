@@ -4,6 +4,8 @@
   block:
   - name: get instances based on tag Name 
     community.aws.ec2_instance_info:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       region: '{{ AWS_REGION }}'
       filters:
         "tag:Name": "{{ CLUSTER_NAME }}*"
@@ -11,6 +13,8 @@
 
   - name: add AWS tags to each instance
     amazon.aws.ec2_tag:
+      aws_access_key: "{{ aws_access_key }}"
+      aws_secret_key: "{{ aws_secret_key }}"
       region: '{{ AWS_REGION }}'
       resource: '{{ item.instance_id }}'
       state: present
