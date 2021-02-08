@@ -1,16 +1,15 @@
 ---
 ansible_python_interpreter: /usr/bin/python3
-cloudregion: "us-south" # Provide the resource i.e. us-south to use
-clusterName: "newclustername" # Provide a unique cluster name
-dataCenter: "wdc04" # Provide the data center (zone) to deploy to
+apikey: 1234567890123456 # Set the api key here to use for IBM Cloud authentication
+cloudregion: us-south # Provide the resource i.e. us-south to use
+clusterName: newclustername # Provide a unique cluster name
+dataCenter: wdc04 # Provide the data center (zone) to deploy to
 defaultPoolSize: 2 # Set the size of the default worker pool
+entitlement: cloud_pak # Set entitlement to "cloud_pak" when deploying a cloud pak to the cluster otherwise you will be charged for OCP licenses
 hardware: shared # shared for virtual workers
-kubeVersion: 4.4.20_openshift # kube version to use 
-machineType: "b2c.4x16" # machine flavor to use
+icaccount: 1234567890123456 # Target the account to use
+kubeVersion: 4.4_openshift # kube version to use 
+machineType: b2c.4x16 # machine flavor to use
 privateVLAN: 1234567 # Private VLAN to use, must be available
 publicVLAN: 2345678 # Public VLAN to use, optional
-resourceGroup: "default" # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
-workerCount: "2" # Set the size of the default worker pool
-icaccount: "1234567890123456" # Target the account to use
-entitlement: "cloud_pak" # Set entitlement to "cloud_pak" when deploying a cloud pak to the cluster otherwise you will be charged for OCP licenses
-apikey: "1234567890123456" # Set the api key here to use for IBM Cloud authentication
+resourceGroup: default # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
