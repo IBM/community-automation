@@ -1,5 +1,7 @@
 ---
-vars:
-  hardware: shared
-  kubeVersion: 4.3.31_openshift
-  workerCount: 2
+hardware: shared
+kubeVersion: 4.5_openshift
+defaultPoolSize: 2
+resourceGroup: default
+cloudregion: us-south
+entitlement: cloud_pak

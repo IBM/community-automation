@@ -4,7 +4,7 @@
 
 ## Requirements 
 
-1. The "ibmcloud.ibmcollection". To install: `ansible-galaxy collection install ibm.cloudcollection`
+1. The "ibm.cloudcollection". Version 1.8.2 is currently known to work. Newer versions are known to cause issues with the embedded roles. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
 2. IBM-Cloud terraform-provider-ibm v1.9.0
 3. Terraform v0.12.20
 
@@ -38,36 +38,32 @@
 * icaccount: Add IBM Cloud Account GUID when API Key provided is used by multiple accounts.
 * dataCenter: This is the 5 character zone id for IBM Cloud (i.e. dal10). To see zones available use the IBM Cloud CLI `ibmcloud cs zones --provider classic`
 
-
-## Output
-
-Registers variable: iccluster
-
 ## Example Play
 
     ---
     - hosts: localhost
       vars:
         ansible_python_interpreter: /usr/bin/python3
-        cloudregion: "us-east"
-        clusterName: "CLUSTERNAME"
-        dataCenter: "wdc04"
-        defaultPoolSize: 5
-        hardware: shared
-        kubeVersion: 4.3_openshift
-        machineType: "c3c.32x64"
-        privateVLAN: 1234567
-        publicVLAN: 2345678
-        resourceGroup: "RGNAME"
-        workerCount: "5"
-        icaccount: "9zzzzzzzzzzzzzzzzzzzzzz61"
-        entitlement: "cloud_pak"
+        cloudregion: us-south # Provide the resource i.e. us-south to use
+        clusterName: newclustername # Provide a unique cluster name
+        dataCenter: wdc04 # Provide the data center (zone) to deploy to
+        defaultPoolSize: 2 # Set the size of the default worker pool
+        hardware: shared # shared for virtual workers
+        kubeVersion: 4.4_openshift # kube version to use 
+        machineType: b2c.4x16 # machine flavor to use
+        privateVLAN: 1234567 # Private VLAN to use, must be available
+        publicVLAN: 2345678 # Public VLAN to use, optional
+        resourceGroup: default # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
+        icaccount: 1234567890123456 # Target the account to use
+        entitlement: cloud_pak # Set entitlement to "cloud_pak" when deploying a cloud pak to the cluster otherwise you will be charged for OCP licenses
+        apikey: 1234567890123456 # Set the api key here to use for IBM Cloud authentication
       collections:
-        - ibmcloud.ibmcollection
+        - ibm.cloudcollection
 
       tasks:
-        - import_role: 
-            name: createROKSCluster
+      - name: create roks cluster
+        import_role: 
+          name: request-ocp-roks
 
 ## Deploying a cluster through an Ansible Container
 
