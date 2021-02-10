@@ -1,0 +1,28 @@
+---
+# ACM/HIVE Cluster Information
+"kubeadmin_user": "kubeadmin"
+"kubeadmin_password": "" #  ACM/Hive used for cluster create
+"ocp_api_url": "api.hive2-public-cluster.purple-chesterfield.com:6443" # ACM/HIVE used for cluster creates public instance api URL
+
+# pool options
+"admin_task": ""  # provision|delete can be easier to pass and param to playbook, -e "admin_task=claim"
+"pool_name": ""   # the name of the cluster pool, predefined in RHACM/hive cluster
+"pool_namespace": ""   # the cluster pool namespace, predefined in RHACM/hive cluster
+
+# Deployment Details
+# Provision or delete cluster
+"admin_task": "provision" # delete|provision
+
+# What type of cloud to create?
+"cloud": "aws"  # aws|google|azure|vsphere (AWS only at the moment)
+
+"BASE_DOMAIN": "purple-chesterfield.com"
+
+# What OCP version you want to install
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.8-x86_64"
+
+# Redhat pull secret. You can get one here https://cloud.redhat.com/openshift/install/aws/installer-provisioned
+"PULL_SECRET": '<pull_secret>' # be sure to leave the quotes in place
+
+# Public ssh key. Typically from the VM your creating the cluster on
+"SSH_PUBLIC_KEY": '<public key>'

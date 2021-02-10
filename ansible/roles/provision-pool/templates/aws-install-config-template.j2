@@ -1,0 +1,45 @@
+apiVersion: v1
+
+baseDomain: <domain_name> # You must leave this intact (do not change this value) so script can replace
+metadata:
+  name: <cluster_name> # You must leave this intact (do not change this value) so script can replace
+
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform:
+    aws:
+      type: {{ WORKER_SIZE }}
+      rootVolume:
+        size: {{ WORKER_VOL_SIZE }}
+        type: gp2
+  replicas: {{ WORKER_COUNT }}
+
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  platform:
+    aws:
+      type: {{ MASTER_SIZE }}
+      rootVolume:
+        size: {{ MASTER_VOL_SIZE }}
+        type: gp2
+  replicas: 3
+
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineCIDR: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+
+platform:
+  aws:
+    region: {{ AWS_REGION }}
+
+pullSecret: {{ PULL_SECRET }}
+
+sshKey: |
+  {{ SSH_PUBLIC_KEY }}

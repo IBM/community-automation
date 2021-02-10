@@ -1,0 +1,17 @@
+apiVersion: hive.openshift.io/v1
+kind: ClusterPool
+metadata:
+  name: {{ pool_name }}
+  namespace: {{ pool_namespace }}
+spec:
+  baseDomain: {{ BASE_DOMAIN }}
+  imageSetRef:
+    name: openshift-{{ imageset.stdout }}
+  installConfigSecretTemplateRef:
+    name: install-config-{{ MASTER_SIZE }}x{{ WORKER_SIZE }}-template
+  platform:
+    aws:
+      credentialsSecretRef:
+        name: aws-creds
+      region: {{ AWS_REGION }}
+  size: 1
