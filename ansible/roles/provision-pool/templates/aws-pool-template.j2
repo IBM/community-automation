@@ -8,7 +8,7 @@ spec:
   imageSetRef:
     name: openshift-{{ imageset.stdout }}
   installConfigSecretTemplateRef:
-    name: install-config-{{ MASTER_SIZE }}x{{ WORKER_SIZE }}-template
+    name: install-config-3x{{ WORKER_COUNT }}-template
   platform:
     aws:
       credentialsSecretRef:
