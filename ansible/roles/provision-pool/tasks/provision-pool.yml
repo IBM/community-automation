@@ -36,8 +36,8 @@
             - name: Create namespace {{ pool_namespace }}
               shell: "oc create namespace {{ pool_namespace }}"
 
-    - name: Check for install-config-3x{{ WORKER_COUNT }}-template secret in namespace {{ pool_namespace }}...
-      shell: "oc get secrets -n {{ pool_namespace }} | grep -w install-config-3x{{ WORKER_COUNT }}-template > /dev/null ; echo $?"
+    - name: Check for install-config-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template secret in namespace {{ pool_namespace }}...
+      shell: "oc get secrets -n {{ pool_namespace }} | grep -w install-config-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template > /dev/null ; echo $?"
       register: install_config_results
 
     - name: If install-config-template is not in namespace {{ pool_namespace }} then ...
@@ -50,8 +50,8 @@
             backup: false
           register: install_config_template_results
 
-        - name: Create aws install-config-3x{{ WORKER_COUNT }}-template secret in namespace {{ pool_namespace }}
-          shell: "oc create secret generic install-config-3x{{ WORKER_COUNT }}-template --from-file=install-config.yaml=./install-config.yaml -n {{ pool_namespace }}"
+        - name: Create aws install-config-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template secret in namespace {{ pool_namespace }}
+          shell: "oc create secret generic install-config-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template --from-file=install-config.yaml=./install-config.yaml -n {{ pool_namespace }}"
 
     - name: Test for aws-creds  ...
       shell: "oc get secrets -n {{ pool_namespace }} | grep -w aws-creds > /dev/null ; echo $?"
