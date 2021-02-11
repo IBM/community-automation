@@ -2,12 +2,12 @@
 - name: Is imageset already available ?
   when: 'admin_task == "provision"'
   block:
-    - name: Parse register release image tag ...
+    - name: Parse ocp release image for tag info ...
       shell:  "echo {{ OCP_RELEASE_IMAGE }} | rev | cut -f1 -d':' | cut -f1 -d'-' --complement | rev"
       register: imageset
 
-    - name: Is image set created ?
-      shell:  "oc get ClusterImageSet | grep openshift-{{ imageset.stdout }} > /dev/null ; echo $?"
+    - name: Is image set openshift-{{ imageset.stdout }} already available ?
+      shell:  "oc get ClusterImageSet | tr -s ' ' | cut -f1 -d' ' | grep -x openshift-{{ imageset.stdout }} > /dev/null ; echo $?"
       register: imageset_available
 
     - name: If image set is not available then create image set
@@ -21,16 +21,16 @@
         - name: Create image set openshift-{{ imageset.stdout }} ...
           shell: "oc create -f image-set-cr.yml"
 
-- name: Provisioning AWS pool...
+- name: Provisioning new AWS pool with image openshift-{{ imageset.stdout }} ...
   when: 'admin_task == "provision" and cloud == "aws"'
   block:
-    - name: Check to see if Namespace {{ pool_namespace }} already exists.
+    - name: Check to see if pool namespace {{ pool_namespace }} already exists.
       block:
         - name: Parse all namespaces to see if {{ pool_namespace }} is there ...
-          shell: "oc get namespaces | grep -w {{ pool_namespace }} > /dev/null; echo $?"
+          shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep -x {{ pool_namespace }} > /dev/null; echo $?"
           register: ns_results
 
-        - name: If  namespace {{ pool_namespace }} is not created then create it ....
+        - name: If  namespace {{ pool_namespace }} is not already created then create it ....
           when: 'ns_results.stdout == "1"'
           block:
             - name: Create namespace {{ pool_namespace }}
@@ -43,7 +43,7 @@
     - name: If install-config-template is not in namespace {{ pool_namespace }} then ...
       when: 'install_config_results.stdout == "1"'
       block:
-        - name: Create install-config.yaml secret from template
+        - name: Populate install-config.yaml file from template
           template:
             src: "{{ cloud }}-install-config-template.j2"
             dest: "install-config.yaml"
@@ -57,7 +57,7 @@
       shell: "oc get secrets -n {{ pool_namespace }} | grep -w aws-creds > /dev/null ; echo $?"
       register: aws_creds_results
 
-    - name: If aws-creds secret is not in namespace {{ pool_namespace }} then ...
+    - name: Check if aws-creds secret is in namespace {{ pool_namespace }} ...
       when: 'aws_creds_results.stdout == "1"'
       block:
         - name: Create secret for aws-creds in namespace {{ pool_namespace }}
@@ -75,7 +75,7 @@
       register: provision_pool_results
 
     - name: Find the namespace of the first cluster created for pool {{ pool_name }}  ...
-      shell: "oc get namespaces | grep {{ pool_name }} | tr -s ' ' | cut -f1 -d' '"
+      shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep  '^{{ pool_name }}-' | grep -E '^.{'$(( $(echo -n {{ pool_name }}- | wc -m) + 5))'}$' | head -n 1"
       register: pool_cluster_namespace
       until: 'pool_cluster_namespace.stdout != ""'
       retries: 10
@@ -108,7 +108,7 @@
       failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
     - name: Wait for up to 60 minutes for all clusters for pool {{ pool_name }} to be de-provisioned ...
-      shell: "oc get namespaces | grep {{ pool_name }} > /dev/null; echo $?"
+      shell: "oc get namespaces | grep {{ pool_name }} | tr -s ' ' | cut -f1 -d' ' | rev | cut -f1 -d'-' --complement | rev | grep -x {{ pool_name }} > /dev/null; echo $?"
       register: deprovision_results
       until: 'deprovision_results.stdout == 1'
       retries: 60
