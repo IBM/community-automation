@@ -9,7 +9,7 @@ compute:
   name: worker
   platform:
     aws:
-      type: {{ WORKER_SIZE }}
+      type: {{ WORKER_VM_SIZE }}
       rootVolume:
         size: {{ WORKER_VOL_SIZE }}
         type: gp2
@@ -20,7 +20,7 @@ controlPlane:
   name: master
   platform:
     aws:
-      type: {{ MASTER_SIZE }}
+      type: {{ MASTER_VM_SIZE }}
       rootVolume:
         size: {{ MASTER_VOL_SIZE }}
         type: gp2
