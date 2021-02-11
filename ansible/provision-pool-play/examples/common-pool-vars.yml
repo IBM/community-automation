@@ -8,6 +8,7 @@
 "admin_task": ""  # provision|delete can be easier to pass and param to playbook, -e "admin_task=claim"
 "pool_name": ""   # the name of the cluster pool, predefined in RHACM/hive cluster
 "pool_namespace": ""   # the cluster pool namespace, predefined in RHACM/hive cluster
+"pool_size": ""    # Number of clusters per pool_name
 
 # Deployment Details
 # Provision or delete cluster
@@ -19,7 +20,7 @@
 "BASE_DOMAIN": "purple-chesterfield.com"
 
 # What OCP version you want to install
-"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.8-x86_64"
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"
 
 # Redhat pull secret. You can get one here https://cloud.redhat.com/openshift/install/aws/installer-provisioned
 "PULL_SECRET": '<pull_secret>' # be sure to leave the quotes in place

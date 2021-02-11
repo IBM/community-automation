@@ -70,6 +70,10 @@
         backup: false
       register: template_results
 
+    - name: Copy pool cr yaml with pool name ...
+      shell: "mkdir dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml;sed -i 's/size: 1/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml"
+      register: provision_pool_results
+
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
       shell: "oc create -f {{ cloud }}-pool-cr.yml"
       register: provision_pool_results
@@ -98,6 +102,7 @@
 - name: Deleting pool {{ pool_name }} in namespace {{ pool_namespace }}
   when: 'admin_task == "delete" and cloud == "aws"'
   block:
+
     - name: Delete pool
       shell: "oc -n {{ pool_namespace }} delete -f {{ cloud }}-pool-cr.yml"
       register: delete_results
@@ -110,6 +115,6 @@
     - name: Wait for up to 60 minutes for all clusters for pool {{ pool_name }} to be de-provisioned ...
       shell: "oc get namespaces | grep {{ pool_name }} | tr -s ' ' | cut -f1 -d' ' | rev | cut -f1 -d'-' --complement | rev | grep -x {{ pool_name }} > /dev/null; echo $?"
       register: deprovision_results
-      until: 'deprovision_results.stdout == 1'
+      until: 'deprovision_results.stdout == "1"'
       retries: 60
       delay: 60
