@@ -11,7 +11,7 @@ compute:
     aws:
       type: {{ WORKER_VM_SIZE }}
       rootVolume:
-        size: {{ WORKER_VOL_SIZE }}
+        size: {{ WORKER_VOLUME_SIZE }}
         type: gp2
   replicas: {{ WORKER_COUNT }}
 
@@ -22,7 +22,7 @@ controlPlane:
     aws:
       type: {{ MASTER_VM_SIZE }}
       rootVolume:
-        size: {{ MASTER_VOL_SIZE }}
+        size: {{ MASTER_VOLUME_SIZE }}
         type: gp2
   replicas: 3
 
