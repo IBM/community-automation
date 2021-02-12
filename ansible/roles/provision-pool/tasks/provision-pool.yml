@@ -70,8 +70,12 @@
         backup: false
       register: template_results
 
+    - name: Make backup dir to save pool create files ...
+      cmd: "mkdir dir-{{ pool_name }}"
+      register: provision_pool_results
+
     - name: Copy pool cr yaml with pool name ...
-      shell: "mkdir dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml;sed -i 's/size: {{ pool_size }}/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml"
+      shell: "cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml;sed -i 's/size: {{ pool_size }}/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml"
       register: provision_pool_results
 
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
@@ -92,7 +96,7 @@
       retries: 10
       delay: 30
 
-    - name: Check progress of provisioning pod in namespace {{ pool_cluster_namespace.stdout }} for pool {{ pool_name }}, waiting up to 60 minutes for first cluster to finish deploying ...
+    - name: Cluster provisioning pod {{ pro_pod_results.stdout }}, waiting up to 60 minutes for first cluster to finish deploying ...
       shell: "oc logs -n {{ pool_cluster_namespace.stdout }} {{ pro_pod_results.stdout }} -c hive"
       register: monitor_results
       until: 'monitor_results.stdout.find("install completed successfully") != -1'
@@ -102,6 +106,14 @@
 - name: Deleting pool {{ pool_name }} in namespace {{ pool_namespace }}
   when: 'admin_task == "delete" and cloud == "aws"'
   block:
+    - name: Check for claims against pool {{ pool_name }}
+      shell: "oc --no-headers=true get clusterclaims -n walt-poolc | grep ^.*$ > /dev/null; echo $?"
+      register: claim_results
+
+    - name: If outstanding claims abort delete of pool and exit ....
+      when: 'claim_results.stdout == "0"'
+      fail:
+        msg: Cannot delete pool {{ pool_name }} when there are outstanding claims. Release all claims and re-run.
 
     - name: Delete pool
       shell: "oc delete ClusterPool {{ pool_name }} -n {{ pool_namespace }}"
