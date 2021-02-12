@@ -70,3 +70,7 @@
       shell: "./oc delete clusterclaim {{ claim_name }} -n {{ pool_namespace }}"
       register: release_results
   
+- name: logout of hive hub
+  shell: "oc logout"
+  register: logout_results
+  ignore_errors: yes
