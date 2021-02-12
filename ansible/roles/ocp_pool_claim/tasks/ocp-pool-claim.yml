@@ -43,6 +43,7 @@
         kubeadmin_user: "kubeadmin"
         ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
         cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+        admin_task: "claim"
       changed_when: false
 
     - name: Remove previous log file
@@ -70,3 +71,7 @@
       shell: "./oc delete clusterclaim {{ claim_name }} -n {{ pool_namespace }}"
       register: release_results
   
+- name: logout of hive hub
+  shell: "oc logout"
+  register: logout_results
+  ignore_errors: yes

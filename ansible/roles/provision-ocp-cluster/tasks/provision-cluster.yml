@@ -78,6 +78,11 @@
      register: delete_namespace_results
      failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
+- name: logout of hive hub
+  shell: "oc logout"
+  register: logout_results
+  ignore_errors: yes
+
 - debug:
     msg:
      - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
