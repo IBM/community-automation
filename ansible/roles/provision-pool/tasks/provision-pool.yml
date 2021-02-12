@@ -71,7 +71,7 @@
       register: template_results
 
     - name: Copy pool cr yaml with pool name ...
-      shell: "mkdir dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml;sed -i 's/size: 1/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml"
+      shell: "mkdir dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml;sed -i 's/size.*/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-pool-cr-delete.yml"
       register: provision_pool_results
 
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
@@ -92,7 +92,7 @@
       retries: 10
       delay: 30
 
-    - name: Check progress of provisioning pod {{ pro_pod_results.stdout }} in namespace {{ pool_cluster_namespace.stdout }} for pool {{ pool_name }}, waiting up to 60 minutes for first cluster to finish deploying ...
+    - name: Check progress of provisioning pod in namespace {{ pool_cluster_namespace.stdout }} for pool {{ pool_name }}, waiting up to 60 minutes for first cluster to finish deploying ...
       shell: "oc logs -n {{ pool_cluster_namespace.stdout }} {{ pro_pod_results.stdout }} -c hive"
       register: monitor_results
       until: 'monitor_results.stdout.find("install completed successfully") != -1'
@@ -104,7 +104,7 @@
   block:
 
     - name: Delete pool
-      shell: "oc -n {{ pool_namespace }} delete -f {{ cloud }}-pool-cr.yml"
+      shell: "oc delete ClusterPool {{ pool_name }} -n {{ pool_namespace }}"
       register: delete_results
 
     - name: delete namespace {{ pool_namespace }}
