@@ -71,7 +71,7 @@
       register: template_results
 
     - name: Make backup dir to save pool create files ...
-      cmd: "mkdir dir-{{ pool_name }}"
+      command: "mkdir dir-{{ pool_name }}"
       register: provision_pool_results
 
     - name: Copy pool cr yaml with pool name ...
