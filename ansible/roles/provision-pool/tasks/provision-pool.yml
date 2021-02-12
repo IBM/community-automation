@@ -107,7 +107,7 @@
   when: 'admin_task == "delete" and cloud == "aws"'
   block:
     - name: Check for claims against pool {{ pool_name }}
-      shell: "oc --no-headers=true get clusterclaims -n walt-poolc | grep ^.*$ > /dev/null; echo $?"
+      shell: "oc --no-headers=true get clusterclaims -n walt-poolc | tr -s ' ' | cut -f1 -d' ' | grep ^.*$ > /dev/null; echo $?"
       register: claim_results
 
     - name: If outstanding claims abort delete of pool and exit ....
