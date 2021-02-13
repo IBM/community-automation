@@ -1,0 +1,58 @@
+---
+- name: Modifying Security Context Contrains
+  debug:
+    msg: "*********************Modifying Security Context Contrains*********************"
+
+- block:
+    - name: Modifying {{ scc_to_be_modified }} scc
+      debug:
+        msg: "*********************Modifying {{ scc_to_be_modified }} scc*********************"
+
+    - name: Get a list of all service objects for the hostmount-anyuid scc
+      k8s_info:
+        api_version: v1
+        kind: SecurityContextConstraints
+        name: "{{ scc_to_be_modified }}"
+      register: scc_list
+
+    - name: Modify the {{ scc_to_be_modified }} scc and add the NFS provisioners service account
+      set_fact:
+        imported_var: "{{ scc_list | community.general.json_query('resources[]') | default([]) | combine({item.key: [item.value]}, list_merge='append') }}"
+      with_items:
+        - { key: 'users', value: '{{ user_string_for_scc }}' }
+
+    - name: Create temporary build directory for storing the modified SCC
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: build
+
+    - name: Create temporary file for storing the modified SCC
+      ansible.builtin.tempfile:
+        state: file
+        suffix: temp
+      register: tempfile_1
+
+    - name: Copy the modified SCC to a temp path
+      copy: content="{{ imported_var }}" dest="{{ tempfile_1.path }}"
+
+    - name: Apply the updated SCC for the nfs client storage deployment
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', '{{ tempfile_1.path }}') }}"
+
+    - name: Use the registered var and the file module to remove the temporary file
+      ansible.builtin.file:
+        path: "{{ tempfile_1.path }}"
+        state: absent
+      when: tempfile_1.path is defined
+
+    - name: SCC update complete
+      debug:
+        msg: "*********************SCC update complete*********************"
+
+  module_defaults:
+    group/k8s:
+      host: "{{ ocp_api_url }}"
+      api_key: "{{ ocp_token | default('exampletoken') }}"
+      validate_certs: no

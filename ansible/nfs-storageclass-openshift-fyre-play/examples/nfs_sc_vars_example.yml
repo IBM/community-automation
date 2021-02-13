@@ -1,0 +1,21 @@
+# vars file for nfs-client-provisioner-fyre
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+kubeadmin_user: "my_kubeadmin_user_name"
+kubeadmin_password: "my_kubeadmin_user_name"
+ocp_api_url: "https://my_ocp_api_url:port"
+nfs_provisioner_namespace: "new_namespace_to_deploy_nfs_provisioner"
+storageClassName: "storage_class_name_example_rook-cephfs"
+infra_node_private_ip: "private_ip_address_of_infra_node"
+
+
+###### EXAMPLE ###########
+#kubeadmin_user: "kubeadmin"
+#kubeadmin_password: "Uf6H7-NdcCy-sample-password"
+#ocp_api_url: "https://api.apache.cp.fyre.ibm.com:6443"
+#infra_node_private_ip: "10.17.99.138"
+#nfs_provisioner_namespace: "managed-nfs-storage"
+#storageClassName: "rook-cephfs"

@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: Apache2.0
 #
 ---
-- include_tasks: db2-deploy-fyre.yml
+- include_tasks: db2-deploy-openshift.yml

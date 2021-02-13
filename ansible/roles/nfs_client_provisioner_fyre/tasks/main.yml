@@ -1,0 +1,3 @@
+---
+# tasks file for nfs-client-provisioner-fyre
+- include_tasks: nfs-client-provisioner-ocp-private.yml

@@ -1,7 +1,7 @@
 db2_fyre
 =========
 
-This role utilizes the [IBM Operator Catalog](https://www.ibm.com/support/knowledgecenter/SSTTDS_11.0.0/com.ibm.ace.icp.doc/certc_install_enablingoperatorcatalog.html) to install [DB2 CE](https://www.ibm.com/support/knowledgecenter/SSEPGG_11.5.0/com.ibm.db2.luw.welcome.doc/doc/welcome.html) version `11.5.5.0-cn1` on OCP-Fyre(Private Cloud) cluster. 
+This role utilizes the [IBM Operator Catalog](https://www.ibm.com/support/knowledgecenter/SSTTDS_11.0.0/com.ibm.ace.icp.doc/certc_install_enablingoperatorcatalog.html) to install [DB2 CE](https://www.ibm.com/support/knowledgecenter/SSEPGG_11.5.0/com.ibm.db2.luw.welcome.doc/doc/welcome.html) version `11.5.5.0-cn1` on OCP clusters. 
 
 
 Requirements

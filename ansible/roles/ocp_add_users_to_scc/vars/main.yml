@@ -1,0 +1,12 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+#---
+scc_to_be_modified: "target-scc"
+user_string_for_scc: 'system:serviceaccount:my-test-namespace:mt-test-service-account'
+
+
+################ EXAMPLE ################
+#scc_to_be_modified: "hostmount-anyuid"
+#user_string_for_scc: 'system:serviceaccount:{{ nfs_provisioner_namespace }}:nfs-client-provisioner'
