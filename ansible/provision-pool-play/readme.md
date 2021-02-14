@@ -15,7 +15,7 @@ alternatively
 
 - An instance of RHACM or Hive
 - Know your hive cloud credentials
-- In the future when VMware is available, the RHACM or Hive OCP instance must live inside your vCenter in order to install into your vCenter. The Redhat OCP IPI installer does not work if RHACM/hive is outside the vCenter.  `However the hive instance in your vCenter can install to public clouds (AWS, google, azure)``
+- In the future when VMware is available, the RHACM or Hive OCP instance must live inside your vCenter in order to install into your vCenter. The Redhat OCP IPI installer does not work if RHACM/hive is outside the vCenter.  `However the hive instance in your vCenter can install to public clouds (AWS, google, azure)`   
 
 ## Supporting roles
 
