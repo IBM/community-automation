@@ -1,8 +1,8 @@
-Ansible Playbook for installing DB2 Community Edition onto OCP clusters.
+Ansible Playbook for installing DB2 Community Edition onto Openshift clusters.
 =========
 
 ## Overview
-This playbook uses the `db2_fyre` roles to deploy the DB2 Community Edition version `11.5.5.0-cn1` onto an on OCP-Fyre(Private Cloud) cluster.
+This playbook uses the `db2_openshift` role to deploy the DB2 Community Edition version `11.5.5.0-cn1` onto Openshift cluster.
 
 Assumptions:
 ------------
@@ -15,12 +15,12 @@ Assumptions:
 
 ## Setting up variables & pre-requisites
 
-- From the `db2-fyre-play` directory copy the sample variables file at `db2_vars_example.yml` to the  current directory.
+- From the `db2-openshift-play` directory copy the sample variables file at `db2_vars_example.yml` to the  current directory.
 - Modify `kubeadmin_user` variable in the `variables` file with the Kube/OCP admin user of you OCP cluster.
 - Modify `kubeadmin_password` variable in the `variables` file with the Kube/OCP admin password of you OCP cluster.
 - Modify `ocp_api_url` variable in the `variables` file with the OCP API url of you OCP cluster.
-- Modify `db2_namespace` variable in the `variables` file with the namespace where you to install DB2. It can either be a new or existing namespace.
-- Modify `storageClassName` variable in the `variables` file with an existing storage class on your OCP cluster. If you don't have a storage class you can use the [csi-cephfs-fyre-play](https://github.com/IBM/community-automation/tree/master/ansible/csi-cephfs-fyre-play) playbook to provision a storage class on your OCP fyre cluster.
+- Modify `db2_namespace` variable in the `variables` file with the namespace where you to install DB2. It can either be a new or existing namespace. Please note that the `namespace` should not contain `_` .
+- Modify `storageClassName` variable in the `variables` file with an existing storage class on your OCP cluster. If you don't have a storage class you can use the [csi-cephfs-fyre-play](https://github.com/IBM/community-automation/tree/master/ansible/csi-cephfs-fyre-play) or `nfs-storageclass-openshift-fyre-play` playbook to provision a storage class on your OCP fyre cluster.
 - Modify `entitled_key` variable in the `variables` file with the IBM entitled. You can get the IBM entitled key by visiting this link--> https://myibm.ibm.com/products-services/containerlibrary)
 
 ## Run playbook
@@ -29,7 +29,7 @@ Assumptions:
 Once you have configured the `db2_vars.yml` file, run the playbook using:
 
 ```
-ansible-playbook db2-fyre-play.yml --extra-vars  "@./db2_vars.yml"
+ansible-playbook db2-openshift-play.yml --extra-vars  "@./db2_vars.yml"
 ```
 
 ## Post install

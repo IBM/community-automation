@@ -1,0 +1,10 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+- name: Install DB2 Community Edition on fyre
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - role: db2_openshift

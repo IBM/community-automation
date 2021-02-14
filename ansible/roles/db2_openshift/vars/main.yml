@@ -6,6 +6,6 @@
 kubeadmin_user: "<admin user for the OCP cluster>"
 kubeadmin_password: "<admin user for the OCP cluster>"
 ocp_api_url: "https://<ocp api host>:6443"
-db2_namespace: "<namespace where you want db2 to be installed>"
+ldap_namespace: "<namespace where you want db2 to be installed>"
 storageClassName: "Add your storage class name"
 entitled_key: "IBM Entitled Key"

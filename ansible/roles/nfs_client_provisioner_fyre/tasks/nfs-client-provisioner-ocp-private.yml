@@ -1,0 +1,143 @@
+---
+- name: Deploying NFS storage class on Fyre using NFS client provisioner
+  debug:
+    msg: "*********************Deploying NFS storage class on Fyre*********************"
+
+- block:
+    - name: Creating a nfs-client provisioner on OCP Private cluster
+      debug:
+        msg: "Create a nfs-client provisioner on OCP Private cluster"
+
+    - name: Ensure the {{ storageClassName }} Namespace exists.
+      k8s:
+        api_version: v1
+        kind: Namespace
+        name: "{{ nfs_provisioner_namespace }}"
+        state: present
+
+    - name: Create the service account for the nfs client provisioner
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'nfs-sa.yml') | from_yaml }}"
+
+    - name: Create the Cluster Role for NFS Provisioner
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'nfs-cluster-role.yml') }}"
+
+    - name: Create Cluster Role Binding for NFS Runner
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'nfs-cluster-rb.yml') }}"
+
+    - name: Create the Cluster Role for Provisioner
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'nfs-role.yml') }}"
+
+    - name: Create the Cluster Role Binding for Provisioner
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'nfs-role-binding.yml') }}"
+
+    - name: Modifying hostmount-anyuid scc
+      debug:
+        msg: "*********************Modifying hostmount-anyuid scc*********************"
+
+    - name: Call the ocp_add_users_to_scc role to add user to the SCC for the NFS
+      import_role:
+        name: ocp_add_users_to_scc
+      vars:
+        scc_to_be_modified: "hostmount-anyuid"
+        user_string_for_scc: 'system:serviceaccount:{{ nfs_provisioner_namespace }}:nfs-client-provisioner'
+
+        msg: "*********************SCC update complete*********************"
+
+    - name: Create provisioner for storage class
+      k8s:
+        definition: "{{ lookup('template', 'class.yml') | from_yaml }}"
+        state: present
+
+    - name: Create NFS deployment
+      k8s:
+        definition: "{{ lookup('template', 'deployment.yml.j2') | from_yaml }}"
+        state: present
+
+    - name: Sleep for 60 seconds for the deployment
+      wait_for:
+        timeout: 60
+      delegate_to: localhost
+
+    - name: Wait for the storage class provisioner deployments to be Ready
+      k8s_info:
+        kind: Pod
+        namespace: "{{ storageClassName }}"
+      register: pod_list
+      retries: 20
+      delay: 15
+      until:
+        - ('Pending' not in (pod_list | community.general.json_query('resources[*].status.phase') | select('match', 'Pending') | list))
+
+    - name: Patch the storage class to make it default
+      k8s:
+        definition:
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            annotations:
+              storageclass.kubernetes.io/is-default-class: "true"
+            name: "{{ storageClassName }}"
+          parameters:
+            archiveOnDelete: "false"
+          provisioner: fuseim.pri/ifs
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+
+    - name: Create a test claim
+      ignore_errors: True
+      k8s:
+        state: present
+        definition: "{{ lookup('template', 'test-claim.yml') }}"
+
+    - name: Testing the "{{ storageClassName }}" storage class
+      debug:
+        msg: "*********************Deploying NFS storage class on Fyre*********************"
+
+    - name: Wait for pvc to be bound
+      k8s_info:
+        kind: PersistentVolumeClaim
+        name: test-claim
+        namespace: "{{ nfs_provisioner_namespace }}"
+      register: test_pvc
+      retries: 20
+      delay: 15
+      until: ('Bound' in test_pvc | json_query('resources[*].status.phase'))
+
+    - name: Test pvc is not ready
+      fail:
+        msg: "The test pvc is not ready, please check you deployment"
+      when: ('Bound' not in test_pvc | json_query('resources[*].status.phase'))
+
+    - name: Deleting the "{{ storageClassName }}" storage class
+      debug:
+        msg: "*********************Deploying NFS storage class on Fyre*********************"
+
+    - name: Delete test storage class
+      ignore_errors: True
+      k8s:
+        state: absent
+        definition: "{{ lookup('template', 'test-claim.yml') }}"
+
+  module_defaults:
+    community.okd.openshift_auth:
+      host: "{{ ocp_api_url }}"
+      validate_certs: no
+    group/k8s:
+      host: "{{ ocp_api_url }}"
+      api_key: "{{ ocp_token | default('exampletoken') }}"
+      validate_certs: no
