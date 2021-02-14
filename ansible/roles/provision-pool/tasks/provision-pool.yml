@@ -70,13 +70,10 @@
         backup: false
       register: template_results
 
-    - name: Make backup dir to save pool create files ...
-      command: "mkdir dir-{{ pool_name }}"
-      register: provision_pool_results
-
     - name: Copy pool cr yaml with pool name ...
-      shell: "cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml;sed -i 's/size: {{ pool_size }}/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml"
+      shell: "mkdir  dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml;sed -i 's/size: {{ pool_size }}/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml"
       register: provision_pool_results
+      warn: false
 
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
       shell: "oc create -f {{ cloud }}-pool-cr.yml"
