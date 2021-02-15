@@ -1,0 +1,45 @@
+---
+#Keep single quotes where indicated and dowble quotes where indicated
+#VCENTER_BASE64_SSL_CERTIFICATE is cut/paste of actual certificate within the single quotes
+"VCENTER_CLUSTERNAME": "<vcenter cluster like ICO01>"
+"VCENTER_DATACENTER": "<vcenter datacenter like IOCDCPC1>"
+"VCENTER_DATASOURCE": "<vcenter datasource like ICOVCPC-RSX6-101>"
+"VCENTER_NETWORK": "<network id like VIS232>"
+"VCENTER_SERVER": "<vCenter dns name like xxxxxx.rtp.raleigh.ibm.com>"
+"VCENTER_PASSWORD": '<password>'
+"VCENTER_ADMIN_USER": "<vcenter_admin like xxxx@icovcpc65.rtp>"
+#vCenter certificate
+#wget --no-check-certificate  https://icovcpc65.rtp.raleigh.ibm.com/certs/download.zip
+#extract zip file
+#from lin dir
+#cp * /etc/pki/ca-trust/source/anchors/
+# run 'update-ca-trust extract'
+"VCENTER_BASE64_SSL_CERTIFICATE": '<vcenter_cert>'
+
+#Master and Worker nodes sizes
+"MASTER_CPUS": "10"
+"MASTER_MEMORY": "32768"
+"MASTER_DISK_SIZE": "300"
+"WORKER_COUNT": 3
+"WORKER_CPUS": "16"
+"WORKER_MEMORY": "73728"
+"WORKER_DISK_SIZE": "200"
+
+#Route53 setup for vmware-ipi
+"aws_access_key": "<your AWS_ACCESS_KEY_ID>"
+"aws_secret_key": "<your AWS_SECRET_ACCESS_KEY>"
+"api_ip": "<your static ip for api server>"
+"apps_ip": "<your static ip for apps url>"
+
+#Route53 No changes needed to the following
+"base_domain": "{{ BASE_DOMAIN }}"
+"clustername": "{{ CLUSTER_NAME }}"
+"api_dns": "api.{{ CLUSTER_NAME }}.{{ base_domain }}"
+"apps_dns": "*.apps.{{ CLUSTER_NAME }}.{{ base_domain }}"
+"route_task": "add"  # add|delete
+
+#provision-ocp-cluster No changes needed - Role specific variables
+"OCP_API_IP_ADDRESS": "{{ api_ip }}"
+"OCP_APPS_IP_ADDRESS": "{{ apps_ip }}"
+"AWS_ACCESS_KEY_ID": "{{ aws_access_key }}"
+"AWS_SECRET_ACCESS_KEY": "{{ aws_secret_key }}"
