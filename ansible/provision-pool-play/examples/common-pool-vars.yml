@@ -11,9 +11,6 @@
 "pool_size": ""    # Number of clusters per pool_name
 
 # Deployment Details
-# Provision or delete cluster
-"admin_task": "provision" # delete|provision
-
 # What type of cloud to create?
 "cloud": "aws"  # aws|google|azure|vsphere (AWS only at the moment)
 
