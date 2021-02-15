@@ -50,10 +50,6 @@ cp examples/<cloud>-pool-vars.yml .
 - edit common-pool-vars.yml
 - edit **\<cloud\>**-pool-vars.yml
 
-Run the collection install command
-```
-# ansible-galaxy collection install -r requirements.yml
-```
 ## Create cluster
 
 When using variable files
