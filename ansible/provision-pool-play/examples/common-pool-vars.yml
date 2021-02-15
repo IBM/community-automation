@@ -2,7 +2,7 @@
 # ACM/HIVE Cluster Information
 "kubeadmin_user": "kubeadmin"
 "kubeadmin_password": "" #  ACM/Hive used for cluster create
-"ocp_api_url": "api.hive2-public-cluster.purple-chesterfield.com:6443" # ACM/HIVE used for cluster creates public instance api URL
+"ocp_api_url": "api.hive2-public-cluster.purple-chesterfield.com" # ACM/HIVE used for cluster creates public instance api URL
 
 # pool options
 "admin_task": ""  # provision|delete can be easier to pass and param to playbook, -e "admin_task=claim"
