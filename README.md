@@ -129,7 +129,7 @@ From the repo home folder "community-autommation", run the following command whi
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
 |ocp_login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
-|oc-client-install|installs oc command| Available | is automatic when using ocp_login role|
+|oc_client_install|installs oc command| Available | is automatic when using ocp_login role|
 |ocp_cluster_tag|tags your cluster| Available | working on AWS only at this time|
 |aws_route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
 |deploy_ova_vmware| deploy redhat coreos image to vmware|Availalbe|

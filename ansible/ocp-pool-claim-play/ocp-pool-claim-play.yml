@@ -9,7 +9,7 @@
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
-      - oc-client-install
+      - oc_client_install
       - ocp_login # login to hive cluster
       - ocp_pool_claim
 
