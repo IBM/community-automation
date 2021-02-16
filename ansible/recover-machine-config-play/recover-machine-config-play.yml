@@ -7,4 +7,4 @@
   become_user: root
   gather_facts: yes
   roles: 
-  - recover-machine-config
+  - recover_machine_config

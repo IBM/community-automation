@@ -7,4 +7,4 @@
     
       tasks:
         - import_role:
-            name: aws-route53
+            name: aws_route53

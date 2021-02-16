@@ -1,0 +1,4 @@
+---
+- name: import tasks
+  import_tasks: start_aws_cluster.yml
+  run_once: true

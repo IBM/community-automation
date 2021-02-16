@@ -2,4 +2,4 @@
 - name: Install common services catalog source install
   hosts: bastion
   roles:
-  - common-services-cat-src-inst
+  - common_services_cat_src_inst

@@ -108,7 +108,7 @@ From the repo home folder "community-autommation", run the following command whi
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
 |request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ |Availalbe|none|
 |request-ocp-ceph-fyre-play|deploy fyre OCP+ cluster with cephfs|Availalbe|none|
-|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common-services|Availalbe|none|
+|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common_services|Availalbe|none|
 |request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
@@ -128,11 +128,11 @@ From the repo home folder "community-autommation", run the following command whi
 
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
-|ocp-login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
-|oc-client-install|installs oc command| Available | is automatic when using ocp-login role|
-|ocp-cluster-tag|tags your cluster| Available | working on AWS only at this time|
-|aws-route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
-|deploy-ova-vmware| deploy redhat coreos image to vmware|Availalbe|
+|ocp_login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
+|oc-client-install|installs oc command| Available | is automatic when using ocp_login role|
+|ocp_cluster_tag|tags your cluster| Available | working on AWS only at this time|
+|aws_route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
+|deploy_ova_vmware| deploy redhat coreos image to vmware|Availalbe|
 
 ## Scripts
 
@@ -264,7 +264,7 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
     ├── request-ocp-roks-play
     │   └── roles -> ../roles
     └── roles
-        ├── common-services
+        ├── common_services
         │   ├── README.md
         │   ├── defaults
         │   │   └── main.yml
@@ -276,11 +276,11 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
         │       ├── cs-sub.yaml.j2
         │       ├── cs-validation.bash.j2
         │       └── opencloud-source.yaml.j2
-        ├── ocp-login
+        ├── ocp_login
         │   └── tasks
         │       ├── main.yml
-        │       └── ocp-login.yml
-        ├── recover-epxired-certificates
+        │       └── ocp_login.yml
+        ├── recover_expired_certificates
         │   ├── defaults
         │   │   └── main.yml
         │   ├── files
@@ -291,7 +291,7 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
         │   │   └── recover-expired-certificates.yml
         │   ├── templates
         │   └── vars
-        ├── recover-machine-config
+        ├── recover_machine_config
         │   ├── defaults
         │   │   └── main.yml
         │   ├── files
@@ -300,15 +300,15 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
         │   ├── readme.md
         │   ├── tasks
         │   │   ├── main.yml
-        │   │   └── recover-machine-config.yml
+        │   │   └── recover_machine_config.yml
         │   ├── templates
         │   └── vars
-        ├── request-ocp-aws
+        ├── request_ocp_aws
         │   ├── default
         │   ├── readme.md
         │   ├── tasks
         │   └── templates
-        ├── request-ocp-fyre
+        ├── request_ocp_fyre
         │   ├── defaults
         │   ├── readme.md
         │   ├── tasks
@@ -318,7 +318,7 @@ To ensure we can load the roles correctly you will notice a symbolic link to the
         ├── jmeter_java
         ├── java
         ├── jmeter_prereqs
-        └── request-ocp-roks
+        └── request_ocp_roks
             ├── defaults
             ├── readme.md
             ├── tasks

@@ -2,4 +2,4 @@
 - name: Install common services
   hosts: bastion
   roles:
-  - common-services
+  - common_services

@@ -1,7 +1,7 @@
 ---
 - hosts: fyreApi
   roles: 
-  - role: request-ocp-fyre
+  - role: request_ocp_fyre
 
 - hosts: ocp-clusters
   gather_facts: false
