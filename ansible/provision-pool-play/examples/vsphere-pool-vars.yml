@@ -38,7 +38,7 @@
 "apps_dns": "*.apps.{{ CLUSTER_NAME }}.{{ base_domain }}"
 "route_task": "add"  # add|delete
 
-#provision-ocp-cluster No changes needed - Role specific variables
+#provision_ocp_cluster No changes needed - Role specific variables
 "OCP_API_IP_ADDRESS": "{{ api_ip }}"
 "OCP_APPS_IP_ADDRESS": "{{ apps_ip }}"
 "AWS_ACCESS_KEY_ID": "{{ aws_access_key }}"

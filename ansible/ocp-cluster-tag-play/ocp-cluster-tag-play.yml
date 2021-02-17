@@ -10,4 +10,4 @@
       AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
 
     roles:
-      - ocp-cluster-tag
+      - ocp_cluster_tag

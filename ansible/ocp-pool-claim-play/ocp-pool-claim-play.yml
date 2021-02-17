@@ -9,8 +9,8 @@
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
-      - oc-client-install
-      - ocp-login # login to hive cluster
+      - oc_client_install
+      - ocp_login # login to hive cluster
       - ocp_pool_claim
 
     tasks:
@@ -31,13 +31,13 @@
       PATH: ".:{{ ansible_env.PATH }}"
 
     roles:
-      - role: ocp-login # claimed cluster login
+      - role: ocp_login # claimed cluster login
         when: admin_task == "claim"
 
-      - role: request-ocs
+      - role: request_ocs
         when: ocs_storage == "true" and admin_task == "claim"
 
-      - role: request-ocp4-logging
+      - role: request_ocp4_logging
         when: ocp_logging == "true" and admin_task == "claim"
 
       - role: clone_repo
@@ -46,7 +46,7 @@
       - role: "{{ post_install_role }}"
         when: post_install == "true" and admin_task == "claim"        
       
-      - role: ocp-cluster-tag
+      - role: ocp_cluster_tag
         vars:
           CLUSTER_NAME: "{{ cluster_name }}"
         when: admin_task == "claim"

@@ -21,8 +21,8 @@ alternatively
 
 The following roles are called by this readme.
 
-- [ocp-login](https://github.com/IBM/community-automation/blob/master/ansible/roles/ocp-login/readme.md)
-- [provision-pool](https://github.com/IBM/community-automation/blob/master/ansible/roles/provision-pool/readme.md)
+- [ocp_login](https://github.com/IBM/community-automation/blob/master/ansible/roles/ocp_login/readme.md)
+- [provision_pool](https://github.com/IBM/community-automation/blob/master/ansible/roles/provision_pool/readme.md)
 
 ## Top level folder
 
