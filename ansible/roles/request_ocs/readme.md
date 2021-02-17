@@ -39,4 +39,4 @@ Example Playbook
     - name: Install ocs
       hosts: bastion
       roles:
-      - request-ocs-common
+      - request_ocs_common
