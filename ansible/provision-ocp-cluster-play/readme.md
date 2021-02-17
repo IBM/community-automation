@@ -21,8 +21,8 @@ alternatively
 
 See the following readmes for details about the roles
 
-- [ocp-login](https://https://github.com/IBM/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
-- [ocp-cluster-tag](https://github.com/rayashworth/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
+- [ocp_login](https://https://github.com/IBM/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
+- [ocp_cluster_tag](https://github.com/rayashworth/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
 
 ## Tagging clusters
 

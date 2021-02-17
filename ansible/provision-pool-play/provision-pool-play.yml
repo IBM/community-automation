@@ -12,5 +12,5 @@
 
   roles:
     # used to login into RHACM/HIVE cluster
-    - role: ocp-login
-    - role: provision-pool
+    - role: ocp_login
+    - role: provision_pool

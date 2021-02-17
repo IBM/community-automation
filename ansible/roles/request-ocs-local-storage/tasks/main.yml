@@ -1,3 +1,0 @@
-- name: import tasks
-  import_tasks: request-ocs-local-storage.yml
-  run_once: true
