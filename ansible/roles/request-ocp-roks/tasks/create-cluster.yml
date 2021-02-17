@@ -15,6 +15,7 @@
     name: "{{ clusterName }}"
     datacenter: "{{ dataCenter }}"
     hardware: "{{ hardware }}"
+    worker_num: "{{ defaultPoolSize }}"
     default_pool_size: "{{ defaultPoolSize }}"
     kube_version: "{{ kubeVersion }}"
     private_vlan_id: "{{ privateVLAN }}"
