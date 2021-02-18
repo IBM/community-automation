@@ -11,24 +11,24 @@ def jobProps = [
 def paramsList = [
     string(name: 'aws_access_key', defaultValue: "", description: 'Your AWS access key'),
     string(name: 'aws_secret_key', defaultValue: "", description: 'Your AWS secret key'),
-    string(name: 'AWS_REGION', defaultValue: "us-east-1", description: 'AWS region, default is us-east-1'),
-    string(name: 'WORKER_COUNT', defaultValue: "3", description: 'Number of worker nodes in pool clusters'),
-    string(name: 'WORKER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS worker node size'),
-    string(name: 'WORKER_VOLUME_SIZE', defaultValue: "256", description: 'AWS worker node volume size'),
-    string(name: 'MASTER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS master node size'),
-    string(name: 'MASTER_VOLUME_SIZE', defaultValue: "256", description: 'AWS master node volume size'),
-    string(name: 'hive_admin', defaultValue: "kubeadmin", description: 'ACM/Hive cluster admin user'),
-    password(name: 'hive_admin_password', description: 'ACM/Hive luster admin password'),
-    string(name: 'hive_api_url', defaultValue: "api.hive2.purple-chesterfield.com", description: 'ACM/Hive used for pool'),
-    string(name: 'pname', defaultValue: "yourpoolname", description: 'The name of pool your creating.'),
-    string(name: 'pnamespace', defaultValue: "contnet-pools", description: 'The name of namespace for pool.'),
-    string(name: 'psize', defaultValue: "1", description: 'Number of clusters in a the pool.'),
-    string(name: 'ptask',defaultValue: "provision", description: 'Provision or Delete a pool'),
-    string(name: 'pcloud:', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
-    string(name: 'pbasedomain:', defaultValue: "purple-chesterfield.com", description: 'Base domain you cluster lives in.'),
-    string(name: 'pocpimage:', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
-    string(name: 'pull_secret: ""'),
-    string(name: 'ssh_public: ""')
+    string(name: 'AWS_REGION', defaultValue: "us-east-1", description: 'AWS region.'),
+    string(name: 'WORKER_COUNT', defaultValue: "3", description: 'Number of worker nodes in pool clusters.'),
+    string(name: 'WORKER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS worker node size.'),
+    string(name: 'WORKER_VOLUME_SIZE', defaultValue: "256", description: 'AWS worker node volume size.'),
+    string(name: 'MASTER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS master node size.'),
+    string(name: 'MASTER_VOLUME_SIZE', defaultValue: "256", description: 'AWS master node volume size.'),
+    string(name: 'hive_admin', defaultValue: "kubeadmin", description: 'ACM/Hive cluster admin user.'),
+    password(name: 'hive_admin_password', description: 'ACM/Hive cluster admin password.'),
+    string(name: 'hive_api_url', defaultValue: "api.hive2.purple-chesterfield.com", description: 'ACM/Hive used for pools.'),
+    string(name: 'pool_name', defaultValue: "yourpoolname", description: 'The pool name.'),
+    string(name: 'pool_namespace', defaultValue: "content-pools", description: 'The pool namespace.'),
+    string(name: 'pool_size', defaultValue: "1", description: 'Number of clusters in a the pool.'),
+    string(name: 'pool_task',defaultValue: "provision", description: 'provision or delete a pool.'),
+    string(name: 'pool_cloud:', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
+    string(name: 'pool_basedomain:', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
+    string(name: 'pool_ocp_image:', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
+    string(name: 'pull_secret:' defaultValue: '''),
+    string(name: 'ssh_public:' defaultValue: ''')
 
   ]
 jobProps.push(parameters(paramsList))
@@ -51,12 +51,12 @@ timestamps {
           -e kubeadmin_user=${params.hive_admin} \
           -e kubeadmin_password=${params.hive_admin_password} \
           -e ocp_api_url=${params.hive_api_url} \
-          -e pool_name=${params.pname} \
-          -e pool_namespace=${params.pnamespace} \
-          -e pool_size=${params.psize} \
-          -e admin_task=${params.ptask} \
-          -e cloud=${params.pcloud} \
-          -e BASE_DOMAIN=${params.pbasedomain} \
+          -e pool_name=${params.pool_name} \
+          -e pool_namespace=${params.pool_namespace} \
+          -e pool_size=${params.pool_size} \
+          -e admin_task=${params.pool_task} \
+          -e cloud=${params.pool_cloud} \
+          -e BASE_DOMAIN=${params.pool_basedomain} \
           -e aws_access_key=${params.aws_access_key} \
           -e aws_secret_key=${params.aws_secret_key} \
           -e AWS_REGION=${params.AWS_REGION} \
