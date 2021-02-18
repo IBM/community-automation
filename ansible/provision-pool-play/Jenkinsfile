@@ -25,8 +25,8 @@ def paramsList = [
     string(name: 'psize', defaultValue: "1", description: 'Number of clusters in a the pool.'),
     string(name: 'ptask',defaultValue: "provision", description: 'Provision or Delete a pool'),
     string(name: 'pcloud:', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
-    string(name: 'pbasedomain:, defaultValue: "purple-chesterfield.com", description: 'Base domain you cluster lives in.'),
-    string(name: 'pocpimage:, defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
+    string(name: 'pbasedomain:', defaultValue: "purple-chesterfield.com", description: 'Base domain you cluster lives in.'),
+    string(name: 'pocpimage:', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
     string(name: 'pull_secret: ""'),
     string(name: 'ssh_public: ""')
 
