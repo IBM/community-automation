@@ -1,4 +1,3 @@
-# jenkins file for provisioning
 #! groovy
 
 // Standard job properties
