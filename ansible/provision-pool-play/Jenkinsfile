@@ -43,11 +43,12 @@ timestamps {
 
       stage('Provicion Pool') {
         sh """
-          cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/;\
-          cp ./ansible/provision-pool-play/examples/${params.pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/;\
-          cp ./ansible/provision-pool-play/examples/inventory ./ansible/provision-pool-play/;\
-          ansible-playbook -i ./ansible/provision-pool-play/inventory \
-          ./ansible/provision-pool-play/provision-pool-play.yml \
+          cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/
+          cp ./ansible/provision-pool-play/examples/${params.pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/
+          cp ./ansible/provision-pool-play/examples/inventory ./ansible/provision-pool-play/
+          cd ./ansible/provision-pool-play
+          ansible-playbook -i inventory \
+          provision-pool-play.yml \
           -e kubeadmin_user=${params.hive_admin} \
           -e kubeadmin_password=${params.hive_admin_password} \
           -e ocp_api_url=${params.hive_api_url} \
