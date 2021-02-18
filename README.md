@@ -100,15 +100,17 @@ From the repo home folder "community-autommation", run the following command whi
 
 | play | Description | status | Comments |
 |------|-------------|--------|----------|
-|prereq-play|Install all prereq's for using this repo|Availalbe| none|
+|prereq-play|Install all prereq's for using this repo|Available| none|
 |common-services-cat-src-inst-play|Install Common Services Operator Catalog Source|Available|none|
 |common-service-fyre-play|install csi-cephfs and common services on FYRE| Available | none |
 |common-service-play|deploy common-services on any infrastructure|Available|none|
 |csi-cephfs-fyre-play|deploy cephfs storage on your fyre cluster|Available | none|
+|db2-openshift-play|deploy db2 community edition on your OCP cluster|Available | none|
 |deploy-ova-vmware-play|deploy a new RHCOS template to VMWare|Available|none|
-|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ |Availalbe|none|
-|request-ocp-ceph-fyre-play|deploy fyre OCP+ cluster with cephfs|Availalbe|none|
-|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common_services|Availalbe|none|
+|nfs-storageclass-openshift-fyre-play|deployNFS automation provisioner onto OCP Private(Fyre) clusters|Available | none|
+|request-ocp-fyre-play|deploy an OCP cluster on old fyre and fyre OCP+ |Available|none|
+|request-ocp-ceph-fyre-play|deploy fyre OCP+ cluster with cephfs|Available|none|
+|request-ocp-cs-install-fyre-play|deploy fyre OCP+ cluster and install csi-cephfs and common_services|Available|none|
 |request-crc-fyre-play|Install Redhat CodeReadyContainer Instance|Availble| none|
 |request-ocp-aws-play|deploy an OCP cluster on aws|WIP|none|
 |request-ocp-roks-play|deploy an OCP cluster on roks|Available|none|
@@ -122,17 +124,19 @@ From the repo home folder "community-autommation", run the following command whi
 |common-service-cat-src-inst-play|Install the Common Services Catalog Source|Available| none|
 |request-rhel-jmeter-fyre-play|Install Jmeter on Fyre RHEL 8|Availble| none|
 |aws-route53-play|Creaate DNS entries for VMWare and AWS IPI installs|Availble| none |
-|provision-ocp-cluster-play| deploy OCP clusters via hive instance on OCP cluster| Availalbe | AWS only at this time |
+|provision-ocp-cluster-play| deploy OCP clusters via hive instance on OCP cluster| Available | AWS only at this time |
 
 ## Supporting Roles
 
 | role | Description | status | Comments |
 |------|-------------|--------|----------|
-|ocp_login | used when OCP Login is needed for your play | Availalbe | will automatically install oc client |
+|ocp_login | used when OCP Login is needed for your play | Available | will automatically install oc client |
 |oc_client_install|installs oc command| Available | is automatic when using ocp_login role|
+|ocp_request_token | used to fetch OCP token | Available | will fetch OCP token  |
 |ocp_cluster_tag|tags your cluster| Available | working on AWS only at this time|
-|aws_route53|sets up api.\* and apps.\* for vsphere ipi installer| Availalbe |
-|deploy_ova_vmware| deploy redhat coreos image to vmware|Availalbe|
+|ocp_add_users_to_scc | used to patch existing SCC with the user/service account | Available |
+|aws_route53|sets up api.\* and apps.\* for vsphere ipi installer| Available |
+|deploy_ova_vmware| deploy redhat coreos image to vmware|Available|
 
 ## Scripts
 
