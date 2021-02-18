@@ -27,8 +27,8 @@ def paramsList = [
     string(name: 'pool_cloud:', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
     string(name: 'pool_basedomain:', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
     string(name: 'pool_ocp_image:', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
-    string(name: 'pull_secret:' defaultValue: 'NULL', description: 'Replace NULL with your pull secret.'),
-    string(name: 'ssh_public:' defaultValue: 'NULL', description: 'Replace NULL with your ssh public key')
+    string(name: 'pull_secret:' defaultValue: "NULL", description: 'Replace NULL with your pull secret between single quotes.'),
+    string(name: 'ssh_public:' defaultValue: "NULL"', description: 'Replace NULL with your ssh public key between single quotes.')
 
   ]
 jobProps.push(parameters(paramsList))
