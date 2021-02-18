@@ -2,7 +2,6 @@
 - name: Install csi-cephfs on fyre OCP+Beta env
   hosts: bastion
   gather_facts: no
-  hosts: bastion
   tasks:
   - name: python_install_fyre
     include_role:
