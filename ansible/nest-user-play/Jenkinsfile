@@ -25,7 +25,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/nest-user-play/examples/inventory ./ansible/nest-user-play/; ansible-playbook -i ${params.osnames} ./ansible/nest-user-play/nest-user-play.yml -e ${params.external_password_file}
+          cp ./ansible/nest-user-play/examples/inventory ./ansible/nest-user-play/; ansible-playbook -i ${params.osnames}, ./ansible/nest-user-play/nest-user-play.yml -e ${params.external_password_file}
         """.stripIndent()
       }
    }
