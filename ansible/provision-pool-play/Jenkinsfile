@@ -69,8 +69,8 @@ timestamps {
           -e WORKER_VOLUME_SIZE=${params.WORKER_VOLUME_SIZE} \
           -e MASTER_VM_SIZE=${params.MASTER_VOLUME_SIZE} \
           -e MASTER_VOLUME_SIZE=${params.MASTER_VOLUME_SIZE} \
-          -e PULL_SECRET='${params.pull_secret}' \
-          -e SSH_PUBLIC_KEY='${params.ssh_public}'  -vv
+          -e \"PULL_SECRET='${params.pull_secret}'\" \
+          -e \"SSH_PUBLIC_KEY='${params.ssh_public}'\"  -vv
         """.stripIndent()
       }
    }
