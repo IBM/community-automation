@@ -21,7 +21,7 @@ def paramsList = [
     password(name: 'hive_admin_password', description: 'ACM/Hive cluster admin password.'),
     string(name: 'hive_api_url', defaultValue: "api.hive2.purple-chesterfield.com", description: 'ACM/Hive used for pools.'),
     string(name: 'hive_pool_name', defaultValue: "yourpoolname", description: 'The pool name.'),
-    string(name: 'hive_pool_namespace', defaultValue: "content-pools", description: 'The pool namespace.'),
+    string(name: 'hive_pool_namespace', defaultValue: "your-test-namespace", description: 'The pool namespace.'),
     string(name: 'hive_pool_size', defaultValue: "1", description: 'Number of clusters in the pool.'),
     string(name: 'hive_pool_task',defaultValue: "provision", description: 'provision or delete a pool.'),
     string(name: 'hive_pool_cloud', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
