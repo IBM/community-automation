@@ -1,0 +1,32 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'nest-host' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          set +x # hide sensitive info being echo'd to log
+          cp ./ansible/osprereq-play/examples/inventory ./ansible/osprereq-play/; ansible-playbook -i ${params.osnames}, ./ansible/osprereq-play/osprereq-play.yml 
+        """.stripIndent()
+      }
+   }
+  }
+}
