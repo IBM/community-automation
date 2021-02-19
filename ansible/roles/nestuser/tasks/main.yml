@@ -1,0 +1,66 @@
+---
+
+- name: Generate User Password file
+  shell: python ./password_hasher.py {{ user_password }} > {{ user_passfile }}
+  args:
+    creates: "{{ user_passfile }}"
+  delegate_to: localhost
+
+  #    - name: Ensure User is Absent
+  #      user: name={{ user_username }} state=absent
+  #      become: yes
+
+- name: Ensure group "somegroup" exists
+  group:
+    name: "{{ user_username }}"
+    state: present
+
+- name: Ensure User is Present
+  user: name={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
+  become: yes
+
+- name: authorized_key
+  authorized_key:
+   user: "{{ user_username }}"
+   state: present
+   manage_dir: yes
+   key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+- name: nest sudoers
+  lineinfile:
+   path: /etc/sudoers
+   state: present
+   regexp: '^nest'
+   line: 'nest ALL=(ALL) NOPASSWD: ALL'
+   validate: 'visudo -cf %s'
+   backup: yes
+  become: yes
+
+- name: nest hard ulimit nofile
+  lineinfile:
+   path: /etc/security/limits.conf
+   state: present
+   regexp: 'nest hard'
+   line: 'nest hard nofile 20000'
+   backup: yes
+  become: yes
+
+- name: nest soft ulimit nofile
+  lineinfile:
+   path: /etc/security/limits.conf
+   state: present
+   regexp: 'nest soft'
+   line: 'nest soft nofile 20000'
+   backup: yes
+  become: yes
+
+- name: opt directory owner
+  file:
+   path: '{{ item }}'
+   state: directory
+   recurse: yes
+   owner: "nest"
+   group: "nest"
+  with_items:
+   - '/opt'
+  become: yes

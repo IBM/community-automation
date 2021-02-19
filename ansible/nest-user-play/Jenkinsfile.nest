@@ -1,0 +1,33 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
+    string(name: 'external_password_file', defaultValue: '/etc/ansible/nestvars.yml', description: 'location of password yml file'),
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'nest-host' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          set +x # hide sensitive info being echo'd to log
+          cp ./ansible/nest-user-play/examples/inventory ./ansible/nest-user-play/; ansible-playbook -i ${params.osnames}, ./ansible/nest-user-play/nest-user-play.yml -e ${params.external_password_file}
+        """.stripIndent()
+      }
+   }
+  }
+}
