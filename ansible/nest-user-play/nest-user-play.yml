@@ -1,0 +1,12 @@
+---
+
+- hosts: all
+  gather_facts: true
+  vars_files:
+    - "{{ password_file }}"
+  vars:
+  - password_file: "{{ external_password_file | default('/etc/ansible/nestvars.yml') }}"
+  - user_passfile: ./password.hash
+  - ansible_user: root
+  roles:
+  - role: nestuser
