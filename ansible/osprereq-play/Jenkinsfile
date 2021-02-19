@@ -17,7 +17,7 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( 'nest-host' ) {
+    node ( 'kube_pod_slave' ) {
 
       //def scmVars = checkout scm
       checkout scm
