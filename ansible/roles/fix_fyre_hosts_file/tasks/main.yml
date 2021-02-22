@@ -1,0 +1,17 @@
+---
+
+- debug: 
+   msg: "{{ ansible_facts['default_ipv4']['address'] }}"
+- debug: 
+   msg: "{{ ansible_facts['fqdn'] }}"
+- debug: 
+   msg: "{{ ansible_facts['hostname'] }}"
+
+- name: use public IP instead of private as the default
+  lineinfile:
+   path: /etc/hosts
+   state: present
+   regexp: "{{ansible_facts['fqdn'] }}"
+   line: "{{ ansible_facts['default_ipv4']['address'] }} {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }}"
+   backup: yes
+  become: yes
