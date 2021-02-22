@@ -17,7 +17,7 @@
     state: present
 
 - name: Ensure User is Present
-  user: name={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
+  user: name={{ user_username }} group={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
   become: yes
 
 - name: remove temp pass hash file
