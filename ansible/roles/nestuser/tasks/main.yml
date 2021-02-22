@@ -1,7 +1,7 @@
 ---
 
 - name: Generate User Password file
-  shell: python ./password_hasher.py {{ user_password }} > {{ user_passfile }}
+  script: scripts/password_hasher.py {{ user_password }} > {{ user_passfile }}
   args:
     creates: "{{ user_passfile }}"
   delegate_to: localhost
@@ -18,6 +18,11 @@
 - name: Ensure User is Present
   user: name={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
   become: yes
+
+- name: remove temp pass hash file
+  file:
+   path: "{{ user_passfile }}"
+   state: absent
 
 - name: authorized_key
   authorized_key:

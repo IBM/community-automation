@@ -4,7 +4,10 @@
   gather_facts: true
   vars_files:
     - "{{ password_file }}"
-  vars:
-  - ansible_user: root
+      #  vars:
+      #  - ansible_user: root
+  become: yes
   roles:
   - role: nestuser
+  - role: osprereqs
+  - role: fix_fyre_hosts_file

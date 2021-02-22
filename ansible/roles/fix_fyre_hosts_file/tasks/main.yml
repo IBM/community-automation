@@ -1,12 +1,5 @@
 ---
 
-- debug: 
-   msg: "{{ ansible_facts['default_ipv4']['address'] }}"
-- debug: 
-   msg: "{{ ansible_facts['fqdn'] }}"
-- debug: 
-   msg: "{{ ansible_facts['hostname'] }}"
-
 - name: use public IP instead of private as the default
   lineinfile:
    path: /etc/hosts
