@@ -36,8 +36,8 @@
   lineinfile:
    path: /etc/sudoers
    state: present
-   regexp: '^nest'
-   line: 'nest ALL=(ALL) NOPASSWD: ALL'
+   regexp: "^{{ user_username }}"
+   line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
    validate: 'visudo -cf %s'
    backup: yes
   become: yes
@@ -46,8 +46,8 @@
   lineinfile:
    path: /etc/security/limits.conf
    state: present
-   regexp: 'nest hard'
-   line: 'nest hard nofile 20000'
+   regexp: "{{ user_username }} hard"
+   line: "{{ user_username }} hard nofile 20000"
    backup: yes
   become: yes
 
@@ -55,8 +55,8 @@
   lineinfile:
    path: /etc/security/limits.conf
    state: present
-   regexp: 'nest soft'
-   line: 'nest soft nofile 20000'
+   regexp: "{{ user_username }} soft"
+   line: "{{ user_username }} soft nofile 20000"
    backup: yes
   become: yes
 
@@ -65,8 +65,8 @@
    path: '{{ item }}'
    state: directory
    recurse: yes
-   owner: "nest"
-   group: "nest"
+   owner: "{{ user_username }}"
+   group: "{{ user_username }}"
   with_items:
    - '/opt'
   become: yes

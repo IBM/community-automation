@@ -3,9 +3,9 @@
 - hosts: all
   gather_facts: true
   vars_files:
-    - "{{ password_file }}"
-      #  vars:
-      #  - ansible_user: root
+  - "{{ password_file }}"
+  vars:
+  - ansible_user: root
   roles:
   - role: nestuser
   - role: osprereqs
