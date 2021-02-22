@@ -11,6 +11,7 @@
   #      become: yes
 
 - name: Ensure group "somegroup" exists
+  become: yes
   group:
     name: "{{ user_username }}"
     state: present

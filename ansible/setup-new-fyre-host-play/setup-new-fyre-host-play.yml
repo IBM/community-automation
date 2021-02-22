@@ -6,7 +6,6 @@
     - "{{ password_file }}"
       #  vars:
       #  - ansible_user: root
-  become: yes
   roles:
   - role: nestuser
   - role: osprereqs
