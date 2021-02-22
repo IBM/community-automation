@@ -17,7 +17,15 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( "${NODE_NAME}" ) {
+
+    node('master') {
+        stage('GetNodeName') {
+        def node_name = "${NODE_NAME}"
+        echo "The Node Name is: ${node_name}"
+        }
+    }
+
+    node ( "${node_name}" ) {
 
       //def scmVars = checkout scm
       checkout scm
