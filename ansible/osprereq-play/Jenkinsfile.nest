@@ -17,7 +17,7 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( ${NODE_NAME} ) {
+    node ( "${NODE_NAME}" ) {
 
       //def scmVars = checkout scm
       checkout scm
