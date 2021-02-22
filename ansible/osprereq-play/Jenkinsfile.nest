@@ -18,7 +18,7 @@ properties(jobProps)
 timestamps {
   ansiColor('xterm') {
 
-    node('master') {
+    node('nest-host') {
         stage('GetNodeName') {
         def node_name = "${NODE_NAME}"
         echo "The Node Name is: ${node_name}"
