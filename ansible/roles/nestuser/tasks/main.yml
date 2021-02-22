@@ -10,7 +10,7 @@
   #      user: name={{ user_username }} state=absent
   #      become: yes
 
-- name: Ensure group "somegroup" exists
+- name: Ensure group exists
   become: yes
   group:
     name: "{{ user_username }}"
