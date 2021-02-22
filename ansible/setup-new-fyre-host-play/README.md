@@ -34,3 +34,4 @@ Once you have configured the `inventory` file, run the playbook using:
 ansible-playbook  -i inventory setup-new-fyre-host-play.yml
 
 ```
+
