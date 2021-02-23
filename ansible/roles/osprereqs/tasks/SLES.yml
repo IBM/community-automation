@@ -23,6 +23,5 @@
   vars:
    packages:
    - 'xorg-x11-xauth'
-   - 'zip'
-   - 'unzip'
+   - 'less'
 

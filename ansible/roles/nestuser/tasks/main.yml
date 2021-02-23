@@ -1,7 +1,7 @@
 ---
 
 - name: Generate User Password file
-  shell: python ./password_hasher.py {{ user_password }} > {{ user_passfile }}
+  script: scripts/password_hasher.py {{ user_password }} > {{ user_passfile }}
   args:
     creates: "{{ user_passfile }}"
   delegate_to: localhost
@@ -10,14 +10,20 @@
   #      user: name={{ user_username }} state=absent
   #      become: yes
 
-- name: Ensure group "somegroup" exists
+- name: Ensure group exists
+  become: yes
   group:
     name: "{{ user_username }}"
     state: present
 
 - name: Ensure User is Present
-  user: name={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
+  user: name={{ user_username }} group={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell="/bin/bash" state=present
   become: yes
+
+- name: remove temp pass hash file
+  file:
+   path: "{{ user_passfile }}"
+   state: absent
 
 - name: authorized_key
   authorized_key:
@@ -30,8 +36,8 @@
   lineinfile:
    path: /etc/sudoers
    state: present
-   regexp: '^nest'
-   line: 'nest ALL=(ALL) NOPASSWD: ALL'
+   regexp: "^{{ user_username }}"
+   line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
    validate: 'visudo -cf %s'
    backup: yes
   become: yes
@@ -40,8 +46,8 @@
   lineinfile:
    path: /etc/security/limits.conf
    state: present
-   regexp: 'nest hard'
-   line: 'nest hard nofile 20000'
+   regexp: "{{ user_username }} hard"
+   line: "{{ user_username }} hard nofile 20000"
    backup: yes
   become: yes
 
@@ -49,8 +55,8 @@
   lineinfile:
    path: /etc/security/limits.conf
    state: present
-   regexp: 'nest soft'
-   line: 'nest soft nofile 20000'
+   regexp: "{{ user_username }} soft"
+   line: "{{ user_username }} soft nofile 20000"
    backup: yes
   become: yes
 
@@ -59,8 +65,8 @@
    path: '{{ item }}'
    state: directory
    recurse: yes
-   owner: "nest"
-   group: "nest"
+   owner: "{{ user_username }}"
+   group: "{{ user_username }}"
   with_items:
    - '/opt'
   become: yes
