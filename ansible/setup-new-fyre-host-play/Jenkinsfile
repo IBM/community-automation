@@ -11,6 +11,7 @@ def jobProps = [
 def paramsList = [
     string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
     string(name: 'external_password_file', defaultValue: '/etc/ansible/nestvars.yml', description: 'location of password yml file'),
+    string(name: 'regionTimeZone', defaultValue: 'America/New_York', description: 'set the timezone'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -25,7 +26,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e ${params.external_password_file}
+          cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e ${params.external_password_file} -e ${params.regionTimeZone}
         """.stripIndent()
       }
    }
