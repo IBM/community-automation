@@ -1,0 +1,44 @@
+---
+
+- name: check for oc client
+  command: ./oc version
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+  register: oc_installed
+  ignore_errors: yes
+
+- name: install oc client
+  when: oc_installed.rc != 0
+  block:
+  - name: Download OCP CLI
+    get_url:
+      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ arch }}-{{ ocp_client_version }}.tar.gz"
+      dest: "./openshift-client.tar.gz"
+      mode: '0755'
+      validate_certs: false
+    vars:
+      arch: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
+
+  - name: Unpack OCP CLI
+    shell: |
+      tar xf "openshift-client.tar.gz" oc kubectl
+      chmod 0755 oc kubectl
+    args:
+      # Suppress the warning about using 'tar'
+      warn: false
+
+  - name: Copy oc command to local bin
+    ansible.builtin.copy:
+      src: oc
+      dest: /usr/local/bin/oc
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy kubectl to local bin
+    ansible.builtin.copy:
+      src: kubectl
+      dest: /usr/local/bin/kubectl
+      owner: root
+      group: root
+      mode: '0755'

@@ -1,0 +1,3 @@
+---
+- include_tasks: recover_machine_config.yml
+

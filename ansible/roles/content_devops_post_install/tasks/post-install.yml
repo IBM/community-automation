@@ -1,0 +1,29 @@
+---
+- name: running content devops post install
+  when: 'post_install == "true"'
+  block:
+    - name: check pods readiness
+      shell: "oc --no-headers=true get pods --all-namespaces | grep -v -E \"Comp|Run\""
+      register: pod_check
+      until: 'pod_check.rc == 1'
+      retries: 30
+      delay: 60
+      ignore_errors: yes
+
+    - name: execute post operations
+      shell: 
+        cmd: "export GITHUB_USER={{ GITHUB_USER }}; export GITHUB_TOKEN={{ GITHUB_TOKEN }}; timeout 3600s {{ script_name }} --version {{ ocp_version }} --arch {{ arch }} --regenventry_name {{ env_name }} --usagetag {{ usage }}  --master_ip {{ ocp_api_url }}  --product {{ product }} --port 6443 --cluster_user kubeadmin --cluster_pass {{ kubeadmin_password }} --ocpapiurl {{ ocp_api_url }}  --ocpadminpassword {{ kubeadmin_password }}"
+        chdir: "/{{ local_repo_location }}/{{ repo_name }}/{{ script_location }}" 
+      args:
+        executable: /bin/bash
+      async: 3600
+      poll: 0
+      register: post_results
+
+    - name: Check on post install script, wait up to 2 hours
+      async_status:
+        jid: "{{ post_results.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      retries: 120
+      delay: 60

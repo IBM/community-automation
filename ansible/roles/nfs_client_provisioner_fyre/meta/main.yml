@@ -1,0 +1,8 @@
+galaxy_info:
+  author: Rahul Tripathi
+  company: IBM
+  license: license (Apache License 2.0)
+  min_ansible_version: 2.10
+  galaxy_tags: []
+dependencies:
+  - role: ocp_request_token

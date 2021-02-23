@@ -1,0 +1,131 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+- name: Deploying DB2 Community Edition
+  debug:
+    msg: "*********************Deploying DB2 Community Edition on an OCP Cluster*********************"
+
+- block:
+  - name: Ensure the {{ db2_namespace }} Namespace exists.
+    k8s:
+      api_version: v1
+      kind: Namespace
+      name: "{{ db2_namespace }}"
+      state: present
+
+  - name: Create Image Pull Secret
+    k8s:
+      state: present
+      definition:
+        apiVersion: v1
+        kind: Secret
+        type: kubernetes.io/dockerconfigjson
+        metadata:
+          name: "ibm-registry"
+          namespace: "{{ db2_namespace }}"
+        data:
+          .dockerconfigjson: "{{ lookup('template', 'ibm-pull-secret.yml.j2' ) | tojson | b64encode }}"
+
+  - name: Create IBM catalog resource
+    k8s:
+      definition: "{{ lookup('template', 'ibm-catalog-resource.yml.j2') | from_yaml }}"
+      state: present
+
+  - name: Wait for the IBM Operator Catalog Pod to be Ready
+    k8s_info:
+      kind: Pod
+      namespace: "openshift-marketplace"
+    register: pod_list
+    retries: 20
+    delay: 15
+    until:
+      - ('Pending' not in (pod_list | community.general.json_query('resources[*].status.phase') | select('match', 'Pending') | list))
+
+  - name: Create DB2 Operator group
+    k8s:
+      definition: "{{ lookup('template', 'db2-operator-group.yml.j2') | from_yaml }}"
+      state: present
+
+  - name: Create DB2 subcription to deploy the DB2 operator
+    k8s:
+      definition: "{{ lookup('template', 'db2-subscription.yml.j2') | from_yaml }}"
+      state: present
+
+  - name: Sleep for 60 seconds and continue with DB2 operator deployment
+    wait_for:
+      timeout: 60
+    delegate_to: localhost
+
+  - name: Wait for the DB2 operator Pod to be Ready
+    k8s_info:
+      kind: Pod
+      namespace: "{{ db2_namespace }}"
+    register: pod_list
+    retries: 20
+    delay: 15
+    until:
+      - ('Pending' not in (pod_list | community.general.json_query('resources[*].status.phase') | select('match', 'Pending') | list))
+
+  - name: Create Db2uCluster
+    k8s:
+      definition: "{{ lookup('template', 'db2-cluster.yml.j2') | from_yaml }}"
+      state: present
+
+  - name: Sleep for 300 seconds for the DB2 cluster
+    wait_for:
+      timeout: 300
+    delegate_to: localhost
+
+  - name: Wait for the DB2 deployments to be Ready
+    k8s_info:
+      kind: Pod
+      namespace: "{{ db2_namespace }}"
+    register: pod_list
+    retries: 20
+    delay: 15
+    until:
+      - ('Pending' not in (pod_list | community.general.json_query('resources[*].status.phase') | select('match', 'Pending') | list))
+
+  - name: Get a list of all db2u pods from {{ db2_namespace }} namespace
+    k8s_facts:
+      kind: Pod
+      namespace: "{{ db2_namespace }}"
+      label_selectors:
+        - role=db
+    register: pod_list
+    retries: 20
+    delay: 120
+    until:
+      - ('Pending' not in (pod_list | community.general.json_query('resources[*].status.phase') | select('match', 'Pending') | list))
+
+  - set_fact:
+      db2_pod_id: "{{ pod_list | community.general.json_query(query) }}"
+    vars:
+      query: "resources[?status.phase=='Running'].metadata.name"
+
+  - name: Print Pod Status
+    debug: msg="{{ db2_pod_id }}"
+
+  - name: Get default DB password
+    k8s_info:
+      kind: Secret
+      name: c-db2u-sample-db-instancepassword
+      namespace: "{{ db2_namespace }}"
+    register: db2_password
+
+  - name: Print Pod Status
+    debug: msg="{{ db2_password }}"
+
+  module_defaults:
+    community.okd.openshift_auth:
+      host: "{{ ocp_api_url }}"
+      validate_certs: no
+    group/k8s:
+      host: "{{ ocp_api_url }}"
+      api_key: "{{ ocp_token | default('exampletoken') }}"
+      validate_certs: no
+    community.general.oc:
+      host: "{{ ocp_api_url }}"
+      validate_certs: no

@@ -3,4 +3,4 @@
   hosts: bastion
   gather_facts: no
   roles:
-  - request-ocs-local-storage
+  - request_ocs_local_storage

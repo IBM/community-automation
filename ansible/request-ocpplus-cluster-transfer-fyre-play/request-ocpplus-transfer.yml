@@ -2,4 +2,4 @@
 - name: Transfer fyre OCP Plus Beta cluster to new user
   hosts: bastion
   roles:
-  - request-ocpplus-cluster-transfer-fyre
+  - request_ocpplus_cluster_transfer_fyre

@@ -1,0 +1,2 @@
+---
+    - include_tasks: recover_expired_certificates.yml

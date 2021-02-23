@@ -1,5 +1,5 @@
 ocpPlatform: "x"
-
+fyre_site: "svl"
 fyre_master_quantity: 3
 fyre_master_cpu: 8
 fyre_master_memory: 16

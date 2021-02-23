@@ -1,0 +1,24 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+- block:
+    - name: Print a message
+      ansible.builtin.debug:
+        msg: "Different message"
+
+    - name: Log in (obtain access token)
+      community.okd.openshift_auth:
+        username: "{{ kubeadmin_user }}"
+        password: "{{ kubeadmin_password }}"
+      register: openshift_auth_results
+
+    - name: Set OCP token as a global fact
+      set_fact: ocp_token="{{ openshift_auth_results.openshift_auth.api_key }}"
+
+  module_defaults:
+    community.okd.openshift_auth:
+      host: "{{ ocp_api_url }}"
+      validate_certs: no
+

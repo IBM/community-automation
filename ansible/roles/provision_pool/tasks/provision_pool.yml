@@ -1,0 +1,130 @@
+---
+- name: Is imageset already available ?
+  when: 'admin_task == "provision"'
+  block:
+    - name: Parse ocp release image for tag info ...
+      shell:  "echo {{ OCP_RELEASE_IMAGE }} | rev | cut -f1 -d':' | cut -f1 -d'-' --complement | rev"
+      register: imageset
+
+    - name: Is image set openshift-{{ imageset.stdout }} already available ?
+      shell:  "oc get ClusterImageSet | tr -s ' ' | cut -f1 -d' ' | grep -x openshift-{{ imageset.stdout }} > /dev/null ; echo $?"
+      register: imageset_available
+
+    - name: If image set is not available then create image set
+      when: 'imageset_available.stdout == "1"'
+      block:
+        - name: Fill in image set template
+          template:
+            src: "image-set-template.j2"
+            dest: "image-set-cr.yml"
+
+        - name: Create image set openshift-{{ imageset.stdout }} ...
+          shell: "oc create -f image-set-cr.yml"
+
+- name: Provisioning new AWS pool with image openshift-{{ imageset.stdout }} ...
+  when: 'admin_task == "provision" and cloud == "aws"'
+  block:
+    - name: Check to see if pool namespace {{ pool_namespace }} already exists.
+      block:
+        - name: Parse all namespaces to see if {{ pool_namespace }} is there ...
+          shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep -x {{ pool_namespace }} > /dev/null; echo $?"
+          register: ns_results
+
+        - name: If  namespace {{ pool_namespace }} is not already created then create it ....
+          when: 'ns_results.stdout == "1"'
+          block:
+            - name: Create namespace {{ pool_namespace }}
+              shell: "oc create namespace {{ pool_namespace }}"
+
+    - name: Check for install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template secret in namespace {{ pool_namespace }}...
+      shell: "oc get secrets -n {{ pool_namespace }} | grep -w install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template > /dev/null ; echo $?"
+      register: install_config_results
+
+    - name: If install-config-template is not in namespace {{ pool_namespace }} then ...
+      when: 'install_config_results.stdout == "1"'
+      block:
+        - name: Populate install-config.yaml file from template
+          template:
+            src: "{{ cloud }}-install-config-template.j2"
+            dest: "install-config.yaml"
+            backup: false
+          register: install_config_template_results
+
+        - name: Create aws install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template secret in namespace {{ pool_namespace }}
+          shell: "oc create secret generic install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template --from-file=install-config.yaml=./install-config.yaml -n {{ pool_namespace }}"
+
+    - name: Test for aws-creds  ...
+      shell: "oc get secrets -n {{ pool_namespace }} | grep -w aws-creds > /dev/null ; echo $?"
+      register: aws_creds_results
+
+    - name: Check if aws-creds secret is in namespace {{ pool_namespace }} ...
+      when: 'aws_creds_results.stdout == "1"'
+      block:
+        - name: Create secret for aws-creds in namespace {{ pool_namespace }}
+          shell: "oc create secret generic aws-creds -n {{ pool_namespace }} --from-literal=aws_access_key_id={{ AWS_ACCESS_KEY_ID }} --from-literal=aws_secret_access_key={{ AWS_SECRET_ACCESS_KEY }}"
+
+    - name: Populate pool deployment CR template
+      template:
+        src: "{{ cloud }}-pool-template.j2"
+        dest: "{{ cloud }}-pool-cr.yml"
+        backup: false
+      register: template_results
+
+    - name: Copy pool cr yaml with pool name ...
+      shell: "mkdir  dir-{{ pool_name }};cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-pool-cr.yml; cp {{ cloud }}-pool-cr.yml dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml;sed -i 's/size: {{ pool_size }}/size: 0/g' dir-{{ pool_name }}/{{ cloud }}-delete-pool-clusters.yml"
+      args:
+        warn: false
+      register: provision_pool_results
+
+    - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
+      shell: "oc create -f {{ cloud }}-pool-cr.yml"
+      register: provision_pool_results
+
+    - name: Find the namespace of the first cluster created for pool {{ pool_name }}  ...
+      shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep  '^{{ pool_name }}-' | grep -E '^.{'$(( $(echo -n {{ pool_name }}- | wc -m) + 5))'}$' | head -n 1"
+      register: pool_cluster_namespace
+      until: 'pool_cluster_namespace.stdout != ""'
+      retries: 10
+      delay: 30
+
+    - name: Get the provisioning pod name from namespace {{ pool_cluster_namespace.stdout }} for the first cluster in pool {{ pool_name }} ...
+      shell:  "oc --no-headers=true get pods -n {{ pool_cluster_namespace.stdout }} -l hive.openshift.io/job-type=provision,hive.openshift.io/cluster-deployment-name={{ pool_cluster_namespace.stdout }} -o name"
+      register: pro_pod_results
+      until: 'pro_pod_results.stdout != ""'
+      retries: 10
+      delay: 30
+
+    - name: Cluster provisioning pod {{ pro_pod_results.stdout }}, waiting up to 60 minutes for first cluster to finish deploying ...
+      shell: "oc logs -n {{ pool_cluster_namespace.stdout }} {{ pro_pod_results.stdout }} -c hive"
+      register: monitor_results
+      until: 'monitor_results.stdout.find("install completed successfully") != -1'
+      retries: 60
+      delay: 60
+
+- name: Deleting pool {{ pool_name }} in namespace {{ pool_namespace }}
+  when: 'admin_task == "delete" and cloud == "aws"'
+  block:
+    - name: Check for claims against pool {{ pool_name }}
+      shell: "oc --no-headers=true get clusterclaims -n walt-poolc | tr -s ' ' | cut -f1 -d' ' | grep ^.*$ > /dev/null; echo $?"
+      register: claim_results
+
+    - name: If outstanding claims abort delete of pool and exit ....
+      when: 'claim_results.stdout == "0"'
+      fail:
+        msg: Cannot delete pool {{ pool_name }} when there are outstanding claims. Release all claims and re-run.
+
+    - name: Delete pool
+      shell: "oc delete ClusterPool {{ pool_name }} -n {{ pool_namespace }}"
+      register: delete_results
+
+    - name: delete namespace {{ pool_namespace }}
+      shell: "oc delete namespace {{ pool_namespace }}"
+      register: delete_namespace_results
+      failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
+
+    - name: Wait for up to 60 minutes for all clusters for pool {{ pool_name }} to be de-provisioned ...
+      shell: "oc get namespaces | grep {{ pool_name }} | tr -s ' ' | cut -f1 -d' ' | rev | cut -f1 -d'-' --complement | rev | grep -x {{ pool_name }} > /dev/null; echo $?"
+      register: deprovision_results
+      until: 'deprovision_results.stdout == "1"'
+      retries: 60
+      delay: 60

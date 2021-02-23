@@ -1,3 +1,0 @@
-- name: import tasks
-  import_tasks: common-services-cat-src.yml
-  run_once: true

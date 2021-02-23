@@ -1,0 +1,3 @@
+- name: import tasks
+  import_tasks: provision_pool.yml
+  run_once: true

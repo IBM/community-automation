@@ -1,11 +1,77 @@
 ---
 - name: claim a cluster from pool "{{ pool_name }}"
-    template:
-      src: "claim-template.j2"
-      dest: "clusterclaim-cr.yml"
-      backup: false
-    register: template_result
+  when: 'admin_task == "claim"'
+  block: 
+    - name: creating clusterclaim CR
+      template:
+        src: "claim-template.j2"
+        dest: "clusterclaim-cr.yml"
+        backup: false
+      register: template_result
 
-- name: deploy cluster claim
-  shell: oc apply -f clusterclaim.cr.yml
-  register: claim_results
+    - name: deploy cluster claim
+      shell: oc apply -f clusterclaim-cr.yml
+      register: claim_results
+
+    - name: check for claim readiness, wait up to 1 hour
+      shell: "./oc get clusterclaim {{ claim_name }}  -n {{ pool_namespace }} -o yaml"
+      register: ready_results
+      until: 'ready_results.stdout.find("message: Cluster is running") != -1'
+      retries: 60
+      delay: 60
+
+    - name: get claim namespace
+      shell: "./oc get clusterclaim {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
+      register: ns_results
+
+    - name: get kubeadmin password
+      shell: "./oc extract secret/$(./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ ns_results.stdout }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
+      register: password_results
+
+    - name: get console web url
+      shell: "./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
+      register: console_url
+
+    - name: Add inf host to group
+      no_log: "True"
+      add_host:
+        name: "{{ console_url.stdout.split('.')[2] }}"
+        groups: "ocp_claimed_cluster"
+        ansible_connection: "local"
+        ansible_python_interpreter: "/usr/bin/python3"
+        kubeadmin_password: "{{ password_results.stdout }}"
+        kubeadmin_user: "kubeadmin"
+        ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+        cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+        admin_task: "claim"
+      changed_when: false
+
+    - name: Remove previous log file
+      ansible.builtin.file:
+        path: cluster_details.log
+        state: absent
+      changed_when: false
+
+    - name: create output details
+      lineinfile:
+        path: cluster_details.log
+        line: "{{ item }}"
+        create: yes
+        mode: 0755
+      with_items:
+        - "OCP Admin: kubeadmin, password {{password_results.stdout }}"
+        - "OCP Admin Console: {{ console_url.stdout }}"
+        - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+        - "Login: oc login -u kubeadmin -p {{ password_results.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
+
+- name: Release claim "{{ claim_name }}"
+  when: 'admin_task =="release"'
+  block: 
+    - name: Releasing the claim "{{ claim_name }}"
+      shell: "./oc delete clusterclaim {{ claim_name }} -n {{ pool_namespace }}"
+      register: release_results
+  
+- name: logout of hive hub
+  shell: "oc logout"
+  register: logout_results
+  ignore_errors: yes

@@ -1,0 +1,3 @@
+---
+# tasks file for ocp_add_users_to_scc
+- include_tasks: ocp-add-users-to-scc.yml

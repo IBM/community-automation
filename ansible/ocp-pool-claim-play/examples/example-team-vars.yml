@@ -1,0 +1,7 @@
+# make a copy of this example and add your own values
+
+"ocs_storage": "false"   # true|false   - add OCS storage
+"ocp_logging": "false"   # true|false   - add OCP logging
+
+"post_install": "false"  # true|false   - call your post install role listed below
+"post_install_role": ""  # a role containing tasks specific to your team.

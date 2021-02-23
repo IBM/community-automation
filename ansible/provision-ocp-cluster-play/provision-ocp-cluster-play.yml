@@ -12,7 +12,18 @@
 
   roles:
     # used to login into RHACM/HIVE cluster
-    - role: ocp-login
-    - role: provision-ocp-cluster
-    - role: ocp-cluster-tag
-      when: 'admin_task == "provision"'  
+    - role: ocp_login
+    - role: aws_route53
+      when: 'cloud == "vsphere" and admin_task != "delete"'
+    - role: provision_ocp_cluster
+    - role: ocp_cluster_tag
+      when: 'admin_task == "provision" and cloud != "vsphere"'
+  tasks:
+    - set_fact:
+        route_task: "delete"
+      when: 'cloud == "vsphere" and admin_task == "delete"'
+
+    - name: Run aws_route53 delete - vsphere only
+      include_role:
+        name: aws_route53
+      when: 'cloud == "vsphere" and route_task == "delete"'

@@ -1,0 +1,11 @@
+#
+# Copyright 2020- IBM Inc. All rights reserved
+# SPDX-License-Identifier: Apache2.0
+#
+---
+kubeadmin_user: "my_kubeadmin_user_name"
+kubeadmin_password: "my_kubeadmin_user_name"
+ocp_api_url: "https://my_ocp_api_url:port"
+db2_namespace: "any_namespace"
+storageClassName: "storage_class_name"
+entitled_key: "my_IBM_entitled_key"
