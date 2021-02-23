@@ -22,4 +22,7 @@
    state: present
   vars:
    packages:
-   - 'zip'
+   - 'libxtst6'
+   - 'libgtk2.0-0'
+   - 'libxft2'
+
