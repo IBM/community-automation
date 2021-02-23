@@ -1,0 +1,7 @@
+---
+
+- name: "Set timezone to {{ regionTimeZone }}"
+  community.general.timezone:
+    name: "{{ regionTimeZone }}"
+
+
