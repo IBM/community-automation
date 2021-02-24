@@ -47,7 +47,7 @@ timestamps {
       stage('Provision Pool') {
         sh """
           cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/
-          cp ./ansible/provision-pool-play/examples/${params.hive_pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/
+          cp ./ansible/provision-pool-play/examples/\${params.hive_pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/
           cp ./ansible/provision-pool-play/examples/inventory ./ansible/provision-pool-play/
           cd ./ansible/provision-pool-play
           echo "What is the current directory"
