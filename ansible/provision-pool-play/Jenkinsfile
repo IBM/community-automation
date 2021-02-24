@@ -72,7 +72,7 @@ timestamps {
           -e MASTER_VM_SIZE=${params.MASTER_VM_SIZE} \
           -e MASTER_VOLUME_SIZE=${params.MASTER_VOLUME_SIZE} \
           -e OCP_RELEASE_IMAGE=${params.hive_pool_ocp_image} \
-          -e PULL_SECRET='${params.hive_pull_secret}' \
+          -e PULL_SECRET=\'${params.hive_pull_secret}\' \
           -e "SSH_PUBLIC_KEY='${params.hive_ssh_public}'"  -vv
         """.stripIndent()
       }
