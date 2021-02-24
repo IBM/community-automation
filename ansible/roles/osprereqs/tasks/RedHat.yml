@@ -28,5 +28,7 @@
   vars:
    packages:
    - 'xorg-x11-xauth'
-
-
+   - 'gtk2'
+   - 'libXtst'
+   - 'xorg-x11-fonts-Type1'
+   - 'libnsl'
