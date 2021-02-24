@@ -55,6 +55,11 @@ timestamps {
           ls -l
           echo hive_pull_secret
           echo ${params.hive_pull_secret}
+          secret2=$(sed 's/\"/\\"/g' <<< ${params.hive_pull_secret})
+          echo secret2
+          echo $secret2
+          echo " "
+          echo " "
           ansible-playbook -i inventory \
           provision-pool-play.yml \
           -e kubeadmin_user=${params.hive_admin} \
@@ -75,7 +80,7 @@ timestamps {
           -e MASTER_VM_SIZE=${params.MASTER_VM_SIZE} \
           -e MASTER_VOLUME_SIZE=${params.MASTER_VOLUME_SIZE} \
           -e OCP_RELEASE_IMAGE=${params.hive_pool_ocp_image} \
-          -e "PULL_SECRET='$(sed 's/\"/\\"/g' <<< ${params.hive_pull_secret})'" \
+          -e "PULL_SECRET='${secret2}'" \
           -e "SSH_PUBLIC_KEY='${params.hive_ssh_public}'"  -vv
         """.stripIndent()
       }
