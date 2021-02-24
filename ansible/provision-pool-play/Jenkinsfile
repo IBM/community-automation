@@ -41,8 +41,8 @@ timestamps {
 
       checkout scm
 
-      def pull_json = readJSON text: '${params.hive_pull_secret}'
-      writeJSON file: 'pull_secret.json', json: pull_json
+//      def pull_json = readJSON text: '${params.hive_pull_secret}'
+//      writeJSON file: 'pull_secret.json', json: pull_json
 
       stage('Provision Pool') {
         sh """
