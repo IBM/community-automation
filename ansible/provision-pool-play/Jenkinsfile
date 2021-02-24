@@ -53,6 +53,8 @@ timestamps {
           echo "What is the current directory"
           pwd
           ls -l
+          echo hive_pull_secret
+          echo ${params.hive_pull_secret}
           ansible-playbook -i inventory \
           provision-pool-play.yml \
           -e kubeadmin_user=${params.hive_admin} \
@@ -73,7 +75,7 @@ timestamps {
           -e MASTER_VM_SIZE=${params.MASTER_VM_SIZE} \
           -e MASTER_VOLUME_SIZE=${params.MASTER_VOLUME_SIZE} \
           -e OCP_RELEASE_IMAGE=${params.hive_pool_ocp_image} \
-          -e "PULL_SECRET='${params.hive_pull_secret}'" \
+          -e "PULL_SECRET='$(sed 's/\"/\\"/g' <<< ${params.hive_pull_secret})'" \
           -e "SSH_PUBLIC_KEY='${params.hive_ssh_public}'"  -vv
         """.stripIndent()
       }
