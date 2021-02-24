@@ -41,9 +41,6 @@ timestamps {
 
       checkout scm
 
-//      def pull_json = readJSON text: '${params.hive_pull_secret}'
-//      writeJSON file: 'pull_secret.json', json: pull_json
-
       stage('Provision Pool') {
         sh """
           cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/
