@@ -53,11 +53,11 @@ timestamps {
           echo "What is the current directory"
           pwd
           ls -l
-          echo hive_pull_secret
+          echo "hive_pull_secret is"
           echo "${params.hive_pull_secret}"
           secret2=$(sed 's/\"/\\"/g' <<< ${params.hive_pull_secret})
-          echo secret2
-          echo $secret2
+          echo "secret2 is"
+          echo ${secret2}
           echo " "
           echo " "
           ansible-playbook -i inventory \
