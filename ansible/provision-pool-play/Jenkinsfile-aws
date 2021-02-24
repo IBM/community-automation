@@ -27,7 +27,7 @@ def paramsList = [
     string(name: 'hive_pool_cloud', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
     string(name: 'hive_pool_basedomain', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
     string(name: 'hive_pool_ocp_image', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
-    string(name: 'hive_pull_secret', defaultValue: /NULL/, description: 'Enter your pull secret.'),
+    string(name: 'hive_pull_secret', defaultValue: /NULL/, description: 'Replace NULL with your pull secret.'),
     string(name: 'hive_ssh_public', defaultValue: 'NULL', description: 'Replace NULL with your ssh public key.')
 
   ]
