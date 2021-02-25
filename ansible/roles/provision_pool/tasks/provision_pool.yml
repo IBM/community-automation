@@ -77,8 +77,9 @@
       register: provision_pool_results
 
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
-      shell: "oc create -f {{ cloud }}-pool-cr.yml"
+      shell: "cat {{ cloud }}-pool-cr.yml; oc create -f {{ cloud }}-pool-cr.yml"
       register: provision_pool_results
+    - debug: msg="{{ provision_pool_results.stdout }}"
 
     - name: Find the namespace of the first cluster created for pool {{ pool_name }}  ...
       shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep  '^{{ pool_name }}-' | grep -E '^.{'$(( $(echo -n {{ pool_name }}- | wc -m) + 5))'}$' | head -n 1"
