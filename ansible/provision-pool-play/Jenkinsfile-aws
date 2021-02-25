@@ -44,6 +44,7 @@ timestamps {
 
           wrap([$class: 'MaskPasswordsBuildWrapper',
                 varPasswordPairs: [
+                  [password: "${params.hive_pull_secret}", var: 'PULL_CREDS'],                
                   [password: "${params.aws_access_key}", var: 'AWS_CREDS_USR'],
                   [password: "${params.aws_secret_key}", var: 'AWS_CREDS_PSW']
                 ]
