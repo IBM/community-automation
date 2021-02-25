@@ -2,7 +2,7 @@
 # any or all of these can be passed on the ansible-playbook command line using -e "var=value" 
 # ACM/HIVE Cluster Information
 "kubeadmin_user": "kubeadmin"
-"kubeadmin_password": "" # RHACM/Hive Instance aquired from content devops team
+"hive_hub_password": "" # RHACM/Hive Instance aquired from content devops team
 "ocp_api_url": "api.hive2.purple-chesterfield.com" #  RHACM/Hive api URL
 
 # pool options
