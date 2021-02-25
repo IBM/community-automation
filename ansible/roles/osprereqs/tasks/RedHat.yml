@@ -3,7 +3,7 @@
 - name: remove extraneous packages
   become: yes
   ignore_errors: yes
-  dnf:
+  yum:
    name: "{{ packages }}"
    state: absent
    autoremove: yes
@@ -21,7 +21,7 @@
 
 - name: install packages
   become: yes
-  dnf:
+  yum:
    name: "{{ packages }}"
    state: present
    skip_broken: yes
