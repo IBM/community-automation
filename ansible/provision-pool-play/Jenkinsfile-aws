@@ -24,7 +24,6 @@ def paramsList = [
     string(name: 'hive_pool_namespace', defaultValue: "your-test-namespace", description: 'The pool namespace.'),
     string(name: 'hive_pool_size', defaultValue: "1", description: 'Number of clusters in the pool.'),
     string(name: 'hive_pool_task',defaultValue: "provision", description: 'provision or delete a pool.'),
-    string(name: 'hive_pool_cloud', defaultValue: "aws", description: "Cloud type aws|google|azure|vsphere"),
     string(name: 'hive_pool_basedomain', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
     string(name: 'hive_pool_ocp_image', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64"),
     string(name: 'hive_pull_secret', defaultValue: /NULL/, description: 'Replace NULL with your pull secret.'),
@@ -47,11 +46,6 @@ timestamps {
           cp ./ansible/provision-pool-play/examples/${params.hive_pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/
           cp ./ansible/provision-pool-play/examples/inventory ./ansible/provision-pool-play/
           cd ./ansible/provision-pool-play
-          echo "What is the current directory"
-          pwd
-          ls -l
-          echo "TestTestTest"
-          echo " "
           ansible-playbook -i inventory \
           provision-pool-play.yml \
           -e kubeadmin_user=${params.hive_admin} \
@@ -61,7 +55,7 @@ timestamps {
           -e pool_namespace=${params.hive_pool_namespace} \
           -e pool_size=${params.hive_pool_size} \
           -e admin_task=${params.hive_pool_task} \
-          -e cloud=${params.hive_pool_cloud} \
+          -e cloud=aws \
           -e BASE_DOMAIN=${params.hive_pool_basedomain} \
           -e aws_access_key=${params.aws_access_key} \
           -e aws_secret_key=${params.aws_secret_key} \
