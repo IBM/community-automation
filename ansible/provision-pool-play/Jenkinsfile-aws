@@ -43,13 +43,9 @@ timestamps {
       stage('Provision Pool') {
         sh """
           cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/
-          cp ./ansible/provision-pool-play/examples/${params.hive_pool_cloud}-pool-vars.yml ./ansible/provision-pool-play/
+          cp ./ansible/provision-pool-play/examples/aws-pool-vars.yml ./ansible/provision-pool-play/
           cp ./ansible/provision-pool-play/examples/inventory ./ansible/provision-pool-play/
           cd ./ansible/provision-pool-play
-          echo "What is the current directory"
-          pwd
-          ls -l
-          echo " "
           ansible-playbook -i inventory \
           provision-pool-play.yml \
           -e kubeadmin_user=${params.hive_admin} \
