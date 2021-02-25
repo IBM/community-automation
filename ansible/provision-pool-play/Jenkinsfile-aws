@@ -40,7 +40,15 @@ timestamps {
 
       checkout scm
 
-      stage('Provision Pool') {
+        stage('Provision Pool') {
+
+          wrap([$class: 'MaskPasswordsBuildWrapper',
+                varPasswordPairs: [
+                  [password: "${params.aws_access_key}", var: 'AWS_CREDS_USR'],
+                  [password: "${params.aws_secret_key}", var: 'AWS_CREDS_PSW']
+                ]
+        ]) {
+
         sh """
           cp ./ansible/provision-pool-play/examples/common-pool-vars.yml ./ansible/provision-pool-play/
           cp ./ansible/provision-pool-play/examples/aws-pool-vars.yml ./ansible/provision-pool-play/
@@ -69,6 +77,7 @@ timestamps {
           -e PULL_SECRET=\'${params.hive_pull_secret}\'  \
           -e "SSH_PUBLIC_KEY='${params.hive_ssh_public}'"
         """.stripIndent()
+        }
       }
    }
   }
