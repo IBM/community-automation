@@ -9,7 +9,6 @@
    autoremove: yes
   vars:
    packages:
-   - "containers*"
    - "java*"
    - "samba*"
    - "valgrind*"
@@ -25,4 +24,3 @@
    - 'libxtst6'
    - 'libgtk2.0-0'
    - 'libxft2'
-
