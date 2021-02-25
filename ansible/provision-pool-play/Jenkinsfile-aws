@@ -14,7 +14,7 @@ def paramsList = [
     string(name: 'hive_pool_namespace', defaultValue: "your-test-namespace", description: 'The pool namespace.'),
     string(name: 'hive_admin', defaultValue: "kubeadmin", description: 'ACM/Hive cluster admin user.'),
     password(name: 'hive_admin_password', description: 'ACM/Hive cluster admin password.'),
-    string(name: 'hive_pull_secret', defaultValue: //, description: 'Input your Redhat pull secret.'),
+    string(name: 'hive_pull_secret', defaultValue: /NULL/, description: 'Replace NULL with your Redhat pull secret.'),
     string(name: 'hive_ssh_public', defaultValue: "", description: 'Input your ssh public key.'),
     string(name: 'aws_access_key', defaultValue: "", description: 'Your AWS access key'),
     password(name: 'aws_secret_key', defaultValue: "", description: 'Your AWS secret key'),
