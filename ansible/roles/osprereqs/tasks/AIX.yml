@@ -1,0 +1,5 @@
+---
+# specific OS supports wildcards, if preceded with @ its a group
+- name: AIX - work in process
+  debug:
+    msg: "AIX - more work to be done"

@@ -1,28 +1,34 @@
 ---
-# specific OS supports wildcards
+# specific OS supports wildcards, if preceded with @ its a group
 - name: remove extraneous packages
   become: yes
   ignore_errors: yes
-  apt:
+  dnf:
    name: "{{ packages }}"
    state: absent
    autoremove: yes
   vars:
    packages:
+   - "adobe*"
    - "containers*"
    - "java*"
    - "samba*"
    - "valgrind*"
    - "tignervnc"
+   - '@workstation'
+   - 'tigervnc-server'
+   - 'xorg-x11-fonts-Type1'
 
 - name: install packages
   become: yes
-  apt:
+  dnf:
    name: "{{ packages }}"
    state: present
+   skip_broken: yes
   vars:
    packages:
-   - 'libxtst6'
-   - 'libgtk2.0-0'
-   - 'libxft2'
-
+   - 'xorg-x11-xauth'
+   - 'gtk2'
+   - 'libXtst'
+   - 'xorg-x11-fonts-Type1'
+   - 'libnsl'
