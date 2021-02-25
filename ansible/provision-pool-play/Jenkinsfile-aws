@@ -9,23 +9,23 @@ def jobProps = [
 ]
 
 def paramsList = [
+    string(name: 'hive_pool_task',defaultValue: "provision", description: 'provision or delete a pool.'),
+    string(name: 'hive_pool_name', defaultValue: "yourpoolname", description: 'The pool name.'),
+    string(name: 'hive_pool_namespace', defaultValue: "your-test-namespace", description: 'The pool namespace.'),
+    string(name: 'hive_admin', defaultValue: "kubeadmin", description: 'ACM/Hive cluster admin user.'),
+    password(name: 'hive_admin_password', description: 'ACM/Hive cluster admin password.'),
+    string(name: 'hive_pull_secret', defaultValue: / /, description: 'Input your Redhat pull secret.'),
+    string(name: 'hive_ssh_public', defaultValue: " ", description: 'Input your ssh public key.'),
     string(name: 'aws_access_key', defaultValue: "", description: 'Your AWS access key'),
     string(name: 'aws_secret_key', defaultValue: "", description: 'Your AWS secret key'),
-    password(name: 'hive_admin_password', description: 'ACM/Hive cluster admin password.'),
-    string(name: 'hive_pull_secret', defaultValue: / /, description: 'Replace NULL with your pull secret.'),
-    string(name: 'hive_ssh_public', defaultValue: " ", description: 'Replace NULL with your ssh public key.'),
     string(name: 'AWS_REGION', defaultValue: "us-east-1", description: 'AWS region.'),
     string(name: 'WORKER_COUNT', defaultValue: "3", description: 'Number of worker nodes in pool clusters.'),
     string(name: 'WORKER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS worker node size.'),
     string(name: 'WORKER_VOLUME_SIZE', defaultValue: "256", description: 'AWS worker node volume size.'),
     string(name: 'MASTER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS master node size.'),
     string(name: 'MASTER_VOLUME_SIZE', defaultValue: "256", description: 'AWS master node volume size.'),
-    string(name: 'hive_admin', defaultValue: "kubeadmin", description: 'ACM/Hive cluster admin user.'),
     string(name: 'hive_api_url', defaultValue: "api.hive2.purple-chesterfield.com", description: 'ACM/Hive used for pools.'),
-    string(name: 'hive_pool_name', defaultValue: "yourpoolname", description: 'The pool name.'),
-    string(name: 'hive_pool_namespace', defaultValue: "your-test-namespace", description: 'The pool namespace.'),
     string(name: 'hive_pool_size', defaultValue: "1", description: 'Number of clusters in the pool.'),
-    string(name: 'hive_pool_task',defaultValue: "provision", description: 'provision or delete a pool.'),
     string(name: 'hive_pool_basedomain', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
     string(name: 'hive_pool_ocp_image', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64")
   ]
