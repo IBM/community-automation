@@ -52,6 +52,13 @@
      backup: yes
     become: yes
 
+  - name: set permisssions
+    file:
+      path: "/etc/profile.d/jmeter.sh"
+      state: present
+      mode: '0644'
+    become: yes
+
   - name: retrieve jmeter-plugin-manager.jar
     get_url:
      url: "{{ jmeterManagerPluginUrl }}"
