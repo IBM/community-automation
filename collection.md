@@ -29,6 +29,18 @@ ansible-galaxy collection list
 
 ## Using in your playbook
 
+### roles example
+```
+---
+- name: Prepare cluster for Demo Deployment
+  hosts: localhost
+  gather_facts: no
+  tasks:
+  roles:
+    - ibm_community_automation.ibm_community_automation.ocp_request_token
+```
+
+### include_role example
 ```
 ---
 - name: Prepare cluster for Demo Deployment
