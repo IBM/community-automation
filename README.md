@@ -2,7 +2,11 @@
 
 ## Introduction
 
-This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.
+This repo represents the Community Automation effort where teams can contribute automation to be shared with other teams.  We decided as a guild to use Jenkins and Ansible combination for our implementations.  Jenkins and Ansible details below.  The repo is also setup for use as an ansible collection to be included in playbooks being created outside of this repo.
+
+## Using this repo as an ansible collection
+
+[Ansible-collection](collection.md)
 
 ## How to run playbooks
 
