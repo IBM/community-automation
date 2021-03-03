@@ -45,12 +45,6 @@
      regexp: 'java'
      line: 'export PATH="{{ javaDir }}/{{ jVersion.stdout }}/bin:$PATH"'
      backup: yes
-    become: yes
-
-  - name: set permisssions
-    file:
-      path: "/etc/profile.d/jmeter_java.sh"
-      state: present
-      mode: '0644'
+     mode: '0644'
     become: yes
   when: isjava.stat.exists == False

@@ -50,13 +50,7 @@
      regexp: 'jmeter'
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
-    become: yes
-
-  - name: set permisssions
-    file:
-      path: "/etc/profile.d/jmeter.sh"
-      state: present
-      mode: '0644'
+     mode: '0644'
     become: yes
 
   - name: retrieve jmeter-plugin-manager.jar
