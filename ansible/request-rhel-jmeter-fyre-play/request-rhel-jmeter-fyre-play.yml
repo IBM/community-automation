@@ -2,6 +2,8 @@
 - hosts: fyreApi
   roles:
   - role: jmeter_fyrevm
+
+- hosts: all
   - role: timezone
 
 - hosts: jmeter
