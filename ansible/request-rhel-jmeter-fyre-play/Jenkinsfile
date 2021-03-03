@@ -13,8 +13,8 @@ def paramsList = [
     string(name: 'jmeterUser', defaultValue: 'changeMyjmeterUser', description: 'name of non-root user ( Do not use jmeter )'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
     password(name: 'fyreapikey', description: 'fyre api key'),
-    string(name: 'javaArchive', defaultValue: 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.9+11_openj9-0.23.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.9_11_openj9-0.23.0.tar.gz', description: 'url of source java archive'),
-    string(name: 'jmeterArchive', defaultValue: 'http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.4.tgz', description: 'url of source jmeter archive'),
+    string(name: 'javaArchive', defaultValue: 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10+9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz',description: 'url of source java archive'),
+    string(name: 'jmeterArchive', defaultValue: 'http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.4.1.tgz', description: 'url of source jmeter archive'),
     string(name: 'jmeterManagerPluginUrl', defaultValue: 'https://jmeter-plugins.org/get/'),
     booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on jmeter host')
   ]
