@@ -3,10 +3,6 @@
   roles:
   - role: jmeter_fyrevm
 
-- hosts: all
-  roles:
-  - role: timezone
-
 - hosts: jmeter
   vars:
   - ansible_user: root
@@ -14,6 +10,7 @@
   roles:
   - role: jmeter_prereqs
   - role: nestuser
+  - role: timezone
 
 - hosts: jmeter
   vars:
