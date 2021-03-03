@@ -9,7 +9,7 @@
   - crc_username: "{{ jmeterUser }}"
   roles:
   - role: jmeter_prereqs
-  - role: nestuser
+  - role: crc_user
   - role: timezone
 
 - hosts: jmeter
