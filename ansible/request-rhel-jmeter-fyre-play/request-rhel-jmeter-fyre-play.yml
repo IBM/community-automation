@@ -4,6 +4,7 @@
   - role: jmeter_fyrevm
 
 - hosts: all
+  roles:
   - role: timezone
 
 - hosts: jmeter
