@@ -2,6 +2,7 @@
 - hosts: fyreApi
   roles:
   - role: jmeter_fyrevm
+  - role: timezone
 
 - hosts: jmeter
   vars:
@@ -9,7 +10,7 @@
   - crc_username: "{{ jmeterUser }}"
   roles:
   - role: jmeter_prereqs
-  - role: crc_user
+  - role: nestuser
 
 - hosts: jmeter
   vars:
