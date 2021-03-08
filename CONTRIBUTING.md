@@ -1,6 +1,9 @@
 ## Contributing to community-automation
 
-Create your 
+## IMPORTANT
+
+When developing automation that needs to be kept private, do so in a private repository that consumes the roles from this public community repository.  This can be done using collections or by referncing the roles in your own playbooks.  See readme for details.
+ 
 To contribute code or documentation, create a fork, operate on your fork, and put in a [pull request](https://github.com/IBM/community-automation/pulls).
 
 A good way to familiarize yourself with the codebase and contribution process is
