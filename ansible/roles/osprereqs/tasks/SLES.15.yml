@@ -25,4 +25,5 @@
    - 'xorg-x11-xauth'
    - 'less'
    - 'psmisc'
+   - 'bind-utils'
 
