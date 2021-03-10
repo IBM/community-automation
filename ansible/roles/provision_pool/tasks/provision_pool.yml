@@ -142,9 +142,14 @@
       shell: "oc delete ClusterPool {{ pool_name }} -n {{ pool_namespace }}"
       register: delete_results
 
+    - name: checking for cluster pools in {{ pool_namespace}}
+      shell: "oc get clusterpool -n {{ pool_namespace }}"
+      register: pool_results
+
     - name: delete namespace {{ pool_namespace }}
       shell: "oc delete namespace {{ pool_namespace }}"
       register: delete_namespace_results
+      when: '"No resources" in pool_results.stderr'
       failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
     - name: Wait for up to 60 minutes for all clusters for pool {{ pool_name }} to be de-provisioned ...
