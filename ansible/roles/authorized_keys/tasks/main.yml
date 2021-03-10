@@ -1,9 +1,5 @@
 ---
 
-- name: whats the url
-  debug:
-   msg: "{{ authorized_keys_url }}"
-
 - name: Add authorized keys
   when: authorized_keys_url is defined 
   block:
