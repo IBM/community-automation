@@ -11,3 +11,4 @@
   - role: osprereqs
   - role: fix_fyre_hosts_file
   - role: timezone
+  - role: authorized_keys

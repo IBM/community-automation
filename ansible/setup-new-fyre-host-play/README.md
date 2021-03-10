@@ -4,6 +4,7 @@
 
 - Fyre systems do not have unzip. This is the basic install of that package
 - Check the roles/osprereqs/tasks/*.yml to review the actual list of packages
+- Ansible host has python `passlib`
 
 - external default file: /etc/ansible/nestvars.yml
 ```
@@ -13,6 +14,10 @@ user_username: nest
 user_password: yourFavoritePassword
 ```
 Can override this file with `-e external_password_file=somefile`
+
+- external file containing .ssh/id_rsa.pub keys
+default is blank, thus no keys are added to the target host
+Can override this file with `-e authorized_keys_url=http://yourkeyhost/yourkeyfile`
 
 ## Setting up inventory
 
