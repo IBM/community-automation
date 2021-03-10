@@ -26,7 +26,7 @@ timestamps {
       checkout scm
       stage('Stage 1') {
         sh """
-          set +x # hide sensitive info being echo'd to log
+          set -x # hide sensitive info being echo'd to log
           cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e ${params.external_password_file} -e ${params.regionTimeZone} -e ${params.authorized_keys_url} -vvv
         """.stripIndent()
       }
