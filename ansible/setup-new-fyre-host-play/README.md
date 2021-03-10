@@ -16,7 +16,9 @@ user_password: yourFavoritePassword
 Can override this file with `-e external_password_file=somefile`
 
 - external file containing .ssh/id_rsa.pub keys
-default is blank, thus no keys are added to the target host
+
+Default is blank, thus no keys are added to the target host
+
 Can override this file with `-e authorized_keys_url=http://yourkeyhost/yourkeyfile`
 
 ## Setting up inventory
