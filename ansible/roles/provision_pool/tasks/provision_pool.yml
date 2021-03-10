@@ -36,12 +36,12 @@
             - name: Create namespace {{ pool_namespace }}
               shell: "oc create namespace {{ pool_namespace }}"
 
-    - name: Remove file (delete file)
+    - name: Remove pull-secret file
       ansible.builtin.file:
-        path: /etc/foo.txt
+        path: pull-secret
         state: absent
 
-    - name: create create global pull secret file
+    - name: create create pull-secret file
       lineinfile:
         path: "pull-secret"
         line: "{{ item | to_nice_json }}"
