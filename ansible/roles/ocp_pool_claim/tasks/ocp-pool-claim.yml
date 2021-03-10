@@ -68,7 +68,7 @@
   when: 'admin_task =="release"'
   block: 
     - name: Releasing the claim "{{ claim_name }}"
-      shell: "./oc delete clusterclaim {{ claim_name }} -n {{ pool_namespace }}"
+      shell: "./oc delete clusterclaim.hive {{ claim_name }} -n {{ pool_namespace }}"
       register: release_results
   
 - name: logout of hive hub
