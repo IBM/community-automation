@@ -14,14 +14,14 @@
       register: claim_results
 
     - name: check for claim readiness, wait up to 1 hour
-      shell: "./oc get clusterclaim {{ claim_name }}  -n {{ pool_namespace }} -o yaml"
+      shell: "./oc get clusterclaim.hive {{ claim_name }}  -n {{ pool_namespace }} -o yaml"
       register: ready_results
       until: 'ready_results.stdout.find("message: Cluster is running") != -1'
       retries: 60
       delay: 60
 
     - name: get claim namespace
-      shell: "./oc get clusterclaim {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
+      shell: "./oc get clusterclaim.hive {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
       register: ns_results
 
     - name: get kubeadmin password
