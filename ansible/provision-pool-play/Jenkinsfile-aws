@@ -24,7 +24,7 @@ def paramsList = [
     string(name: 'WORKER_VOLUME_SIZE', defaultValue: "256", description: 'AWS worker node volume size.'),
     string(name: 'MASTER_VM_SIZE', defaultValue: "m5.2xlarge", description: 'AWS master node size.'),
     string(name: 'MASTER_VOLUME_SIZE', defaultValue: "256", description: 'AWS master node volume size.'),
-    string(name: 'hive_api_url', defaultValue: "api.hive2.purple-chesterfield.com", description: 'ACM/Hive used for pools.'),
+    string(name: 'hive_api_url', defaultValue: "api.hive3.purple-chesterfield.com", description: 'ACM/Hive used for pools.'),
     string(name: 'hive_pool_size', defaultValue: "1", description: 'Number of clusters in the pool.'),
     string(name: 'hive_pool_basedomain', defaultValue: "purple-chesterfield.com", description: 'Base domain your cluster lives in.'),
     string(name: 'hive_pool_ocp_image', defaultValue: "quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64")
