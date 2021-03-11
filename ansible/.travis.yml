@@ -1,0 +1,30 @@
+---
+sudo: required
+dist: trusty
+
+language: python
+python: "3.8"
+
+# Doc: https://docs.travis-ci.com/user/customizing-the-build#Build-Matrix
+env:
+  - ANSIBLE_VERSION=latest
+  - ANSIBLE_VERSION=2.2.2.0
+  - ANSIBLE_VERSION=2.2.1.0
+  - ANSIBLE_VERSION=2.2.0.0
+
+branches:
+  only:
+    - master
+
+before_install:
+  - sudo apt-get update -qq
+
+install:
+  # Install Ansible.
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip3 install ansible; else pip3 install ansible==$ANSIBLE_VERSION; fi
+  - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip3 install ansible-lint; fi
+
+script:
+  # Check the role/playbook's syntax.
+  - ansible-lint -i ansible/ocp-pool-claim-play/examples/inventory ansible/ocp-pool-claim-play/ocp-pool-claim-play.yml
+
