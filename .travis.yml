@@ -1,6 +1,5 @@
 ---
-sudo: required
-dist: trusty
+sudo: true
 
 env:
   - ANSIBLE_VERSION=latest
@@ -11,6 +10,7 @@ env:
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -y python3 python3-pip 
+  - pip3 install --upgrade pip
 
 install:
   # Install Ansible.
