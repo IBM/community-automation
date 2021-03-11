@@ -15,8 +15,8 @@ install:
   - pip3 install ansible
   - pip3 install ansible-lint
 
-
 script:
   # Check the role/playbook's syntax.
-  - ansible-lint -i ansible/ocp-pool-claim-play/examples/inventory ansible/ocp-pool-claim-play/ocp-pool-claim-play.yml
+  - cd ansible/roles
+  - ansible-lint 
 
