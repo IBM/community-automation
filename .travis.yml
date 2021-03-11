@@ -2,10 +2,6 @@
 sudo: required
 dist: trusty
 
-language: python
-python: "3"
-
-# Doc: https://docs.travis-ci.com/user/customizing-the-build#Build-Matrix
 env:
   - ANSIBLE_VERSION=latest
   - ANSIBLE_VERSION=2.2.2.0
@@ -14,11 +10,13 @@ env:
 
 before_install:
   - sudo apt-get update -qq
+  - sudo apt-get install python3
 
 install:
   # Install Ansible.
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip3 install ansible; else pip3 install ansible==$ANSIBLE_VERSION; fi
   - if [ "$ANSIBLE_VERSION" = "latest" ]; then pip3 install ansible-lint; fi
+
 
 script:
   # Check the role/playbook's syntax.
