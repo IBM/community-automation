@@ -3,7 +3,7 @@ sudo: required
 dist: trusty
 
 language: python
-python: "3.8"
+python: "3"
 
 # Doc: https://docs.travis-ci.com/user/customizing-the-build#Build-Matrix
 env:
