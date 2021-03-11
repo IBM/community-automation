@@ -9,6 +9,11 @@ spec:
     name: openshift-{{ imageset.stdout }}
   installConfigSecretTemplateRef:
     name: install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template
+  labels:
+    {{ LABEL }}
+  skipMachinePools: true
+  pullSecretRef:
+    name: global-pull-secret
   platform:
     aws:
       credentialsSecretRef:

@@ -38,6 +38,12 @@ networking:
 platform:
   aws:
     region: {{ AWS_REGION }}
+    userTags:
+      owner: "ashworth@us.ibm.com"
+      team: "Content"
+      Usage: "infra"
+      Usage_desc: "hive pooling clusters"
+      Review_freq: "quarter"
 
 pullSecret: {{ PULL_SECRET }}
 
