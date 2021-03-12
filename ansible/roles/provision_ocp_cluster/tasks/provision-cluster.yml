@@ -2,6 +2,26 @@
 - name: Provisioning OCP cluster...
   when: 'admin_task == "provision"'
   block:
+    - name: Azure Service Principal
+      when: 'cloud == "azure"'
+      block:
+        - name: Create Service Principal json from template
+          template:
+            src: "azure-osServicePrincipal.json.j2"
+            dest: "azure-osServicePrincipal.json"
+            backup: false
+        - name: Set Azure Service Principle
+          set_fact:
+              AZURE_SERVICE_PRINCIPAL: "{{ cat azure-osServicePrincipal.json | base64 -w 0 }}"
+
+    - name: create clusterdeployment CR based on template
+      template:
+        src: "{{ cloud }}-template.j2"
+        dest: "{{ cloud }}-clusterdeployment-cr.yml"
+        backup: false
+      register: template_results
+
+
     - name: create clusterdeployment CR based on template
       template:
         src: "{{ cloud }}-template.j2"

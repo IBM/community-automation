@@ -34,10 +34,10 @@
 "SSH_PUBLIC_KEY": '<public key>'
 
 # Domain where api and apps DNS entries will live
-"BASE_DOMAIN": "purple-chesterfield.com"
+"BASE_DOMAIN": "purple-chesterfield.com" # aws - purple-chesterfield.com, azure - green-chesterfield.com, vmware - purple-chesterfield.com
 
 # What OCP version you want to install
-"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.6.8-x86_64"
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.7.0-x86_64"
 
 # Redhat pull secret. You can get one here https://cloud.redhat.com/openshift/install/aws/installer-provisioned
 "PULL_SECRET": '<pull_secret>' # be sure to leave the quotes in place
