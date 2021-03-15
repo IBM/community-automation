@@ -4,6 +4,8 @@
     gather_facts: yes
     vars_files:
       pool-vars.yml
+    vars:
+      kubeadmin_password: "{{ hive_hub_password }}"
 
     environment:
       PATH: ".:{{ ansible_env.PATH }}"

@@ -36,6 +36,30 @@
             - name: Create namespace {{ pool_namespace }}
               shell: "oc create namespace {{ pool_namespace }}"
 
+    - name: Remove pull-secret file
+      ansible.builtin.file:
+        path: pull-secret
+        state: absent
+
+    - name: create create pull-secret file
+      lineinfile:
+        path: "pull-secret"
+        line: "{{ item | to_nice_json }}"
+        create: yes
+        mode: 0755
+      with_items:
+        - '{{ PULL_SECRET }}'
+
+    - name: check for global pull secret
+      shell: 'oc get secret global-pull-secret -n {{ pool_namespace }}'
+      register: secret_results
+      ignore_errors: yes
+
+    - name: create global pull secret
+      shell: 'oc create secret generic global-pull-secret --from-file=.dockerconfigjson=pull-secret --type=kubernetes.io/dockerconfigjson --namespace "{{ pool_namespace }}"'
+      register: gps_results
+      when: '"AlreadyExists" in secret_results.stderr'
+
     - name: Check for install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template secret in namespace {{ pool_namespace }}...
       shell: "oc get secrets -n {{ pool_namespace }} | grep -w install-config-{{ cloud }}-{{ WORKER_COUNT }}-{{ WORKER_VM_SIZE }}-{{ WORKER_VOLUME_SIZE }}-template > /dev/null ; echo $?"
       register: install_config_results
@@ -77,8 +101,9 @@
       register: provision_pool_results
 
     - name: Create aws {{ pool_name }} pool in namespace {{ pool_namespace }}
-      shell: "oc create -f {{ cloud }}-pool-cr.yml"
+      shell: "cat {{ cloud }}-pool-cr.yml; oc create -f {{ cloud }}-pool-cr.yml"
       register: provision_pool_results
+    - debug: msg="{{ provision_pool_results.stdout }}"
 
     - name: Find the namespace of the first cluster created for pool {{ pool_name }}  ...
       shell: "oc get namespaces | tr -s ' ' | cut -f1 -d' ' | grep  '^{{ pool_name }}-' | grep -E '^.{'$(( $(echo -n {{ pool_name }}- | wc -m) + 5))'}$' | head -n 1"
@@ -105,7 +130,7 @@
   when: 'admin_task == "delete" and cloud == "aws"'
   block:
     - name: Check for claims against pool {{ pool_name }}
-      shell: "oc --no-headers=true get clusterclaims -n walt-poolc | tr -s ' ' | cut -f1 -d' ' | grep ^.*$ > /dev/null; echo $?"
+      shell: "oc --no-headers=true get clusterclaims.hive -n {{ pool_namespace }} | tr -s ' ' | cut -f1 -d' ' | grep ^.*$ > /dev/null; echo $?"
       register: claim_results
 
     - name: If outstanding claims abort delete of pool and exit ....
@@ -117,9 +142,14 @@
       shell: "oc delete ClusterPool {{ pool_name }} -n {{ pool_namespace }}"
       register: delete_results
 
+    - name: checking for cluster pools in {{ pool_namespace}}
+      shell: "oc get clusterpool -n {{ pool_namespace }}"
+      register: pool_results
+
     - name: delete namespace {{ pool_namespace }}
       shell: "oc delete namespace {{ pool_namespace }}"
       register: delete_namespace_results
+      when: '"No resources" in pool_results.stderr'
       failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
     - name: Wait for up to 60 minutes for all clusters for pool {{ pool_name }} to be de-provisioned ...

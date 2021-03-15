@@ -34,6 +34,8 @@
       owner: root
       group: root
       mode: '0755'
+    become: yes
+    become_user: root
 
   - name: Copy kubectl to local bin
     ansible.builtin.copy:
@@ -42,3 +44,5 @@
       owner: root
       group: root
       mode: '0755'
+    become: yes
+    become_user: root
