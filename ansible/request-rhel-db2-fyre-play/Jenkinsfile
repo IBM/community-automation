@@ -12,8 +12,9 @@ def paramsList = [
     string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
     password(name: 'fyreapikey', description: 'fyre api key'),
-    string(name: 'db2Archive', defaultValue: 'https://ibm.com/db2/ce.tar.gz',description: 'url of source db2 archive'),
-    booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on jmeter host')
+    string(name: 'db2Archive', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/DB2S_11.5.4_MPML.tar.gz',description: 'url of source db2 ce archive'),
+    string(name: 'db2responseFile', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/db2serverv11.5.rsp',description: 'url of source db2 ce response file'),
+    booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on db2 host')
   ]
 jobProps.push(parameters(paramsList))
 
@@ -28,7 +29,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/request-rhel-db2-fyre-play/examples/inventory ./ansible/request-rhel-db2-fyre-play/; ansible-playbook -i ./ansible/request-rhel-db2-fyre-play/inventory ./ansible/request-rhel-db2-fyre-play/request-rhel-db2-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e db2Archive=${params.javaArchive} -e stackName=${params.stackName}
+          cp ./ansible/request-rhel-db2-fyre-play/examples/inventory ./ansible/request-rhel-db2-fyre-play/; ansible-playbook -i ./ansible/request-rhel-db2-fyre-play/inventory ./ansible/request-rhel-db2-fyre-play/request-rhel-db2-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e db2Archive=${params.db2Archive} -e stackName=${params.stackName} -e db2responseFile=${params.db2responseFile}
         """.stripIndent()
       }
    }

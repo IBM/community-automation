@@ -11,6 +11,6 @@
 
 - hosts: db2
   roles:
-  - role: db2
+  - role: db2_fyre
   - { role: vnc, when: vnc|bool }
 

@@ -1,0 +1,46 @@
+---
+
+- name: check if db2 is installed
+  stat:
+   path: '/opt/ibm/db2/V11.5'
+  register: isdb2
+
+- block:
+  - name: retrieve db2 archive
+    get_url:
+     url: "{{ db2Archive }}"
+     dest: /tmp/db2.tar.gz
+
+  - name: retrieve db2 setup response file
+    get_url:
+     url: "{{ db2responseFile }}"
+     dest: /tmp/db2serverv11.5.rsp
+
+  - name: extract db2 archive
+    unarchive:
+     src: /tmp/db2.tar.gz
+     dest: /tmp
+     remote_src: yes
+
+  - name: install db2 ce
+    command: './db2setup -f sysreq -r /tmp/db2serverv11.5.rsp'
+    args:
+     chdir: '/tmp/server_dec'
+
+  - name: remove temp db2 archive
+    file:
+     path: /tmp/db2.tar.gz
+     state: absent
+
+  - name: remove temp db2 response file
+    file:
+     path: /tmp/db2serverv11.5.rsp
+     state: absent
+
+  - name: change password
+    debug:
+     msg: 'CHANGE ME: db2inst1 password: letme1n2.2021Q1'
+  when: isdb2.stat.exists == False
+
+
+

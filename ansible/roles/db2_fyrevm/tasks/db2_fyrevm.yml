@@ -120,8 +120,7 @@
 
 - add_host:
    name: "{{ stackName }}-1{{ hostnameDomain }}"
-   groups: jmeter
-   ansible_user: "{{ jmeterUser }}"
-   jmeterUser: "{{ jmeterUser }}"
+   groups: db2
+   ansible_user: "root"
    stackName: "{{ stackName }}"
    vnc: "{{ vnc }}"
