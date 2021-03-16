@@ -1,0 +1,16 @@
+---
+- hosts: fyreApi
+  roles:
+  - role: db2_fyrevm
+
+- hosts: db2
+  vars:
+  - ansible_user: root
+  roles:
+  - role: timezone
+
+- hosts: db2
+  roles:
+  - role: db2
+  - { role: vnc, when: vnc|bool }
+
