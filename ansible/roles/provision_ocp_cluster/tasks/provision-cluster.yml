@@ -10,9 +10,14 @@
             src: "azure-osServicePrincipal.json.j2"
             dest: "azure-osServicePrincipal.json"
             backup: false
+
+        - name: Create Azure Service Principal base64
+          shell: "cat azure-osServicePrincipal.json | base64 -w 0"
+          register: service_principal
+
         - name: Set Azure Service Principle
           set_fact:
-              AZURE_SERVICE_PRINCIPAL: "{{ cat azure-osServicePrincipal.json | base64 -w 0 }}"
+              AZURE_SERVICE_PRINCIPAL: "{{ service_principal.stdout }}"
 
     - name: create clusterdeployment CR based on template
       template:
