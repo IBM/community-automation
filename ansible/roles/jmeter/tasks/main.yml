@@ -4,6 +4,7 @@
   copy:
    src: "scripts/"
    dest: "/home/{{ jmeterUser }}/"
+   mode: '0644'
 
 - name: check if jmeter dir
   file:
