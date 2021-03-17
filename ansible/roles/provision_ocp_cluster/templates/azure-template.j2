@@ -60,7 +60,7 @@ items:
         platform:
           azure:
             osDisk:
-              diskSizeGB: {{ AZURE_WORKER_DISK_SIZE }}512
+              diskSizeGB: {{ AZURE_WORKER_DISK_SIZE }}
             type: "{{ AZURE_WORKER_TYPE }}"
         replicas: {{ AZURE_WORKER_COUNT }}
       controlPlane:
