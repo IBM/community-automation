@@ -1,22 +1,23 @@
 ---
 - name: claim a cluster from pool "{{ pool_name }}"
   when: 'admin_task == "claim"'
-  block: 
+  block:
     - name: creating clusterclaim CR
       template:
         src: "claim-template.j2"
         dest: "clusterclaim-cr.yml"
         backup: false
+        mode: 0755
       register: template_result
 
     - name: deploy cluster claim
       shell: oc apply -f clusterclaim-cr.yml
       register: claim_results
 
-    - name: check for claim readiness, wait up to 1 hour
+    - name: check for cluster claimed, wait up to 1 hour
       shell: "./oc get clusterclaim.hive {{ claim_name }}  -n {{ pool_namespace }} -o yaml"
       register: ready_results
-      until: 'ready_results.stdout.find("message: Cluster is running") != -1'
+      until: 'ready_results.stdout.find("message: Cluster claimed") != -1'
       retries: 60
       delay: 60
 
@@ -24,12 +25,19 @@
       shell: "./oc get clusterclaim.hive {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
       register: ns_results
 
+    - name: check for cluster running, wait up to 1 hour
+      shell: "./oc get clusterdeployment.hive {{ ns_results.stdout }}  -n {{ ns_results.stdout }} -o yaml"
+      register: ready_results
+      until: 'ready_results.stdout.find("message: All machines are") != -1'
+      retries: 60
+      delay: 60
+
     - name: get kubeadmin password
       shell: "./oc extract secret/$(./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ ns_results.stdout }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
       register: password_results
 
     - name: get console web url
-      shell: "./oc get cd {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
+      shell: "./oc get clusterdeployment.hive {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
       register: console_url
 
     - name: Add inf host to group
@@ -46,15 +54,9 @@
         admin_task: "claim"
       changed_when: false
 
-    - name: Remove previous log file
-      ansible.builtin.file:
-        path: cluster_details.log
-        state: absent
-      changed_when: false
-
     - name: create output details
       lineinfile:
-        path: cluster_details.log
+        path: "{{ console_url.stdout.split('.')[2] }}_details.log"
         line: "{{ item }}"
         create: yes
         mode: 0755
@@ -66,11 +68,25 @@
 
 - name: Release claim "{{ claim_name }}"
   when: 'admin_task =="release"'
-  block: 
+  block:
+    - name: get claim namespace
+      shell: "./oc get clusterclaim.hive {{ claim_name }} -n {{ pool_namespace }}  -o json | jq -r '.spec.namespace'"
+      register: ns_results
+
+    - name: get console web url
+      shell: "./oc get clusterdeployment.hive {{ ns_results.stdout }} -n {{ ns_results.stdout }} -o jsonpath='{ .status.webConsoleURL }'"
+      register: console_url
+
     - name: Releasing the claim "{{ claim_name }}"
       shell: "./oc delete clusterclaim.hive {{ claim_name }} -n {{ pool_namespace }}"
       register: release_results
-  
+
+    - name: Remove cluster details file
+      ansible.builtin.file:
+        path: "{{ console_url.stdout.split('.')[2] }}_details.log"
+        state: absent
+      changed_when: false
+
 - name: logout of hive hub
   shell: "oc logout"
   register: logout_results

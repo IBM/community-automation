@@ -1,4 +1,121 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ CLUSTER_NAME }}
+items:
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterDeployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      hive.openshift.io/hiveutil-created: "true"
+    name: {{ CLUSTER_NAME }}
+    namespace: {{ CLUSTER_NAME }}
+  spec:
+    baseDomain: {{ BASE_DOMAIN }}
+    clusterName: {{ CLUSTER_NAME }}
+    controlPlaneConfig:
+      servingCertificates: {}
+    installed: false
+    platform:
+      azure:
+        baseDomainResourceGroupName: {{ AZURE_BASE_DOMAIN_RESOURCE_GROUP_NAME }}
+        credentialsSecretRef:
+          name: {{ CLUSTER_NAME }}-azure-creds
+        region: {{ AZURE_REGION }}
+    provisioning:
+      imageSetRef:
+        name: {{ CLUSTER_NAME }}-imageset
+      installConfigSecretRef:
+        name: {{ CLUSTER_NAME }}-install-config
+    pullSecretRef:
+      name: {{ CLUSTER_NAME }}-pull-secret
+  status: {}
+- apiVersion: hive.openshift.io/v1
+  kind: MachinePool
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-worker
+    namespace: {{ CLUSTER_NAME }}
+  spec:
+    clusterDeploymentRef:
+      name: {{ CLUSTER_NAME }}
+    name: worker
+    platform:
+      azure:
+        osDisk:
+          diskSizeGB: 128
+        type: Standard_D2s_v3
+    replicas: 3
+  status: {}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-install-config
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    install-config.yaml: |
+      apiVersion: v1
+      baseDomain: {{ BASE_DOMAIN }}
+      compute:
+      - name: worker
+        platform:
+          azure:
+            osDisk:
+              diskSizeGB: {{ AZURE_WORKER_DISK_SIZE }}
+            type: "{{ AZURE_WORKER_TYPE }}"
+        replicas: {{ AZURE_WORKER_COUNT }}
+      controlPlane:
+        name: master
+        platform:
+          azure:
+            osDisk:
+              diskSizeGB: {{ AZURE_MASTER_DISK_SIZE }}
+            type: "{{ AZURE_MASTER_TYPE }}"
+        replicas: 3
+      metadata:
+        creationTimestamp: null
+        name: {{ CLUSTER_NAME }}
+      networking:
+        clusterNetwork:
+        - cidr: 10.128.0.0/14
+          hostPrefix: 23
+        machineNetwork:
+        - cidr: 10.0.0.0/16
+        networkType: OpenShiftSDN
+        serviceNetwork:
+        - 172.30.0.0/16
+      platform:
+        azure:
+          baseDomainResourceGroupName: {{ AZURE_BASE_DOMAIN_RESOURCE_GROUP_NAME }}
+          outboundType: ""
+          region: {{ AZURE_REGION }}
+      pullSecret: ""
+      sshKey: {{ SSH_PUBLIC_KEY }}
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-pull-secret
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    .dockerconfigjson: '{{ PULL_SECRET }}'
+  type: kubernetes.io/dockerconfigjson
+- apiVersion: v1
+  data:
+    osServicePrincipal.json: {{ AZURE_SERVICE_PRINCIPAL }}
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-azure-creds
+    namespace: {{ CLUSTER_NAME }}
+  type: Opaque
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterImageSet
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-imageset
+  spec:
+    releaseImage: {{ OCP_RELEASE_IMAGE }}
+  status: {}
+kind: List
+metadata: {}
