@@ -1,5 +1,5 @@
 ---
-- name: Azure Service Principal
+- name: Set Env Vars
   when: 'cloud != "azure"'
   environment:
     AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
