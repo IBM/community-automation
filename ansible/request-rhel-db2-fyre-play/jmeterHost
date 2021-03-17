@@ -1,2 +1,0 @@
-[jmeter]
-jmeterTest1950-1.fyre.ibm.com ansible_user=nest jmeterUser=nest stackName=jmeterTest1950 vnc=true 
