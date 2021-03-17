@@ -31,3 +31,4 @@
    - 'gtk2'
    - 'libXtst'
    - 'xorg-x11-fonts-Type1'
+   - 'psmisc'

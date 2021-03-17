@@ -10,6 +10,7 @@
   roles:
   - role: jmeter_prereqs
   - role: crc_user
+  - role: timezone
 
 - hosts: jmeter
   vars:
