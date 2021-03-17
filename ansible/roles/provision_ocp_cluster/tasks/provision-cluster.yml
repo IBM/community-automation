@@ -1,4 +1,10 @@
 ---
+- name: Azure Service Principal
+  when: 'cloud != "azure"'
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+
 - name: Provisioning OCP cluster...
   when: 'admin_task == "provision"'
   block:
