@@ -2,7 +2,7 @@
 # ACM/HIVE Cluster Information
 "kubeadmin_user": "kubeadmin"
 "kubeadmin_password": "" #  ACM/Hive used for cluster create
-"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com:6443" # ACM/HIVE used for cluster creates public instance api URL
+"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # ACM/HIVE used for cluster creates public instance api URL
 
 "CLUSTER_NAME": "<cluster_name>"  # limit to 21 characters on AWS, limit has not been researched on other platforms.
 
