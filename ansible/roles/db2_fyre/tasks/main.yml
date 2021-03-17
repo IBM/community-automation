@@ -39,7 +39,7 @@
 
   - name: change password
     debug:
-     msg: 'CHANGE ME: db2inst1 password: letme1n2.2021Q1'
+     msg: 'CHANGE ME: db2inst1 password'
   when: isdb2.stat.exists == False
 
 
