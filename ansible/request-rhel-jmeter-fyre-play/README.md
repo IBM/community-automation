@@ -31,7 +31,7 @@ ansible-playbook  -i inventory request-rhel-jmeter-fyre-play.yml
 
 or
 
-ansible-playbook  -i inventory request-crc-fyre-play.yml -e stackName=jmeterStack -e jmeterUser=nest -e noLog=false -e javaArchive='https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14.0.2+12_openj9-0.21.0/OpenJDK14U-jdk_x64_linux_openj9_14.0.2_12_openj9-0.21.0.tar.gz'  -e jmeterArchive='http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.3.tgz'
+ansible-playbook  -i inventory request-rhel-jmeter-play.yml -e stackName=jmeterStack -e jmeterUser=nest -e noLog=false -e javaArchive='https://github.com/AdoptOpenJDK/openjdk14-binaries/releases/download/jdk-14.0.2+12_openj9-0.21.0/OpenJDK14U-jdk_x64_linux_openj9_14.0.2_12_openj9-0.21.0.tar.gz'  -e jmeterArchive='http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.3.tgz'
 ```
 
 To disable vnc server install ( takes around 8 minutes ) add
