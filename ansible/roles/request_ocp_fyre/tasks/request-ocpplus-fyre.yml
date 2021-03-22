@@ -105,4 +105,8 @@
     ansible_user: "root"
     inf_public_ip: "{{fyre_inf_public_ip}}"
     clusterName: "{{ clusterName }}"
+    kubeadmin_password: "{{ cluster_status_response.json.clusters[0].kubeadmin_password }}"
+    ocp_access_url: "{{ cluster_status_response.json.clusters[0].access_url }}"
+    ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
+    ocp_api_port: "6443"
   changed_when: false
