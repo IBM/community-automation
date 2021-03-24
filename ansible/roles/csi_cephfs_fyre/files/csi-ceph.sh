@@ -1,6 +1,7 @@
 #!/bin/bash
 rookRelease=$1
 device=$2
+new_default_sc=$3
 
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
@@ -74,6 +75,6 @@ else
   echo "Set storageclass $default_storage_class to not be default"
   oc patch storageclass $default_storage_class -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 fi
-echo "Set default storageclass to csi-cephfs"
-oc patch storageclass csi-cephfs -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+echo "Set default storageclass to $new_default_cs"
+oc patch storageclass $new_default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml

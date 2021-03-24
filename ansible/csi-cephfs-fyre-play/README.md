@@ -37,9 +37,13 @@ ansible-playbook  -i inventory csi-cephfs.yml
 or to pass a new rook-ceph release
 
 ```
-ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "rook_cephfs_release=v1.4.7"
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "rook_cephfs_release=release-1.5"
 ```
+or set new default storageclass to something other than csi-cephfs
 
+```
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "default_sc=rook-cephfs"
+```
 License
 -------
 
