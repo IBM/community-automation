@@ -26,7 +26,7 @@ oc create -f rook/cluster/examples/kubernetes/ceph/operator-openshift.yaml
 echo "operator-openshift.yaml exit $?"
 sleep_count=30
 while [[ $sleep_count -gt 0 ]]; do
-  oc  get po -n rook-ceph | grep  -e  rook-ceph-operator | tr -s ' ' | Running
+  oc  get po -n rook-ceph | grep  -e  rook-ceph-operator | tr -s ' ' | grep Running
   if [ $? -ne 0 ] ; then
     echo "Waiting for ceph operator to go to Running"
     sleep 1m
