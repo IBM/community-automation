@@ -9,11 +9,13 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 rm -rf rook
 echo "Doing clone of rook release $rookRelease"
 git clone https://github.com/rook/rook.git
-cd rook
-rook_branch_version=$(echo $rookRelease | cut -f1 -d'-' | cut -f3 -d'.' --complement | sed 's/v//g')
-echo "For tag $rookRelease we are using branch release-$rook_branch_version"
-git checkout tags/$rookRelease -b release-$rook_branch_version
-cd ..
+if [[ $rookRelease != "master" ]]; then 
+  cd rook
+  rook_branch_version=$(echo $rookRelease | cut -f1 -d'-' | cut -f3 -d'.' --complement | sed 's/v//g')
+  echo "For tag $rookRelease we are using branch release-$rook_branch_version"
+  git checkout tags/$rookRelease -b release-$rook_branch_version
+  cd ..
+fi
 # if rook-ceph is version 1.5, then need to create/apply crd
 majorRelease=$(echo ${rookRelease:0:4})
 if [[ $majorRelease != "v1.4" ]]
