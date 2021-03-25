@@ -20,6 +20,7 @@
   - catalog-source.yaml
   - cs-request.bash
   - cs-validation.bash
+  - db2-catalog-source.yaml
 
 - name: Check for an oc connection
   shell: |
