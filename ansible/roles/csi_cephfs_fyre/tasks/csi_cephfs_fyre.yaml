@@ -37,6 +37,6 @@
       warn: false
   register: waitceph
 
-- name: Waiting for rook-ceph-mds-myfs pods to go to Running Log
+- name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
   debug:
     msg: "{{ waitceph.stdout_lines }}"
