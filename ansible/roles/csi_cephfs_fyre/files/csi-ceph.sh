@@ -8,7 +8,10 @@ oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(ho
 # Install ceph
 rm -rf rook
 echo "Doing clone of rook release $rookRelease"
-git clone https://github.com/rook/rook.git -b $rookRelease
+git clone https://github.com/rook/rook.git
+cd rook
+git checkout tags/$rookRelease -b release-$(echo $rookRelease | rev | cut -f1 -d'.' --complement | rev | sed 's/v//g')
+cd ..
 # if rook-ceph is version 1.5, then need to create/apply crd
 majorRelease=$(echo ${rookRelease:0:4})
 if [[ $majorRelease != "v1.4" ]]
