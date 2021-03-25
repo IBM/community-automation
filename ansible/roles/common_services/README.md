@@ -19,9 +19,10 @@ Role Variables
 | cs_operator_project_name  | no       | common-service                                     | Namespace to use for installing Common Services operators |
 | cs_operator_catalog_image | no       | docker.io/ibmcom/ibm-common-service-catalog:latest | `latest` for stable and beta channels, `3.5-beta1` also valid |
 | cs_subscription_channel   | no       | stable-v1                                          | stable-v1, beta                                              |
-| cs_subscription_strategy  | no       | Automatic                                          | Approval stragergy for operator subscription              |
+| cs_subscription_strategy  | no       | Automatic                                          | Approval strategy for operator subscription              |
 | cs_operand_list           | no       | []                                                 | List of Operands to install, name or pattern. empty list default to everything |
 | cs_operand_to_disable     | no       | ["elastic"]                                        | List of Operands to disable, name or pattern              |
+| db2_operator_catalog_image | no      | docker.io/ibmcom/ibm-operator-catalog | `latest` for stable channel 
 | storageclass_name         | no       | managed-nfs-storage                                | StorageClass name                                         |
 | strict_validation         | no       | true                                               | Specify if to validate deployment strictly                |
 

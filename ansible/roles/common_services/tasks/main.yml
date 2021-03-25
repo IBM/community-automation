@@ -42,3 +42,7 @@
 - include: "install.yml"
   static: no
   when: cs_action == "install"
+
+- include: "install-db2.yml"
+  static: no
+  when: cs_action == "install-db2"

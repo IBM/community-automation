@@ -9,5 +9,6 @@ cs_subscription_channel: stable-v1 # this relates to catalog image above, exampl
 cs_subscription_strategy: Automatic
 cs_operand_list: [] # leave empty list by default enable all operands. support name and pattern. example for cpd ["licensing","metering","commonui","iam"]
 cs_operand_to_disable: ["elastic"] # support name and pattern to disable operands
+db2_operator_catalog_image: docker.io/ibmcom/ibm-operator-catalog
 storageclass_name: ""
 strict_validation: true
