@@ -45,6 +45,8 @@ sed -i "s/#deviceFilter:/deviceFilter: $device/g" rook/cluster/examples/kubernet
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
 oc create -f rook/cluster/examples/kubernetes/ceph/cluster.yaml
+echo "Exit from cluster.yaml $?"
+
 num_worker_nodes=$(oc get no | tr -s ' ' | cut -f3 -d' ' | grep worker  | wc -l)
 echo "Check for the number of ceph nodes running is equal to numbers of worker nodes - wait up to 1 hour"
 ceph_sleep_count=60
@@ -60,7 +62,6 @@ while [[ $ceph_sleep_count -ne 0 ]]; do
     break
   fi
 done
-echo "Exit from cluster.yaml $?"
 echo "Doing filessystem-test.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/filesystem-test.yaml
 echo "Exit from filesystem-test.yaml $?"
