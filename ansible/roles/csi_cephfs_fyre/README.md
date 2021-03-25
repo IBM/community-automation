@@ -3,7 +3,7 @@ csi-cephfs: csi cephfs on OCP
 
 This module will install:
 - rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
-- Default rook-ceph release is `release-1.5`. See release information here https://github.com/rook/rook/releases.
+- Default rook-ceph release is `v1.5.9`. See release information here https://github.com/rook/rook/releases.
 - Creates 3 storageClass
   - rook-cephfs - File store (RWX)
   - rook-ceph-block - Ceph Block storage (RWO)
