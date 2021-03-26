@@ -11,6 +11,7 @@
         name : "{{ clusterName }}"
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
+        site: "{{fyre_site | default(omit)}}"
         ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
         worker:
           - count: "{{ fyre_worker_quantity }}"
