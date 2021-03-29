@@ -1,6 +1,6 @@
 ---
 # Information for your osProviderAccount - Ref - https://cloud.google.com/iam/docs/creating-managing-service-account-keys
-"GOOGLE_PROJECT_ID": " "   # example: oceanic-guard-191815
+"GOOGLE_PROJECT_ID": " "
 "GOOGLE_PRIVATE_KEY_ID": " "
 "GOOGLE_PRIVATE_KEY": " "
 "GOOGLE_CLIENT_EMAIL": " "
@@ -14,5 +14,5 @@
 "GOOGLE_MASTER_TYPE": n1-standard-4
 "GOOGLE_WORKER_TYPE": n1-standard-8  # Ref Doc https://cloud.google.com/compute/docs/machine-types#n1_standard_machine_types
 "GOOGLE_WORKER_COUNT": 3
-# SERvICE ACCOUNT JSON - DO NOT CHANGE
+# SERVICE ACCOUNT JSON - DO NOT CHANGE
 "GOOGLE_SERVICE_ACCOUNT": " "

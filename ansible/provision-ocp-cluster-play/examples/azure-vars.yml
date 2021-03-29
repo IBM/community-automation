@@ -12,5 +12,5 @@
 "AZURE_MASTER_DISK_SIZE": 128 #See https://docs.microsoft.com/en-us/azure/virtual-machines/disks-types
 "AZURE_MASTER_TYPE": "Standard_D4s_v3" #See https://docs.microsoft.com/en-us/azure/cloud-services/cloud-services-sizes-specs
 "AZURE_REGION": eastus
-# SERvICE PRINCIPAL JSON - DO NOT CHANGE
+# SERVICE PRINCIPAL JSON - DO NOT CHANGE
 "AZURE_SERVICE_PRINCIPAL": " "
