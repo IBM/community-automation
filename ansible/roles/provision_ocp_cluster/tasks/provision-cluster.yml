@@ -31,6 +31,39 @@
               AZURE_SERVICE_PRINCIPAL: "{{ service_principal1.stdout }}"
           when: ansible_distribution == 'MacOSX'
 
+- name: Provisioning OCP cluster...
+  when: 'admin_task == "provision"'
+  block:
+    - name: Azure Service Principal
+      when: 'cloud == "google"'
+      block:
+        - name: Create Service Principal json from template
+          template:
+            src: "google-osServiceAccount.json.j2"
+            dest: "google-osServiceAccount.json"
+            backup: false
+
+        - name: Create Azure Service Principal base64 Linux
+          shell: "cat google-osServiceAccount.json | base64 -w 0"
+          register: service_account0
+          when: ansible_distribution != 'MacOSX'
+
+        - name: Create Azure Service Principal base64 MacOS
+          shell: "cat azure-osServicePrincipal.json | base64"
+          register: service_account1
+          when: ansible_distribution == 'MacOSX'
+
+        - name: Set Azure Service Principle Linux
+          set_fact:
+              GOOGLE_SERVICE_ACCOUNT: "{{ service_account0.stdout }}"
+          when: ansible_distribution != 'MacOSX'
+
+        - name: Set Azure Service Principle MacOS
+          set_fact:
+              GOOGLE_SERVICE_ACCOUNT: "{{ service_account1.stdout }}"
+          when: ansible_distribution == 'MacOSX'
+
+
     - name: create clusterdeployment CR based on template
       template:
         src: "{{ cloud }}-template.j2"
