@@ -33,8 +33,8 @@
 # Public ssh key. Typically from the VM your creating the cluster on
 "SSH_PUBLIC_KEY": '<public key>'
 
-# Domain where api and apps DNS entries will live
-"BASE_DOMAIN": "purple-chesterfield.com" # aws - purple-chesterfield.com, azure - green-chesterfield.com, vmware - purple-chesterfield.com, google - blue-chesterfield.com
+# Dynamically set in code, no need to set. Following is for your information only.
+"BASE_DOMAIN": " " # aws - purple-chesterfield.com, azure - green-chesterfield.com, vmware - purple-chesterfield.com, google - blue-chesterfield.com
 
 # What OCP version you want to install
 "OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.7.0-x86_64"
