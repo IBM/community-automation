@@ -1,12 +1,13 @@
 ---
-- name: Set AWS or VMware BASE_DOMAIN purple-chesterfield.com
-  set_fact:
-      BASE_DOMAIN: "purple-chesterfield.com"
-  when: 'cloud == "aws" or cloud == "vmware"'
-
 - name: Provisioning OCP cluster...
   when: 'admin_task == "provision"'
   block:
+
+    - name: Set AWS or VMware BASE_DOMAIN purple-chesterfield.com
+      set_fact:
+          BASE_DOMAIN: "purple-chesterfield.com"
+      when: 'cloud == "aws" or cloud == "vmware"'
+
     - name: Azure Service Principal
       when: 'cloud == "azure"'
       block:
@@ -40,9 +41,6 @@
           set_fact:
               BASE_DOMAIN: "green-chesterfield.com"
 
-- name: Provisioning OCP cluster...
-  when: 'admin_task == "provision"'
-  block:
     - name: Google Service Account
       when: 'cloud == "google"'
       block:
