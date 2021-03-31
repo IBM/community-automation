@@ -45,7 +45,7 @@
       when: 'cloud == "google"'
       block:
         - name: Create Google Service Account base64 MacOS
-          shell: "echo {{ CLUSTER_NAME }} | grep google; [[ $? -eq 0 ]] && { echo "Can not have \"google\" used in the cluster name!"; exit 1; }"
+          shell: "echo {{ CLUSTER_NAME }} | grep google; [[ $? -eq 0 ]] && { echo 'Can not have \"google\" used in the cluster name!'; exit 1; }"
 
         - name: Create Service Account json from template
           template:
