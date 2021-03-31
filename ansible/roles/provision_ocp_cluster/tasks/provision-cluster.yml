@@ -45,7 +45,7 @@
       when: 'cloud == "google"'
       block:
         - name: Check for the string google being used in the cluster name
-          shell: bash -lc 'echo {{ CLUSTER_NAME }} | grep google > /dev/null; if [[ $? -eq 0 ]]; then  echo "Can not have a cluster name with the string google in it!"; exit 1; fi'
+          shell: bash -lc 'echo {{ CLUSTER_NAME }} | grep google > /dev/null; if [[ $? -eq 0 ]]; then  echo "Cannot have a cluster name with the string google in it!"; exit 1; fi'
 
         - name: Create Service Account json from template
           template:
