@@ -9,6 +9,7 @@ fyre_ocp_inf_group: "ocp-clusters"
 fyre_inf_node_name: "{{ clusterName | lower }}-inf"
 fyre_site: "svl"
 fyre_ocptype: "ocp"
+ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}" 
 
 ocpPlatform: "x"
 
