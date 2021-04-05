@@ -12,6 +12,7 @@ def paramsList = [
     string(name: 'ocpVersion', defaultValue: "4.5.4"),
     string(name: 'clusterName', description: 'name of fyre cluster'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
+    string(name: 'ssh_key_file', defaultValue: "$HOME/.ssh/id_rsa.pub", description: 'public ssh key file')
     password(name: 'fyreapikey', description: 'fyre api key'),
     choice(name: 'ocptype', choices: ['ocpplus', 'ocp'], description: 'type of fyre ocp cluster')
   ]
@@ -27,7 +28,7 @@ timestamps {
       checkout scm
       stage('Stage 1') {
         sh """
-          cp ./ansible/request-ocp-fyre-play/examples/inventory ./ansible/request-ocp-fyre-play/; ansible-playbook -i ./ansible/request-ocp-fyre-play/inventory ./ansible/request-ocp-fyre-play/request-ocp-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapi}  -e clusterName=${params.clusterName} -e ocpVersion=${params.ocpVersion} -e fyre_ocptype=${params.ocptype} -vv
+          cp ./ansible/request-ocp-fyre-play/examples/inventory ./ansible/request-ocp-fyre-play/; ansible-playbook -i ./ansible/request-ocp-fyre-play/inventory ./ansible/request-ocp-fyre-play/request-ocp-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapi}  -e clusterName=${params.clusterName} -e ocpVersion=${params.ocpVersion} -e fyre_ocptype=${params.ocptype} -e ssh_key_file=${ssh_key_file} -vv
         """.stripIndent()
       }
    }
