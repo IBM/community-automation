@@ -40,7 +40,7 @@
 - name: create input json file
   no_log: "{{ noLog }}"
   copy:
-   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ stackName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ stackName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' } ] 'additional_disks':[{ 'size':'{{ disksizegb }}']} }"
+   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ stackName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ stackName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' }, 'additional_disks':[{ 'size':'{{ disksizegb }}' ]}] }"
    dest: "fyre.{{ stackName }}.json"
 
 - name: Create Fyre stack
