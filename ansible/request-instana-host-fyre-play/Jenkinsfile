@@ -26,7 +26,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false
+          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e stackName=${params.stackName}
         """.stripIndent()
       }
    }
