@@ -62,7 +62,7 @@
     return_content: yes
   changed_when: false
   register: cluster_status_response
-  until: (cluster_status_response.status == 200) and (cluster_status_response.json.clusters[0].deployment_status  =="deployed") or (cluster_status_response.json.clusters[0].deployment_status == "error")
+  until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "error")
   retries: 300
   delay: 20
 
