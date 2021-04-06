@@ -1,0 +1,15 @@
+---
+- hosts: fyreApi
+  roles:
+  - role: instana_fyrevm
+
+- hosts: instana
+  vars:
+  - ansible_user: root
+  roles:
+  - role: timezone
+
+- hosts: instana
+  roles:
+  - { role: vnc, when: vnc|bool }
+
