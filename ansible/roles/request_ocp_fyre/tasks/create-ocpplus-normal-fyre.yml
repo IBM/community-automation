@@ -11,7 +11,7 @@
         name : "{{ clusterName }}"
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
-        ssh_key: "{{ ssh_key_file }}"
+        ssh_key: "{{ ssh_public_key_file }}"
         worker:
           - count: "{{ fyre_worker_quantity }}"
             cpu: "{{ fyre_worker_cpu }}"

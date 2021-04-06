@@ -4,7 +4,7 @@
 - All possible params can be found in [role defaults](../roles/request_ocp_fyre/defaults/main.yml)
 - Will create an OCP 4.x cluster in fyre.
   - The `clusterName=` parm, name you want to give your cluster. Must be unique in fyre.
-  - The `ssh_key_file=` parm, reference to your public ssh key use to access the INF server.
+  - The `ssh_public_key_file=` parm, reference to your public ssh key use to access the INF server.
   - Using `fyre_ocptype=ocpplus` this will create a fyre `OCP+` 4.x cluster.
     - The `ocpVersion=` parm
       -  Set to the current versions available in the fyre.ibm.com GUI `OCP+` tab.
