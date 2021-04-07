@@ -18,7 +18,7 @@
             cpu: "{{ fyre_worker_cpu }}"
             memory: "{{ fyre_worker_memory }}"
             additional_disk:
-              - "{{ fyre_worker_additional_disk }}"
+              - "{{ fyre_worker_additional_disk | default(omit) }}"
         master:
           - count: "{{ fyre_master_quantity }}"
             cpu: "{{ fyre_master_cpu }}"
