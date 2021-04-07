@@ -15,6 +15,11 @@
  - A healthy Fyre OCP+Beta OpenShift 4.4.3 cluster or later in running state.
  - The OCP cluster must have 3 master nodes and at least 3 worker nodes.
  - You must have a fyre root password for your cluster to access the inf node with-in your OCP cluster.
+ - Each worker needs to have additional disks configure (/dev/vdb). The additional disk is what rook-ceph uses to allocate storage against.
+   - `GUI CLUSTERS:` By default using the OCP+ GUI (fyre.ibm.com) to create your cluster you will get a 200G /dev/vdb additional disk on each worker.
+   - `API CLUSTERS:`If using the OCP+ API to create your cluster be sure to have additional disks specified for your workers.
+     - "additional_disk": [ "200" ]
+
 
 ## Setting up inventory
 
