@@ -1,6 +1,6 @@
 # Provision OCP cluster
 
-This provisioning play is used to create OCP cluster on all cloud (AWS,vsphere, google, and azure).  This play is wrapper for openshift-hive.  It passes a request to an OCP cluster that is running the hive operator and contains all of the hive custom resources.  The role that supports this play is designed with ansibe templates, available samples are AWS and vSphere.
+This provisioning play is used to create OCP cluster on all cloud (AWS,vsphere, google, and azure).  This play is wrapper for openshift-hive.  It passes a request to an OCP cluster that is running the hive operator and contains all of the hive custom resources.  The role that supports this play is designed with ansibe templates, available samples are AWS, google, azure and vSphere.
 
 ## How to use
 
