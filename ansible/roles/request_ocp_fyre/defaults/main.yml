@@ -9,7 +9,8 @@ fyre_ocp_inf_group: "ocp-clusters"
 fyre_inf_node_name: "{{ clusterName | lower }}-inf"
 fyre_site: "svl"
 fyre_ocptype: "ocp"
-ssh_public_key_file: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}" 
+# this will read the value from the file, submitting the file does not work
+ssh_public_key: "{{ lookup('file','~/.ssh/id_rsa.pub') }}" 
 
 ocpPlatform: "x"
 
