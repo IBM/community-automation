@@ -12,7 +12,7 @@
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
         site: "{{fyre_site | default(omit)}}"
-        ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+        ssh_key: "{{ ssh_public_key_file }}"
         worker:
           - count: "{{ fyre_worker_quantity }}"
             cpu: "{{ fyre_worker_cpu }}"

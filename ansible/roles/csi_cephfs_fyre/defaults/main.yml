@@ -1,4 +1,5 @@
 ---
 cephfs_bastion_setup_dir: ~/setup-files/ceph-setup
-rook_cephfs_release: v1.4.7 #Rook-ceph release from https://github.com/rook/rook/releases
+rook_cephfs_release: v1.5.9  #Rook-ceph release from https://github.com/rook/rook/releases
 device_name: vdb
+default_sc: csi-cephfs
