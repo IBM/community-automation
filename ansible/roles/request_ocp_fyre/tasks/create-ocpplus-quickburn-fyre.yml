@@ -12,6 +12,7 @@
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
         ssh_key: "{{ ssh_public_key_file }}"
+        site: "{{fyre_site | default(omit)}}"
         quota_type: "quick_burn"
         size: "{{ quickburn_size }}"
         time_to_live: "{{ quickburn_ttl }}"

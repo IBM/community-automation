@@ -85,8 +85,8 @@
     body_format: json
   changed_when: false
   register: cluster_status_response
-  until: (cluster_status_response.status == 200) and (cluster_status_response.json[ clusterName ][0].status == "deployed") or (cluster_status_response.json[ clusterName ][0].status == "error")
-  retries: 300
+  until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "error")
+  retries: 600
   delay: 20
 
 - name: check for error status after loop check

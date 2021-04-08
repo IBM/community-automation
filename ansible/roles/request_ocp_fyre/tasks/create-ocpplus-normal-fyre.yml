@@ -11,13 +11,14 @@
         name : "{{ clusterName }}"
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
+        site: "{{fyre_site | default(omit)}}"
         ssh_key: "{{ ssh_public_key_file }}"
         worker:
           - count: "{{ fyre_worker_quantity }}"
             cpu: "{{ fyre_worker_cpu }}"
             memory: "{{ fyre_worker_memory }}"
             additional_disk:
-              - "{{ fyre_worker_additional_disk }}"
+              - "{{ fyre_worker_additional_disk | default(omit) }}"
         master:
           - count: "{{ fyre_master_quantity }}"
             cpu: "{{ fyre_master_cpu }}"
