@@ -32,9 +32,9 @@
           creds: 
             username: "{{ fyreuser }}" 
             api_key: "{{ fyreapikey }}"
-            public_key: "{{ ssh_public_key_file }}"
+            public_key: "{{ ssh_public_key }}"
         cluster_name : "{{ clusterName }}"
-        site: "{{fyre_site}}"
+        site: "{{ fyre_site }}"
         ocp_version: "{{ ocpVersion }}"
         master_quantity: "{{ fyre_master_quantity }}"
         master_cpu: "{{ fyre_master_cpu }}"

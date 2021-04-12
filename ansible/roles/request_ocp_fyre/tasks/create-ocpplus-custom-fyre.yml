@@ -25,7 +25,7 @@
       name : "{{ clusterName }}"
       platform: "{{ ocpPlatform }}"
       fips: "no"
-      ssh_key: "{{ ssh_public_key_file }}"
+      ssh_key: "{{ ssh_public_key }}"
       custom_ocp: "yes"
       site: "{{fyre_site | default(omit)}}"
       kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*kernel-x86_64.*') | list | first }}"
