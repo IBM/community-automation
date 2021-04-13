@@ -1,0 +1,9 @@
+---
+
+- hosts: all
+  vars:
+  - ansible_user: root
+  roles:
+  - role: db2_fyre
+  - { role: vnc, when: vnc|bool }
+
