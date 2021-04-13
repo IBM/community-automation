@@ -1,0 +1,19 @@
+---
+# Download from URL oav and deploy to vCenter
+
+- name: Add disk to virtaul machine by vm name
+  vmware_guest_disk:
+    hostname: '{{ vcenter_ip }}'
+    username: '{{ vcenter_uid }}'
+    password: '{{ vcenter_pw }}'
+    datacenter: '{{ vcenter_datacenter }}'
+    name: '{{ vm_name }}'
+    disk:
+      - size_gb: 500
+        type: thin
+        datastore: '{{ vcenter_datastore }}'
+        state: present
+        scsi_controller: 0
+        unit_number: 1
+        scsi_type: 'paravirtual'
+  register: create_vm

@@ -1,0 +1,7 @@
+---
+vcenter_ip: 9.37.222.18
+vcenter_uid: <administrator>@icovcpc65.rtp
+vcenter_pw: <pw>
+vcenter_datacenter: IOCDCPC1
+vcenter_datastore: ICOVCPC-RSX6-102
+vm_name: walt-test4-s6789-worker-j9gck
