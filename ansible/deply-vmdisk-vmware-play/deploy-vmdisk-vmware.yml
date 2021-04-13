@@ -2,4 +2,4 @@
 - name: Download ova and then deploy to vcenter
   hosts: bastion
   roles:
-  - deploy_ova_vmware
+  - deploy_vmdisk_vmware
