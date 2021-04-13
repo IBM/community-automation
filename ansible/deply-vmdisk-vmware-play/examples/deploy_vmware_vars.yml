@@ -1,0 +1,8 @@
+---
+#Download from URL to local file then deploy ova to vcenter
+vcenter_ip: "9.37.222.18" #vCenter IP
+vcenter_uid: "<UID>" #<vcenter uid>@icovcpc65.rtp vCenter login username
+vcenter_pw: "<pw>"  #vCenter login password
+vcenter_datacenter: "IOCDCPC1" #vCenter datacenter VM will live in
+vcenter_datastore: "ICOVCPC-RSX6-005" #vCenter datastore to put ova on
+local_target_folder: "~/ova_cp_folder" #<absolute path to local folder to copy ova into>
