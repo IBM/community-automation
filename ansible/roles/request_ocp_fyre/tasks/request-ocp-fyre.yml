@@ -156,12 +156,12 @@
   delegate_to: localhost
 
 - name: Add inf host to group
-  no_log: "True"
+  no_log: True
   add_host:
-    name: "{{fyre_inf_public_ip}}"
+    name: "{{ fyre_inf_public_ip }}"
     groups: "{{ fyre_ocp_inf_group }}"
     ansible_user: "root"
-    inf_public_ip: "{{fyre_inf_public_ip}}"
-    inf_root_password: "{{fyre_inf_root_password}}"
+    inf_public_ip: "{{ fyre_inf_public_ip }}"
+    inf_root_password: "{{ fyre_inf_root_password }}"
     clusterName: "{{ clusterName }}"
   changed_when: false
