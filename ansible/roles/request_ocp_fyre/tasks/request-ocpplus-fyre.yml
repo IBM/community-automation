@@ -100,10 +100,10 @@
 
 - name: Add inf host to group
   add_host:
-    name: "{{fyre_inf_public_ip}}"
+    name: "{{ fyre_inf_public_ip }}"
     groups: "{{ fyre_ocp_inf_group }}"
     ansible_user: "root"
-    inf_public_ip: "{{fyre_inf_public_ip}}"
+    inf_public_ip: "{{ fyre_inf_public_ip }}"
     clusterName: "{{ clusterName }}"
     kubeadmin_password: "{{ cluster_status_response.json.clusters[0].kubeadmin_password }}"
     ocp_access_url: "{{ cluster_status_response.json.clusters[0].access_url }}"
