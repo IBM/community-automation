@@ -27,7 +27,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          ansible-playbook -i .${params.stackName}, ./ansible/request-rhel-db2-fyre-play/db2.yml -e vnc=${params.enableVNC} -e noLog=false -e db2Archive=${params.db2Archive} -e db2responseFile=${params.db2responseFile}
+          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-db2-fyre-play/db2.yml -e vnc=${params.enableVNC} -e noLog=false -e db2Archive=${params.db2Archive} -e db2responseFile=${params.db2responseFile}
         """.stripIndent()
       }
    }
