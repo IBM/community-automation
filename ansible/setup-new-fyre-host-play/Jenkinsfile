@@ -27,6 +27,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
+	  export ANSIBLE_FORCE_COLOR=true
           cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e external_password_file=${params.external_password_file} -e regionTimeZone=${params.regionTimeZone} -e authorized_keys_url=${params.authorized_keys_url}
         """.stripIndent()
       }
