@@ -28,6 +28,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
+          export ANSIBLE_FORCE_COLOR=true
           ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-jmeter-fyre-play/jmeter-play.yml -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} 
         """.stripIndent()
       }
