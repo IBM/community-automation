@@ -9,7 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
-    string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
+    string(name: 'stackName', defaultValue: 'changeMyFQDNname', description: 'FQDN of the target DB2 host'),
     string(name: 'db2Archive', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/DB2S_11.5.4_MPML.tar.gz',description: 'url of source db2 ce archive'),
     string(name: 'db2responseFile', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/db2serverv11.5.rsp',description: 'url of source db2 ce response file'),
     booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on db2 host')
