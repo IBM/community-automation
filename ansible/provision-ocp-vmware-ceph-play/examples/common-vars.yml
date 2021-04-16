@@ -10,9 +10,6 @@
 # Provision or delete cluster
 "admin_task": "provision" # delete|provision
 
-# What type of cloud to create?
-"cloud": "aws"  # aws|google|azure|vsphere (AWS only at the moment)
-
 # Public ssh key. Typically from the VM your creating the cluster on
 "SSH_PUBLIC_KEY": '<public key>'
 
