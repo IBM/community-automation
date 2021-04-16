@@ -1,7 +1,7 @@
 ---
-vcenter_ip: 9.37.222.18
-vcenter_uid: <administrator>@icovcpc65.rtp
-vcenter_pw: <pw>
-vcenter_datacenter: IOCDCPC1
-vcenter_datastore: ICOVCPC-RSX6-102
-vm_name: walt-test4-s6789-worker-j9gck
+#"VCENTER_SERVER": "<vCenter dns name like xxxxxx.rtp.raleigh.ibm.com>"
+#"VCENTER_ADMIN_USER": "<vcenter_admin like xxxx@icovcpc65.rtp>"
+#"VCENTER_PASSWORD": '<password>'
+#"VCENTER_DATACENTER": "<vcenter datacenter like IOCDCPC1>"
+#"VCENTER_DATASOURCE": "<vcenter datasource like ICOVCPC-RSX6-101>"
+local_target_folder: "~/ova_cp_folder" #<absolute path to local folder to copy ova into>

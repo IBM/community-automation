@@ -1,0 +1,102 @@
+---
+- name: Provision OCP Cluster from hive
+  hosts: hive_instance
+  vars:
+    cloud: vsphere
+
+  vars_files:
+    - common-vars.yml
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    # used to login into RHACM/HIVE cluster
+    - role: oc_client_install
+
+    - role: ocp_login
+
+    - role: aws_route53
+      when: 'admin_task != "delete"'
+
+    - role: provision_ocp_cluster
+
+  tasks:
+
+    - name: Get admin password for kubeadmin
+      shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ CLUSTER_NAME }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
+      register: kubeadmin_pw
+      when: 'admin_task != "delete"'
+
+    - debug: msg="{{ kubeadmin_pw.stdout }}"
+      when: 'admin_task != "delete"'
+
+    - name: Get openshift console url
+      shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }'"
+      register: console_url
+      when: 'admin_task != "delete"'
+
+    - debug: msg="{{ console_url.stdout }}"
+      when: 'admin_task != "delete"'
+
+    - name: Creat new inventory host (ocp_claimed_cluster) and add vmware cluster
+      no_log: "True"
+      add_host:
+        name: "{{ console_url.stdout.split('.')[2] }}"
+        groups: "ocp_claimed_cluster"
+        ansible_connection: "local"
+        ansible_python_interpreter: "/usr/bin/python3"
+        kubeadmin_password: "{{ kubeadmin_pw.stdout }}"
+        kubeadmin_user: "kubeadmin"
+        ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+        cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+        admin_task: "claim"
+      changed_when: false
+      when: 'admin_task != "delete"'
+
+    - set_fact:
+        route_task: "delete"
+      when: 'admin_task == "delete"'
+
+    - name: Run aws_route53 delete - vsphere only
+      include_role:
+        name: aws_route53
+      when: 'route_task == "delete"'
+
+    - name: logout of hive hub
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+
+
+- name: "Using new host connect to new vmware cluster"
+  hosts: ocp_claimed_cluster
+  gather_facts: yes
+  vars:
+    device_name: sdb
+
+  vars_files:
+    vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+
+    - role: ocp_login # claimed cluster login
+      when: admin_task != "delete"
+
+    - role: deploy_vmdisk_vmware
+      when: admin_task != "delete"
+
+#    - role: csi_cephfs
+#      when: admin_task != "delete"
+
+  tasks:
+
+    - name: logout of cluster
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+      when: admin_task != "delete"
