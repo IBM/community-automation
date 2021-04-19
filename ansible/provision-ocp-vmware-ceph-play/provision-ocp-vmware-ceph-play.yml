@@ -22,6 +22,8 @@
 
     - role: provision_ocp_cluster
 
+    - role: ocp_login
+
   tasks:
 
     - name: Get admin password for kubeadmin
@@ -33,7 +35,7 @@
       when: 'admin_task != "delete"'
 
     - name: Get openshift console url
-      shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }'"
+      shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }' -n {{ CLUSTER_NAME }}"
       register: console_url
       when: 'admin_task != "delete"'
 

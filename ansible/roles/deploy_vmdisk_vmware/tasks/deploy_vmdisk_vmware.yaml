@@ -12,7 +12,7 @@
     datacenter: '{{ VCENTER_DATACENTER }}'
     name: '{{ item }}'
     disk:
-      - size_gb: {{ WORKER_DISK2_SIZE }}
+      - size_gb: "{{ WORKER_DISK2_SIZE }}"
         type: thin
         datastore: '{{ VCENTER_DATASOURCE }}'
         state: present
