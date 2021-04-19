@@ -172,3 +172,18 @@
      - "Cluster API: api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
      - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
   when: 'admin_task == "provision"'
+
+- name: Creat new inventory host (ocp_provisioned_cluster)
+  no_log: "True"
+  add_host:
+    name: "{{ console_url.stdout.split('.')[2] }}"
+    groups: "ocp_provisioned_cluster"
+    ansible_connection: "local"
+    ansible_python_interpreter: "/usr/bin/python3"
+    kubeadmin_password: "{{ kubeadmin_password.stdout }}"
+    kubeadmin_user: "kubeadmin"
+    ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+    cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+    admin_task: "provision"
+  changed_when: false
+  when: 'admin_task == "provision"'
