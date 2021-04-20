@@ -34,4 +34,4 @@
 
 - name: Viewing gather disk info log
   debug:
-    msg: "{{ vm_info }}"
+    msg: "{{ vm_info | list }}"
