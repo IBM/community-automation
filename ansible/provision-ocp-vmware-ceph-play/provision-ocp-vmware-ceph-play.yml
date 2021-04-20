@@ -51,7 +51,7 @@
   gather_facts: yes
   vars:
     device_name: sdb
-    LABEL: "content: build"
+
 
   vars_files:
     vsphere-vars.yml
