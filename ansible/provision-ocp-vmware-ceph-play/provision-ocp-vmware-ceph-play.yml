@@ -28,7 +28,7 @@
   tasks:
 
     - name: Display cluster details
-      command: cat cluster_details.log
+      command: cat {{ CLUSTER_NAME }}_details.log
       register: cluster_details
       when: 'admin_task == "provision"'
 

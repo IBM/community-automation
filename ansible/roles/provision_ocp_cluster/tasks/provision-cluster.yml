@@ -154,7 +154,7 @@
 
 - name: create output details
   lineinfile:
-    path: "{{ console_url.stdout.split('.')[2] }}_details.log"
+    path: "{{ CLUSTER_NAME }}_details.log"
     line: "{{ item }}"
     create: yes
     mode: 0755
