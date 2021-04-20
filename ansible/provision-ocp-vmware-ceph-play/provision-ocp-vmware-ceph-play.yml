@@ -38,8 +38,10 @@
 - name: "Using new host connect to new vmware cluster"
   hosts: ocp_provisioned_cluster
   gather_facts: yes
+  when: admin_task != "delete"'
   vars:
     device_name: sdb
+    LABEL: "content: build"
 
   vars_files:
     vsphere-vars.yml
