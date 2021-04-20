@@ -5,7 +5,7 @@
   - role: request_ocp_fyre
 
 - name: Install csi-cephfs and then common services onto OCP+Beta Fyre cluster
-  hosts: ocp-clusters
+  hosts: ocpClusters
   gather_facts: false
   roles:
   - role: git_install_fyre
