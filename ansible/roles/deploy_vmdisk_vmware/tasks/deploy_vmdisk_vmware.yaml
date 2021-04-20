@@ -5,7 +5,7 @@
   register: worker_nodes
 
 - name: Add disk to virtaul machine by vm name
-  vmware_guest_disk:
+  community.vmware.vmware_guest_disk:
     hostname: '{{ VCENTER_SERVER }}'
     username: '{{ VCENTER_ADMIN_USER }}'
     password: '{{ VCENTER_PASSWORD }}'
@@ -23,7 +23,7 @@
   register: create_vm
 
 - name: Gather disk info by vm name
-  vmware_guest_disk_info:
+  community.vmware.vmware_guest_disk_info:
     hostname: '{{ VCENTER_SERVER }}'
     username: '{{ VCENTER_ADMIN_USER }}'
     password: '{{ VCENTER_PASSWORD }}'

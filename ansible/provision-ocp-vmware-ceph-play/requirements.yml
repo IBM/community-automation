@@ -8,3 +8,5 @@
         source: https://galaxy.ansible.com
       - name: google.cloud
         source: https://galaxy.ansible.com
+      - name: community.vmware
+        source: https://galaxy.ansible.com
