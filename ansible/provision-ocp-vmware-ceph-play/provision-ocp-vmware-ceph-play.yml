@@ -3,6 +3,7 @@
   hosts: hive_instance
   vars:
     cloud: vsphere
+    device_name: sdb
 
   vars_files:
     - common-vars.yml
