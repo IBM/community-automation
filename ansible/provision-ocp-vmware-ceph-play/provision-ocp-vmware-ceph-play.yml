@@ -4,6 +4,7 @@
   vars:
     cloud: vsphere
     device_name: sdb
+    LABEL: "content: build"
 
   vars_files:
     - common-vars.yml
