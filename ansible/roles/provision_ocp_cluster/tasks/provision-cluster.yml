@@ -165,12 +165,17 @@
   register: logout_results
   ignore_errors: yes
 
-- debug:
-    msg:
-     - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
-     - "OCP Admin Console: {{ console_url.stdout }}"
-     - "Cluster API: api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
-     - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
+- name: create output details
+  lineinfile:
+    path: "{{ console_url.stdout.split('.')[2] }}_details.log"
+    line: "{{ item }}"
+    create: yes
+    mode: 0755
+  with_items:
+    - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
+    - "OCP Admin Console: {{ console_url.stdout }}"
+    - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+    - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
   when: 'admin_task == "provision"'
 
 - name: Creat new inventory host (ocp_provisioned_cluster)

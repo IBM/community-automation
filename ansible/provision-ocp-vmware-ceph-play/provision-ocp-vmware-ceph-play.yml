@@ -26,6 +26,16 @@
 
   tasks:
 
+    - name: Display cluster details
+      command: cat cluster_details.log
+      register: cluster_details
+      when: 'admin_task == "provision"'
+
+    - name: Print details
+      debug:
+        msg: "{{ cluster_details.stdout }}"
+      when: 'admin_task == "provision"'
+
     - set_fact:
         route_task: "delete"
       when: 'admin_task == "delete"'
@@ -38,7 +48,7 @@
 - name: "Using new host connect to new vmware cluster"
   hosts: ocp_provisioned_cluster
   gather_facts: yes
-  when: admin_task != "delete"'
+  when: 'admin_task != "delete"'
   vars:
     device_name: sdb
     LABEL: "content: build"
@@ -52,13 +62,13 @@
   roles:
 
     - role: ocp_login # claimed cluster login
-      when: admin_task != "delete"
+      when: 'admin_task != "delete"'
 
     - role: deploy_vmdisk_vmware
-      when: admin_task != "delete"
+      when: 'admin_task != "delete"'
 
     - role: csi_cephfs
-      when: admin_task != "delete"
+      when: 'admin_task != "delete"'
 
   tasks:
 
@@ -66,4 +76,4 @@
       shell: "oc logout"
       register: logout_results
       ignore_errors: yes
-      when: admin_task != "delete"
+      when: 'admin_task != "delete"'
