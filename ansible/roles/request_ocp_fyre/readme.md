@@ -14,7 +14,7 @@ Will it is expected to run on a host with the following hostvars set in inventor
 The role expects to be supplied:
  - clusterName
  - ocpVersion
- - fyre_ocp_inf_group (optional: defaults to 'ocp-clusters')
+ - fyre_ocp_inf_group (optional: defaults to 'ocpClusters')
  - fyre_site (optional: defaults to svl)
 
 
