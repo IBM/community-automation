@@ -4,12 +4,12 @@
   shell: "oc get no | tr -s ' ' | cut -f1 -d' ' | grep worker | wc -l"
   register: num_worker_nodes
 
-- name: Ingress router Get number of worker nodes
+- name: Ingress router worker node setup
   shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch \"{\"spec\":{\"replicas\": {{ num_worker_nodes.stdout }} }}\" --type=merge"
   args:
       warn: false
   register: ingress_routes
 
-- name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
+- name: Viewing ingress router worker node setup
   debug:
     msg: "{{ ingress_routes.stdout_lines }}"
