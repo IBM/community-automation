@@ -10,10 +10,13 @@
     dest: "ingress-router-patch.json"
     backup: false
     mode: 0755
-  register: template_result
 
-- name: Ingress router worker node setup
-  shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch $(cat ingress-router-patch.json) --type=merge"
+- name: cat json patch
+  shell: "cat ingress-router-patch.json"
+  register: router_json
+
+- name: Patch ingress router to be enabled on all worker nodes
+  shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch '{{ router_json.stdout }}' --type=merge"
   args:
       warn: false
   register: ingress_routes

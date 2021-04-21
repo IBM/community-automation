@@ -5,7 +5,8 @@ items:
   metadata:
     creationTimestamp: null
     labels:
-      hive.openshift.io/hiveutil-created: "true"
+      hive.openshift.io/hiveutil-created: "true",
+      {{ LABEL }}
     name: {{ CLUSTER_NAME }}
     namespace: {{ CLUSTER_NAME }}
   spec:
@@ -33,8 +34,6 @@ items:
         name: {{ CLUSTER_NAME }}-install-config
     pullSecretRef:
       name: {{ CLUSTER_NAME }}-pull-secret
-    labels:
-      {{ LABEL | default(omit) }}
   status: {}
 - apiVersion: hive.openshift.io/v1
   kind: MachinePool
