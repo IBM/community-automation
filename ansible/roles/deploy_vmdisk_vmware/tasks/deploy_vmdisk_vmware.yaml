@@ -21,17 +21,3 @@
         scsi_type: 'paravirtual'
   with_items: "{{ worker_nodes.stdout_lines }}"
   register: create_vm
-
-- name: Gather disk info by vm name
-  community.vmware.vmware_guest_disk_info:
-    hostname: '{{ VCENTER_SERVER }}'
-    username: '{{ VCENTER_ADMIN_USER }}'
-    password: '{{ VCENTER_PASSWORD }}'
-    datacenter: '{{ VCENTER_DATACENTER }}'
-    name: '{{ item }}'
-  with_items: "{{ worker_nodes.stdout_lines }}"
-  register: vm_info
-
-- name: Viewing gather disk info log
-  debug:
-    msg: "{{ vm_info }}"
