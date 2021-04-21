@@ -17,6 +17,17 @@
     - role: ocp_cluster_tag
       when: 'admin_task == "provision" and cloud != "vsphere" and cloud != "google"'
   tasks:
+
+    - name: Display cluster details
+      command: cat {{ CLUSTER_NAME }}_details.log
+      register: cluster_details
+      when: 'admin_task == "provision"'
+
+    - name: Print details
+      debug:
+        msg: "{{ cluster_details.stdout }}"
+      when: 'admin_task == "provision"'
+
     - set_fact:
         route_task: "delete"
       when: 'cloud == "vsphere" and admin_task == "delete"'
