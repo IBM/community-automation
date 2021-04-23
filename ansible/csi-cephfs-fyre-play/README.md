@@ -54,6 +54,26 @@ or set new default storageclass to something other than csi-cephfs
 ```
 ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "default_sc=rook-cephfs"
 ```
+
+or pass Docker registry authentication. Note that the `registry` variable must be specified in order for the playbook to setup the 
+ImagePullSecret.
+```
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "registry=docker.io registry_user=MYUSER registry_pwd=MYPASSWORD"
+```
+Additionally if you have special characters in your variables (as is common with passwords) consider using a JSON or YAML file and 
+referencing it as below
+```
+ansible-playbook  -i inventory csi-cephfs.yml --extra-vars "@registry.json"
+```
+`registry.json`:
+```
+{
+  "registry": "docker.io",
+  "registry_user": "MYUSER",
+  "registry_pwd": "MYPASSWORD"
+}
+```
+
 License
 -------
 

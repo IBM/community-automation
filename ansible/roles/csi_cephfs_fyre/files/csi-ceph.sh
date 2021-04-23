@@ -2,6 +2,9 @@
 rookRelease=$1
 device=$2
 new_default_sc=$3
+registry=$4
+registry_user=$4
+registry_pwd=$5
 
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
@@ -29,6 +32,21 @@ fi
 echo "Doing common.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
 echo "common.yaml exit $?"
+
+echo "Setting up Docker registry image pull secrets"
+if [[ -z $registry ]]; then
+  echo "Using unauthenticated Docker registry pulls. Skipping ServiceAccount patching"
+else 
+  echo "Creating image pull secret for $registry and patching rook-ceph ServiceAccounts"
+  oc project rook-ceph
+  oc -n rook-ceph create secret docker-registry dockerhub-secret --docker-server=$registry --docker-username=$registry_user --docker-password=$registry_pwd --docker-email=unused
+  oc patch serviceaccount default -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+  oc patch serviceaccount rook-ceph-system -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+  oc patch serviceaccount rook-ceph-mgr -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+  oc patch serviceaccount rook-ceph-osd -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+fi
+echo "setup Docker registry image pull secrets exit"
+
 echo "Doing operator-openshift.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/operator-openshift.yaml
 echo "operator-openshift.yaml exit $?"
