@@ -44,6 +44,7 @@ else
   oc patch serviceaccount rook-ceph-system -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
   oc patch serviceaccount rook-ceph-mgr -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
   oc patch serviceaccount rook-ceph-osd -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+  oc patch serviceaccount rook-ceph-cmd-reporter -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
 fi
 echo "setup Docker registry image pull secrets exit"
 
