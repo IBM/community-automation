@@ -3,8 +3,8 @@ rookRelease=$1
 device=$2
 new_default_sc=$3
 registry=$4
-registry_user=$4
-registry_pwd=$5
+registry_user=$5
+registry_pwd=$6
 
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
