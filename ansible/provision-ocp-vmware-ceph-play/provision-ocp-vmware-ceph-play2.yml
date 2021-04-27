@@ -1,0 +1,36 @@
+---
+
+- name: "Using new host connect to new vmware cluster"
+  hosts: ocp_provisioned_cluster
+  gather_facts: yes
+  vars:
+    device_name: sdb
+
+  vars_files:
+    - common-vars.yml
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+
+    - role: ocp_login # claimed cluster login
+      when: 'admin_task != "delete"'
+
+    - role: deploy_ingress_router_vmware
+      when: 'admin_task != "delete"'
+
+    - role: deploy_vmdisk_vmware
+      when: 'admin_task != "delete"'
+
+    - role: csi_cephfs
+      when: 'admin_task != "delete"'
+
+  tasks:
+
+    - name: logout of cluster
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+      when: 'admin_task != "delete"'
