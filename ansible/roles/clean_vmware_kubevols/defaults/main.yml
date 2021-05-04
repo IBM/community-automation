@@ -1,0 +1,12 @@
+---
+
+"CLUSTER_NAME"="<cluster_name>"
+"VCENTER_SERVER"="<vcenter_server>"
+"VCENTER_ADMIN_USER"="<vcenter_user>"
+"VCENTER_PASSWORD"='<vcenter_password>'
+"VCENTER_DATASOURCE"="<vsphere_datastore_name>"
+"VCENTER_DATACENTER"="<vsphere_datacenter_name>"
+# GOVC info
+"GOVC_VERS"="0.21.0"
+"GOVC_DWLD"="govc_linux_amd64.gz"
+"GOVC_PRQ"="vmware"

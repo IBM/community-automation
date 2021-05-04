@@ -4,4 +4,4 @@
 #"VCENTER_PASSWORD": '<password>'
 #"VCENTER_DATACENTER": "<vcenter datacenter like IOCDCPC1>"
 #"VCENTER_DATASOURCE": "<vcenter datasource like ICOVCPC-RSX6-101>"
-local_target_folder: "~/ova_cp_folder" #<absolute path to local folder to copy ova into>
+local_target_folder: "~/ingress_router_cp_folder" #<absolute path to local folder to copy ova into>

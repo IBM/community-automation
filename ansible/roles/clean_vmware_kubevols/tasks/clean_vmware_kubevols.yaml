@@ -1,0 +1,18 @@
+---
+# Download from URL oav and deploy to vCenter
+- name: Populate clean kubevols template
+  template:
+    src: "ocp_clean_kubvols.sh.j2"
+    dest: "ocp_clean_kubevols.sh"
+    backup: false
+    mode: 0755
+
+- name: Clean kubevols for cluster {{ CLUSTER_NAME }}
+  shell: bash -lc "ocp_clean_kubevols.sh"
+  args:
+      warn: false
+  register: kubevols
+
+- name: Viewing kubevols cleanup for cluster {{ CLUSTER_NAME }}
+  debug:
+    msg: "{{ kubevols.stdout_lines }}"

@@ -1,0 +1,37 @@
+#!/bin/bash
+
+path=$(cut -f1 -d':' <<< $PATH)
+mkdir -p $path
+
+echo "[INFO] Begin Query/Delete of orphaned dynamic PVCs for {{ CLUSTER_NAME }"
+
+echo "[INFO] Begin download:  http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ GOVC_PRQ }}/{{ GOVC_VERS }}/{{ GOVC_DWLD }}"
+rm "{{ GOVC_DWLD }}" 2>/dev/null || true
+wget  --progress=dot:giga  --timeout=60  --tries=2 -nv http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ GOVC_PRQ }}/{{ GOVC_VERS }}/{{ GOVC_DWLD }}
+# shellcheck disable=SC2015
+[[ ! -f {{ GOVC_DWLD }} ]] && { echo "[ERROR] Failed to download prereq: {{ GOVC_DWLD }} " ; return 1 ; } || echo "[INFO] completed download:  http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ GOVC_PRQ }}/{{ GOVC_VERS }}/{{ GOVC_DWLD }}"
+rm "$path"/govc  "$(cut -f1 -d'.' <<< {{ GOVC_DWLD }})" 2>/dev/null || true
+gzip -d "{{ GOVC_DWLD }}"
+chmod +x "$(cut -f1 -d'.' <<< {{ GOVC_DWLD }})"
+sudo mv "$(cut -f1 -d'.' <<< {{ GOVC_DWLD }})" "$path"/govc
+govc version | xargs -i echo "[GOC version] {}"
+
+export GOVC_INSECURE=true
+export GOVC_USERNAME={{ VCENTER_ADMIN_USER }}
+export GOVC_URL={{ VCENTER_SERVER }}
+export GOVC_PASSWORD={{ VCENTER_PASSWORD }}
+
+#echo "Run test  govc from vCenter. List kubevols"
+#govc datastore.ls -dc=$vsphere_dc_name -ds=$vsphere_ds_name /kubevols/*
+
+echo "[INFO] Start Query for kubevols/{{ CLUSTER_NAME }} from DC {{ VCENTER_DATACENTER }} and DS {{ VCENTER_DATASOURCE }}"
+govc datastore.ls -dc={{ VCENTER_DATACENTER }} -ds={{ VCENTER_DATASOURCE }} /kubevols/{{ CLUSTER_NAME }}*-dynamic-pvc-*.vmdk >> /dev/null
+rc=$?
+if [[ $rc -eq 0 ]]; then
+  echo "[INFO] Begin delete of orphnaed dynamic PCVs"
+  govc datastore.ls -dc={{ VCENTER_DATACENTER }} -ds={{ VCENTER_DATASOURCE }} /kubevols/{{ CLUSTER_NAME }}*-dynamic-pvc-*.vmdk | egrep -v flat.vmdk | xargs -i -t govc datastore.rm -dc={{ VCENTER_DATACENTER }} -ds={{ VCENTER_DATASOURCE }} -f /kubevols/{}
+else
+  echo "[INFO] No orphaned PVCs found to clean after cluster destroyed"
+fi
+rm -f $path/govc
+echo "[INFO] Done with Query/Delete of orphaned dynamic PVCs for {{ CLUSTER_NAME }}"
