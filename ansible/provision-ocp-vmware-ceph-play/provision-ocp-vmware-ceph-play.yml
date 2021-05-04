@@ -45,3 +45,8 @@
       include_role:
         name: aws_route53
       when: 'route_task == "delete"'
+
+    - name: Clean kubevols - vsphere only
+      include_role:
+        name: clean_vmware_kubevols
+      when: 'route_task == "delete"'
