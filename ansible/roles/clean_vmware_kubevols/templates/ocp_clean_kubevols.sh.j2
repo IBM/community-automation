@@ -19,7 +19,7 @@ govc version | xargs -i echo "[GOC version] {}"
 export GOVC_INSECURE=true
 export GOVC_USERNAME={{ VCENTER_ADMIN_USER }}
 export GOVC_URL={{ VCENTER_SERVER }}
-export GOVC_PASSWORD={{ VCENTER_PASSWORD }}
+export GOVC_PASSWORD='{{ VCENTER_PASSWORD }}'
 
 #echo "Run test  govc from vCenter. List kubevols"
 #govc datastore.ls -dc=$vsphere_dc_name -ds=$vsphere_ds_name /kubevols/*
