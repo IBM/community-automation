@@ -1,0 +1,15 @@
+---
+# specific OS supports wildcards, if preceded with @ its a group
+- name: remove current instana packages
+  become: yes
+  ignore_errors: yes
+  yum:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - "instana-agent-dynamic"
+   - "instana-agent-dynamic-j9"
+   - "instana-agent-static"
+   - "instana-agent-static-j9"

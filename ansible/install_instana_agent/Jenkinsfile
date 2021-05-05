@@ -1,0 +1,34 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
+    string(name: 'fyreuser', description: 'username for accessing fyre api'),
+    password(name: 'fyreapikey', description: 'fyre api key'),
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'kube_pod_slave' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          set +x # hide sensitive info being echo'd to log
+          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e stackName=${params.stackName}
+        """.stripIndent()
+      }
+   }
+  }
+}

@@ -1,0 +1,14 @@
+---
+# specific OS supports wildcards
+- name: remove extraneous packages
+  become: yes
+  ignore_errors: yes
+  zypper:
+   name: "{{ packages }}"
+   state: absent
+  vars:
+   packages:
+   - "instana-agent-dynamic"
+   - "instana-agent-dynamic-j9"
+   - "instana-agent-static"
+   - "instana-agent-static-j9"

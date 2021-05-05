@@ -1,0 +1,10 @@
+---
+### "ansible_architecture": "s390x",
+### "ansible_architecture": "ppc64le",
+### "ansible_architecture": "x86_64",
+### "ansible_architecture": "chrp", --- AIX
+- include_tasks: stop.yml
+- include_tasks: remove_package.yml
+### remove OS packages
+- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
+- include_tasks: "install_agent.{{ ansible_architecture }}.yml"

@@ -1,0 +1,32 @@
+---
+- name: check if instana is installed
+  stat:
+   path: "{{ instana_dir_custom }}/bin/stop"
+  register: isInstana
+
+- block:
+  - name: stop any instana agents running
+    command: "{{ instana_dir_custom }}/bin/stop"
+    register: istop
+    become: yes
+
+  - name: Instana stop
+    debug:
+     msg: "{{ istop.stdout_lines }}"
+  when: isInstana.stat.exists == True
+
+- name: check if instana is installed
+  stat:
+   path: "{{ instana_dir_normal }}/bin/stop"
+  register: isInstana
+
+- block:
+  - name: stop any instana agents running
+    command: "{{ instana_dir_normal }}/bin/stop"
+    become: yes
+    register: istop
+
+  - name: Instana stop
+    debug:
+     msg: "{{ istop.stdout_lines }}"
+  when: isInstana.stat.exists == True

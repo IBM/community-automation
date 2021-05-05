@@ -1,0 +1,9 @@
+---
+- name: install custom Instana archive
+  unarchive:
+    src: "{{ custom_agent_url }}/instana-agent-{{ ansible_architecture }}.tar.gz"
+    dest: /opt
+  become: yes
+  register: isInstana
+- debug:
+   msg: "{{isInstana.stdout.lines}}"
