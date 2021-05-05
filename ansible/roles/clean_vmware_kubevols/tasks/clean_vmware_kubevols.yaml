@@ -2,7 +2,7 @@
 # Download from URL oav and deploy to vCenter
 - name: Populate clean kubevols template
   template:
-    src: "ocp_clean_kubvols.sh.j2"
+    src: "ocp_clean_kubevols.sh.j2"
     dest: "ocp_clean_kubevols.sh"
     backup: false
     mode: 0755
