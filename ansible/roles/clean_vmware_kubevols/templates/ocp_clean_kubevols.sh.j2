@@ -3,7 +3,7 @@
 path=$(cut -f1 -d':' <<< $PATH)
 mkdir -p $path
 
-echo "[INFO] Begin Query/Delete of orphaned dynamic PVCs for {{ CLUSTER_NAME }"
+echo "[INFO] Begin Query/Delete of orphaned dynamic PVCs for {{ CLUSTER_NAME }}"
 
 echo "[INFO] Begin download:  http://rchgsa.ibm.com/projects/c/cloud-prereq/{{ GOVC_PRQ }}/{{ GOVC_VERS }}/{{ GOVC_DWLD }}"
 rm "{{ GOVC_DWLD }}" 2>/dev/null || true
