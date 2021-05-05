@@ -14,7 +14,7 @@
     mode: '0755'
 
 - name: Install csi-cephfs
-  shell: "csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }}"
+  shell: "rm -rf rook; csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }}"
   args:
       warn: false
   register: cephinstall
