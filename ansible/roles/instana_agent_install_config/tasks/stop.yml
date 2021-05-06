@@ -9,7 +9,8 @@
     command: "{{ instana_dir_custom }}/bin/stop"
     register: istop
     become: yes
-
+    ignore_errors: yes
+    no_log: True
   - name: Instana stop
     debug:
      msg: "{{ istop.stdout_lines }}"
@@ -25,7 +26,8 @@
     command: "{{ instana_dir_normal }}/bin/stop"
     become: yes
     register: istop
-
+    ignore_errors: yes
+    no_log: True
   - name: Instana stop
     debug:
      msg: "{{ istop.stdout_lines }}"

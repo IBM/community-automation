@@ -3,7 +3,11 @@
   unarchive:
     src: "{{ custom_agent_url }}/instana-agent-{{ ansible_architecture }}.tar.gz"
     dest: /opt
+    remote_src: yes
   become: yes
+- name: start the agent
+  become: yes
+  command: "{{ instana_dir_custom }}/bin/start"
   register: isInstana
 - debug:
-   msg: "{{isInstana.stdout.lines}}"
+   msg: "{{ isInstana.stdout_lines }}"

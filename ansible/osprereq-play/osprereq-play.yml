@@ -2,6 +2,7 @@
 
 - hosts: all
   gather_facts: true
-  become: yes
+  vars:
+  - ansible_user: root
   roles:
   - role: osprereqs

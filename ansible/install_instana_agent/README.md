@@ -1,15 +1,30 @@
-# Ansible Playbook for creating an Ubuntu 18.04 Instana hosted instance host on Fyre
+# Ansible Playbook for installing Instana agents 
 
 ## Assumptions:
 
- - You have capacity in fyre
- - Fyre is online
+- Instana hosting server
+
+- Instana support for ppc64le / aix / s390x is a tar.gz.  This playbook presumes that a custom package has been created where inside the package is an OS supported jvm in : ./instana-agent/jvm/ or a working jvm in the path on the target host
+
+-- custom package naming compatible with the ansible arch naming:
+
+```
+
+instana-agent-x86_64.tar.gz
+instana-agent-ppc64le.tar.gz
+instana-agent-s390x.tar.gz
+instana-agent-chrp.tar.gz
+
+```
+
+
+## Restrictions:
+
+- Does not support Windoze
 
 ## Setting up inventory
 
-- From the `request-instana-fyre-play` directory copy the sample inventory file at `examples/inventory` to the  current directory.
-- Modify `fyreuser` variable in the `inventory` file with the name of your fyre user (see https://fyre.ibm.com/account).
-- Modify `fyreapikey` variable in the `inventory` file  with your fyre api key (see https://fyre.ibm.com/account).
+- From the `install_instana_agent` directory copy the sample inventory file at `examples/inventory` to the  current directory.
 
 ```
 cp examples/inventory .
@@ -17,33 +32,10 @@ cp examples/inventory .
 
 ## Run playbook
 
-The playbook/role supports a single Intel Fyre vm with 16cpu/64gb Ubuntu 18.04.  The stack name is randomly chosen unless overridden
-
-e.g. -e stackName=test-instana
-
-
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
 ansible-playbook  -i inventory request-instana-fyre-play.yml 
+ansible-playbook -i inventory install_instana_agent.yml -e instana_host_port=my-instana.com:myport -e agent_key=yourAgentKey -e custom_agent_url=http://yourcustompackagehost.com/opt/custompackage/instana
 
-or
-
-ansible-playbook  -i inventory request-instana-fyre-play.yml -e stackName=instana -e noLog=false 
 ```
-
-To disable vnc server install ( takes around 8 minutes ) add
-``` 
--e vnc=False
-```
-
-## Access the command line
-
-Once the stack is created, ssh root@stackname_FQDN 
-
-There is an additional disk 1024GB 
-
-## Access vnc 
-
-One can also vncviewer stackname_FQDN:5901
-password is : vncPassw0rd

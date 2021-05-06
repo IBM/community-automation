@@ -9,9 +9,10 @@ def jobProps = [
 ]
 
 def paramsList = [
-    string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
-    string(name: 'fyreuser', description: 'username for accessing fyre api'),
-    password(name: 'fyreapikey', description: 'fyre api key'),
+    string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
+    string(name: 'instana_host_port', defaultValue: 'changeMyInstanaHost:port', description: 'Instana host:port'),
+    string(name: 'agent_key', defaultValue: 'changeMyagentKey', description: 'Instana agent key'),
+    string(name: 'custom_agent_url', defaultValue: 'changeMyCustomAgentUrl', description: 'Url to custom agent packages for s390x/ppc64le/AIX'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -26,7 +27,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e stackName=${params.stackName}
+          ansible-playbook -i ${params.osnames}, ./ansible/install_instana_agent/install_instana_agent.yml -e instana_host_port=${params.instana_host_port} -e agent_key=${params.agent_key} -e custom_agent_url=${params.custom_agent_url}
         """.stripIndent()
       }
    }

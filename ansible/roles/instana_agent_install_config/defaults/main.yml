@@ -1,8 +1,8 @@
-### helpful for debug to set noLog to false via -e noLog=false
+### instana dir's are hard coded
 instana_dir_custom: '/opt/instana-agent'
 instana_dir_normal: '/opt/instana/agent'
 get_normal_linux_agent: 'https://setup.instana.io/agent'
 agent_key: 'thisIsAllowsOverridden'
 instana_host_port: 'thisIsAllowsOverridden'
 install_normal_linux_agent: "/opt/setup_agent.sh -a {{ agent_key }} -t dynamic -e {{ instana_host_port }}  -y -s"
-custom_agent_url: 'http://nest-reports1.fyre.ibm.com/opt/automation2/cpt/instana/'
+custom_agent_url: 'thisIsAllowsOverridden'
