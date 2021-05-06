@@ -1,6 +1,6 @@
 ---
 # specific OS supports wildcards
-- name: remove current instana packages
+- name: remove current OS instana packages
   become: yes
   ignore_errors: yes
   apt:

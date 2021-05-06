@@ -1,6 +1,6 @@
 ---
 # specific OS supports wildcards, if preceded with @ its a group
-- name: remove extraneous packages
+- name: remove current OS instana packages
   become: yes
   ignore_errors: yes
   dnf:
