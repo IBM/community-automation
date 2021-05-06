@@ -6,6 +6,13 @@ registry=$4
 registry_user=$5
 registry_pwd=$6
 
+if [[ -n $registry ]]; then
+  if [[ -z $registry_user || -z $registry_pwd ]]; then
+    echo "If setting custom Docker registry authentication, then you must specify valid registry user and registry password arguments"
+    exit 1
+  fi
+fi
+
 oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
 
 # Install ceph
@@ -39,12 +46,12 @@ if [[ -z $registry ]]; then
 else 
   echo "Creating image pull secret for $registry and patching rook-ceph ServiceAccounts"
   oc project rook-ceph
-  oc -n rook-ceph create secret docker-registry dockerhub-secret --docker-server=$registry --docker-username=$registry_user --docker-password=$registry_pwd --docker-email=unused
-  oc patch serviceaccount default -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
-  oc patch serviceaccount rook-ceph-system -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
-  oc patch serviceaccount rook-ceph-mgr -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
-  oc patch serviceaccount rook-ceph-osd -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
-  oc patch serviceaccount rook-ceph-cmd-reporter -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}'
+  oc create secret docker-registry dockerhub-secret --docker-server=$registry --docker-username=$registry_user --docker-password=$registry_pwd --docker-email=unused
+  oc patch serviceaccount default -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}' || true
+  oc patch serviceaccount rook-ceph-system -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}' || true
+  oc patch serviceaccount rook-ceph-mgr -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}' || true
+  oc patch serviceaccount rook-ceph-osd -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}' || true
+  oc patch serviceaccount rook-ceph-cmd-reporter -p '{"imagePullSecrets": [{"name": "dockerhub-secret"}]}' || true
 fi
 echo "setup Docker registry image pull secrets exit"
 
