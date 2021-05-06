@@ -1,5 +1,24 @@
 ---
-# specific OS supports wildcards, if preceded with @ its a group
-- name: AIX - work in process
-  debug:
-    msg: "AIX - more work to be done"
+- name: check if aixtoolbox is installed
+  stat:
+   path: /usr/bin/yum 
+  register: istoolbox
+
+- block:
+  - name: get aixtoolbox
+    unarchive:
+      src: "https://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
+      dest: /tmp/aixtoolbox
+      remote_src: yes
+    become: yes
+  - name: install aixtoolbox rpms
+    command: 'rpm -Uvh *.rpm'
+    chdir: /tmp/aixtoolbox
+    become: yes
+  - name: Install the latest version sudo
+    yum:
+     name: sudo
+     state: latest
+    become: yes
+  when: istoolbox.stat.exists == False
+
