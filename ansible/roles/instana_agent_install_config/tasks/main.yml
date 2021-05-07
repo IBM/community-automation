@@ -15,6 +15,9 @@
 - include_tasks: install_agent_custom.yml
   when:
   - ansible_architecture == 's390x' or ansible_architecture == 'ppc64le' or ansible_architecture == 'chrp'
+- include_tasks: install_agent_custom_chrp.yml
+  when:
+  - ansible_architecture == 'chrp'
 - include_tasks: custom_package_cron.yml
   when:
   - ansible_architecture == 's390x' or ansible_architecture == 'ppc64le'
