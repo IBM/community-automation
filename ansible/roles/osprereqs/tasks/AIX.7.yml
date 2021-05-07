@@ -1,22 +1,18 @@
 ---
+### https://www.ibm.com/support/pages/understanding-aix-virtual-rpm-package-rpmrte
+- name: updtvpkg
+  command: 'updtvpkg'
+  become: yes
 - name: check if aixtoolbox is installed
   stat:
    path: /usr/bin/yum 
   register: istoolbox
-
 - block:
-        # FAILS with ssl3 comm error
-        #  - name: get aixtoolbox get_url
-        #    get_url:
-        #     url: "https://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
-        #     dest: /tmp
-        #     validate_certs: false
-        #    become: yes
-
+        # FAILS with unzip error ....
         #  - name: get aixtoolbox
         #    unarchive:
         #      validate_certs: False
-        #      src: "https://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
+        #      src: "http://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
         #      dest: /tmp
         #      remote_src: yes
         #    become: yes
@@ -27,7 +23,9 @@
      state: directory
   - name: get aixtoolbox get_url
     get_url:
-     url: "http://nest-reports1.fyre.ibm.com/opt/downloads/yum_bundle.tar"
+            # FAILS with ssl3 comm error
+            #     url: "http://nest-reports1.fyre.ibm.com/opt/downloads/yum_bundle.tar"
+     url: "http://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
      dest: /tmp/aixtoolbox
      validate_certs: false
     become: yes
