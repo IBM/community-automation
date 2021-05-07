@@ -5,6 +5,8 @@
 ### "ansible_architecture": "chrp", --- AIX
 - include_tasks: stop.yml
 - include_tasks: remove_package.yml
+  when:
+  - ansible_architecture == 'x86_64'
 ### remove OS packages
 - include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
 - include_tasks: install_agent_normal.yml
