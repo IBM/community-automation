@@ -116,8 +116,8 @@
 
     - name: Get admin password for kubeadmin
       shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ CLUSTER_NAME }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
-      register: kubeadmin_password
-    - debug: msg="{{ kubeadmin_password.stdout }}"
+      register: kubeadmin_pw
+    - debug: msg="{{ kubeadmin_pw.stdout }}"
 
     - name: Get openshift console url
       shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }'"
@@ -159,10 +159,10 @@
     create: yes
     mode: 0755
   with_items:
-    - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
+    - "OCP Admin: kubeadmin, password {{ kubeadmin_pw.stdout }}"
     - "OCP Admin Console: {{ console_url.stdout }}"
     - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
-    - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
+    - "Login: oc login -u kubeadmin -p {{ kubeadmin_pw.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
   when: 'admin_task == "provision"'
 
 - name: Creat new inventory host (ocp_provisioned_cluster)
@@ -172,7 +172,7 @@
     groups: "ocp_provisioned_cluster"
     ansible_connection: "local"
     ansible_python_interpreter: "/usr/bin/python3"
-    kubeadmin_password: "{{ kubeadmin_password.stdout }}"
+    kubeadmin_password: "{{ kubeadmin_pw.stdout }}"
     kubeadmin_user: "kubeadmin"
     ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
     cluster_name: "{{ console_url.stdout.split('.')[2] }}"
