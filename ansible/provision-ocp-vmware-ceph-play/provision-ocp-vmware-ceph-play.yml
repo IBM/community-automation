@@ -29,7 +29,7 @@
   tasks:
 
     - name: Wait for syncsets to be  applied, wait up to 5 minutes
-      shell: "oc get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }}"
+      shell: "oc  --no-headers=true get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} > /dev/null;echo $?"
       register: syncset_ready_results
       until: 'syncset_ready_results.stdout == 0'
       retries: 5
