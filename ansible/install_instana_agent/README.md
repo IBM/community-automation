@@ -35,7 +35,6 @@ cp examples/inventory .
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook  -i inventory request-instana-fyre-play.yml 
 ansible-playbook -i inventory install_instana_agent.yml -e instana_host_port=my-instana.com:myport -e agent_key=yourAgentKey -e custom_agent_url=http://yourcustompackagehost.com/opt/custompackage/instana
 
 ```
