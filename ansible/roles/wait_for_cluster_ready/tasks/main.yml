@@ -1,0 +1,2 @@
+---
+- include_tasks: wait_for_cluster_ready.yaml

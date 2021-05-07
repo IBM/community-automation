@@ -18,6 +18,9 @@
     - role: ocp_login # claimed cluster login
       when: 'admin_task != "delete"'
 
+    - role: wait_for_cluster_ready # claimed cluster login
+      when: 'admin_task != "delete"'
+
     - role: deploy_ingress_router_vmware
       when: 'admin_task != "delete"'
 

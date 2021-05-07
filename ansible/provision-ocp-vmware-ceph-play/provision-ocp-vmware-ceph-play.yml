@@ -37,6 +37,14 @@
         msg: "{{ cluster_details.stdout }}"
       when: 'admin_task == "provision"'
 
+    - name: Wait for syncsets to be  applied, wait up to 5 minutes
+      shell: "oc get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }}"
+      register: syncset_ready_results
+      until: 'syncset_ready_results.stdout == 0'
+      retries: 5
+      delay: 60
+      when: 'admin_task == "provision"'
+
     - set_fact:
         route_task: "delete"
       when: 'admin_task == "delete"'
@@ -50,3 +58,41 @@
       include_role:
         name: clean_vmware_kubevols
       when: 'route_task == "delete"'
+
+- name: "Using new host connect to new vmware cluster"
+  hosts: ocp_provisioned_cluster
+  gather_facts: yes
+  vars:
+    device_name: sdb
+
+  vars_files:
+    - common-vars.yml
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+
+    - role: ocp_login # claimed cluster login
+      when: 'admin_task != "delete"'
+
+    - role: wait_for_cluster_ready
+      when: 'admin_task != "delete"'
+
+    - role: deploy_ingress_router_vmware
+      when: 'admin_task != "delete"'
+
+    - role: deploy_vmdisk_vmware
+      when: 'admin_task != "delete"'
+
+    - role: csi_cephfs
+      when: 'admin_task != "delete"'
+
+  tasks:
+
+    - name: logout of cluster
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+      when: 'admin_task != "delete"'
