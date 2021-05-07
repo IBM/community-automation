@@ -24,8 +24,8 @@
 
     - role: provision_ocp_cluster
 
-    - role: ocp_login  
-
+    - role: ocp_login
+      when: 'admin_task == "provision"'
   tasks:
 
     - name: Wait for syncsets to be  applied, wait up to 5 minutes
