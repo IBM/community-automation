@@ -24,8 +24,22 @@
 
     - role: provision_ocp_cluster
 
+    - role: ocp_login  
 
   tasks:
+
+    - name: Wait for syncsets to be  applied, wait up to 5 minutes
+      shell: "oc get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }}"
+      register: syncset_ready_results
+      until: 'syncset_ready_results.stdout == 0'
+      retries: 5
+      delay: 60
+      when: 'admin_task == "provision"'
+
+    - name: logout of hive hub
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
 
     - name: Display cluster details
       command: cat {{ CLUSTER_NAME }}_details.log
@@ -35,14 +49,6 @@
     - name: Print details
       debug:
         msg: "{{ cluster_details.stdout }}"
-      when: 'admin_task == "provision"'
-
-    - name: Wait for syncsets to be  applied, wait up to 5 minutes
-      shell: "oc get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }}"
-      register: syncset_ready_results
-      until: 'syncset_ready_results.stdout == 0'
-      retries: 5
-      delay: 60
       when: 'admin_task == "provision"'
 
     - set_fact:
