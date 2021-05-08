@@ -29,11 +29,16 @@
   tasks:
 
     - name: Wait for syncsets to be  applied, wait up to 5 minutes
-      shell: "oc  --no-headers=true get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} > /dev/null;echo $?"
+      shell: "oc  --no-headers=true get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }};echo $?"
       register: syncset_ready_results
       until: 'syncset_ready_results.stdout == "0"'
       retries: 5
       delay: 60
+      when: 'admin_task == "provision"'
+
+    - name: Wait for 4 minutes for syncset to take effect
+      wait_for:
+        timeout: 240
       when: 'admin_task == "provision"'
 
     - name: logout of hive hub

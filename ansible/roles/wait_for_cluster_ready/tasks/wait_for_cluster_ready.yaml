@@ -1,7 +1,7 @@
 ---
 # tasks csi-cephfs install
 - name: Check for all pods Running or Complete, wait up to 60 minutes
-  shell: "oc --no-headers=true get pods --all-namespaces | grep -v Running | grep -v Complete > /dev/null; echo $?"
+  shell: "oc --no-headers=true get pods --all-namespaces | grep -v Running | grep -v Complete ; echo $?"
   register: cluster_ready_results
   until: 'cluster_ready_results.stdout != "0"'
   retries: 60
