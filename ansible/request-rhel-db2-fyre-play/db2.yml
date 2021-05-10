@@ -1,8 +1,9 @@
 ---
 
 - hosts: all
-  gather_facts: true
   vars:
   - ansible_user: root
   roles:
-  - role: osprereqs
+  - role: db2_fyre
+  - { role: vnc, when: vnc|bool }
+

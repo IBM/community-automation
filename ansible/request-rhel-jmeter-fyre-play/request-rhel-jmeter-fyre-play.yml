@@ -4,12 +4,14 @@
   - role: jmeter_fyrevm
 
 - hosts: jmeter
+  vars_files:
+  - "{{ password_file }}"
   vars:
   - ansible_user: root
   - crc_username: "{{ jmeterUser }}"
   roles:
   - role: jmeter_prereqs
-  - role: crc_user
+  - role: nestuser
   - role: timezone
 
 - hosts: jmeter

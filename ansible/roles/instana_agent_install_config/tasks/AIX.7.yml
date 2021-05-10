@@ -1,0 +1,4 @@
+---
+- name: AIX - work in process
+  debug:
+    msg: "AIX - more work to be done"

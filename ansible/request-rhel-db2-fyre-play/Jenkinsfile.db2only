@@ -1,0 +1,35 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'stackName', defaultValue: 'changeMyFQDNname', description: 'FQDN of the target DB2 host'),
+    string(name: 'db2Archive', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/DB2S_11.5.4_MPML.tar.gz',description: 'url of source db2 ce archive'),
+    string(name: 'db2responseFile', defaultValue: 'http://nest-reports1.fyre.ibm.com/opt/downloads/db2ce/db2serverv11.5.rsp',description: 'url of source db2 ce response file'),
+    booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on db2 host')
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'kube_pod_slave' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          set +x # hide sensitive info being echo'd to log
+          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-db2-fyre-play/db2.yml -e vnc=${params.enableVNC} -e noLog=false -e db2Archive=${params.db2Archive} -e db2responseFile=${params.db2responseFile}
+        """.stripIndent()
+      }
+   }
+  }
+}

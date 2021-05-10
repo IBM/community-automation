@@ -1,0 +1,34 @@
+---
+- name: check if instana custom is installed
+  stat:
+   path: "{{ instana_dir_custom }}/bin/start"
+  register: isInstana
+
+- block:
+  - name: start instana agent
+    command: "{{ instana_dir_custom }}/bin/start"
+    register: istart
+    become: yes
+    ignore_errors: yes
+    no_log: True
+  - name: Instana start
+    debug:
+     msg: "{{ istart.stdout_lines }}"
+  when: isInstana.stat.exists == True
+
+- name: check if instana normal is installed
+  stat:
+   path: "{{ instana_dir_normal }}/bin/start"
+  register: isInstana
+
+- block:
+  - name: start instana agents 
+    command: "{{ instana_dir_normal }}/bin/start"
+    become: yes
+    register: istart
+    ignore_errors: yes
+    no_log: True
+  - name: Instana start
+    debug:
+     msg: "{{ istart.stdout_lines }}"
+  when: isInstana.stat.exists == True
