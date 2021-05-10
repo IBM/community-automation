@@ -62,8 +62,8 @@
     return_content: yes
   changed_when: false
   register: cluster_status_response
-  until: (cluster_status_response.status == 200) and (cluster_status_response.json.clusters[0].deployment_status  =="deployed") or (cluster_status_response.json.clusters[0].deployment_status == "error")
-  retries: 300
+  until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "failed")
+  retries: 600
   delay: 20
 
 - name: check for error status after loop check
@@ -100,9 +100,13 @@
 
 - name: Add inf host to group
   add_host:
-    name: "{{fyre_inf_public_ip}}"
+    name: "{{ fyre_inf_public_ip }}"
     groups: "{{ fyre_ocp_inf_group }}"
     ansible_user: "root"
-    inf_public_ip: "{{fyre_inf_public_ip}}"
+    inf_public_ip: "{{ fyre_inf_public_ip }}"
     clusterName: "{{ clusterName }}"
+    kubeadmin_password: "{{ cluster_status_response.json.clusters[0].kubeadmin_password }}"
+    ocp_access_url: "{{ cluster_status_response.json.clusters[0].access_url }}"
+    ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
+    ocp_api_port: "6443"
   changed_when: false

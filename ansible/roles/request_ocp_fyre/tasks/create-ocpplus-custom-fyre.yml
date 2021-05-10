@@ -25,8 +25,9 @@
       name : "{{ clusterName }}"
       platform: "{{ ocpPlatform }}"
       fips: "no"
-      ssh_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+      ssh_key: "{{ ssh_public_key }}"
       custom_ocp: "yes"
+      site: "{{fyre_site | default(omit)}}"
       kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*kernel-x86_64.*') | list | first }}"
       initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*initramfs.x86_64.*')  | list | first}}"
       rootfs_url: "{{ rootfs_url | default (omit)}}"
@@ -38,7 +39,7 @@
           cpu: "{{ fyre_worker_cpu }}"
           memory: "{{ fyre_worker_memory }}"
           additional_disk:
-            - "{{ fyre_worker_additional_disk }}"
+            - "{{ fyre_worker_additional_disk | default(omit) }}"
       master:
         - count: "{{ fyre_master_quantity }}"
           cpu: "{{ fyre_master_cpu }}"

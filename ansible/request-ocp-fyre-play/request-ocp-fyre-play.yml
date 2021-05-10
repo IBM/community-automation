@@ -3,7 +3,7 @@
   roles: 
   - role: request_ocp_fyre
 
-- hosts: ocp-clusters
+- hosts: ocpClusters
   gather_facts: false
   tasks:
   - name: Check machine alive

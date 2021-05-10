@@ -32,9 +32,9 @@
           creds: 
             username: "{{ fyreuser }}" 
             api_key: "{{ fyreapikey }}"
-            public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"   
+            public_key: "{{ ssh_public_key }}"
         cluster_name : "{{ clusterName }}"
-        site: "{{fyre_site}}"
+        site: "{{ fyre_site }}"
         ocp_version: "{{ ocpVersion }}"
         master_quantity: "{{ fyre_master_quantity }}"
         master_cpu: "{{ fyre_master_cpu }}"
@@ -85,8 +85,8 @@
     body_format: json
   changed_when: false
   register: cluster_status_response
-  until: (cluster_status_response.status == 200) and (cluster_status_response.json[ clusterName ][0].status == "deployed") or (cluster_status_response.json[ clusterName ][0].status == "error")
-  retries: 300
+  until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "error")
+  retries: 600
   delay: 20
 
 - name: check for error status after loop check
@@ -156,12 +156,12 @@
   delegate_to: localhost
 
 - name: Add inf host to group
-  no_log: "True"
+  no_log: True
   add_host:
-    name: "{{fyre_inf_public_ip}}"
+    name: "{{ fyre_inf_public_ip }}"
     groups: "{{ fyre_ocp_inf_group }}"
     ansible_user: "root"
-    inf_public_ip: "{{fyre_inf_public_ip}}"
-    inf_root_password: "{{fyre_inf_root_password}}"
+    inf_public_ip: "{{ fyre_inf_public_ip }}"
+    inf_root_password: "{{ fyre_inf_root_password }}"
     clusterName: "{{ clusterName }}"
   changed_when: false
