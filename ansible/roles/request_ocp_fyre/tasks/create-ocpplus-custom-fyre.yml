@@ -28,6 +28,7 @@
       ssh_key: "{{ ssh_public_key }}"
       custom_ocp: "yes"
       site: "{{fyre_site | default(omit)}}"
+      product_group_id: "{{ fyre_group_id }}"
       kernel_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*kernel-x86_64.*') | list | first }}"
       initramfs_url: "https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/{{ rhcos_version_path }}/{{ rhcos_sha256sum.content.split() | select('match', '.*initramfs.x86_64.*')  | list | first}}"
       rootfs_url: "{{ rootfs_url | default (omit)}}"
