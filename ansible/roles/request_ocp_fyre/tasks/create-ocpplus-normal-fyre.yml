@@ -12,6 +12,7 @@
         ocp_version: "{{ ocpVersion }}"
         platform: "{{ ocpPlatform }}"
         site: "{{fyre_site | default(omit)}}"
+        product_group_id: "{{ fyre_group_id }}"
         ssh_key: "{{ ssh_public_key }}"
         worker:
           - count: "{{ fyre_worker_quantity }}"

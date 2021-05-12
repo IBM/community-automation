@@ -16,7 +16,7 @@ The role expects to be supplied:
  - ocpVersion
  - fyre_ocp_inf_group (optional: defaults to 'ocpClusters')
  - fyre_site (optional: defaults to svl)
-
+ - fyre_group_id (options: default is 0, which will default to account setting )
 
 Ansible controller machine should have an public ssh key available: ~/.ssh/id_rsa.pub
 
