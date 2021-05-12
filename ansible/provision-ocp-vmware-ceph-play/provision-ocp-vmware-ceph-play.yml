@@ -36,9 +36,9 @@
       delay: 60
       when: 'admin_task == "provision"'
 
-    - name: Wait for 4 minutes for syncset to take effect
+    - name: Wait for 5 minutes for syncset to take effect
       wait_for:
-        timeout: 240
+        timeout: 300
       when: 'admin_task == "provision"'
 
     - name: logout of hive hub
