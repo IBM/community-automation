@@ -77,7 +77,6 @@
     device_name: sdb
 
   vars_files:
-    - common-vars.yml
     - vsphere-vars.yml
 
   environment:
