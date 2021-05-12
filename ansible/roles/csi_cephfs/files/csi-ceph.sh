@@ -2,6 +2,7 @@
 rookRelease=$1
 device=$2
 new_default_sc=$3
+#Make sure all pods Running or Completed state
 
 # Install ceph
 rm -rf rook
@@ -15,7 +16,6 @@ if [[ $rookRelease != "master" ]]; then
   cd ..
 fi
 # if rook-ceph is version 1.5, then need to create/apply crd
-sleep 3m
 majorRelease=$(echo ${rookRelease:0:4})
 if [[ $majorRelease != "v1.4" ]]
 then
