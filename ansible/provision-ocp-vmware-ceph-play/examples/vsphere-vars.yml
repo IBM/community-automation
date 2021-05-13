@@ -41,7 +41,7 @@
 #Cephfs deply - No changes needed
 cephfs_bastion_setup_dir: ~/setup-files/ceph-setup
 rook_cephfs_release: v1.5.9  #Rook-ceph release from https://github.com/rook/rook/releases
-default_sc: csi-cephfs
+default_sc: file-storage
 
 #provision_ocp_cluster No changes needed - Role specific variables
 "OCP_API_IP_ADDRESS": "{{ api_ip }}"
