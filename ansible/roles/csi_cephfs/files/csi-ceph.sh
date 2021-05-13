@@ -72,7 +72,7 @@ echo "Doing filessystem-test.yaml"
 oc create -f rook/cluster/examples/kubernetes/ceph/filesystem-test.yaml
 echo "Exit from filesystem-test.yaml $?"
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
-sed -i "s/rook-cephfs/csi-cephfs/g" rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+sed -i "s/rook-cephfs/file-storage/g" rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
 default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
 echo "default_storage_class is $default_storage_class"
@@ -84,4 +84,5 @@ else
 fi
 echo "Set default storageclass to $new_default_cs"
 oc patch storageclass $new_default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+sed -i "s/rook-ceph-block/block-storage/g" rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml

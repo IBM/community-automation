@@ -1,4 +1,4 @@
 ---
 rook_cephfs_release: v1.5.9  #Rook-ceph release from https://github.com/rook/rook/releases
 device_name: sdb
-default_sc: csi-cephfs
+default_sc: file-storage
