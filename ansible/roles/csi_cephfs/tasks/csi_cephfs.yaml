@@ -13,6 +13,12 @@
     dest: "wait-for-csi-ceph.sh"
     mode: '0755'
 
+- name: Copy vsphere-block-storage.yaml to dest
+  copy:
+    src: files/vsphere-block-storage.yaml
+    dest: "vsphere-block-storage.yaml"
+    mode: '0755'
+
 - name: Install csi-cephfs
   shell: "rm -rf rook; csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }}"
   args:
