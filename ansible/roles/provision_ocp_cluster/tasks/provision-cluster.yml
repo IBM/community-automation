@@ -107,7 +107,7 @@
     - name: Check provisioning progress, waiting up to 60 minutes
       shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
       register: monitor_results
-      until: 'monitor_results.stdout.find("install completed successfully") != -1'
+      until: '(monitor_results.stdout.find("install completed successfully") != -1) or (monitor_results.stdout.find("command completed successfully") != -1) '
       retries: 60
       delay: 60
 
