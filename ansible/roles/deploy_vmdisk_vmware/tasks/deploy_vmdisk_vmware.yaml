@@ -10,6 +10,7 @@
     username: '{{ VCENTER_ADMIN_USER }}'
     password: '{{ VCENTER_PASSWORD }}'
     datacenter: '{{ VCENTER_DATACENTER }}'
+    validate_certs: false
     name: '{{ item }}'
     disk:
       - size_gb: "{{ WORKER_DISK2_SIZE }}"
