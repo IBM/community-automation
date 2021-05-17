@@ -10,6 +10,7 @@
          - boto
          - boto3
          - botocore
+         - pyVim
          - pyvmomi
          - six
          - google-auth
