@@ -1,31 +1,17 @@
-deploy_ova_vmware: deploy an ova file to a vCenter
+clean_vmware_kubevols: After vmware cluster is uninstalled call this role to cleam up any orphaned kubevol files.
 =========
-
-Ansible role for uploading a new rhcos vmware ova to a vCenter.
-
-Description
------------
-
- - Downloads to the local ubuntu system a rhcos ova file.
- - Imports the ova file into a vCenter as a VM, for use as a VM template or clone.
- - Sets the storage to `thin` when importing the ova.
- - Sets the `disk.EnableUUID=TRUE`
 
 Requirements:
 ------------
-
- - Need to be on an ubuntu system, with ansible 2.9.9 or later and pyvmomi installed.
-   - sudo apt-get update -y
-   - sudo apt-get install ansible
-   - sudo apt-get install -y python-pyvmomi
+- Need to be on an linux box or docker image that has run `community-automation/scripts/common/install-prereqs.sh`.
 
 Example Playbook
 ----------------
 
-    - name: Install ova to vCenter
+    - name: clean orphaned kubvols on  vCenter
       hosts: bastion
       roles:
-      - deploy_ova_vmware
+      - clean_vmware_kubevols
 
 License
 -------

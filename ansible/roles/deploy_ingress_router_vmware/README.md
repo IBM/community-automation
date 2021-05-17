@@ -1,23 +1,12 @@
-deploy_ova_vmware: deploy an ova file to a vCenter
+deploy_ingress_rounter_vmware: deploy an ingress router to every worker in the cluster. Only needed for vmware clusters where the worker nodes have public 9 dot IPs.
 =========
 
-Ansible role for uploading a new rhcos vmware ova to a vCenter.
-
-Description
------------
-
- - Downloads to the local ubuntu system a rhcos ova file.
- - Imports the ova file into a vCenter as a VM, for use as a VM template or clone.
- - Sets the storage to `thin` when importing the ova.
- - Sets the `disk.EnableUUID=TRUE`
+Ansible role for enabling the ingress router on all cluster worker nodes.
 
 Requirements:
 ------------
 
- - Need to be on an ubuntu system, with ansible 2.9.9 or later and pyvmomi installed.
-   - sudo apt-get update -y
-   - sudo apt-get install ansible
-   - sudo apt-get install -y python-pyvmomi
+ - Need to be on an linux box or docker image that has run `community-automation/scripts/common/install-prereqs.sh`.
 
 Example Playbook
 ----------------
@@ -25,7 +14,7 @@ Example Playbook
     - name: Install ova to vCenter
       hosts: bastion
       roles:
-      - deploy_ova_vmware
+      - deploy_ingress_router_vmware
 
 License
 -------

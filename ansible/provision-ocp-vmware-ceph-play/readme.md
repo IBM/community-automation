@@ -1,6 +1,6 @@
 # Provision OCP cluster
 
-This provisioning play is used to create OCP  vmware-ipi clusters with rook-ceph installed.  This play is a replacement for the terraform tf_openshift_4 vmware installations. I does everything the tf_openshift_4 vmware installer/uninstaller does but uses the vmware-ipi instead of doing a vmware upi install.  It passes a request to an OCP cluster that is running the hive operator and contains all of the hive custom resources.  The role that supports this play is designed with ansibe templates.
+This provisioning play is used to create OCP  vmware-ipi clusters with rook-ceph installed.  This play is a replacement for the terraform tf_openshift_4 vmware installations. It does everything the tf_openshift_4 vmware installer/uninstaller does but uses the vmware-ipi instead of doing a vmware upi install.  It passes a request to an OCP cluster that is running the hive operator and contains all of the hive custom resources.  The role that supports this play is designed with ansibe templates.
 
 ## How to use
 
@@ -21,7 +21,6 @@ alternatively
 See the following readmes for details about the roles
 
 - [ocp_login](https://https://github.com/IBM/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
-- [ocp_cluster_tag](https://github.com/rayashworth/community-automation/blob/provision-ocp-cluster/ansible/provision-ocp-cluster-play/readme.md)
 
 ## Top level folder
 
