@@ -10,6 +10,7 @@
          - boto
          - boto3
          - botocore
+         - pyvmomi
          - six
          - google-auth
          - google-api-python-client
