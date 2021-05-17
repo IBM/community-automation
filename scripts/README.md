@@ -5,6 +5,6 @@ This scripts folder will be used for non ansible scripts that can be shared with
 
 | Team | Comments |
 |------| -------- |
-| common/ | scripts that could be use across teams |
-| content-devops/ | used by content devops team |
+| [common/](common/README.md) | scripts that could be use across teams |
+| [content-devops/](content-tools/README.md) | used by content devops team |
 | etc.../ | add your teams folder as applicable |
