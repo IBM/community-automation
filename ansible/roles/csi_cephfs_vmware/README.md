@@ -1,19 +1,20 @@
-csi-cephfs: csi cephfs on OCP
+csi_cephfs_vmware: csi cephfs  on vmware OCP cluster
 =========
 
 This module will install:
-- rook-cephfs from repository https://github.com/rook/rook.git onto your fyre inf node.
+- rook-cephfs from repository https://github.com/rook/rook.git onto your vmware cluster.
 - Default rook-ceph release is `v1.5.9`. See release information here https://github.com/rook/rook/releases.
 - Creates 3 storageClass
   - rook-cephfs - File store (RWX)
-  - rook-ceph-block - Ceph Block storage (RWO)
-  - csi-cephfs - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as the rook-cephfs storageclass.
-- Sets csi-cephfs as the default storageclass.
+  - block-storage - Ceph Block storage (RWO)
+  - file-storage - For backward compatability to earlier versions of rook-ceph. This is the same storageclass as the rook-cephfs storageclass.
+  - vsphere-block-storage - thin storage.
+- Sets file-storage as the default storageclass.
 
 Requirements
 ------------
 
- - Running fyre OCP+Beta cluster is needed.
+ - Running vmware OCP cluster is needed.
  - oc client installed.
  - oc login to OCP cluster performed.
  - git client installed.
@@ -34,13 +35,12 @@ How to install oc client
 
 Example Playbook
 ----------------
-- Install csi-cephfs on a fyre cluster before Common Services.
+- Install csi-cephfs on a vmware.
 
- - name: Install common services
+ - name: Install csi-cephfs
    hosts: bastion
    roles:
    - csi_cephfs_fyre
-   - common_services
 
 
 License
