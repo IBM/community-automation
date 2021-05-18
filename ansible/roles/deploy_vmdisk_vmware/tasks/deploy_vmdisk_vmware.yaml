@@ -1,0 +1,24 @@
+---
+# Download from URL oav and deploy to vCenter
+- name: Create list of worker nodes
+  shell: "oc get no | tr -s ' ' | cut -f1 -d' ' | grep worker"
+  register: worker_nodes
+
+- name: Add disk to virtaul machine by vm name
+  community.vmware.vmware_guest_disk:
+    hostname: '{{ VCENTER_SERVER }}'
+    username: '{{ VCENTER_ADMIN_USER }}'
+    password: '{{ VCENTER_PASSWORD }}'
+    datacenter: '{{ VCENTER_DATACENTER }}'
+    validate_certs: false
+    name: '{{ item }}'
+    disk:
+      - size_gb: "{{ WORKER_DISK2_SIZE }}"
+        type: thin
+        datastore: '{{ VCENTER_DATASOURCE }}'
+        state: present
+        scsi_controller: 0
+        unit_number: 1
+        scsi_type: 'paravirtual'
+  with_items: "{{ worker_nodes.stdout_lines }}"
+  register: create_vm

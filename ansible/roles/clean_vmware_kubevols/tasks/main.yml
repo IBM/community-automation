@@ -1,0 +1,2 @@
+---
+- include_tasks: clean_vmware_kubevols.yaml
