@@ -40,7 +40,7 @@ Example Playbook
  - name: Install csi-cephfs
    hosts: bastion
    roles:
-   - csi_cephfs_fyre
+   - csi_cephfs_vmware
 
 
 License
