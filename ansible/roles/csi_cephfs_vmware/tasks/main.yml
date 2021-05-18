@@ -1,0 +1,2 @@
+---
+- include_tasks: csi_cephfs_vmware.yaml

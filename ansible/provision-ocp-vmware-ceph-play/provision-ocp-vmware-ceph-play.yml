@@ -96,7 +96,7 @@
     - role: deploy_vmdisk_vmware
       when: 'admin_task != "delete"'
 
-    - role: csi_cephfs
+    - role: csi_cephfs_vmware
       when: 'admin_task != "delete"'
 
   tasks:

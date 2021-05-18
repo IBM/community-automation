@@ -39,7 +39,6 @@
 "route_task": "add"  # add|delete
 
 #Cephfs deply - No changes needed
-cephfs_bastion_setup_dir: ~/setup-files/ceph-setup
 rook_cephfs_release: v1.5.9  #Rook-ceph release from https://github.com/rook/rook/releases
 default_sc: file-storage
 
