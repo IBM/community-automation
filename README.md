@@ -10,10 +10,11 @@ This repo represents the Community Automation effort where teams can contribute 
 - Run options
   - Docker image
   - importing the ansible collection  
-  - Personal workspace (requires prereq script found in script folder)
+  - Personal workspace (requires prereq [scripts](docs/scripts.md) found in scripts folder)
 
 ## Documentation
 
+  - [prereq scripts](docs/scripts.md)
   - [Ansible Documentation](https://docs.ansible.com/ansible/latest/user_guide/index.html)
   - [Ansible-collection](docs/collection.md)
   - [Docker-Image](docs/docker-image.md)  
@@ -21,4 +22,4 @@ This repo represents the Community Automation effort where teams can contribute 
   - [playbooks](docs/playbooks.md)
   - [roles](docs/roles.md)
   - [jenkinsfile](docs/jenkinsfile.md)
-  - [scripts](docs/scripts.md)
+  - [non ansible scripts](scripts/README.md)

@@ -81,19 +81,23 @@ EXAMPLE:
 
 ## Personal client VM prereq script
 
-install-prereqs.sh is used to setup an ansible install client VM.   It will ensure the correct version of ansible is installed and it will add python3 and several python3 libraries.  After the script complete you should be able to run most of the existing ansible playbooks without any additional updates.  
+install-prereqs.sh is used to setup an ansible install client VM.  It will ensure the correct version of ansible is installed and it will add python3 and several python3 libraries.  After the script complete you should be able to run most of the existing ansible playbooks (check playbook readme's for parameter details) without any additional updates.  
 
 **Tested on ubuntu 16.04,18.04,20.04 and RHEL 7/8**  
 **NOTES:**
 
 - non-root users will need sudo access
-- you may need to do a **docker login**, if you see complaints about pull limits
+- you may need to do a **docker login**, if you see complaints about pull rate limits
 - ssh keys that get copied to the container will default to ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
 ```
+Ubuntu/RHEL7
 # cd community-automation
 # scripts/common/install-prereqs.sh
+```
 
+```
 RHEL8
 # cd community-automation
 # scripts/common/install-prereqs.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWOR
+```
