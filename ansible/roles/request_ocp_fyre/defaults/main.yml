@@ -10,6 +10,7 @@ fyre_inf_node_name: "{{ clusterName | lower }}-inf"
 fyre_site: "svl"
 fyre_group_id: "0"
 fyre_ocptype: "ocp"
+fyre_addHost: true
 # this will read the value from the file, submitting just the filename does not work
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
