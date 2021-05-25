@@ -165,3 +165,4 @@
     inf_root_password: "{{ fyre_inf_root_password }}"
     clusterName: "{{ clusterName }}"
   changed_when: false
+  when: "fyre_addAnsibleHost|bool == true"

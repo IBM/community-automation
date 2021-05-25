@@ -15,6 +15,7 @@ The role expects to be supplied:
  - clusterName
  - ocpVersion
  - fyre_ocp_inf_group (optional: defaults to 'ocpClusters')
+ - fyre_addAnsibleHost (optional: defaults to true)
  - fyre_site (optional: defaults to svl)
  - fyre_group_id (options: default is 0, which will default to account setting )
 
@@ -24,7 +25,9 @@ The roles behaves in the following way:
 1) Will reuse an existing cluster if name matches (no changes will be reported in this event)
 2) Requests and Wait for an OCP cluster to be fully deployed if one does not exist
 3) Role will error if cluster fails to create in fyre
-4) An ansible host will be added to represent the inf node within the cluster. This node will be part of the supplied group
+4) One of the following will happen
+   a) If fyre_addAnsibleHost is true, An ansible host will be added to represent the inf node within the cluster. This node will be part of the supplied group
+   b) If fyre_addAnsibleHost is false, The current ansible host will be update with information about the cluster.
 5) No checking is performed to ensure that cluster matches ocpVersion
 
 The following is an example of how to run the role.

@@ -1,3 +1,5 @@
 ---
 "login_retries": 10
 "ocp_api_port": "6443"
+kubeadmin_user: "kubeadmin"
+kubeconfig_location: "{{ ansible_user_dir }}/.kube"

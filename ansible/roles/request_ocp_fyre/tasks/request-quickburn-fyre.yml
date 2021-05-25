@@ -106,3 +106,13 @@
     ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
     ocp_api_port: "6443"
   changed_when: false
+  when: "fyre_addAnsibleHost|bool == true"
+- name: Update existing host with OCP Facts
+  set_fact:
+    kubeadmin_password: "{{ cluster_status_response.json.clusters[0].kubeadmin_password }}"
+    ocp_access_url: "{{ cluster_status_response.json.clusters[0].access_url }}"
+    ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
+    ocp_api_port: "6443"
+  no_log: True
+  changed_when: false
+  when: "fyre_addAnsibleHost|bool == false"
