@@ -7,3 +7,4 @@ Used to login to OCP clusters prior to running command line tasks.  This play ro
 - kubeadmin_password
 - ocp_api_url   (example: "api.my-cluster.purple-chesterfield.com")
 - ocp_api_port ( OPTIONAL, defaults to 6443 )
+- kubeconfig_location ( OPTIONAL, default $HOME/.kube )
