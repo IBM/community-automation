@@ -12,15 +12,16 @@
 
 - name: "Create kube directory..."
   file: 
-    path: "{{ ocp_api_url }}/.kube"
+    path: "{{ kubeconfig_location }}"
     state: directory
     mode: 0755
+
   
 - name: "OCP login"
   command: 'oc login -u "{{ kubeadmin_user }}" -p "{{ kubeadmin_password|default(kubeadmin_password_lookup.stdout) }}" https://"{{ ocp_api_url|default(ocp_api_url_lookup.stdout) }}:{{ ocp_api_port }}" --insecure-skip-tls-verify=true'
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
-    KUBECONFIG: "{{ ocp_api_url }}/.kube/config"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: results
   until: results.stdout.find("projects") != -1 
   retries: "{{ login_retries }}"
