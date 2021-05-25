@@ -1,3 +1,4 @@
 ---
 "login_retries": 10
 "ocp_api_port": "6443"
+kubeadmin_user: "kubeadmin"

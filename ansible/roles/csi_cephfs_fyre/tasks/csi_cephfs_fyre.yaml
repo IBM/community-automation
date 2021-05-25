@@ -1,42 +1,68 @@
 ---
 # tasks csi-cephfs install
 
-- name: Create setup directory
-  file:
-    path: "{{ cephfs_bastion_setup_dir }}"
-    state: "{{ item }}"
-    mode: '0755'
-  with_items:
-  - directory
 
-- name: Copy csi-cephfs script to dest
-  copy:
-    src: files/csi-ceph.sh
-    dest: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
-    mode: '0755'
+- name: Wait until cluster is available
+  shell: "oc get projects"
+  register: cluster_available
+  until: cluster_available.rc == 0
+  changed_when: false
+  delay: 20
+  retries: 30
 
-- name: Copy wait-for-csi-cephfs script to dest
-  copy:
-    src: files/wait-for-csi-ceph.sh
-    dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
-    mode: '0755'
+- name: Check if CephFS is already installed
+  shell: "oc  get pods -n rook-ceph 2>/dev/null | grep -e Running"
+  register: "cephfs_status"
+  failed_when: false
+  changed_when: false
 
-- name: Install csi-cephfs
-  shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }} {{ device_name }} {{ default_sc }} {{ registry }} {{ registry_user }} '{{ registry_pwd }}'"
-  args:
-      warn: false
-  register: cephinstall
+- name: Install CephFS
+  block:
+    - name: Create setup directory
+      file:
+        path: "{{ cephfs_bastion_setup_dir }}"
+        state: "{{ item }}"
+        mode: '0755'
+      with_items:
+      - directory
 
-- name: Viewing csi-cephfs install log
-  debug:
-    msg: "{{ cephinstall.stdout_lines }}"
+    - name: Copy csi-cephfs script to dest
+      copy:
+        src: files/csi-ceph.sh
+        dest: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh"
+        mode: '0755'
 
-- name: Waiting for rook-ceph-mds-myfs pods to go to Running
-  shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
-  args:
-      warn: false
-  register: waitceph
+    - name: Copy wait-for-csi-cephfs script to dest
+      copy:
+        src: files/wait-for-csi-ceph.sh
+        dest: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
+        mode: '0755'
 
-- name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
-  debug:
-    msg: "{{ waitceph.stdout_lines }}"
+    - name: Install csi-cephfs
+      shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }}"
+      args:
+          warn: false
+      register: cephinstall
+
+    - name: Viewing csi-cephfs install log
+      debug:
+        msg: "{{ cephinstall.stdout_lines }}"
+
+    - name: Waiting for rook-ceph-mds-myfs pods to go to Running
+      shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
+      args:
+          warn: false
+      register: waitceph
+
+    - name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
+      debug:
+        msg: "{{ waitceph.stdout_lines }}"
+
+    - name: "Wait until oc get cephclusters is ready"
+      shell: "oc get cephclusters.ceph.rook.io rook-ceph -n rook-ceph -o jsonpath='{.status.phase}'"
+      register: cephclusters
+      until: cephclusters.stdout.find('Ready') != -1
+      changed_when: false
+      delay: 40
+      retries: 180
+  when: cephfs_status.rc != 0

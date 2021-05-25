@@ -1,6 +1,17 @@
 ---
+- name: "Retrieve Kubeadmin_password if not already defined"
+  shell: "cat {{ ansible_user_dir }}/auth/kubeadmin-password"
+  register: "kubeadmin_password_lookup"
+  changed_when: false
+  when: "kubeadmin_password is not defined"
+- name: "Retrieve API URL if not already defined"
+  shell: "echo api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com"
+  register: "ocp_api_url_lookup"
+  changed_when: false
+  when: "ocp_api_url is not defined"
+
 - name: "OCP login"
-  command: 'oc login -u "{{ kubeadmin_user }}" -p "{{ kubeadmin_password }}" https://"{{ ocp_api_url }}:{{ ocp_api_port }}" --insecure-skip-tls-verify=true'
+  command: 'oc login -u "{{ kubeadmin_user }}" -p "{{ kubeadmin_password|default(kubeadmin_password_lookup.stdout) }}" https://"{{ ocp_api_url|default(ocp_api_url_lookup.stdout) }}:{{ ocp_api_port }}" --insecure-skip-tls-verify=true'
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
   register: results
