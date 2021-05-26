@@ -26,7 +26,7 @@
   register: num_pvs
 
 - set_fact:
-    localstore_version: "4.6"
+    localstore_version: "4.7"
   when: oc_version.stdout is version('4.6', '>=')
 
 - set_fact:
@@ -38,7 +38,7 @@
   when: oc_version.stdout is version('4.6', '>=')
 
 - set_fact:
-    ocs_channel: "stable-4.6"
+    ocs_channel: "stable-4.7"
   when: oc_version.stdout is version('4.6', '>=')
 
 - name: Generate OCS install files from templates and copy to dest
@@ -117,7 +117,7 @@
   debug:
     msg: "{{ localvolumes.stdout_lines }}"
 
-- name: OCS 4.6 auto discovery of local volumes
+- name: OCS 4.7 auto discovery of local volumes
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volumes-discovery.sh"
   when: oc_version.stdout is version('4.6', '>=')
   args:
@@ -129,7 +129,7 @@
   debug:
     msg: "{{ autovolumediscovery.stdout_lines }}"
 
-- name: OCS 4.6 create localvolumeset
+- name: OCS 4.7 create localvolumeset
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volume-set.sh"
   when: oc_version.stdout is version('4.6', '>=')
   args:
