@@ -107,6 +107,6 @@ else
   echo "Set storageclass $default_storage_class to not be default"
   oc patch storageclass $default_storage_class -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 fi
-echo "Set default storageclass to $new_default_cs"
+echo "Set default storageclass to $new_default_sc"
 oc patch storageclass $new_default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml
