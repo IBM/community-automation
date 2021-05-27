@@ -39,7 +39,7 @@
         mode: '0755'
 
     - name: Install csi-cephfs
-      shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }}"
+      shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }} {{ registry }} {{ registry_user }} '{{ registry_pwd }}'"
       args:
           warn: false
       register: cephinstall
