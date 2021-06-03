@@ -18,7 +18,7 @@ spec:
     registryNamespace: ibm-common-services
     operands:
 ENDF
-   for operand in `oc -n ibm-common-services get operandregistry common-service -o jsonpath='{.spec.operators[*].name}'`; do
+   for operand in `oc -n ibm-common-services get operandregistry common-service -o jsonpath='{.spec.operators[?(@.sourceName=="opencloud-operators")].name}'`; do
       if [ "X$OPERANDS_TO_DISABLE" != "X" ]; then
          if echo $operand | egrep -q "$OPERANDS_TO_DISABLE"; then
             echo "    # - name: $operand"

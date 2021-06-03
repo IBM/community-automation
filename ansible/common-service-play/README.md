@@ -12,7 +12,7 @@
    - Download for linux: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/linux/oc.tar.gz`
    - Download for Mac: `curl -o oc.tar.gz https://mirror.openshift.com/pub/openshift-v4/clients/oc/latest/macosx/oc.tar.gz`
    - Extract: tar xf oc.tar.gz
-   - Move to /usr/local/bin: cp oc /usr/lcoal/bring
+   - Move to /usr/local/bin: cp oc /usr/local/bring
    - Example oc login: `oc login https://api.<your-cluster-name>.purple-chesterfield.com:6443 --insecure-skip-tls-verify=true -u kubeadmin -p "<kubeadmin pw>"`
 
 ## Setting up inventory
