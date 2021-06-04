@@ -47,6 +47,12 @@ cp examples/vSphere-vars.yml .
 - edit common-vars.yml
 - edit vsphere-vars.yml
 
+## load prereq's
+
+```
+ansible-galaxy collection install -r requirements.yml
+```
+
 ## Create cluster
 
 When using variable files
