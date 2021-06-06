@@ -5,7 +5,7 @@
   changed_when: false
   when: "kubeadmin_password is not defined"
 - name: "Retrieve API URL if not already defined"
-  shell: "echo api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com"
+  shell: "echo api.$(hostname | cut -f2 -d'.').cp.fyre.ibm.com"
   register: "ocp_api_url_lookup"
   changed_when: false
   when: "ocp_api_url is not defined"
