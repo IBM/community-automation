@@ -77,8 +77,8 @@
 
 - name: Derive Info from Fyre Api
   set_fact:
-    fyre_inf_public_ip: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='ip_address') | list | first }}"
-    fyre_inf_hostname: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='hostname') | list | first }}"
+    fyre_inf_public_ip: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address','defined') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='ip_address') | list | first }}"
+    fyre_inf_hostname: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address','defined') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='hostname') | list | first }}"
 
 - name: remove new host from localhost known_hosts ip
   command: "ssh-keygen -R {{ fyre_inf_public_ip }}"
