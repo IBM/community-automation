@@ -14,14 +14,31 @@ if [ $ansible_installed == false ]; then
 # check rhel 8 and update/install
 [[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
 
+ubuntu_release=$(grep VERSION= /etc/os-release | cut -d\" -f2 | cut -d. -f1)
+
+[[ $ubuntu_release == 20 ]] && { \
+  sudo apt update -y; \
+  sudo apt upgrade -y; \
+  sudo add-apt-repository -y ppa:deadsnakes/ppa; \
+  sudo apt update -y; \
+  sudo apt-get install -y python3.6; \
+  sudo cd /usr/bin; \
+  sudo rm -f python3; \
+  sudo ln -s python3.6 python3; \
+  sudo apt update -y; \
+  sudo apt upgrade -y; \
+  sudo apt install -y python3-pip; \
+  sudo pip3 install -y ansible==2.10; } || true
+
 # check ubuntu and update/install
-[[ -f /etc/os-release ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { sudo apt -y update; \
-  sudo apt -y upgrade; \
-  sudo apt -y remove --purge ansible; \
-  sudo apt -y install python3 python3-pip sshpass; \
-  sudo add-apt-repository -y add ppa:ansible2.10; \
+[[ $ubuntu_release != 20 ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { \
   sudo apt -y update; \
-  sudo pip3 install ansible; } || true
+  sudo apt -y upgrade; \
+  sudo apt -y install python3 python3-pip sshpass; \
+  sudo rm -f /usr/local/bin/ans*; \
+  sudo add-apt-repository -y ppa:ansible/ansible-2.10; \
+  sudo apt -y update; \
+  sudo pip3 install ansible==2.10; } || true
 
   # clear bash cache
   hash -r
