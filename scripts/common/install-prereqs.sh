@@ -22,9 +22,7 @@ ubuntu_release=$(grep VERSION= /etc/os-release | cut -d\" -f2 | cut -d. -f1)
   sudo add-apt-repository -y ppa:deadsnakes/ppa; \
   sudo apt update -y; \
   sudo apt-get install -y python3.6; \
-  sudo cd /usr/bin; \
-  sudo rm -f python3; \
-  sudo ln -s python3.6 python3; \
+  sudo -s cd /usr/bin; rm -f python3; ln -s python3.6 python3; \
   sudo apt update -y; \
   sudo apt upgrade -y; \
   sudo apt install -y python3-pip; \
