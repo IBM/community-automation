@@ -26,7 +26,7 @@ ubuntu_release=$(grep VERSION= /etc/os-release | cut -d\" -f2 | cut -d. -f1)
   sudo apt update -y; \
   sudo apt upgrade -y; \
   sudo apt install -y python3-pip; \
-  sudo pip3 install -y ansible==2.10; } || true
+  sudo pip3 install ansible==2.10; } || true
 
 # check ubuntu and update/install
 [[ $ubuntu_release != 20 ]] && [[ $(cat /etc/os-release  | grep NAME | grep Ubuntu | grep -v PRETTY | cut -d \" -f2) == "Ubuntu" ]] && { \
