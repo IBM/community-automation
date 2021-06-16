@@ -24,7 +24,8 @@
 "WORKER_CPUS": "16"
 "WORKER_MEMORY": "73728"
 "WORKER_DISK_SIZE": "200"
-
+"WORKER_DISK2_ENABLED": false  # Would need a second disk drive if for example installing rook-ceph on the cluster
+"WORKER_DISK2_SIZE": "500"
 #Route53 setup for vmware-ipi
 "aws_access_key": "<your AWS_ACCESS_KEY_ID>"
 "aws_secret_key": "<your AWS_SECRET_ACCESS_KEY>"

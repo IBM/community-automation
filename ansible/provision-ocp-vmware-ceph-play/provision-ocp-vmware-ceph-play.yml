@@ -1,0 +1,108 @@
+---
+- name: Provision OCP Cluster from hive
+  hosts: hive_instance
+  vars:
+    cloud: vsphere
+    device_name: sdb
+    LABEL: "content: build"
+
+  vars_files:
+    - common-vars.yml
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    # used to login into RHACM/HIVE cluster
+    - role: oc_client_install
+
+    - role: ocp_login
+
+    - role: aws_route53
+      when: 'admin_task != "delete"'
+
+    - role: provision_ocp_cluster
+
+    - role: ocp_login
+      when: 'admin_task == "provision"'
+  tasks:
+
+    - name: Wait for syncsets to be  applied, wait up to 5 minutes
+      shell: "oc  --no-headers=true get clustersync {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} > /dev/null;echo $?"
+      register: syncset_ready_results
+      until: 'syncset_ready_results.stdout == "0"'
+      retries: 5
+      delay: 60
+      when: 'admin_task == "provision"'
+
+    - name: Wait for 5 minutes for syncset to take effect
+      wait_for:
+        timeout: 300
+      when: 'admin_task == "provision"'
+
+    - name: logout of hive hub
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+
+    - name: Display cluster details
+      command: cat {{ CLUSTER_NAME }}_details.log
+      register: cluster_details
+      when: 'admin_task == "provision"'
+
+    - name: Print details
+      debug:
+        msg: "{{ cluster_details.stdout }}"
+      when: 'admin_task == "provision"'
+
+    - set_fact:
+        route_task: "delete"
+      when: 'admin_task == "delete"'
+
+    - name: Run aws_route53 delete - vsphere only
+      include_role:
+        name: aws_route53
+      when: 'route_task == "delete"'
+
+    - name: Clean kubevols - vsphere only
+      include_role:
+        name: clean_vmware_kubevols
+      when: 'route_task == "delete"'
+
+- name: "Using new host connect to new vmware cluster"
+  hosts: ocp_provisioned_cluster
+  gather_facts: yes
+  vars:
+    device_name: sdb
+
+  vars_files:
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+
+    - role: ocp_login # claimed cluster login
+      when: 'admin_task != "delete"'
+
+    - role: wait_for_cluster_ready
+      when: 'admin_task != "delete"'
+
+    - role: deploy_ingress_router_vmware
+      when: 'admin_task != "delete"'
+
+    - role: deploy_vmdisk_vmware
+      when: 'admin_task != "delete"'
+
+    - role: csi_cephfs_vmware
+      when: 'admin_task != "delete"'
+
+  tasks:
+
+    - name: logout of cluster
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
+      when: 'admin_task != "delete"'

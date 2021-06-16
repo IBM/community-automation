@@ -3,11 +3,6 @@
   when: 'admin_task == "provision"'
   block:
 
-    - name: Set AWS or VMware BASE_DOMAIN purple-chesterfield.com
-      set_fact:
-          BASE_DOMAIN: "purple-chesterfield.com"
-      when: 'cloud == "aws" or cloud == "vmware"'
-
     - name: Azure Service Principal
       when: 'cloud == "azure"'
       block:
@@ -36,10 +31,6 @@
           set_fact:
               AZURE_SERVICE_PRINCIPAL: "{{ service_principal1.stdout }}"
           when: ansible_distribution == 'MacOSX'
-
-        - name: Set Azure BASE_DOMAIN green-chesterfield.com
-          set_fact:
-              BASE_DOMAIN: "green-chesterfield.com"
 
     - name: Google Service Account
       when: 'cloud == "google"'
@@ -72,10 +63,6 @@
           set_fact:
               GOOGLE_SERVICE_ACCOUNT: "{{ service_account1.stdout }}"
           when: ansible_distribution == 'MacOSX'
-
-        - name: Set Google BASE_DOMAIN blue-chesterfield.com
-          set_fact:
-              BASE_DOMAIN: "blue-chesterfield.com"
 
     - name: create clusterdeployment CR based on template
       template:
@@ -120,7 +107,7 @@
     - name: Check provisioning progress, waiting up to 60 minutes
       shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
       register: monitor_results
-      until: 'monitor_results.stdout.find("install completed successfully") != -1'
+      until: '(monitor_results.stdout.find("install completed successfully") != -1)'
       retries: 60
       delay: 60
 
@@ -129,8 +116,8 @@
 
     - name: Get admin password for kubeadmin
       shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ CLUSTER_NAME }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
-      register: kubeadmin_password
-    - debug: msg="{{ kubeadmin_password.stdout }}"
+      register: kubeadmin_pw
+    - debug: msg="{{ kubeadmin_pw.stdout }}"
 
     - name: Get openshift console url
       shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }'"
@@ -160,15 +147,40 @@
      register: delete_namespace_results
      failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
+   - name: delete cluster image-set
+     shell: "oc delete clusterimageset {{ CLUSTER_NAME }}-imageset"
+     register: delete_cluster_imageset
+     failed_when: '"not found" not in delete_cluster_imageset.stderr and "deleted" not in delete_cluster_imageset.stdout'
+
 - name: logout of hive hub
   shell: "oc logout"
   register: logout_results
   ignore_errors: yes
 
-- debug:
-    msg:
-     - "OCP Admin: kubeadmin, password {{ kubeadmin_password.stdout }}"
-     - "OCP Admin Console: {{ console_url.stdout }}"
-     - "Cluster API: api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
-     - "Login: oc login -u kubeadmin -p {{ kubeadmin_password.stdout }} https://api.{{ CLUSTER_NAME }}.{{ BASE_DOMAIN }}:6443"
+- name: create output details
+  lineinfile:
+    path: "{{ CLUSTER_NAME }}_details.log"
+    line: "{{ item }}"
+    create: yes
+    mode: 0755
+  with_items:
+    - "OCP Admin: kubeadmin, password {{ kubeadmin_pw.stdout }}"
+    - "OCP Admin Console: {{ console_url.stdout }}"
+    - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+    - "Login: oc login -u kubeadmin -p {{ kubeadmin_pw.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
+  when: 'admin_task == "provision"'
+
+- name: Creat new inventory host (ocp_provisioned_cluster)
+  no_log: true
+  add_host:
+    name: "{{ console_url.stdout.split('.')[2] }}"
+    groups: "ocp_provisioned_cluster"
+    ansible_connection: "local"
+    ansible_python_interpreter: "/usr/bin/python3"
+    kubeadmin_password: "{{ kubeadmin_pw.stdout }}"
+    kubeadmin_user: "kubeadmin"
+    ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+    cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+    admin_task: "provision"
+  changed_when: false
   when: 'admin_task == "provision"'

@@ -5,7 +5,7 @@
 - Installs `csi-cephfs` storage on worker nodes using the /dev/vdb drive on each worker node.
   - Creates file storage (rwo/rwx)  storageclass called `csi-cephfs` as the default storageclass.
   - Creates block storageclass (rwo/rwx) `rook-ceph-block`
-- Installs `common-services` 3.4.1 GA by default.
+- Installs `common-services` latest GA by default.
 
 ## Assumptions:
 

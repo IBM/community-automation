@@ -1,0 +1,26 @@
+---
+# Download from URL oav and deploy to vCenter
+- name: Get number of worker nodes
+  shell: "oc get no | tr -s ' ' | cut -f1 -d' ' | grep worker | wc -l"
+  register: num_worker_nodes
+
+- name: Using num_worker_nodes to fill in ingress-router-patch-template
+  template:
+    src: "ingress-router-patch-template.j2"
+    dest: "ingress-router-patch.json"
+    backup: false
+    mode: 0755
+
+- name: cat json patch
+  shell: "cat ingress-router-patch.json"
+  register: router_json
+
+- name: Patch ingress router to be enabled on all worker nodes
+  shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch '{{ router_json.stdout }}' --type=merge"
+  args:
+      warn: false
+  register: ingress_routes
+
+- name: Viewing ingress router worker node setup
+  debug:
+    msg: "{{ ingress_routes.stdout_lines }}"

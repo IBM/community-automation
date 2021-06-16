@@ -28,14 +28,14 @@
 
 # The Operand Deployment Lifecycle Manager is not always available immediately
 - name: Waiting for Operand Deployment Lifecycle Manager to complete
-  shell: "oc -n {{ cs_operator_project_name }} get csv --no-headers | grep operand-deployment-lifecycle-manager | grep Succeeded | wc -l"
+  shell: "oc get csv -A --no-headers | grep operand-deployment-lifecycle-manager | grep Succeeded | wc -l"
   register: operand_count
   until: operand_count.stdout|int != 0
-  retries: 10
+  retries: 20
   delay: 30
 
 - name: Making sure CRD OperandRegistry is present
-  shell: "oc -n ibm-common-services get operandregistry --no-headers | grep common-service | wc -l"
+  shell: "oc get operandregistry -A --no-headers | grep common-service | wc -l"
   register: crdc_count
   until: crdc_count.stdout|int == 1
   retries: 10
@@ -87,7 +87,7 @@
   shell: "sleep 30; oc -n ibm-common-services get statefulset --no-headers | grep -i mongodb | wc -l"
   register: mongo_count
   until: mongo_count.stdout|int != 0
-  retries: 5
+  retries: 10
   delay: 30
 
 - name: Make sure all Statefulsets are healthy

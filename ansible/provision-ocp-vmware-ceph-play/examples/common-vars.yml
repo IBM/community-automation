@@ -1,0 +1,23 @@
+---
+# ACM/HIVE Cluster Information
+"kubeadmin_user": "kubeadmin"
+"kubeadmin_password": "" #  ACM/Hive used for cluster create
+"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # ACM/HIVE used for cluster creates public instance api URL
+
+"CLUSTER_NAME": "<cluster_name>"  # limit to 21 characters on AWS, limit has not been researched on other platforms.
+
+# Deployment Details
+# Provision or delete cluster
+"admin_task": "provision" # delete|provision
+
+# Public ssh key. Typically from the VM your creating the cluster on
+"SSH_PUBLIC_KEY": '<public key>'
+
+# Set to purple-chesterfield.com or brown-chesterfield.com only.
+"BASE_DOMAIN": "purple-chesterfield.com" 
+
+# What OCP version you want to install
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.7.0-x86_64"
+
+# Redhat pull secret. You can get one here https://cloud.redhat.com/openshift/install/aws/installer-provisioned
+"PULL_SECRET": '<pull_secret>' # be sure to leave the quotes in place

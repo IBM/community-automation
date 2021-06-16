@@ -1,0 +1,2 @@
+---
+- include_tasks: deploy_ingress_router_vmware.yaml

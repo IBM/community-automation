@@ -6,9 +6,11 @@ fyre_ocpdeployurl: "{{ fyre_apiurl }}?operation=deployopenshiftcluster"
 fyreocpplus_ocpdeployurl: "{{ fyreocpplus_apiurl }}/v1/ocp/"
 fyre_opshowclusterurl: "{{ fyre_apiurl }}?operation=query&request=showclusters"
 fyre_ocp_inf_group: "ocpClusters"
-fyre_inf_node_name: "{{ clusterName | lower }}-inf"
+fyre_inf_node_name: "{{ clusterName | lower }}-inf" # Only used on old OCP (not OCP+)
 fyre_site: "svl"
+fyre_group_id: "0"
 fyre_ocptype: "ocp"
+fyre_addAnsibleHost: true
 # this will read the value from the file, submitting just the filename does not work
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 

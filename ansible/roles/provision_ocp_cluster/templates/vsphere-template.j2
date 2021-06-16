@@ -6,6 +6,7 @@ items:
     creationTimestamp: null
     labels:
       hive.openshift.io/hiveutil-created: "true"
+      {{ LABEL }}
     name: {{ CLUSTER_NAME }}
     namespace: {{ CLUSTER_NAME }}
   spec:
@@ -18,7 +19,7 @@ items:
       vsphere:
         certificatesSecretRef:
           name: {{ CLUSTER_NAME }}-vsphere-certs
-        cluster: {{ VCENTER_CLUSTERNAME }} 
+        cluster: {{ VCENTER_CLUSTERNAME }}
         credentialsSecretRef:
           name: {{ CLUSTER_NAME }}-vsphere-creds
         datacenter: {{ VCENTER_DATACENTER }}
@@ -46,7 +47,7 @@ items:
     name: worker
     platform:
       vsphere:
-        coresPerSocket: 1 
+        coresPerSocket: 1
         cpus: {{ WORKER_CPUS }}
         memoryMB: {{ WORKER_MEMORY }}
         osDisk:
@@ -64,7 +65,7 @@ items:
       apiVersion: v1
       baseDomain: {{ BASE_DOMAIN }}
       compute:
-      - name: worker 
+      - name: worker
         platform:
           vsphere:
             cpus: {{ WORKER_CPUS }}
@@ -77,7 +78,7 @@ items:
         name: master
         platform:
           vsphere:
-            cpus: {{ MASTER_CPUS }} 
+            cpus: {{ MASTER_CPUS }}
             coresPerSocket: 1
             memoryMB: {{ MASTER_MEMORY }}
             osDisk:
@@ -97,7 +98,7 @@ items:
         - 172.30.0.0/16
       platform:
         vsphere:
-          apiVIP: {{ OCP_API_IP_ADDRESS }} 
+          apiVIP: {{ OCP_API_IP_ADDRESS }}
           cluster: {{ VCENTER_CLUSTERNAME }}
           datacenter: {{ VCENTER_DATACENTER }}
           defaultDatastore:  {{ VCENTER_DATASOURCE }}

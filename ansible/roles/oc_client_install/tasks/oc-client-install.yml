@@ -28,7 +28,7 @@
       warn: false
 
   - name: Copy oc command to local bin
-    ansible.builtin.copy:
+    copy:
       src: oc
       dest: /usr/local/bin/oc
       owner: root
@@ -38,7 +38,7 @@
     become_user: root
 
   - name: Copy kubectl to local bin
-    ansible.builtin.copy:
+    copy:
       src: kubectl
       dest: /usr/local/bin/kubectl
       owner: root

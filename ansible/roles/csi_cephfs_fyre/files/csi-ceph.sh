@@ -13,8 +13,6 @@ if [[ -n $registry ]]; then
   fi
 fi
 
-oc login -u kubeadmin -p "$(cat /root/auth/kubeadmin-password)" https://api.$(hostname | cut -f1 -d'.' | rev | cut -f1 -d'-' --complement | rev).cp.fyre.ibm.com:6443 --insecure-skip-tls-verify=true
-
 # Install ceph
 rm -rf rook
 echo "Doing clone of rook release $rookRelease"
@@ -109,6 +107,6 @@ else
   echo "Set storageclass $default_storage_class to not be default"
   oc patch storageclass $default_storage_class -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
 fi
-echo "Set default storageclass to $new_default_cs"
+echo "Set default storageclass to $new_default_sc"
 oc patch storageclass $new_default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml

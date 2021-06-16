@@ -41,9 +41,9 @@ items:
     platform:
       azure:
         osDisk:
-          diskSizeGB: 128
-        type: Standard_D2s_v3
-    replicas: 3
+          diskSizeGB: {{ AZURE_WORKER_DISK_SIZE }}
+        type: "{{ AZURE_WORKER_TYPE }}"
+    replicas: {{ AZURE_WORKER_COUNT }}
   status: {}
 - apiVersion: v1
   kind: Secret

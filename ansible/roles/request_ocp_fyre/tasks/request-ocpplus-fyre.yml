@@ -77,7 +77,8 @@
 
 - name: Derive Info from Fyre Api
   set_fact:
-    fyre_inf_public_ip: "{{ cluster_status_response.json.clusters[0].vms | selectattr('hostname', 'equalto', fyre_inf_node_name) | map(attribute='ip_address') | list | first }}"
+    fyre_inf_public_ip: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address','defined') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='ip_address') | list | first }}"
+    fyre_inf_hostname: "{{ cluster_status_response.json.clusters[0].vms | selectattr('ip_address','defined') | selectattr('ip_address', 'match', '^9..*$' ) | map(attribute='hostname') | list | first }}"
 
 - name: remove new host from localhost known_hosts ip
   command: "ssh-keygen -R {{ fyre_inf_public_ip }}"
@@ -85,14 +86,8 @@
   # changed_when: false Technically not true but change is not particularly meaningful
   failed_when: false
   delegate_to: localhost
-- name: remove new host from localhost known_hosts
-  command: "ssh-keygen -R {{ fyre_inf_node_name }}"
-  changed_when: false
-  # changed_when: false Technically not true but change is not particularly meaningful
-  failed_when: false
-  delegate_to: localhost
 - name: remove new host from localhost known_hosts fqdn
-  command: "ssh-keygen -R {{ fyre_inf_node_name }}.fyre.ibm.com"
+  command: "ssh-keygen -R {{ fyre_inf_hostname }}"
   changed_when: false
   # changed_when: false Technically not true but change is not particularly meaningful
   failed_when: false
@@ -110,3 +105,13 @@
     ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
     ocp_api_port: "6443"
   changed_when: false
+  when: "fyre_addAnsibleHost|bool == true"
+- name: Update existing host with OCP Facts
+  set_fact:
+    kubeadmin_password: "{{ cluster_status_response.json.clusters[0].kubeadmin_password }}"
+    ocp_access_url: "{{ cluster_status_response.json.clusters[0].access_url }}"
+    ocp_api_url: "api.{{ clusterName }}.cp.fyre.ibm.com"
+    ocp_api_port: "6443"
+  no_log: True
+  changed_when: false
+  when: "fyre_addAnsibleHost|bool == false"
