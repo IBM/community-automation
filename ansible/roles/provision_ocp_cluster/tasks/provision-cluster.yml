@@ -147,6 +147,11 @@
      register: delete_namespace_results
      failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
 
+   - name: delete cluster image-set
+     shell: "oc delete clusterimageset {{ CLUSTER_NAME }}-imageset"
+     register: delete_cluster_imageset
+     failed_when: '"not found" not in delete_cluster_imageset.stderr and "deleted" not in delete_cluster_imageset.stdout'
+
 - name: logout of hive hub
   shell: "oc logout"
   register: logout_results
@@ -166,7 +171,7 @@
   when: 'admin_task == "provision"'
 
 - name: Creat new inventory host (ocp_provisioned_cluster)
-  no_log: "True"
+  no_log: true
   add_host:
     name: "{{ console_url.stdout.split('.')[2] }}"
     groups: "ocp_provisioned_cluster"
