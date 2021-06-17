@@ -17,7 +17,7 @@ sleep 5
 oc project openshift-storage
 ###
 csv_counter=30
-oc get csv local-storage-operator.4.6.0-202106021513 --no-headers=true | grep local-storage-operator
+oc get csv --no-headers=true | grep ocs-operator
 rc_csv=$?
 echo -n "Checking for ocs operator csv "
 while [[ $rc_csv -eq 1 ]]
@@ -29,14 +29,14 @@ do
         exit 1
     fi
     sleep 5
-    oc get csv
+    oc get csv | grep ocs-operator
     rc_csv=$?
     echo -n .
 done
 echo
 echo -n "Waiting for Openshift Container Storage Operator to be ready."
 COUNTER=60
-STATUS=$(oc get csv --no-headers=true | grep local-storage-operator | rev | cut -f1 -d' ' | rev | tr -d ' ')
+STATUS=$(oc get csv --no-headers=true | grep ocs-operator | rev | cut -f1 -d' ' | rev | tr -d ' ')
 while [[ "${STATUS}" != "Succeeded" ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
@@ -46,7 +46,7 @@ do
         exit 1
     fi
     sleep 10
-    STATUS=$(oc get csv --no-headers=true | grep local-storage-operator | rev | cut -f1 -d' ' | rev | tr -d ' ')
+    STATUS=$(oc get csv --no-headers=true | grep ocs-operator | rev | cut -f1 -d' ' | rev | tr -d ' ')
     echo -n $STATUS
     echo -n .
 done
