@@ -37,7 +37,7 @@ echo
 echo -n "Waiting for Openshift Container Storage Operator to be ready."
 COUNTER=60
 STATUS=$(oc get csv --no-headers=true | rev | cut -f1 -d' ' | rev | tr -d ' ')
-while [[ "${STATUS}" != "Succeeded" ]]
+while [[ "${STATUS}" != *"Succeeded"* ]]
 do
     COUNTER=$(( ${COUNTER} -1 ))
     if [ "$COUNTER" -lt 1 ]
