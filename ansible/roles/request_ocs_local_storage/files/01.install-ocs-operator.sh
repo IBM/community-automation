@@ -4,12 +4,16 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Installing Openshift Container Storage Operator."
 
-oc apply -f $my_dir/01.ocs-operator.yaml
-
-if [ ! $? -eq 0 ]
+oc get csv --no-headers=true -n openshift-storage | grep ocs-operator
+if [[ $? -ne 0 ]]
 then
-    echo "There was an error installing Openshift Container Storage Operator."
-    exit 1
+    oc apply -f $my_dir/01.ocs-operator.yaml
+
+    if [ ! $? -eq 0 ]
+    then
+        echo "There was an error installing Openshift Container Storage Operator."
+        exit 1
+    fi
 fi
 
 

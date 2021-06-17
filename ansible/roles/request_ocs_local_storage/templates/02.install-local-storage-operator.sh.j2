@@ -4,12 +4,17 @@ my_dir=$(dirname $(readlink -f $0))
 
 echo "Installing Local Storage Operator."
 
-oc apply -f $my_dir/02.local-storage-operator.yaml
+oc get csv --no-headers=true -n {{ local_storage_namespace }} | grep local-storage-operator
 
-if [ ! $? -eq 0 ]
+if [[ $? -ne 0 ]]
 then
-    echo "There was an error installing Local Storage Operator."
-    exit 1
+    oc apply -f $my_dir/02.local-storage-operator.yaml
+
+    if [ ! $? -eq 0 ]
+    then
+        echo "There was an error installing Local Storage Operator."
+        exit 1
+    fi
 fi
 
 
