@@ -12,7 +12,7 @@ do
     echo "              - ${node}" >> $my_dir/46.local-volumes-discovery.yaml
 done
 
-oc create -f $my_dir/46.local-volumes-discovery.yaml
+oc apply -f $my_dir/46.local-volumes-discovery.yaml
 
 if [ ! $? -eq 0 ]
 then
