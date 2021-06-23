@@ -32,7 +32,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/was-automation-register/examples/inventory ./ansible/was-automation-register/; ansible-playbook -i ./ansible/was-automation-register/inventory ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_scope=${params.wa_target_scope} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert=${params.wa_cert} -e wsadmin_username=${params.wsadmin_username} -e wsadmin_password=${paramas.wsadmin_password} -e sslRef=${params.sslRef}
+          cp ./ansible/was-automation-register/examples/inventory ./ansible/was-automation-register/; ansible-playbook -i ./ansible/was-automation-register/inventory ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_scope=${params.wa_target_scope} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert=${params.wa_cert} -e wsadmin_username=${params.wsadmin_username} -e wsadmin_password=${params.wsadmin_password} -e sslRef=${params.sslRef}
         """.stripIndent()
       }
    }
