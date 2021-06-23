@@ -1,0 +1,15 @@
+---
+- name: copy configuretWasUsageMetering.py to target host
+  copy:
+   src: "scripts/"
+   dest: ~/
+   mode: '0755'
+
+- name: run wsadmin.sh
+  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }}"
+  args:
+   chdir: "{{ wa_target_path }}"
+  register: wsadmin
+
+- debug:
+   msg: "{{ wsadmin.stdout_lines }}"

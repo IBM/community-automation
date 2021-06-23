@@ -1,0 +1,40 @@
+#! groovy
+
+// Standard job properties
+def jobProps = [
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '50')),
+  disableResume(),
+  durabilityHint("PERFORMANCE_OPTIMIZED"),
+  [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+]
+
+def paramsList = [
+    string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
+    choice(name: 'wa_target_scope', defaultValue: 'Cell', choices: ['Cell','Node','Cluster','Server'], description: 'Traditional WebSphere scope'),
+    string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'path as defined in step 4 -> https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server#cf-t-add-was__wsascript'),
+    string(name: 'wsadmin_username', defaultValue: 'changeMe', description: 'Traditional WebSphere wsadmin username'),
+    password(name: 'wsadmin_password', defaultValue: 'changeMe', description: 'Traditional WebSphere wsadmin password'),
+    string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
+    password(name: 'api_key', defaultValue: 'changeMe', description: 'WebSphere Automation instance api_key'),
+    password(name: 'wa_cert', defaultValue: 'changeMe', description: 'WebSphere Automation instance certificate'),
+    string(name: 'sslRef', defaultValue: 'CellDefaultSSLSettings', description: 'Traditional WebSphere sslRef'),
+  ]
+jobProps.push(parameters(paramsList))
+
+properties(jobProps)
+
+timestamps {
+  ansiColor('xterm') {
+    node ( 'kube_pod_slave' ) {
+
+      //def scmVars = checkout scm
+      checkout scm
+      stage('Stage 1') {
+        sh """
+          set +x # hide sensitive info being echo'd to log
+          cp ./ansible/was-automation-register/examples/inventory ./ansible/was-automation-register/; ansible-playbook -i ./ansible/was-automation-register/inventory ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_scope=${params.wa_target_scope} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert=${params.wa_cert} -e wsadmin_username=${params.wsadmin_username} -e wsadmin_password=${paramas.wsadmin_password} -e sslRef=${params.sslRef}
+        """.stripIndent()
+      }
+   }
+  }
+}
