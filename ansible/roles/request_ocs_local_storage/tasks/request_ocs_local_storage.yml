@@ -150,7 +150,7 @@
     msg: "{{ volumeset.stdout_lines }}"
 
 - name: Install storagecluster
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh {{ default_sc }}"
   args:
       warn: false
   register: storagecluster
