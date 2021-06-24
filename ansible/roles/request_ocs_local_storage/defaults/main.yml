@@ -8,7 +8,6 @@ device_set: ocs-deviceset
 localstore_version: 4.5
 ocs_channel: stable-4.5
 num_devices: 1 #Num of additional disks per worker. Only support more than 1 for OCP 4.6 or newer clusters.
-ocs_volume_discovery: true
 ### Change to the additional definition for your cluster type. Only need for OCP 4.5 or 4.4. Not used on OCP 4.6 clusters.
 ocs_device: /dev/vdb
 ## For quickburn clusters only

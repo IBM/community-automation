@@ -127,30 +127,30 @@
 
 - name: OCS auto discovery of local volumes
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volumes-discovery.sh"
-  when: oc_version.stdout is version('4.6', '>=') and (ocs_volume_discovery|bool == true)
+  when: oc_version.stdout is version('4.6', '>=')
   args:
       warn: false
   register: autovolumediscovery
 
 - name: Viewing auto discovery of local-volumes log
-  when: oc_version.stdout is version('4.6', '>=') and (ocs_volume_discovery|bool == true)
+  when: oc_version.stdout is version('4.6', '>=')
   debug:
     msg: "{{ autovolumediscovery.stdout_lines }}"
 
 - name: OCS create localvolumeset
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volume-set.sh"
-  when: oc_version.stdout is version('4.6', '>=') and (ocs_volume_discovery|bool == true)
+  when: oc_version.stdout is version('4.6', '>=')
   args:
       warn: false
   register: volumeset
 
 - name: Viewing localvolumeset log
-  when: oc_version.stdout is version('4.6', '>=') and (ocs_volume_discovery|bool == true)
+  when: oc_version.stdout is version('4.6', '>=')
   debug:
     msg: "{{ volumeset.stdout_lines }}"
 
 - name: Install storagecluster
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh {{ default_sc }}"
+  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
   args:
       warn: false
   register: storagecluster
