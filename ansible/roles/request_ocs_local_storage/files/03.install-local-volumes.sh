@@ -16,7 +16,7 @@ echo -n "Waiting for Local Volumes to be created."
 sleep 10
 
 COUNTER=30
-POD_COUNT=$(oc get pod -n local-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
+POD_COUNT=$(oc get pod -n openshift-local-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
 while [ $POD_COUNT -gt 0 ]
 do
     COUNTER=$(( ${COUNTER} -1 ))
@@ -27,7 +27,7 @@ do
     fi
     sleep 5
     echo -n .
-    POD_COUNT=$(oc get pod -n local-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
+    POD_COUNT=$(oc get pod -n openshift-local-storage | egrep -v '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME' | wc -l)
 done
 
 COUNTER=30
