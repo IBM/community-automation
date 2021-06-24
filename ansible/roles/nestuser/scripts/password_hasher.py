@@ -8,5 +8,5 @@ password = sys.argv[1]
 # Generate a new salt and hash the provided password
 hash = sha256_crypt.encrypt(password);
 # Output
-print hash
+print (hash)
 

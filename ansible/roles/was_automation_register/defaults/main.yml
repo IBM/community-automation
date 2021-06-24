@@ -1,0 +1,9 @@
+### WebSphere Automation instance artifacts
+api_key: 'thisIsAllowsOverridden'
+wa_url: 'thisIsAllowsOverridden'
+wa_cert: 'thisIsAllowsOverridden'
+wa_target_host: 'thisIsAllowsOverridden'
+wa_target_scope: 'thisIsAllowsOverridden'
+wa_target_path: 'thisIsAllowsOverridden'
+wsadmin_username: 'thisIsAllowsOverridden'
+wsadmin_password: 'thisIsAllowsOverridden'
