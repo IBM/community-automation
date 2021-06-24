@@ -1086,7 +1086,7 @@ else:
     if len(url) > 0:
         print "  url: " + url
     if len(apiKey) > 0:
-        print "  apiKey: " + apiKey
+        print "  apiKey: " + "********"  #### schader@us.ibm.com - do not echo sensitive info
     if len(sslRef) > 0:
         print "  sslRef: " + sslRef
     if len(trustStoreName) > 0:

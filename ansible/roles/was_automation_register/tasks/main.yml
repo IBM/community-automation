@@ -5,6 +5,13 @@
    dest: ~/
    mode: '0755'
 
+  # https://www.ibm.com/support/pages/apar/PK72753
+- name: set wsadmin prop to not echo sensitive info
+  replace:
+   path: "{{ wa_target_path }}/properties/wsadmin.properties"
+   regexp: 'com.ibm.ws.scripting.echoparams=true'
+   replace: 'com.ibm.ws.scripting.echoparams=false'
+
 - name: run wsadmin.sh
   shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }}"
   args:
