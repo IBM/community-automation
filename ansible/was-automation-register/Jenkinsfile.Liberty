@@ -10,12 +10,12 @@ def jobProps = [
 
 def paramsList = [
     string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
-    string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-liberty-server')
+    string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-liberty-server'),
     password(name: 'wsadmin_password', description: 'Traditional WebSphere wsadmin password'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
     password(name: 'api_key', description: 'WebSphere Automation instance api_key'),
     password(name: 'wa_cert', description: 'WebSphere Automation instance certificate base64 encoded'),
-    password(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore'),
+    password(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore')
   ]
 jobProps.push(parameters(paramsList))
 
