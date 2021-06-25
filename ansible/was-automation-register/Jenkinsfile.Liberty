@@ -14,7 +14,8 @@ def paramsList = [
     password(name: 'wsadmin_password', description: 'Traditional WebSphere wsadmin password'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
     password(name: 'api_key', description: 'WebSphere Automation instance api_key'),
-    password(name: 'wa_cert', description: 'WebSphere Automation instance certificate'),
+    password(name: 'wa_cert', description: 'WebSphere Automation instance certificate base64 encoded'),
+    password(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -30,7 +31,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
-          cp ./ansible/was-automation-register/examples/inventory ./ansible/was-automation-register/; ansible-playbook -i ${params.wa_target_host}, ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert=${params.wa_cert} -e waProductType='Liberty'
+          cp ./ansible/was-automation-register/examples/inventory ./ansible/was-automation-register/; ansible-playbook -i ${params.wa_target_host}, ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert=${params.wa_cert} -e wa_keystore_pass=${params.wa_keystore_pass} -e waProductType='Liberty'
         """.stripIndent()
       }
    }
