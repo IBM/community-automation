@@ -1,17 +1,5 @@
 ---
 
-# handy command: /opt/liberty/wlp/bin/server list
-# The following servers are defined relative to the user directory /opt/IBM/WebSphere/wlp/usr.
-#
-#server1
-#server2
-#server3
-#server4
-#server5
-#server6
-#
-# 
-
 - name: locate shared/config and list of Liberty servers
   command: "{{ wa_target_path }}/bin/server list"
   register: server_list
@@ -68,11 +56,7 @@
 
 - name: generate new p12 trust
   command: "{{ wa_target_path }}/{{ securityUtility_bin.stdout_lines[0] }} encode {{ wa_keystore_pass }}"
-  register: xor
-
-- name: xor out
-  debug: 
-    msg: "{{ xor.stdout }}"
+  register: xor # DO NOT CHANGE THIS NAME. ITS used in templates/was-usage-metering.xml.j2
 
 - name: Generate config files
   template:
@@ -95,17 +79,10 @@
   debug: 
     msg: "{{ genp12.stdout_lines }}"
 
-    # these strip the required newlines
 - name: create input pem file
   template:
-   src: wa.pem.j2
+   src: wa.pem.j2 # current base64 encoded cert is in defaults/main.yml
    dest: "{{ liberty_shared_config }}/wa.pem"
-
-    #- name: create input pem file with trailing newline
-    #  lineinfile:
-    #    path: "{{ liberty_shared_config }}/wa.pem"
-    #    line: "{{ wa_cert }}"
-    #    create: yes
 
 - name: import wa cert
   command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -import -trustcacerts -file wa.pem -keystore was-usage-metering.p12 -storepass {{ wa_keystore_pass }} -storetype PKCS12 -noprompt"
