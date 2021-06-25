@@ -1,0 +1,106 @@
+---
+
+# handy command: /opt/liberty/wlp/bin/server list
+# The following servers are defined relative to the user directory /opt/IBM/WebSphere/wlp/usr.
+#
+#server1
+#server2
+#server3
+#server4
+#server5
+#server6
+#
+# 
+
+- name: locate shared/config and list of Liberty servers
+  command: "{{ wa_target_path }}/bin/server list"
+  register: server_list
+
+- name: pick up the lines we are interested in.
+  set_fact:
+    important_lines: "{{ important_lines|default([]) + [item] }}"
+  when: item | length > 1
+  with_items:
+  - "{{ server_list.stdout_lines }}"
+
+- name: find the line with the name we are looking for 
+  set_fact:
+    usr_dir: "{{ item }}"
+  when: item|trim|lower is search('directory')
+  with_items:
+  - "{{ important_lines }}"
+
+- name: find the servers
+  set_fact:
+    liberty_servers: "{{ liberty_servers|default([]) + [item] }}"
+  when: item|trim is not search(' ')
+  with_items:
+  - "{{ important_lines }}"
+
+- name: liberty servers
+  debug: 
+    msg: "{{ liberty_servers }}"
+
+- name: find the lengths
+  set_fact:
+    usr_dir_index: "{{ usr_dir.find('directory')|int+10 }}"
+    usr_dir_len: "{{ usr_dir|length|int-1 }}"
+
+- name: find the liberty usr dir
+  set_fact:
+   liberty_usr_dir: "{{ usr_dir[usr_dir_index|int:usr_dir_len|int] }}"
+   liberty_shared_config: "{{ usr_dir[usr_dir_index|int:usr_dir_len|int] }}/shared/config"
+
+- name: remove existing config
+  file:
+   path: "{{ item }}"
+   state: absent
+  with_items:
+  - "{{ liberty_shared_config }}/was-usage-metering.xml"
+  - "{{ liberty_shared_config }}/was-usage-metering.p12"
+  - "{{ liberty_shared_config }}/wa.pem"
+
+- name: Generate config files
+  template:
+   src: was-usage-metering.xml.j2
+   dest: "{{ liberty_shared_config }}/was-usage-metering.xml"
+
+- name: find the keytool
+  command: "find . -name keytool"
+  args:
+   chdir: "{{ wa_target_path }}"
+  register: keytool_bin
+
+- name: generate new p12 trust
+  command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -genkeypair -dname 'cn=NEST, ou=SVT, o=IBM, c=US' -alias wa -keypass {{ wa_keystore_pass }} -keystore was-usage-metering.p12 -storepass letme1n2.2021Q3 -validity 3650 -keyalg RSA"
+  args:
+   chdir: "{{ liberty_shared_config }}"
+  register: genp12
+
+- name: generated p12 stdout
+  debug: 
+    msg: "{{ genp12.stdout_lines }}"
+
+- name: create input pem file
+  template:
+   src: wa.pem.xml.j2
+   dest: "{{ liberty_shared_config }}/wa.pem"
+
+- name: import wa cert
+  command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -import -trustcacerts -file wa.pem -keystore was-usage-metering.p12 -storepass {{ wa_keystore_pass }} -storetype PKCS12 -noprompt"
+  args:
+   chdir: "{{ liberty_shared_config }}"
+  register: import_cert
+
+- name: import wa cert stdout
+  debug: 
+    msg: "{{ import_cert.stdout_lines }}"
+
+- name: add new config into the servers server.xml file
+  lineinfile:
+    path: "{{ liberty_usr_dir }}/servers/{{ item }}/server.xml"
+    regexp: '^was-usage-metering.xml'
+    insertbefore: '</server>'
+    line: '     <include optional="true" location="${shared.config.dir}/was-usage-metering.xml" />'
+  with_items:
+  - "{{ liberty_servers }}"

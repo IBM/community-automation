@@ -1,0 +1,18 @@
+<server>
+    <featureManager>
+	<feature>usageMetering-1.0</feature>
+    </featureManager>
+    <!-- https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-liberty-server -->
+    <keyStore id="meteringKeyStore"
+          location="${shared.config.dir}/was-usage-metering.p12"
+          password="Management"
+          type="PKCS12"/>
+    <ssl id="meteringSSL"
+          keyStoreRef="meteringKeyStore"
+          trustStoreRef="meteringKeyStore"
+	  sslProtocol="TLSv1.2"/>
+    <usageMetering url="{{ wa_url }}"
+	    apiKey="{{ api_key }}
+	    sslRef="meteringSSL"/>
+
+</server>
