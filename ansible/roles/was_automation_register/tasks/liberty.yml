@@ -75,10 +75,6 @@
    chdir: "{{ liberty_shared_config }}"
   register: genp12
 
-- name: generated p12 stdout
-  debug: 
-    msg: "{{ genp12.stdout_lines }}"
-
 - name: create input pem file
   template:
    src: wa.pem.j2 # current base64 encoded cert is in defaults/main.yml
@@ -89,10 +85,6 @@
   args:
    chdir: "{{ liberty_shared_config }}"
   register: import_cert
-
-- name: import wa cert stdout
-  debug: 
-    msg: "{{ import_cert.stdout_lines }}"
 
 - name: add new config into the servers server.xml file
   lineinfile:
