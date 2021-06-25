@@ -60,6 +60,20 @@
   - "{{ liberty_shared_config }}/was-usage-metering.p12"
   - "{{ liberty_shared_config }}/wa.pem"
 
+- name: find the keytool
+  command: "find . -name securityUtility"
+  args:
+   chdir: "{{ wa_target_path }}"
+  register: securityUtility_bin
+
+- name: generate new p12 trust
+  command: "{{ wa_target_path }}/{{ securityUtility_bin.stdout_lines[0] }} encode {{ wa_keystore_pass }}"
+  register: xor
+
+- name: xor out
+  debug: 
+    msg: "{{ xor.stdout }}"
+
 - name: Generate config files
   template:
    src: was-usage-metering.xml.j2
@@ -72,7 +86,7 @@
   register: keytool_bin
 
 - name: generate new p12 trust
-  command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -genkeypair -dname 'cn=NEST, ou=SVT, o=IBM, c=US' -alias wa -keypass {{ wa_keystore_pass }} -keystore was-usage-metering.p12 -storepass letme1n2.2021Q3 -validity 3650 -keyalg RSA"
+  command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -genkeypair -dname 'cn=NEST, ou=SVT, o=IBM, c=US' -alias wa -keypass {{ wa_keystore_pass }} -keystore was-usage-metering.p12 -storepass {{ wa_keystore_pass }} -validity 3650 -keyalg RSA -storetype PKCS12"
   args:
    chdir: "{{ liberty_shared_config }}"
   register: genp12
@@ -81,10 +95,17 @@
   debug: 
     msg: "{{ genp12.stdout_lines }}"
 
+    # these strip the required newlines
 - name: create input pem file
   template:
-   src: wa.pem.xml.j2
+   src: wa.pem.j2
    dest: "{{ liberty_shared_config }}/wa.pem"
+
+    #- name: create input pem file with trailing newline
+    #  lineinfile:
+    #    path: "{{ liberty_shared_config }}/wa.pem"
+    #    line: "{{ wa_cert }}"
+    #    create: yes
 
 - name: import wa cert
   command: "{{ wa_target_path }}/{{ keytool_bin.stdout_lines[0] }} -import -trustcacerts -file wa.pem -keystore was-usage-metering.p12 -storepass {{ wa_keystore_pass }} -storetype PKCS12 -noprompt"
