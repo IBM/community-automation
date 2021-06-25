@@ -3,6 +3,7 @@
 ## Assumptions:
 
  - WebShpere Automation configured
+
  - [tWAS - runs the configuretWasUsageMetering.py script on a dmgr for all application servers in the cell](https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server) 
  -  Liberty - WA Cert embedded in was_automation_register/tasks/defaults/main.yml
 
