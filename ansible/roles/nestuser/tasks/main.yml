@@ -2,8 +2,6 @@
 
 - name: Generate User Password file
   script: scripts/password_hasher.py {{ user_password }} > {{ user_passfile }}
-  args:
-    creates: "{{ user_passfile }}"
   delegate_to: localhost
 
   #    - name: Ensure User is Absent
