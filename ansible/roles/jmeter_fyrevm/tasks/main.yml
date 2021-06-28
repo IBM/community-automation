@@ -7,7 +7,7 @@
   - arch: x
   - numcpu: 2
   - memory: 2 # GB memory Fyre hosting VM
-  - fos: 'Redhat 8.3'
+  - fos: 'Redhat 8.4'
   - comment: 'RH Jmeter'
   - localclusterName: "{{ clusterName }}"
   include_tasks:
