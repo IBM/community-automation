@@ -32,7 +32,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
 	  export ANSIBLE_FORCE_COLOR=true
-          cp ./ansible/request-rhel-jmeter-fyre-play/examples/inventory ./ansible/request-rhel-jmeter-fyre-play/; ansible-playbook -i ./ansible/request-rhel-jmeter-fyre-play/inventory ./ansible/request-rhel-jmeter-fyre-play/request-rhel-jmeter-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} -e stackName=${params.stackName}
+          cp ./ansible/request-rhel-jmeter-fyre-play/examples/inventory ./ansible/request-rhel-jmeter-fyre-play/; ansible-playbook -i ./ansible/request-rhel-jmeter-fyre-play/inventory ./ansible/request-rhel-jmeter-fyre-play/request-rhel-jmeter-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} -e stackName=${params.stackName} -vvv
         """.stripIndent()
       }
    }
