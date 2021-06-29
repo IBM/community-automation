@@ -13,7 +13,7 @@
    replace: 'com.ibm.ws.scripting.echoparams=false'
 
 - name: run wsadmin.sh
-  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }}"
+  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }} startServers={{ start_servers }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: wsadmin

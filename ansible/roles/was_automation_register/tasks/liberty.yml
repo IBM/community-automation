@@ -48,13 +48,13 @@
   - "{{ liberty_shared_config }}/was-usage-metering.p12"
   - "{{ liberty_shared_config }}/wa.pem"
 
-- name: find the keytool
+- name: find the securityUtility
   command: "find . -name securityUtility"
   args:
    chdir: "{{ wa_target_path }}"
   register: securityUtility_bin
 
-- name: generate new p12 trust
+- name: mask the password
   command: "{{ wa_target_path }}/{{ securityUtility_bin.stdout_lines[0] }} encode {{ wa_keystore_pass }}"
   register: xor # DO NOT CHANGE THIS NAME. ITS used in templates/was-usage-metering.xml.j2
 
@@ -94,3 +94,32 @@
     line: '     <include optional="true" location="${shared.config.dir}/was-usage-metering.xml" />'
   with_items:
   - "{{ liberty_servers }}"
+
+- block:
+  - name: stop liberty servers ( if server not running an error will be produced - ignore and no_log )
+    command: "{{ wa_target_path }}/bin/server stop {{ item }}"
+    register: stop_server_servers
+    ignore_errors: yes
+    no_log: yes
+    with_items:
+    - "{{ liberty_servers }}"
+
+      #  - name: stop server stdout ( too much output )
+      #    debug:
+      #     msg: "The command ({{ item.cmd }}) succeeded"
+      #    when: item.rc == 0
+      #    loop: "{{ stop_server_servers.results }}"
+
+  - name: start liberty servers
+    # must use nohup else the server stops after the controller process exits
+    command: "nohup {{ wa_target_path }}/bin/server start {{ item }} --clean"
+    register: start_server_servers
+    with_items:
+    - "{{ liberty_servers }}"
+
+      #  - name: start server stdout ( too much output )
+      #    debug:
+      #     msg: "The command ({{ item.cmd }}) succeeded"
+      #    when: item.rc == 0
+      #    loop: "{{ start_server_servers.results }}"
+  when: startServers == 'true'

@@ -1,2 +1,4 @@
 [all]
-localhost ansible_connection=local 
+websphere_host_1
+websphere_host_1
+websphere_host_3
