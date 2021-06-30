@@ -3,11 +3,13 @@ all:
   waProductType: 'Liberty' # default, can be overridden in the sections below
   wa_url: 'https://cpd-websphere-automation.apps.yourWA.cp.fyre.ibm.com/websphereauto/meteringapi'
   startServers: 'true'
+  api_key: 'apiKeyFromPreqs'
+  # tWAS only
   wsadmin_username: 'changemeUser'
   wsadmin_password: 'changemePass'
   sslRef: 'CellDefaultSSLSettings' # typically not altered
-  api_key: 'apiKeyFromPreqs'
-  # this cert needs to be formatted exactly like the sample below. Used for the Liberty processing. Not used for tWAS
+  # end tWAS only
+  # Liberty / Open Liberty only. This cert needs to be formatted exactly like the sample below. 
   wa_cert: |
            -----BEGIN CERTIFICATE-----
            ThisIsASampleCerti4A+cTvo+Cg+kwDQYJKoZIhvcNAQELBQAwxxxxxxxxxxxxx
