@@ -31,6 +31,7 @@ all:
            Wuv2oYEXHLMhyXljBUT8nFsiC53VWk7fW5Hzo9fzmYxrofcCxgb2IrbujHoRLf12
            dIj6yc1IAQndMSTapVGXBJ5SzJpA74q6wQ==
            -----END CERTIFICATE-----
+ # adjust the contents below to match your configuration
  hosts:         
  children:
   liberty0:
