@@ -1,0 +1,8 @@
+---
+
+- hosts: all
+  vars:
+  - ansible_user: nest
+  roles:
+  - role: vnc
+
