@@ -4,6 +4,7 @@
 
 - Currently support for:
   - RHEL8
+  - UB20.04 ( future )
 
 
 ## Setting up inventory
