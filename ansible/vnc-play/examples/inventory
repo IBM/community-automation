@@ -1,0 +1,5 @@
+[all]
+myhost
+
+[all:vars]
+ansible_user=root
