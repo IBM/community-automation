@@ -38,8 +38,11 @@ all:
    vars:
     wa_target_path: '/opt/liberty/wlp'
    hosts:
-    yourliberty0.fyre.ibm.com:
-    yourliberty01.fyre.ibm.com:
+    yourliberty_18_0_0_3.fyre.ibm.com:
+    yourliberty_19_0_0_x.fyre.ibm.com:
+    yourliberty_20_0_0_x.fyre.ibm.com:
+    yourliberty_21_0_0_x.fyre.ibm.com:
+    yourliberty_21_0_0_7.fyre.ibm.com:
   liberty1:
    hosts:
     yourliberty1.fyre.ibm.com:
@@ -49,11 +52,15 @@ all:
    vars:
     waProductType: 'tWAS'
    hosts:
-    yourwas855.fyre.ibm.com:
+    yourwas85515.fyre.ibm.com:
+    yourwas855xy.fyre.ibm.com:
+    yourwas85519.fyre.ibm.com:
      wa_target_path: '/opt/WAS855/profiles/dmgr'
      startServers: 'false'
   tWAS1:
    hosts:
-    yourwas90.fyre.ibm.com:
+    yourwas9009.fyre.ibm.com:
+    yourwas90xy.fyre.ibm.com:
+    yourwas9058.fyre.ibm.com:
      wa_target_path: '/opt/WAS90/profiles/dmgr'
      startServers: 'true'
