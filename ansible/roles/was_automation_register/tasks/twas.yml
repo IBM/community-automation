@@ -12,8 +12,37 @@
    regexp: 'com.ibm.ws.scripting.echoparams=true'
    replace: 'com.ibm.ws.scripting.echoparams=false'
 
+  # check the status of the dmgr 
+  # [nest@nest-wa-twas855 ~]$ /opt/WAS/profiles/dmgr/bin/serverStatus.sh dmgr
+  #ADMU0116I: Tool information is being logged in file
+  #           /opt/WAS/profiles/dmgr/logs/dmgr/serverStatus.log
+  #ADMU0128I: Starting tool with the dmgr profile
+  #ADMU0500I: Retrieving server status for dmgr
+  #ADMU0509I: The Deployment Manager "dmgr" cannot be reached. It appears to be
+  #           stopped.
+
+- name: check the dmgr status
+  shell: "bin/serverStatus.sh dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
+  args:
+   chdir: "{{ wa_target_path }}"
+  register: dmgr_status
+
+- name: find the dmgr status
+  set_fact:
+    start_dmgr: "{{ item }}"
+  when: item|trim|lower is search('stopped')
+  with_items:
+  - "{{ dmgr_status }}"
+
+- name: start the dmgr
+  shell: "bin/startManager.sh"
+  args:
+   chdir: "{{ wa_target_path }}"
+  register: dmgr_start
+  when: start_dmgr is defined
+
 - name: run wsadmin.sh
-  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }} startServers={{ start_servers }}"
+  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }} startServers={{ startServers }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: wsadmin

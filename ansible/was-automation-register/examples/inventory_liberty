@@ -1,4 +1,0 @@
-[all]
-liberty_host_1 wa_target_host=changeMyTargetHost1 wa_target_path=changeMyTargetPath1 
-liberty_host_2 wa_target_host=changeMyTargetHost2 wa_target_path=changeMyTargetPath2
-liberty_host_3 wa_target_host=changeMyTargetHost3 wa_target_path=changeMyTargetPath3

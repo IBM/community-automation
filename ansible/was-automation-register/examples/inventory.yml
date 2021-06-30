@@ -1,0 +1,58 @@
+all:
+ vars:
+  waProductType: 'Liberty' # default, can be overridden in the sections below
+  wa_url: 'https://cpd-websphere-automation.apps.yourWA.cp.fyre.ibm.com/websphereauto/meteringapi'
+  startServers: 'true'
+  wsadmin_username: 'changemeUser'
+  wsadmin_password: 'changemePass'
+  sslRef: 'CellDefaultSSLSettings' # typically not altered
+  api_key: 'apiKeyFromPreqs'
+  # this cert needs to be formatted exactly like the sample below. Used for the Liberty processing. Not used for tWAS
+  wa_cert: |
+           -----BEGIN CERTIFICATE-----
+           ThisIsASampleCerti4A+cTvo+Cg+kwDQYJKoZIhvcNAQELBQAwxxxxxxxxxxxxx
+           PjEVMBMGA1UEChMMY2VydC1tYW5hZ2VyMSUwIwYDVQQDExxJQk0gQXV0b21hdGlv
+           biBGb3VuZGF0aW9uIENBMB4XDTIxMDUyNzE4NDMxM1oXDTIxMDgyNTE4NDMxM1ow
+           JTEVMBMGA1UEChMMY2VydC1tYW5hZ2VyMQwwCgYDVQQDEwNjcGQwggEiMA0GCSqG
+           SIb3DQEBAQUAA4IBDwAwggEKAoIBAQC8OjcKciQKUdZ0UTb3+2CLKmVeJI+l4qCE
+           LsVYYXAtrItxFxHHLQhPUeRlK2KzwlZT2X1W1KoMlyfGv9F3h03uoJRnMPgjWYUj
+           F+GSu1VWbcrY+VsDFeYWkBdrO7skI8wyQwns+fziVZ76d4GV9hRsuwfHpXBbyV1+
+           R/Fp++ABAtkLG0nLct2U9iDVS7+nyXamoaW3BljA4L0t6h4eQAQPSXcqgZ9OGN8S
+           45mtSgfV0yY/HnYskMLSqANUfdMXOGt2i7NHnuqUyQLg8011sw65vYxrDWAXqHbg
+           OI028F17WL+iO3lf4c7YzqgeeqYDtTtVpgQHKvGicBcHZVfbtNE9AgMBAAGjgbYw
+           gbMwDgYDVR0PAQH/BAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMAwGA1UdEwEB
+           /wQCMAAwfgYDVR0RBHcwdYIDY3BkghhjcGQud2Vic3BoZXJlLWF1dG9tYXRpb26C
+           HGNwZC53ZWJzcGhlcmUtYXV0b21hdGlvbi5zdmOCNmNwZC13ZWJzcGhlcmUtYXV0
+           b21hdGlvbi5hcHBzLmphZ29jcDQ3LmNwLmZ5cmUuaWJtLmNvbTANBgkqhkiG9w0B
+           AQsFAAOCAQEAsAAJeycFgbN6Gb6ipsCpzg7mUSliQQaTMIF/sCtF7Gk4LkIBPhxh
+           wBBN/15VdhQ+k7em4U+UfvoKGkJhK/3Y4LmBsyTBEo1vwws6R6rIoP/KlL+OGVJz
+           B/k9BBPhnBAZoqo7wAMkwZJ7ArXyrowOb3LH7N4V3pizMg9zSl7PH0nMI1+FtXJG
+           XZzZ4zeIYOwFqo/npJyIAj/Eq0zHh7zvHXEaE4eYnqfY/U1WiIPup6U3xZ7hyt0Z
+           Wuv2oYEXHLMhyXljBUT8nFsiC53VWk7fW5Hzo9fzmYxrofcCxgb2IrbujHoRLf12
+           dIj6yc1IAQndMSTapVGXBJ5SzJpA74q6wQ==
+           -----END CERTIFICATE-----
+ hosts:         
+ children:
+  liberty0:
+   vars:
+    wa_target_path: '/opt/liberty/wlp'
+   hosts:
+    yourliberty0.fyre.ibm.com:
+    yourliberty01.fyre.ibm.com:
+  liberty1:
+   hosts:
+    yourliberty1.fyre.ibm.com:
+     wa_target_path: '/opt/liberty1/wlp'
+     startServers: 'false'
+  tWAS0:
+   vars:
+    waProductType: 'tWAS'
+   hosts:
+    yourwas855.fyre.ibm.com:
+     wa_target_path: '/opt/WAS855/profiles/dmgr'
+     startServers: 'false'
+  tWAS1:
+   hosts:
+    yourwas90.fyre.ibm.com:
+     wa_target_path: '/opt/WAS90/profiles/dmgr'
+     startServers: 'true'
