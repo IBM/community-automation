@@ -1,0 +1,5 @@
+autowas_url: http://rtpgsa.ibm.com/projects/m/moonstone/drivers/releases/latest.tar.gz
+autowas_user: nest
+autowas_dir: /home/nest/autowas
+gsa_user: 'yourgsauser'
+gsa_pass: 'yourgsapass'

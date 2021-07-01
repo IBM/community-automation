@@ -1,0 +1,8 @@
+[all]
+yourTargethostFQDN
+
+[all:vars]
+ansible_user=your_autoWASUser
+autowas_dir=/home/your_autoWASUser/autowas
+gsa_user=yourGSAid
+gsa_pass=yourGSApass

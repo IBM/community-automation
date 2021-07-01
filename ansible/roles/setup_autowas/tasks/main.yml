@@ -1,0 +1,78 @@
+---
+
+- name: Install RHEL pre-reqs
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: latest
+  vars:
+   packages:
+   - python2
+
+- name: Install paramiko python package
+  become: yes
+  pip:
+    name: paramiko
+  args:
+   executable: /usr/bin/pip2
+
+- name: check if jmeter dir
+  file:
+   path: "{{ autowas_dir }}"
+   state: directory
+   owner: "{{ autowas_user }}"
+
+- name: get and unarchive autowas gz
+  unarchive:
+   src: "{{ autowas_url }}"
+   dest: "{{ autowas_dir }}"
+   owner: "{{ autowas_user }}"
+   remote_src: yes
+
+- name: dot in the AutoWASEnv.sh
+  lineinfile:
+   path: '~/.bashrc'
+   state: present
+   regexp: '^AutoWASEnv.sh'
+   line: '. {{ autowas_dir }}/bin/AutoWASEnv.sh '
+   backup: yes
+
+- name: bin/configure
+  shell: 'bin/configure'
+  args:
+   chdir: '{{ autowas_dir }}'
+  register: aconfigure
+
+- debug:
+   msg: '{{ aconfigure.stdout_lines }}'
+
+- name: bin/setupUser
+  shell: 'bin/setupUser'
+  args:
+   chdir: '{{ autowas_dir }}'
+  register: asetupUser
+
+- debug:
+   msg: '{{ asetupUser.stdout_lines }}'
+
+- name: configure gsa user creds ( user )
+  replace:
+   path: 'autowas/etc/config.user'
+   regexp: 'FILL_IN_USERNAME'
+   replace: '{{ gsa_user }}'
+
+- name: configure gsa user creds ( pass )
+  replace:
+   path: 'autowas/etc/config.user'
+   regexp: 'FILL_IN_PASSWORD'
+   replace: '{{ gsa_pass }}'
+
+- name: bin/ipcServer.py 
+  shell: 'bin/ipcServer.py -cell default -log transcript.txt'
+  args:
+   chdir: '{{ autowas_dir }}'
+  register: aipc
+
+- debug:
+   msg: '{{ aipc.stdout_lines }}'
+
