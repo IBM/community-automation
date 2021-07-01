@@ -2,7 +2,7 @@
 
 ## Limitations:
 
-- Currently support for:
+- Current support for:
   - RHEL8
   - UB20.04 ( future )
 
