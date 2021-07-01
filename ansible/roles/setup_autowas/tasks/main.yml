@@ -1,5 +1,10 @@
 ---
 
+- name: check for RedHat distribution
+  fail:
+    msg: Target OS is not RedHat
+  when: ansible_distribution != "RedHat"
+
 - name: Install RHEL pre-reqs
   become: yes
   dnf:
