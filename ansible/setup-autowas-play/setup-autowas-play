@@ -1,0 +1,6 @@
+---
+
+- hosts: all
+  roles:
+  - role: setup_autowas
+
