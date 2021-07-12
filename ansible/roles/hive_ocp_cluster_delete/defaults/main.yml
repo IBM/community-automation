@@ -1,0 +1,4 @@
+---
+"pool_size": 1
+"ocp_api_url": "api.awsacm.purple-chesterfield.com"
+"kubeadmin_user": "kubeadmin

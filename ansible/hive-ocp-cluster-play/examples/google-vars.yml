@@ -1,0 +1,18 @@
+---
+# Information for your osProviderAccount - Ref - https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+"GOOGLE_PROJECT_ID": " "
+"GOOGLE_PRIVATE_KEY_ID": " "
+"GOOGLE_PRIVATE_KEY": " "
+"GOOGLE_CLIENT_EMAIL": " "
+"GOOGLE_AUTH_URI": " "
+"GOOGLE_TOKEN_URI": " "
+"GOOGLE_AUTH_PROVIDER_X509_CERT_URL": " "
+"GOOGLE_CLIENT_ID": " "
+"GOOGLE_CLIENT_X509_CERT_URL": " "
+"GOOGLE_REGION": us-central1 # Ref Doc https://docs.openshift.com/container-platform/4.4/installing/installing_gcp/installing-gcp-account.html#installation-gcp-regions_installing-gcp-account
+# GOOGLE NODE INFORMATION
+"GOOGLE_MASTER_TYPE": n1-standard-4
+"GOOGLE_WORKER_TYPE": n1-standard-8  # Ref Doc https://cloud.google.com/compute/docs/machine-types#n1_standard_machine_types
+"GOOGLE_WORKER_COUNT": 3
+# SERVICE ACCOUNT JSON - DO NOT CHANGE
+"GOOGLE_SERVICE_ACCOUNT": " "

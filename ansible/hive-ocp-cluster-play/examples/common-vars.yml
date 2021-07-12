@@ -1,0 +1,43 @@
+---
+# ACM/HIVE Cluster Information
+"kubeadmin_user": "kubeadmin"
+"kubeadmin_password": "" #  ACM/Hive used for cluster create
+"ocp_api_url": "api.rhacm-public-cluster.purple-chesterfield.com" # ACM/HIVE used for cluster creates public instance api URL
+
+"CLUSTER_NAME": "<cluster_name>"  # limit to 21 characters on AWS, limit has not been researched on other platforms.
+
+# cluster tagging (not used for vsphere clusters) details the following detailed tags are used by the weekly cleanup scripts.  If your
+# cluster is not under the account that is affected by the cleanup script you can use whatever tags you want
+# by following the same structure shown in the example
+# "owner_tag": "owner" # owner| Owner (Azure)
+# "owner_tag_value": "email address" # for Google clusters use FirstNameLastName
+# "cluster_tag": "CLUSTER_NAME"  # this tag will be used by the Stop/Start community jenkins job.
+# "team_tag": "team" # "Team" when Azure"
+#  values: "DBA|Content|CP4MCM|CP4I|Edge|CP4Apps|Netcool"
+# "Usage:"
+#   values:  "temp|demo|infra (long term use, must be reviewed regularly)"
+# "Usage_desc:"
+# "Review_freq:" or "Delete_date:" (Azure)
+#   values: "3day|week|month|quarter|half|YYYY-MM-DD (Azure)"
+#
+# content team tags "{ cluster: {{ CLUSTER_NAME }}, owner: someone@us.ibm.com, team: Content, Usage: temp, Usage_desc: your_description, Review_frequency: week }"
+"cluster_tags": { cluster: "{{ CLUSTER_NAME }}", owner: someone@us.ibm.com }
+
+# Deployment Details
+# Provision or delete cluster
+"admin_task": "provision" # delete|provision
+
+# What type of cloud to create?
+"cloud": "aws"  # aws|google|azure|vsphere (AWS only at the moment)
+
+# Public ssh key. Typically from the VM your creating the cluster on
+"SSH_PUBLIC_KEY": '<public key>'
+
+# Dynamically set in code, no need to set. Following is for your information only.
+"BASE_DOMAIN": " " # aws - purple-chesterfield.com, azure - green-chesterfield.com, vmware - purple-chesterfield.com, google - blue-chesterfield.com
+
+# What OCP version you want to install
+"OCP_RELEASE_IMAGE": "quay.io/openshift-release-dev/ocp-release:4.7.0-x86_64"
+
+# Redhat pull secret. You can get one here https://cloud.redhat.com/openshift/install/aws/installer-provisioned
+"PULL_SECRET": '<pull_secret>' # be sure to leave the quotes in place

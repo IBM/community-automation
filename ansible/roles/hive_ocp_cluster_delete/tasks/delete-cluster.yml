@@ -1,0 +1,31 @@
+---
+- name: Delete cluster
+  shell: "oc -n {{ CLUSTER_NAME }} delete clusterdeployment {{ CLUSTER_NAME }} --wait=false"
+  register: delete_results
+
+- name: Check for cluster removal
+  shell: "oc --no-headers=true get clusterdeployment {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }}"
+  register: check_cluster_results
+  until: 'check_cluster_results.rc != 0'
+  retries: 30
+  delay: 60
+  failed_when: '"not found" not in check_cluster_results.stderr'
+
+- name: delete namespace when left behind
+  shell: "oc delete namespace {{ CLUSTER_NAME }}"
+  register: delete_namespace_results
+  failed_when: '"not found" not in delete_namespace_results.stderr and "deleted" not in delete_namespace_results.stdout'
+
+- name: delete cluster image-set
+  shell: "oc delete clusterimageset {{ CLUSTER_NAME }}-imageset"
+  register: delete_cluster_imageset
+  failed_when: '"not found" not in delete_cluster_imageset.stderr and "deleted" not in delete_cluster_imageset.stdout'
+
+
+- name: logout of hive hub instance
+  shell: "oc logout"
+  environment:
+    KUBECONFIG: "{{ kubeconfig_location }}" 
+  register: logout_results
+  ignore_errors: yes
+  changed_when: false

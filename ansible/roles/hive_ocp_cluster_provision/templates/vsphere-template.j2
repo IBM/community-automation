@@ -1,0 +1,150 @@
+apiVersion: v1
+items:
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterDeployment
+  metadata:
+    creationTimestamp: null
+    labels:
+      hive.openshift.io/hiveutil-created: "true"
+      {{ LABEL }}
+    name: {{ CLUSTER_NAME }}
+    namespace: {{ CLUSTER_NAME }}
+  spec:
+    baseDomain: {{ BASE_DOMAIN }}
+    clusterName: {{ CLUSTER_NAME }}
+    controlPlaneConfig:
+      servingCertificates: {}
+    installed: false
+    platform:
+      vsphere:
+        certificatesSecretRef:
+          name: {{ CLUSTER_NAME }}-vsphere-certs
+        cluster: {{ VCENTER_CLUSTERNAME }}
+        credentialsSecretRef:
+          name: {{ CLUSTER_NAME }}-vsphere-creds
+        datacenter: {{ VCENTER_DATACENTER }}
+        defaultDatastore: {{ VCENTER_DATASOURCE }}
+        folder: /
+        network: {{ VCENTER_NETWORK }}
+        vCenter: {{ VCENTER_SERVER }}
+    provisioning:
+      imageSetRef:
+        name: {{ CLUSTER_NAME }}-imageset
+      installConfigSecretRef:
+        name: {{ CLUSTER_NAME }}-install-config
+    pullSecretRef:
+      name: {{ CLUSTER_NAME }}-pull-secret
+  status: {}
+- apiVersion: hive.openshift.io/v1
+  kind: MachinePool
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-worker
+    namespace: {{ CLUSTER_NAME }}
+  spec:
+    clusterDeploymentRef:
+      name: {{ CLUSTER_NAME }}
+    name: worker
+    platform:
+      vsphere:
+        coresPerSocket: 1
+        cpus: {{ WORKER_CPUS }}
+        memoryMB: {{ WORKER_MEMORY }}
+        osDisk:
+          diskSizeGB: {{ WORKER_DISK_SIZE }}
+    replicas: {{ WORKER_COUNT }}
+  status: {}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-install-config
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    install-config.yaml: |
+      apiVersion: v1
+      baseDomain: {{ BASE_DOMAIN }}
+      compute:
+      - name: worker
+        platform:
+          vsphere:
+            cpus: {{ WORKER_CPUS }}
+            coresPerSocket: 1
+            memoryMB: {{ WORKER_MEMORY }}
+            osDisk:
+              diskSizeGB: {{ WORKER_DISK_SIZE }}
+        replicas: {{ WORKER_COUNT }}
+      controlPlane:
+        name: master
+        platform:
+          vsphere:
+            cpus: {{ MASTER_CPUS }}
+            coresPerSocket: 1
+            memoryMB: {{ MASTER_MEMORY }}
+            osDisk:
+              diskSizeGB: {{ MASTER_DISK_SIZE }}
+        replicas: 3
+      metadata:
+        creationTimestamp: null
+        name: {{ CLUSTER_NAME }}
+      networking:
+        clusterNetwork:
+        - cidr: 10.128.0.0/14
+          hostPrefix: 23
+        machineNetwork:
+        - cidr: 10.0.0.0/16
+        networkType: OpenShiftSDN
+        serviceNetwork:
+        - 172.30.0.0/16
+      platform:
+        vsphere:
+          apiVIP: {{ OCP_API_IP_ADDRESS }}
+          cluster: {{ VCENTER_CLUSTERNAME }}
+          datacenter: {{ VCENTER_DATACENTER }}
+          defaultDatastore:  {{ VCENTER_DATASOURCE }}
+          ingressVIP: {{ OCP_APPS_IP_ADDRESS }}
+          network: {{ VCENTER_NETWORK }}
+          password: {{ VCENTER_PASSWORD }}
+          username: {{ VCENTER_ADMIN_USER }}
+          vCenter:  {{ VCENTER_SERVER }}
+      pullSecret: ""
+      sshKey: {{ SSH_PUBLIC_KEY }}
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-pull-secret
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    .dockerconfigjson: '{{ PULL_SECRET }}'
+  type: kubernetes.io/dockerconfigjson
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{CLUSTER_NAME}}-vsphere-creds
+    namespace: {{ CLUSTER_NAME }}
+  stringData:
+    password: {{ VCENTER_PASSWORD }}
+    username: {{ VCENTER_ADMIN_USER }}
+  type: Opaque
+- apiVersion: v1
+  data:
+    .cacert: {{ VCENTER_BASE64_SSL_CERTIFICATE }}
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-vsphere-certs
+    namespace: {{ CLUSTER_NAME }}
+  type: Opaque
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterImageSet
+  metadata:
+    creationTimestamp: null
+    name: {{ CLUSTER_NAME }}-imageset
+  spec:
+    releaseImage: {{ OCP_RELEASE_IMAGE }}
+  status: {}
+kind: List
+metadata: {}
