@@ -9,13 +9,17 @@
     PATH: ".:{{ ansible_env.PATH }}"
 
   roles:
-    # used to login into RHACM/HIVE cluster
-    - role: ocp_login
     - role: aws_route53
       when: 'cloud == "vsphere" and admin_task != "delete"'
-    - role: provision_ocp_cluster
+
+    - role: hive_ocp_cluster_provision
+
     - role: ocp_cluster_tag
       when: 'admin_task == "provision" and cloud != "vsphere" and cloud != "google"'
+
+    - role: hive_ocp_cluster_delete
+      when: 'admin_task == "delete"'
+
   tasks:
 
     - name: Display cluster details
