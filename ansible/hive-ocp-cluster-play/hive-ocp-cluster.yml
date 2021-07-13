@@ -1,6 +1,6 @@
 ---
-- name: Provision OCP Cluster
-  hosts: all
+- name: Manage OCP Cluster(s) using Hive Instance
+  hosts: bastion
   vars_files:
     - common-vars.yml
     - "{{ cloud }}-vars.yml"
