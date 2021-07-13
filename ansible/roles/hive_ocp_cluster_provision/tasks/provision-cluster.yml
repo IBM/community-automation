@@ -139,7 +139,6 @@
     - "OCP Admin Console: {{ console_url.stdout }}"
     - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
     - "Login: oc login -u kubeadmin -p {{ kubeadmin_pw.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
-  change_when: false
 
 - name: Creat new inventory host (ocp_provisioned_cluster)
   no_log: true
