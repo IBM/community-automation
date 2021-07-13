@@ -25,7 +25,8 @@
 - name: logout of hive hub instance
   shell: "oc logout"
   environment:
-    KUBECONFIG: "{{ kubeconfig_location }}" 
+    PATH: ".:{{ ansible_env.PATH }}"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: logout_results
   ignore_errors: yes
   changed_when: false
