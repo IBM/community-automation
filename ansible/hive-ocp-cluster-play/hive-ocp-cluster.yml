@@ -13,6 +13,7 @@
       when: 'cloud == "vsphere" and admin_task != "delete"'
 
     - role: hive_ocp_cluster_provision
+      when: 'admin_task == "provision"'
 
     - role: ocp_cluster_tag
       when: 'admin_task == "provision" and cloud != "vsphere" and cloud != "google"'

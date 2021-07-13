@@ -21,7 +21,6 @@
   register: delete_cluster_imageset
   failed_when: '"not found" not in delete_cluster_imageset.stderr and "deleted" not in delete_cluster_imageset.stdout'
 
-
 - name: logout of hive hub instance
   shell: "oc logout"
   environment:
@@ -29,4 +28,3 @@
     KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: logout_results
   ignore_errors: yes
-  changed_when: false
