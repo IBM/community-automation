@@ -185,7 +185,7 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
        start = cert.find("alias")
        end = cert.find("] [version")
        alias = cert[start+6:end]
-       if alias != "root":
+       if alias = certAlias:
            AdminTask.deleteSignerCertificate(['-keyStoreName', trustStoreName, '-certificateAlias', alias ])
    
    # retrieve new certificate from api-usagemetering-host and port
