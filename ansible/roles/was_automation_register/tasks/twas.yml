@@ -22,12 +22,14 @@
   #           stopped.
 
 - name: check the dmgr status
+  no_log: true
   shell: "bin/serverStatus.sh dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: dmgr_status
 
 - name: find the dmgr status
+  no_log: true
   set_fact:
     start_dmgr: "{{ item }}"
   when: item|trim|lower is search('stopped')

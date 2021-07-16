@@ -1,6 +1,6 @@
 all:
  vars:
-  waProductType: 'Liberty' # default, can be overridden in the sections below
+  ansible_user: nest # user on the target envs
   wa_url: 'https://cpd-websphere-automation.apps.yourWA.cp.fyre.ibm.com/websphereauto/meteringapi'
   startServers: 'true'
   api_key: 'apiKeyFromPreqs'
@@ -38,6 +38,7 @@ all:
  children:
   liberty0:
    vars:
+    waProductType: 'Liberty' 
     wa_target_path: '/opt/liberty/wlp'
    hosts:
     yourliberty_18_0_0_3.fyre.ibm.com:
@@ -48,6 +49,7 @@ all:
   liberty1:
    hosts:
     yourliberty1.fyre.ibm.com:
+     waProductType: 'Liberty' 
      wa_target_path: '/opt/liberty1/wlp'
      startServers: 'false'
   tWAS0:
@@ -60,6 +62,8 @@ all:
      wa_target_path: '/opt/WAS855/profiles/dmgr'
      startServers: 'false'
   tWAS1:
+   vars:
+    waProductType: 'tWAS'
    hosts:
     yourwas9009.fyre.ibm.com:
     yourwas90xy.fyre.ibm.com:
