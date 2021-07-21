@@ -7,9 +7,15 @@
   action: >
    {{ ansible_pkg_mgr }} state=absent update_cache=yes name=adobe,containers,samba,valgrind
 
+- name: update packages
+  become: true
+  ignore_errors: false
+  action: >
+   {{ ansible_pkg_mgr }} state=latest update_cache=yes
+
 - name: install packages
   become: true
-  ignore_errors: true
+  ignore_errors: false
   action: >
    {{ ansible_pkg_mgr }} state=present update_cache=yes name=zip,unzip
 
