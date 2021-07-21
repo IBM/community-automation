@@ -20,6 +20,12 @@
    - 'tigervnc-server'
    - 'xorg-x11-fonts-Type1'
 
+- name: dnf update
+  become: yes
+  dnf:
+   name: *
+   state: latest
+
 - name: install packages
   become: yes
   dnf:
@@ -33,3 +39,5 @@
    - 'libXtst'
    - 'xorg-x11-fonts-Type1'
    - 'libnsl'
+   - 'zip'
+   - 'unzip'

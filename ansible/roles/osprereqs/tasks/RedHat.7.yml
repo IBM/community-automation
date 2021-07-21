@@ -20,6 +20,13 @@
    - 'tigervnc-server'
    - 'xorg-x11-fonts-Type1'
 
+- name: yum update
+  become: yes
+  ignore_errors: yes
+  yum:
+   name: *
+   state: latest
+
 - name: install packages
   become: yes
   yum:
@@ -33,3 +40,5 @@
    - 'libXtst'
    - 'xorg-x11-fonts-Type1'
    - 'psmisc'
+   - 'zip'
+   - 'unzip'
