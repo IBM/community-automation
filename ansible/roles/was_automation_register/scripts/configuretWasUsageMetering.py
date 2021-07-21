@@ -176,7 +176,9 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
    #-------------------------------------------------------------
    if len(certAlias) == 0:
        # use default certificate alias if it is not specified 
-       certAlias = "meteringAlias"
+       # NOTE: the alias is stored in all lower case even if it has CAPS.....
+       certAlias = "meteringalias".lower()
+       print "Using default certificate alias: " + certAlias
        
    # delete certificate if it exists in keystore
    certs = AdminTask.listSignerCertificates(['-keyStoreName', trustStoreName ] )
@@ -185,7 +187,9 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
        start = cert.find("alias")
        end = cert.find("] [version")
        alias = cert[start+6:end]
-       if alias != "root":
+       print "checking signer: " + alias
+       if alias == certAlias.lower():
+           print "Deleting signer: " + alias
            AdminTask.deleteSignerCertificate(['-keyStoreName', trustStoreName, '-certificateAlias', alias ])
    
    # retrieve new certificate from api-usagemetering-host and port

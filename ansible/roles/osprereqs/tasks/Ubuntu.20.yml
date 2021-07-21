@@ -15,6 +15,12 @@
    - "valgrind*"
    - "tignervnc"
 
+- name: apt update
+  become: yes
+  apt:
+   name: '*'
+   state: latest
+
 - name: install packages
   become: yes
   apt:
@@ -25,3 +31,5 @@
    - 'libxtst6'
    - 'libgtk2.0-0'
    - 'libxft2'
+   - 'zip'
+   - 'unzip'

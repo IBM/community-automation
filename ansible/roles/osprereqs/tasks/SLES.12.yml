@@ -15,6 +15,12 @@
    - "valgrind*"
    - "tignervnc"
 
+- name: remove extraneous packages
+  become: yes
+  zypper:
+   name: '*'
+   state: latest
+
 - name: install packages
   become: yes
   zypper:
@@ -24,4 +30,6 @@
    packages:
    - 'xorg-x11-xauth'
    - 'less'
+   - 'zip'
+   - 'unzip'
 
