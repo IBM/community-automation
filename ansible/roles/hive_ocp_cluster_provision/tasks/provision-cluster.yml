@@ -1,0 +1,164 @@
+---
+- name: Setup Azure account details
+  when: 'cloud == "azure"'
+  block:
+    - name: Create Service Principal json from template
+      template:
+        src: "azure-osServicePrincipal.json.j2"
+        dest: "azure-osServicePrincipal.json"
+        backup: false
+
+    - name: Create Azure Service Principal base64 Linux
+      shell: "cat azure-osServicePrincipal.json | base64 -w 0"
+      register: service_principal0
+      when: ansible_distribution != 'MacOSX'
+
+    - name: Create Azure Service Principal base64 MacOS
+      shell: "cat azure-osServicePrincipal.json | base64"
+      register: service_principal1
+      when: ansible_distribution == 'MacOSX'
+
+    - name: Set Azure Service Principle Linux
+      set_fact:
+        AZURE_SERVICE_PRINCIPAL: "{{ service_principal0.stdout }}"
+      when: ansible_distribution != 'MacOSX'
+
+    - name: Set Azure Service Principle MacOS
+      set_fact:
+        AZURE_SERVICE_PRINCIPAL: "{{ service_principal1.stdout }}"
+      when: ansible_distribution == 'MacOSX'
+
+- name: Setup Google Service Account
+  when: 'cloud == "google"'
+  block:
+    - name: Check for the string google being used in the cluster name
+      shell: bash -lc 'echo {{ CLUSTER_NAME }} | grep google > /dev/null; if [[ $? -eq 0 ]]; then  echo "Cannot have a cluster name with the string google in it!"; exit 1; fi'
+
+    - name: Create Service Account json from template
+      template:
+        src: "google-osServiceAccount.json.j2"
+        dest: "google-osServiceAccount.json"
+        backup: false
+
+    - name: Create Google Service Account base64 Linux
+      shell: "cat google-osServiceAccount.json | base64 -w 0"
+      register: service_account0
+      when: ansible_distribution != 'MacOSX'
+
+    - name: Create Google Service Account base64 MacOS
+      shell: "cat google-osServiceAccount.json | base64"
+      register: service_account1
+      when: ansible_distribution == 'MacOSX'
+
+    - name: Set Google Service Account Linux
+      set_fact:
+        GOOGLE_SERVICE_ACCOUNT: "{{ service_account0.stdout }}"
+      when: ansible_distribution != 'MacOSX'
+
+    - name: Set Google Service Account MacOS
+      set_fact:
+        GOOGLE_SERVICE_ACCOUNT: "{{ service_account1.stdout }}"
+      when: ansible_distribution == 'MacOSX'
+
+- name: create clusterdeployment CR based on template
+  template:
+    src: "{{ cloud }}-template.j2"
+    dest: "{{ cloud }}-clusterdeployment-cr.yml"
+    backup: false
+  register: template_results
+
+- name: create clusterdeployment CR based on template
+  template:
+    src: "{{ cloud }}-template.j2"
+    dest: "{{ cloud }}-clusterdeployment-cr.yml"
+    backup: false
+  register: template_results
+
+- name: Create Namespace based on cluster name
+  shell: "oc create namespace {{ CLUSTER_NAME }}"
+  register: ns_results
+
+- name: Apply provision yaml to ACM/Hive cluster
+  shell: "oc apply -f  {{ cloud }}-clusterdeployment-cr.yml"
+  register: provision_results
+
+- name: Get the provisioning pod name
+  shell:  "oc --no-headers=true get pods -n {{ CLUSTER_NAME }} -l hive.openshift.io/job-type=provision,hive.openshift.io/cluster-deployment-name={{ CLUSTER_NAME }} -o name | cut -d / -f2"
+  register: pro_pod_results
+  until: 'pro_pod_results.stdout != ""'
+  retries: 10
+  delay: 30
+
+- name: Setting fact variable
+  set_fact:
+    provision_podname: "{{ pro_pod_results.stdout }}"
+
+- name: Check for bootstrap complete, wait up to 60 minutes
+  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
+  register: bootstrap_results
+  until: '(bootstrap_results.stdout.find("Bootstrap status: complete") != -1) or (bootstrap_results.stdout.find("error") == 0)'
+  retries: 60
+  delay: 60
+  failed_when: '(bootstrap_results.stdout.find("error") == 0)'
+
+- name: Check provisioning progress, waiting up to 60 minutes
+  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
+  register: monitor_results
+  until: '(monitor_results.stdout.find("install completed successfully") != -1) or (monitor_results.stdout.find("error") == 0)'
+  retries: 60
+  delay: 60
+  failed_when: '(monitor_results.stdout.find("error") == 0)'
+
+- name: Change to cluster namespace
+  shell: "oc project {{ CLUSTER_NAME }}"
+
+- name: Get admin password for kubeadmin
+  shell: "oc extract secret/$(oc get cd {{ CLUSTER_NAME }} -n {{ CLUSTER_NAME }} -o jsonpath='{.spec.clusterMetadata.adminPasswordSecretRef.name}') -n {{ CLUSTER_NAME }} --to=/tmp --confirm > /dev/null; cat /tmp/password"
+  register: kubeadmin_pw
+
+- debug: msg="{{ kubeadmin_pw.stdout }}"
+
+- name: Get openshift console url
+  shell: "oc get cd {{ CLUSTER_NAME }} -o jsonpath='{ .status.webConsoleURL }'"
+  register: console_url
+
+- debug: msg="{{ console_url.stdout }}"
+
+- name: save install log locally
+  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive > {{ CLUSTER_NAME }}_ocp_install.log"
+  register: log_save
+
+- name: create output details
+  lineinfile:
+    path: "{{ CLUSTER_NAME }}_details.log"
+    line: "{{ item }}"
+    create: yes
+    mode: 0755
+  with_items:
+    - "OCP Admin: kubeadmin, password {{ kubeadmin_pw.stdout }}"
+    - "OCP Admin Console: {{ console_url.stdout }}"
+    - "Cluster API: api.{{ console_url.stdout.split('.',2)[2] }}:6443"
+    - "Login: oc login -u kubeadmin -p {{ kubeadmin_pw.stdout }} https://api.{{ console_url.stdout.split('.',2)[2] }}:6443 --insecure-skip-tls-verify=true"
+
+- name: Creat new inventory host (ocp_provisioned_cluster)
+  no_log: true
+  add_host:
+    name: "{{ console_url.stdout.split('.')[2] }}"
+    groups: "ocp_provisioned_cluster"
+    ansible_connection: "local"
+    ansible_python_interpreter: "/usr/bin/python3"
+    kubeadmin_password: "{{ kubeadmin_pw.stdout }}"
+    kubeadmin_user: "kubeadmin"
+    ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+    cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+    admin_task: "provision"
+  changed_when: false
+
+- name: logout of hive hub instance
+  shell: "oc logout"
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
+  register: logout_results
+  ignore_errors: yes
+  changed_when: false
