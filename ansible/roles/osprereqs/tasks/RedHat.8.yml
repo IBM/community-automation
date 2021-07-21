@@ -23,7 +23,7 @@
 - name: dnf update
   become: yes
   dnf:
-   name: *
+   name: '*'
    state: latest
 
 - name: install packages

@@ -18,7 +18,7 @@
 - name: remove extraneous packages
   become: yes
   zypper:
-   name: *
+   name: '*'
    state: latest
 
 - name: install packages

@@ -18,7 +18,7 @@
 - name: apt update
   become: yes
   apt:
-   name: *
+   name: '*'
    state: latest
 
 - name: install packages

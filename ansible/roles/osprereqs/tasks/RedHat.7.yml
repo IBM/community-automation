@@ -24,7 +24,7 @@
   become: yes
   ignore_errors: yes
   yum:
-   name: *
+   name: '*'
    state: latest
 
 - name: install packages
