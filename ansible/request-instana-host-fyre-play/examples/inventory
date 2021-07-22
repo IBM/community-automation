@@ -1,2 +1,5 @@
 [fyreApi]
 localhost ansible_connection=local fyreuser=myfyreuser fyreapikey=myfyreapikey 
+
+[instana]
+download_key=yourdkey agent_key=yourakey sales_key=yourskey instana_tenet=yourTenet instana_unit=yourUnit

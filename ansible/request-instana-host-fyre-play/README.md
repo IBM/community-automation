@@ -32,18 +32,8 @@ or
 ansible-playbook  -i inventory request-instana-fyre-play.yml -e stackName=instana -e noLog=false 
 ```
 
-To disable vnc server install ( takes around 8 minutes ) add
-``` 
--e vnc=False
-```
-
 ## Access the command line
 
 Once the stack is created, ssh root@stackname_FQDN 
 
 There is an additional disk 1024GB 
-
-## Access vnc 
-
-One can also vncviewer stackname_FQDN:5901
-password is : vncPassw0rd
