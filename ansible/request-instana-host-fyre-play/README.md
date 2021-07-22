@@ -4,6 +4,7 @@
 
  - You have capacity in fyre
  - Fyre is online
+ - Instana on_prem keys
 
 ## Setting up inventory
 
