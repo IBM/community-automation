@@ -69,7 +69,7 @@
     recurse: yes
   with_items:
   - '/mnt/data'
-  - '/mnt/trace'
+  - '/mnt/traces'
   - '/mnt/metrics'
 
 - name: get the blkid /dev/vdb1
@@ -99,12 +99,12 @@
    src: settings.hcl.j2
    dest: /root/settings.hcl
 
-- name: Add docker key
+- name: Add Instana key
   apt_key:
    url: https://self-hosted.instana.io/signing_key.gpg
    state: present
 
-- name: Add docker repository
+- name: Add Instana repository
   apt_repository:
    repo: deb [arch=amd64] https://self-hosted.instana.io/apt generic main
    state: present
@@ -121,3 +121,43 @@
   vars:
    packages:
    - 'instana-console'
+
+- name: instana init -f settings.hcl -y
+  shell: 'instana init -f settings.hcl -y'
+  register: instanaOutput
+  
+- name: instana init output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: instana version
+  shell: 'instana version'
+  register: instanaOutput
+  
+- name: instana version output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: instana license download
+  shell: 'instana license download'
+  register: licenseOutput
+  
+- name: instana license output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
+
+- name: instana license import
+  shell: 'instana license import'
+  register: licenseOutput
+  
+- name: instana license import output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
+
+- name: instana license verify
+  shell: 'instana license verify'
+  register: licenseOutput
+  
+- name: instana license verify output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
