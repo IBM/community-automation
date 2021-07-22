@@ -30,6 +30,10 @@ ansible-playbook  -i inventory request-instana-fyre-play.yml
 or
 
 ansible-playbook  -i inventory request-instana-fyre-play.yml -e stackName=instana -e noLog=false 
+
+or
+
+ansible-playbook -i inventory request-instana-host-fyre-play.yml -e fyreuser=yourid -e noLog=false -e stackName=wa-instana -e site=rtp -e download_key=xxxxx -e agent_key=xxxxx -e sales_key=yyyyyy -e instana_tenet=wa -e instana_unit=integration
 ```
 
 ## Access the command line
