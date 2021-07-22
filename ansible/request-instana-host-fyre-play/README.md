@@ -1,4 +1,4 @@
-# Ansible Playbook for creating an Ubuntu 18.04 Instana hosted instance host on Fyre
+# Ansible Playbook for creating an Ubuntu 20.04 Instana hosted instance host on Fyre
 
 ## Assumptions:
 
