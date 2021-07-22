@@ -5,7 +5,7 @@ unit                    = "{{ instana_unit }}"
 agent_key               = "{{ agent_key }}"
 download_key            = "{{ download_key }}"
 sales_key               = "{{ sales_key }}"
-host_name               = "{{ stackName }}"
+host_name               = "{{ ansible_facts['fqdn'] }}"
 token_secret            = "YfpqMFZ33Ekn"
 clickhouse_bind_address = ""
 
@@ -31,7 +31,7 @@ proxy {
 artifact_repository {
   repository_url = "https://artifact-public.instana.io/artifactory/shared/"
   user           = "_"
-  password       = "qUMhYJxjSv6uZh2SyqTEnw"
+  password       = "{{ download_key }}"
 }
 
 email {
@@ -58,14 +58,14 @@ email {
 docker_repository {
   base_url = "containers.instana.io"
   username = "_"
-  password = "qUMhYJxjSv6uZh2SyqTEnw"
+  password = "{{ download_key }}"
 }
 
 geo_db {
   download_url = "https://packages.instana.io/geodb/geolite2-city.tar.gz"
   file_name    = "GeoLite2-City.mmdb"
   user         = ""
-  password     = "qUMhYJxjSv6uZh2SyqTEnw"
+  password     = "{{ download_key }}"
 }
 
 feature "useInstanaSaasEumTrackingUrlEnabled" {

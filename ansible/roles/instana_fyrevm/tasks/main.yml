@@ -5,8 +5,8 @@
   vars:
   ## crc host specs
   - arch: x
-  - numcpu: 2
-  - memory: 8 # GB memory Fyre hosting VM
+  - numcpu: 16
+  - memory: 64 # GB memory Fyre hosting VM
   - disksizegb: 1024 # extra DB
   - fos: 'Ubuntu 20.04'
   - comment: 'Instana Host'
