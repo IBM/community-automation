@@ -20,7 +20,6 @@ instana-agent-chrp.tar.gz
 
 ## Restrictions:
 
-- Linux automatic one-liner defaults to dynamic Eclipse OpenJ9 11
 
 ## Setting up inventory
 
