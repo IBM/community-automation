@@ -20,14 +20,21 @@ instana-agent-chrp.tar.gz
 
 ## Restrictions:
 
-- Does not support Windoze
+- Linux automatic one-liner defaults to dynamic Eclipse OpenJ9 11
 
 ## Setting up inventory
 
-- From the `install_instana_agent` directory copy the sample inventory file at `examples/inventory` to the  current directory.
+- UNIX: From the `install_instana_agent` directory copy the sample inventory file at `examples/inventory.unix.yml` to the  current directory.
+- Windows: From the `install_instana_agent` directory copy the sample inventory file at `examples/inventory.windows.yml` to the  current directory.
 
 ```
-cp examples/inventory .
+cp examples/inventory.unix.yml ./inventory
+```
+
+or
+
+```
+cp examples/inventory.windows.yml ./inventory
 ```
 
 ## Run playbook
@@ -35,6 +42,6 @@ cp examples/inventory .
 Once you have configured the `inventory` file, run the playbook using:
 
 ```
-ansible-playbook -i inventory install_instana_agent.yml -e instana_host_port=my-instana.com:myport -e agent_key=yourAgentKey -e custom_agent_url=http://yourcustompackagehost.com/opt/custompackage/instana
+ansible-playbook -i inventory install_instana_agent.yml 
 
 ```

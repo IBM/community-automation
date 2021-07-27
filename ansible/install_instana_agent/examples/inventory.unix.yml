@@ -1,0 +1,20 @@
+all:
+ vars:
+  agent_key: ''
+  instana_host: ''
+  instana_port: '1444'
+  custom_agent_url: ''
+  instana_mode: '' # blank is dynamic offline is static
+  instana_runtime: 'j9' # blank is azul j9 is Eclipse OpenJ9 11
+
+ # adjust the contents below to match your configuration
+ hosts:         
+ children:
+  Unix:
+   vars:
+    ansible_user: nest # user on the target envs
+   hosts:
+    nest-dev1.fyre.ibm.com:
+    rhel8.fyre.ibm.com:
+    aix7.fyre.ibm.com:
+    sles15.fyre.ibm.com:

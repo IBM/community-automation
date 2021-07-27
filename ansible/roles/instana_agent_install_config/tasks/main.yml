@@ -1,24 +1,9 @@
+# "ansible_distribution": "Microsoft Windows Server 2019 Datacenter"
+# "ansible_distribution": "CYGWIN_NT-10.0-17763"
 ---
-### "ansible_architecture": "s390x",
-### "ansible_architecture": "ppc64le",
-### "ansible_architecture": "x86_64",
-### "ansible_architecture": "chrp", --- AIX
-- include_tasks: stop.yml
-- include_tasks: remove_package.yml
+- include_tasks: Windows.yml
   when:
-  - ansible_architecture == 'x86_64'
-### remove OS packages
-- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
-- include_tasks: install_agent_normal.yml
-  when:
-  - ansible_architecture == 'x86_64'
-- include_tasks: install_agent_custom.yml
-  when:
-  - ansible_architecture == 's390x' or ansible_architecture == 'ppc64le' or ansible_architecture == 'chrp'
-- include_tasks: install_agent_custom_chrp.yml
-  when:
-  - ansible_architecture == 'chrp'
-- include_tasks: custom_package_cron.yml
-  when:
-  - ansible_architecture == 's390x' or ansible_architecture == 'ppc64le'
-- include_tasks: start.yml
+  - ansible_shell_type is defined
+  - ansible_shell_type == 'cmd' or ansible_shell_type == 'powershell'
+- include_tasks: unix.yml
+  when: ansible_shell_type is undefined
