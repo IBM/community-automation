@@ -7,7 +7,12 @@ all:
   # tWAS only
   wsadmin_username: 'changemeUser'
   wsadmin_password: 'changemePass'
-  sslRef: 'CellDefaultSSLSettings' # typically not altered
+  # !!!! sslRef or trustStorePassword must be set, not both !!!!
+  # sslRef can be used for tWAS distributed, but not for zOS 
+  # If using trustStorePassword, blank out or delete sslRef
+  sslRef: 'CellDefaultSSLSettings' # typically not altered if using
+  ### or
+  trustStorePassword: '' # a new p12 file will be created
   # end tWAS only
   # Liberty / Open Liberty only. This cert needs to be formatted exactly like the sample below. 
   wa_cert: |

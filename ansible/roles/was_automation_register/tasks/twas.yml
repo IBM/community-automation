@@ -43,8 +43,24 @@
   register: dmgr_start
   when: start_dmgr is defined
 
+- name: set the sslRef info
+  set_fact:
+    key1: 'sslRef'
+    value1: "{{ sslRef }}"
+  when: 
+  - sslRef is defined
+  - sslRef | length > 1
+
+- name: set the trustStorePassword info
+  set_fact:
+    key1: 'trustStorePassword'
+    value1: "{{ trustStorePassword }}"
+  when: 
+  - trustStorePassword is defined
+  - trustStorePassword | length > 1
+
 - name: run wsadmin.sh
-  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} sslRef={{ sslRef }} startServers={{ startServers }}"
+  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} {{ key1 }}={{ value1 }} startServers={{ startServers }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: wsadmin
