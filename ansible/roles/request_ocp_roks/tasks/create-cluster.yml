@@ -15,14 +15,13 @@
     name: "{{ clusterName }}"
     datacenter: "{{ dataCenter }}"
     hardware: "{{ hardware }}"
-    worker_num: "{{ defaultPoolSize }}"
+    force_delete_storage: "{{ force_deletet_storage }}"
     default_pool_size: "{{ defaultPoolSize }}"
     kube_version: "{{ kubeVersion }}"
     private_vlan_id: "{{ privateVLAN }}"
     public_vlan_id: "{{ publicVLAN }}"
     resource_group_id: "{{ rg.id }}"
     ibmcloud_api_key: "{{ apikey }}"
-    account_guid: "{{ icaccount }}"
     entitlement: "{{ entitlement }}"
   register: iccluster
 

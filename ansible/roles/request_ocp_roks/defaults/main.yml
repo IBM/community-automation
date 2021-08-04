@@ -5,3 +5,4 @@ defaultPoolSize: 2
 resourceGroup: default
 cloudregion: us-south
 entitlement: cloud_pak
+force_deletet_storage: true
