@@ -5,9 +5,10 @@
 ## Requirements
 
 1. Depends on the role "request-ocp-roks" included in this repo.
-2. The "ibm.cloudcollection". Version 1.8.2 is currently known to work. Newer versions are known to cause issues with the embedded roles. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
-3. IBM-Cloud terraform-provider-ibm v1.9.0
+2. The "ibm.cloudcollection". Version 1.28.0 is currently known to work. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
+3. IBM-Cloud terraform-provider-ibm v1.28.0
 4. Terraform v0.12.20
+
 ## Usage
 
 1. To ensure the correct version of the ibm.cloudcollection collection is used run the following command to install: `ansible-galaxy collection install -r requirements.yml`
