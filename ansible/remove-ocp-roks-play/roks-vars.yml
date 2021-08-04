@@ -1,0 +1,7 @@
+---
+ansible_python_interpreter: /usr/local/bin/python3
+apikey: LK890Tijlj4hVrZgICgGIfKcYX1efWl5zollUzzyx7wd # Set the api key here to use for IBM Cloud authentication
+clusterName: test-ansible-provision # Provide a unique cluster name
+resourceGroup: dteroks # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
+dataCenter: mex01 # Provide the data center (zone) to deploy to
+hardware: shared # shared for virtual workers
