@@ -2,9 +2,9 @@
 
 > role used to generate a new IBM Cloud ROKS cluster
 
-## Requirements 
+## Requirements
 
-1. The "ibm.cloudcollection". Version 1.8.2 is currently known to work. Newer versions are known to cause issues with the embedded roles. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
+1. The "ibm.cloudcollection". Version 1.8.2 is currently known to work. Newer versions are known to cause issues with the embedded roles. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'.
 2. IBM-Cloud terraform-provider-ibm v1.9.0
 3. Terraform v0.12.20
 
@@ -49,7 +49,7 @@
         dataCenter: wdc04 # Provide the data center (zone) to deploy to
         defaultPoolSize: 2 # Set the size of the default worker pool
         hardware: shared # shared for virtual workers
-        kubeVersion: 4.4_openshift # kube version to use 
+        kubeVersion: 4.4_openshift # kube version to use
         machineType: b2c.4x16 # machine flavor to use
         privateVLAN: 1234567 # Private VLAN to use, must be available
         publicVLAN: 2345678 # Public VLAN to use, optional
@@ -62,7 +62,7 @@
 
       tasks:
       - name: create roks cluster
-        import_role: 
+        import_role:
           name: request_ocp_roks
 
 ## Deploying a cluster through an Ansible Container
@@ -95,4 +95,3 @@ ENTRYPOINT [ "/usr/bin/ansible-playbook" ]
 * "apikey" must be included as one of the variables.
 
 `docker run -it --rm -v <playbook directory>:/runner <image name> -i localhost -e "<variable name>=<value> <variable name>=<value> ..." <playbook name>`
-
