@@ -1,0 +1,26 @@
+---
+- name: get-resource-group
+  ibm.cloudcollection.ibm_resource_group_info:
+    name: "{{ resourceGroup }}"
+    ibmcloud_api_key: "{{ apikey }}"
+  register: output_resource_group
+
+- name: set-fact-resource-group-id
+  set_fact: rg="{{ output_resource_group.resource }}"
+
+- name: get-cluster-id
+  ibm.cloudcollection.ibm_container_cluster_info:
+    resource_group_id: "{{ rg.id }}"
+    name: "{{ clusterName }}"
+    ibmcloud_api_key: "{{ apikey }}"
+  register: output_cluster
+
+- name: remove-cluster
+  ibm.cloudcollection.ibm_container_cluster:
+    id: "{{ output_cluster.resource.id }}"
+    name: "{{ clusterName }}"
+    resource_group_id: "{{ rg.id }}"
+    ibmcloud_api_key: "{{ apikey }}"
+    datacenter: "{{ dataCenter }}"
+    hardware: "{{ hardware }}"
+    state: absent

@@ -1,0 +1,7 @@
+---
+ansible_python_interpreter: /usr/bin/python3
+apikey: 1234567890123456 # Set the api key here to use for IBM Cloud authentication
+clusterName: newclustername # Provide a unique cluster name
+dataCenter: wdc04 # Provide the data center (zone) to deploy to
+hardware: shared # shared for virtual workers
+resourceGroup: default # Provide the Resouce Group name where the cluster is deployed -- default is "default" resource group
