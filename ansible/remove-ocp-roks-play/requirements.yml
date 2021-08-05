@@ -1,5 +1,0 @@
----
-collections:
-  - name: ibm.cloudcollection
-    version: '1.28.0'
-    source: https://galaxy.ansible.com

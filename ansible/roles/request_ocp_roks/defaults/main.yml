@@ -1,6 +1,6 @@
 ---
 hardware: shared
-kubeVersion: 4.5_openshift
+kubeVersion: 4.6_openshift
 defaultPoolSize: 2
 resourceGroup: default
 cloudregion: us-south

@@ -1,26 +1,37 @@
 # request-ocp-roks-play
 
-> Playbook to generate a new IBM Cloud ROKS cluster
+> Playbooks to create or remove an IBM Cloud ROKS cluster
 
 ## Requirements
 
-1. Depends on the role "request-ocp-roks" included in this repo.
+1. Depends on the roles "request-ocp-roks" and "remove-ocp-roks" included in this repo.
 2. The "ibm.cloudcollection". Version 1.28.0 is currently known to work. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
 3. IBM-Cloud terraform-provider-ibm v1.28.0
 4. Terraform v0.12.20
 
 ## Usage
 
+### Create ROKS Cluster
 1. To ensure the correct version of the ibm.cloudcollection collection is used run the following command to install: `ansible-galaxy collection install -r requirements.yml`
 2. Copy examples/roks-vars.yml up one folder
-   `cp examples/roks-vars.yml .`
+   `cp examples/request-roks-vars.yml .`
 3. Edit roks-vars.yml as needed (see documentation in the example roks-vars.yml file).
 4. Execute the playbook: `ansible-playbook -i localhost request-roks.yml`
     * Other options:
         * use -e to set variables from the command line like `-e clusterName=testcluster01`
         * use -v for verbose output (-vvv for more, -vvvv to enable connection debugging)
 
-## Variables used in this Playbook and Role
+### Delete ROKS Cluster
+1. To ensure the correct version of the ibm.cloudcollection collection is used run the following command to install: `ansible-galaxy collection install -r requirements.yml`
+2. Copy examples/roks-vars.yml up one folder
+   `cp examples/remove-roks-vars.yml .`
+3. Edit roks-vars.yml as needed (see documentation in the example roks-vars.yml file).
+4. Execute the playbook: `ansible-playbook -i localhost remove-roks.yml`
+    * Other options:
+        * use -e to set variables from the command line like `-e clusterName=testcluster01`
+        * use -v for verbose output (-vvv for more, -vvvv to enable connection debugging)
+
+## Variables used in these Playbooks and Roles
 
 | Name              | Description                            | Required | Type                   |
 |-------------------|----------------------------------------|----------|------------------------|
