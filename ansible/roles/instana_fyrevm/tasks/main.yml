@@ -7,8 +7,8 @@
   - arch: x
   - numcpu: 16
   - memory: 64 # GB memory Fyre hosting VM
-  - disksizegb: 550 # extra DB
-  - fos: 'Ubuntu 18.04'
+  - disksizegb: 1024 # extra DB
+  - fos: 'Ubuntu 20.04'
   - comment: 'Instana Host'
   - localclusterName: "{{ clusterName }}"
   include_tasks:
