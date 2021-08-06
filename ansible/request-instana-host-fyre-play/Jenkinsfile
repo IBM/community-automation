@@ -12,6 +12,13 @@ def paramsList = [
     string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
     password(name: 'fyreapikey', description: 'fyre api key'),
+    string(name: 'site', defaultValue: 'rtp', description: 'default site: [ svl|rtp|hur|tor|cdl|isl ]'),
+    string(name: 'agent_key', description: 'Instana agent_key'),
+    string(name: 'download_key', description: 'Instana download_key'),
+    string(name: 'sales_key', description: 'Instana sales_key'),
+    string(name: 'tenet', description: 'Instana tenet'),
+    string(name: 'unit', description: 'Instana unit'),
+
   ]
 jobProps.push(parameters(paramsList))
 
@@ -26,7 +33,7 @@ timestamps {
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e vnc=${params.enableVNC} -e noLog=false -e stackName=${params.stackName}
+          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e noLog=false -e stackName=${params.stackName} -e site=${params.site} -e download_key=${params.download_key} -e agent_key=${params.agent_key} -e sales_key=${params.sales_key} -e instana_tenet=${params.tenet} -e instana_unit=${params.unit}
         """.stripIndent()
       }
    }

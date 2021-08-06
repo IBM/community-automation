@@ -1,0 +1,62 @@
+---
+# https://docs.docker.com/engine/install/ubuntu/
+- name: remove conflicting packages
+  become: yes
+  ignore_errors: yes
+  apt:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - "docker"
+   - "docker-engine"
+   - "docker.io"
+   - "containerd"
+   - "runc"
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: install pre-req packages
+  become: yes
+  apt:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - 'apt-transport-https'
+   - 'ca-certificates'
+   - 'curl'
+   - 'gnupg'
+   - 'lsb-release'
+
+- name: apt update
+  become: yes
+  apt:
+   name: '*'
+   state: latest
+   update_cache: yes
+
+- name: Add docker key
+  apt_key:
+   url: https://download.docker.com/linux/ubuntu/gpg
+   state: present
+
+- name: Add docker repository
+  apt_repository:
+   repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_distribution_release}} stable
+   state: present
+
+- name: install docker packages
+  become: yes
+  apt:
+   name: "{{ packages }}"
+   state: present
+   update_cache: yes
+  vars:
+   packages:
+   - 'docker-ce'
+   - 'docker-ce-cli'
+   - 'containerd.io'

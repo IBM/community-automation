@@ -1,8 +1,14 @@
 ### instana dir's are hard coded
 instana_dir_custom: '/opt/instana-agent'
 instana_dir_normal: '/opt/instana/agent'
-get_normal_linux_agent: 'https://setup.instana.io/agent'
 agent_key: 'thisIsAllowsOverridden'
-instana_host_port: 'thisIsAllowsOverridden'
-install_normal_linux_agent: "/opt/setup_agent.sh -a {{ agent_key }} -t dynamic -e {{ instana_host_port }}  -y -s"
+instana_host: 'thisIsAllowsOverridden'
+instana_port: '1444'
+instana_region: 'singlebox-onprem'
 custom_agent_url: 'thisIsAllowsOverridden'
+instana_mode: '' # Windows: blank is dynamic offline is static Unix: dynamic or static
+instana_runtime: 'j9' # Windows: blank is azul j9 is Eclipse OpenJ9 11, Unix: blank or -j
+get_normal_linux_agent: 'https://setup.instana.io/agent'
+install_normal_linux_agent: "/opt/setup_agent.sh -a {{ agent_key }} -t {{ instana_mode }} -e {{ instana_host }}:{{ instana_port }}  -y -s {{ instana_runtime }}"
+get_unattended_windows_exe: 'https://{{ instana_host }}/assets/agent/{{ instana_unit }}/{{ instana_tenet }}?agentKey={{ agent_key }}&type=exe64{{ instana_runtime }}{{ instana_mode }}&region={{ instana_region }}'
+AgentBootstrap: 'AgentBootstrap.exe INSTANA_AGENT_ENDPOINT={{ instana_host }} INSTANA_AGENT_ENDPOINT_PORT={{ instana_port }} INSTANA_AGENT_KEY={{ agent_key }} /quiet'
