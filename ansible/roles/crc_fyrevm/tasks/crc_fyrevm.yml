@@ -1,118 +1,19 @@
 ---
 
-- name: whoami
-  command: 'whoami'
-  register: whoamiX
-
-- block:
-  - name: create ssh dir
-    file:
-     path: /home/jenkins/.ssh
-     state: directory
-     mode: '0700'
-  - openssh_keypair:
-     path: /home/jenkins/.ssh/id_rsa
-  when: whoamiX.stdout == 'jenkins'
-
-- set_fact:
-   stackName: "crc-{{ 999999 | random }}"
-  run_once: yes
-  when: stackName is not defined
-
-- name: check status of the named cluster
-  no_log: "{{ noLog }}"
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ stackName }}'
-  args:
-   warn: no
-  register: clusterStatus
-
-- debug: 
-   msg: "{{ stackName }} is deployed - exit"
-  when: (clusterStatus.stdout|from_json).status is not defined 
-
-- meta: end_play
-  when: (clusterStatus.stdout|from_json).status is not defined 
-
-- name: get the public ssh id
-  shell: 'cat ~/.ssh/id_rsa.pub'
-  register: id_rsa_pub
-
-- name: create input json file
-  no_log: "{{ noLog }}"
-  copy:
-   content: "{ 'fyre': { 'creds': { 'username':'{{ fyreuser }}', 'api_key':'{{ fyreapikey }}', 'public_key':'{{ id_rsa_pub.stdout }}' } }, 'cluster_prefix':'{{ stackName }}', 'clusterconfig': { 'instance_type':'virtual_server', 'platform':'{{ arch }}', 'user_comment':'{{ comment }}'}, '{{ stackName }}' : [ { 'name':'1', 'cpu':'{{ numcpu }}', 'memory':'{{ memory }}', 'os':'{{ fos }}', 'publicvlan':'y', 'privatevlan':'y' } ] }"
-   dest: "fyre.{{ stackName }}.json"
-
-- name: Create Fyre stack
-  no_log: "{{ noLog }}"
-  raw: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurlbuild }} --data @fyre.{{ stackName }}.json
-  args:
-   warn: no
-  register: buildstatus
-
-- name: remove temp json
-  file:
-   path: "fyre.{{ stackName }}.json"
-   state: absent
-
-- name: check Fyre request status
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.stdout|from_json).request_id }}'
-  no_log: "{{ noLog }}"
-  args:
-   warn: no
-  register: fyreStatus
-
-- debug: var=fyreStatus.stdout 
-
-# this is used in fully automated setups - wait x mins for fyre to provision vm
-- pause:
-   minutes: 2
-
-- name: get Fyre request status
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.stdout|from_json).request_id }}'
-  no_log: "{{ noLog }}"
-  retries: 999
-  delay: 5
-  args:
-   warn: no
-  register: fyreStatus
-  until: (fyreStatus.stdout|from_json).request[0].get('status') == 'error' or (fyreStatus.stdout|from_json).request[0].get('status') == 'completed'
-
-- block:
-  - name: check Fyre request status
-    fail:
-     msg: "Fyre reqeust for cluster {{ stackName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
-  when: (fyreStatus.stdout|from_json).request[0].get('status') == 'error'
-
-- name: check status of the named cluster - get publicip
-  #no_log: "{{ noLog }}"
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ stackName }}'
-  args:
-   warn: no
-  register: clusterStatus
-
-- name: remove new host from localhost known_hosts ip
-  no_log: "{{ noLog }}"
-  vars: 
-    publicip: "{{ (clusterStatus.stdout|from_json)[stackName][0].get('publicip') }}"
-  command: "ssh-keygen -R {{ publicip }}"
-  ignore_errors: True
-- name: remove new host from localhost known_hosts
-  no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ stackName }}-1"
-  ignore_errors: True
-- name: remove new host from localhost known_hosts fqdn
-  no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ stackName }}-1.fyre.ibm.com" 
-  ignore_errors: True
-
-# somewhat hard coded here
-- name: check the host for a active ssh
-  command: 'ssh -o StrictHostKeyChecking=no root@{{ stackName }}-1.fyre.ibm.com /usr/bin/true'
-  retries: 999
-  delay: 5
-  register: result
-  until: result.rc == 0
+- name: Create FyreVM with appropriate spec
+  include_role: fyrevm_provision
+  fyre_arch: x
+  fyre_cpu: 6
+  fyre_memory: 32  
+  fyre_os: 'Redhat 8.2'
+  fyre_site: "{{ site }}"
+  fyre_comment: 'RH OpenShift crc'
+  stackName_prefix: crc
+  target_group: crc
+  target_user: "{{ crc_username }}"
+  extra_props: 
+    crc_username: "{{ crc_username }}"
+    vnc: "{{ vnc }}"
 
 - block:
   - name: check the host for cpu type
@@ -137,14 +38,4 @@
         name: crc_fyrevm
     when: (isAMDchip).find('AMD') >= 1 
 
-# somewhat hard coded here
-- name: add host to known_hosts
-  shell: 'ssh-keyscan -H {{ stackName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'
 
-- add_host:
-   name: "{{ stackName }}-1{{ hostnameDomain }}"
-   groups: crc
-   ansible_user: "{{ crc_username }}"
-   crc_username: "{{ crc_username }}"
-   stackName: "{{ stackName }}"
-   vnc: "{{ vnc }}"
