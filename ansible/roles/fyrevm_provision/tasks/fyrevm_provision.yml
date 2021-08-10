@@ -9,6 +9,7 @@
 - name: Ensure SSH Key
   openssh_keypair:
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
+    regenerate: never
 
 - name: Check VM Existance
   no_log: "{{ noLog }}"
@@ -66,31 +67,6 @@
       msg: "Fyre reqeust for cluster {{ clusterName }} has failed\n(fyreStatus.json.request[0].get('error_details')"
     when: fyreStatus.json.request[0].get('status') == 'error'
   #END BLOCK
-
-- name: check that fyre cluster have a deployed status
-  # no_log: "{{ noLog }}"
-  uri:
-    url: "{{fyre_clusterstatusurl}}"
-    method: GET
-    user:  "{{ fyreuser }}"
-    password: "{{ fyreapikey }}"
-    validate_certs: False
-    return_content: yes
-    body_format: json
-  changed_when: false
-  register: clusterStatus
-  until: (clusterStatus.status == 200) and clusterStatus.json is defined and (clusterStatus.json.clusters[0].deployment_status  =="deployed" or clusterStatus.json.clusters[0].deployment_status == "error")
-  retries: 600
-  delay: 20
-
-- name: check for error status after loop check
-  fail:
-   msg:
-   - "{{clusterStatus.json.status}}"
-   - "{{clusterStatus.json.details}}"
-  when:
-  - clusterStatus.json.status is defined
-  - (clusterStatus.json.status) == 'error'  
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
