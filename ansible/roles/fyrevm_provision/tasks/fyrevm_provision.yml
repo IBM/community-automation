@@ -42,8 +42,9 @@
     register: buildstatus
 
   # this is used in fully automated setups - wait x mins for fyre to provision vm
-  - pause:
-    minutes: 2
+  - name: wait x mins for fyre to provision vm
+    pause:
+      minutes: 2
 
   - name: get Fyre request status
     uri:
