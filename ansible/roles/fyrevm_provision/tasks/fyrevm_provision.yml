@@ -59,7 +59,7 @@
     retries: 999
     delay: 5
     register: fyreStatus
-    until: fyreStatus.json.request[0].get('status') == 'error' or (fyreStatus.json.request[0].get('status') == 'completed'
+    until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
 
   - name: check Fyre request status
     fail:
