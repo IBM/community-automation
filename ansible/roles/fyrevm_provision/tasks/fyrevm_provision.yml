@@ -23,7 +23,7 @@
   failed_when: false
 
 - name: Create Fyre VM
-  when: (clusterStatus.json.status is defined # Status is only defined if cluster does not exist
+  when: clusterStatus.json.status is defined # Status is only defined if cluster does not exist
   block:
   #START BLOCK
   - debug:
@@ -38,7 +38,7 @@
       validate_certs: False
       return_content: yes
       body_format: "json"
-      body: "{{ lookup('template', 'fyre_provision.yml') }}" 
+      body: "{{ lookup('template', 'vm_request.json.j2') }}" 
     register: buildstatus
 
   # this is used in fully automated setups - wait x mins for fyre to provision vm
