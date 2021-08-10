@@ -2,14 +2,14 @@
 
 - name: Create FyreVM with appropriate spec
   include_role: fyrevm_provision
-  fyre_arch: x
+  fyre_platform: x
   fyre_cpu: 16
   fyre_memory: 64  
   fyre_additional_disk: 1024
   fyre_os: 'Ubuntu 20.04'
   fyre_site: "{{ site }}"
   fyre_comment: 'Instana Host'
-  stackName_prefix: instana
+  clusterName_prefix: instana
   target_group: instana
     
 

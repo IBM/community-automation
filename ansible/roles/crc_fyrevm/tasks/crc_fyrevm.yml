@@ -2,13 +2,13 @@
 
 - name: Create FyreVM with appropriate spec
   include_role: fyrevm_provision
-  fyre_arch: x
+  fyre_platform: x
   fyre_cpu: 6
   fyre_memory: 32  
   fyre_os: 'Redhat 8.2'
   fyre_site: "{{ site }}"
   fyre_comment: 'RH OpenShift crc'
-  stackName_prefix: crc
+  clusterName_prefix: crc
   target_group: crc
   target_user: "{{ crc_username }}"
   extra_props: 
@@ -17,7 +17,7 @@
 
 - block:
   - name: check the host for cpu type
-    command: 'ssh -o StrictHostKeyChecking=no root@{{ stackName }}-1.fyre.ibm.com lscpu -J'
+    command: 'ssh -o StrictHostKeyChecking=no root@{{ emberFQDN }} lscpu -J'
     register: cpuType
 
   - set_fact: 

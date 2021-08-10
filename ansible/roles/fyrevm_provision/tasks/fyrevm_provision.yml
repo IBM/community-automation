@@ -1,137 +1,79 @@
 ---
 
-- name: whoami
-  command: 'whoami'
-  register: whoamiX
 
-- block:
-  - name: create ssh dir
-    file:
-     path: /home/jenkins/.ssh
-     state: directory
-     mode: '0700'
-  - openssh_keypair:
-     path: /home/jenkins/.ssh/id_rsa
-  when: whoamiX.stdout == 'jenkins'
+- name: create ssh dir
+  file:
+    path: "{{ lookup('env','HOME')}}/.ssh"
+    state: directory
+    mode: '0700'
+- name: Ensure SSH Key
+  openssh_keypair:
+    path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
 
-- set_fact:
-   stackName: "{{stackName_prefix}}-{{ 999999 | random }}"
-  run_once: yes
-  when: stackName is not defined
-
-- name: Check OCP Existance
-  no_log: True
+- name: Check VM Existance
+  no_log: "{{ noLog }}"
   uri:
     url: "{{fyre_clusterstatusurl}}"
     method: "GET"
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
     validate_certs: False
-  register: ocpexistance
+  register: clusterStatus
   changed_when: false
   failed_when: false
 
-- name: Create Fyre OCP
-  when: ocpexistance.json.status is defined # Status is only defined if cluster does not exist
+- name: Create Fyre VM
+  when: (clusterStatus.json.status is defined # Status is only defined if cluster does not exist
   block:
   #START BLOCK
   - debug:
       msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
 
-- name: check status of the named cluster
-  no_log: "{{ noLog }}"
-  command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreclusterstatus }}{{ stackName }}'
-  args:
-   warn: no
-  register: clusterStatus
-
-# - debug: 
-#    msg: "{{ stackName }} is deployed - exit"
-#   when: (clusterStatus.stdout|from_json).status is not defined 
-
-# - meta: end_play
-#   when: (clusterStatus.stdout|from_json).status is not defined 
-
-- name: Create Fyre VM
-  when: (clusterStatus.stdout|from_json).status is defined # Status is only defined if cluster does not exist
-  block:
-  #START BLOCK
-  - debug:
-      msg: "Cluster was not found so creating new cluster called '{{ stackName }}'"
-
-  - name: get the public ssh id
-    shell: 'cat ~/.ssh/id_rsa.pub'
-    register: id_rsa_pub
-
   - name: Create Fyre stack
     uri:
-      url: "{{fyreurlbuild}}"
+      url: "{{fyre_buildurl}}"
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       validate_certs: False
+      return_content: yes
       body_format: "json"
-      body:
-        fyre:
-          creds:
-            username: "{{ fyreuser }}"
-            api_key: "{{ fyreapikey }}"
-            public_key: "{{ id_rsa_pub.stdout }}"
-        cluster_prefix: "{{ stackname }}"
-        site: "{{ fyre_site }}"
-        #product_group_id: "{{ fyre_group_id }}"
-        clusterconfig:
-          instance_type: "virtual_server"
-          platform: "{{ fyre_arch }}"
-          user_comment: "{{ fyre_comment }}"
-        "{{ stackName }}": 
-          - name: "1"
-            cpu: "{{ fyre_cpu }}"
-            memory: "{{ fyre_memory }}"
-            os: "{{ fyre_os }}"
-            publicvlan: "y"
-            privatevlan: "y"
-            additional_disk:
-              - size: "{{ fyre_additional_disk | default(omit) }}"
-    register: buildstatus  
-  
-  - name: check Fyre request status
-    command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.json).request_id }}'
-    no_log: "{{ noLog }}"
-    args:
-    warn: no
-    register: fyreStatus
-
-  - debug: var=fyreStatus.stdout 
+      body: "{{ lookup('template', 'fyre_provision.yml') }}" 
+    register: buildstatus
 
   # this is used in fully automated setups - wait x mins for fyre to provision vm
   - pause:
     minutes: 2
 
   - name: get Fyre request status
-    command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (buildstatus.json).request_id }}'
+    uri:
+      url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
+      method: "POST"
+      user: "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      validate_certs: False
+      return_content: yes
+      body_format: json
     no_log: "{{ noLog }}"
     retries: 999
     delay: 5
-    args:
-    warn: no
     register: fyreStatus
-    until: (fyreStatus.stdout|from_json).request[0].get('status') == 'error' or (fyreStatus.stdout|from_json).request[0].get('status') == 'completed'
+    until: (fyreStatus.json.request[0].get('status') == 'error' or (fyreStatus.json.request[0].get('status') == 'completed'
 
   - name: check Fyre request status
     fail:
-      msg: "Fyre reqeust for cluster {{ stackName }} has failed\n(fyreStatus.stdout|from_json).request[0].get('error_details')"
-    when: (fyreStatus.stdout|from_json).request[0].get('status') == 'error'
+      msg: "Fyre reqeust for cluster {{ clusterName }} has failed\n(fyreStatus.json.request[0].get('error_details')"
+    when: (fyreStatus.json.request[0].get('status') == 'error'
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
   # no_log: "{{ noLog }}"
   uri:
-    url: "{{fyreclusterstatus}}{{stackName}}"
-    method: POST
+    url: "{{fyre_clusterstatusurl}}"
+    method: GET
     user:  "{{ fyreuser }}"
-    validate_certs: False
     password: "{{ fyreapikey }}"
+    validate_certs: False
     return_content: yes
     body_format: json
   changed_when: false
@@ -152,21 +94,21 @@
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{ clusterStatus.json.stackName[0].get('publicip') }}"
+    publicip: "{{ clusterStatus.json.clusterName[0].get('publicip') }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
 - name: remove new host from localhost known_hosts
   no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ stackName }}-1"
+  command: "ssh-keygen -R {{ ember }}"
   ignore_errors: True
 - name: remove new host from localhost known_hosts fqdn
   no_log: "{{ noLog }}"
-  command: "ssh-keygen -R {{ stackName }}-1.fyre.ibm.com" 
+  command: "ssh-keygen -R {{ emberFQDN }}" 
   ignore_errors: True
 
 # somewhat hard coded here
 - name: check the host for a active ssh
-  command: 'ssh -o StrictHostKeyChecking=no root@{{ stackName }}-1.fyre.ibm.com /usr/bin/true'
+  command: 'ssh -o StrictHostKeyChecking=no root@{{ emberFQDN }} /usr/bin/true'
   retries: 999
   delay: 5
   register: result
@@ -174,12 +116,28 @@
 
 # somewhat hard coded here
 - name: add host to known_hosts
-  shell: 'ssh-keyscan -H {{ stackName }}-1{{ hostnameDomain }} >> ~/.ssh/known_hosts'
+  shell: 'ssh-keyscan -H {{ emberFQDN }} >> ~/.ssh/known_hosts'
 
 - add_host:
-   name: "{{ stackName }}-1{{ hostnameDomain }}"
+   name: "{{ emberFQDN }}"
    groups: "{{ target_group }}"
    ansible_user: "{{ target_user|default('root') }}"
-   stackName: "{{ stackName }}"
+   clusterName: "{{ clusterName }}"
+   stackName: "{{ clusterName }}"
   args: {{ extra_props| default(omit) }}
+  changed_when: false
+  when: "fyre_addAnsibleHost|bool == true"
 
+- set_fact:
+    clusterName: "{{ clusterName }}"
+    emberFQDN: "{{ emberFQDN }}"
+  when: "fyre_addAnsibleHost|bool == true"
+- name: Update existing host with new facts
+  set_fact:
+    clusterName: "{{ clusterName }}"
+    stackName: "{{ clusterName }}"
+    ansible_user: "{{ target_user|default(omit) }}"
+  args: {{ extra_props| default(omit) }} 
+  no_log: True
+  changed_when: false
+  when: "fyre_addAnsibleHost|bool == false"
