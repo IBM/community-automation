@@ -1,14 +1,3 @@
 ---
 
-- name: set jmeter host specs
-  no_log: "{{ noLog }}"
-  vars:
-  ## crc host specs
-  - arch: x
-  - numcpu: 2
-  - memory: 4 # GB memory Fyre hosting VM
-  - fos: 'Redhat 8.4'
-  - comment: 'RH Jmeter'
-  - localclusterName: "{{ clusterName }}"
-  include_tasks:
-    file: db2_fyrevm.yml
+- include_tasks: db2_fyrevm.yml

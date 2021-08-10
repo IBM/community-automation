@@ -1,0 +1,32 @@
+### helpful for debug to set noLog to false via -e noLog=false
+noLog: False
+
+
+fyre_addAnsibleHost: true
+fyre_emberSuffix: "1"
+clusterName: "{{ stackName|default(clusterName_prefix+'-'+ (999999|random))"
+ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+#Default Specs
+fyre_platform: "x"
+fyre_os: "Ubuntu 20.04"
+fyre_memory: 8
+fyre_cpu: 4
+fyre_site: "svl"
+fyre_publicvlan: "y"
+fyre_comment: "Created By Community Automation Ansible"
+fyre_group_id: "0" # 0 = Users Default
+
+### do not change below
+# Fyre urls and api
+fyre_apiurl: https://api.fyre.ibm.com/rest/v1/
+fyre_buildurl: "{{ fyre_apiurl }}?operation=build"
+fyre_requeststatusurl: "{{ fyre_apiurl }}?operation=query&request=showrequests&request_id="
+fyre_clusterstatusurl: "{{ fyre_apiurl }}?operation=query&request=showclusterdetails&cluster_name={{clusterName}}"
+
+hostnameDomain: '.fyre.ibm.com'
+ember: "{{ clusterName }}-{{ fyre_emberSuffix }}"
+emberFQDN: "{{ ember }}{{ hostnameDomain }}"
+
+
+
