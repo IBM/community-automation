@@ -8,7 +8,9 @@
     },
     "cluster_prefix": "{{ clusterName }}",
     "site": "{{ fyre_site }}",
+    {% if fyre_group_id is defined %}
     "product_group_id": "{{ fyre_group_id }}",
+    {% endif %}
     "clusterconfig": {
         "instance_type": "virtual_server",
         "platform": "{{ fyre_platform }}",

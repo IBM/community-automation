@@ -15,7 +15,6 @@ fyre_cpu: 4
 fyre_site: "svl"
 fyre_publicvlan: "y"
 fyre_comment: "Created By Community Automation Ansible"
-fyre_group_id: "0" # 0 = Users Default
 
 ### do not change below
 # Fyre urls and api
