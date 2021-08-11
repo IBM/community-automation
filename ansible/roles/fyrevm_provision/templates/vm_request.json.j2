@@ -1,0 +1,32 @@
+{
+    "fyre": {
+        "creds": {
+            "username": "{{ fyreuser }}",
+            "api_key": "{{ fyreapikey }}",
+            "public_key": "{{ ssh_public_key }}"
+        }
+    },
+    "cluster_prefix": "{{ clusterName }}",
+    "site": "{{ fyre_site }}",
+    {% if fyre_group_id is defined %}
+    "product_group_id": "{{ fyre_group_id }}",
+    {% endif %}
+    "clusterconfig": {
+        "instance_type": "virtual_server",
+        "platform": "{{ fyre_platform }}",
+        "user_comment": "{{ fyre_comment }}"
+    },
+    "{{ clusterName }}": [
+        {
+            "name": "{{ fyre_emberSuffix }}",
+            "cpu": "{{ fyre_cpu }}",
+            "memory": "{{ fyre_memory }}",
+            "os": "{{ fyre_os }}",
+            "publicvlan": "{{ fyre_publicvlan }}",
+            "privatevlan": "y",
+            {% if fyre_additional_disk is defined %}
+            "additional_disks": [{ "size": "{{ fyre_additional_disk }}" }]
+            {% endif %}
+        }
+    ]
+}
