@@ -6,6 +6,11 @@
     path: "{{ lookup('env','HOME')}}/.ssh"
     state: directory
     mode: '0700'
+- name: create ssh dir
+  file:
+    path: "{{ lookup('env','HOME')}}/.ssh/known_hosts"
+    state: file
+    mode: '0700'    
 - name: Ensure SSH Key
   openssh_keypair:
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
@@ -66,12 +71,36 @@
     fail:
       msg: "Fyre reqeust for cluster {{ clusterName }} has failed\n(fyreStatus.json.request[0].get('error_details')"
     when: fyreStatus.json.request[0].get('status') == 'error'
-  #END BLOCK 
+  #END BLOCK
+
+- name: check that fyre cluster have a deployed status
+  # no_log: "{{ noLog }}"
+  uri:
+    url: "{{fyre_clusterstatusurl}}"
+    method: GET
+    user:  "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    validate_certs: False
+    return_content: yes
+    body_format: json
+  changed_when: false
+  register: clusterStatus
+  until: (clusterStatus.status == 200) and clusterStatus.json is defined and (clusterStatus.json[clusterName][0].status  == "deployed" or clusterStatus.json[clusterName][0].status == "error")
+  retries: 600
+  delay: 20
+
+- name: check for error status after loop check
+  fail:
+   msg:
+   - "{{clusterStatus.json[clusterName][0]}}"
+  when:
+  - clusterStatus.json is defined
+  - (clusterStatus.json[clusterName][0].status) == 'error'  
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{ clusterStatus.json.clusterName[0].get('publicip') }}"
+    publicip: "{{ clusterStatus.json[clusterName][0].publicip }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
 - name: remove new host from localhost known_hosts
@@ -85,7 +114,7 @@
 
 # somewhat hard coded here
 - name: check the host for a active ssh
-  command: 'ssh -o StrictHostKeyChecking=no root@{{ emberFQDN }} /usr/bin/true'
+  command: 'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no root@{{ emberFQDN }} /usr/bin/true'
   retries: 999
   delay: 5
   register: result
