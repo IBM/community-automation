@@ -25,9 +25,7 @@
             "publicvlan": "{{ fyre_publicvlan }}",
             "privatevlan": "y",
             {% if fyre_additional_disk is defined %}
-            "additional_disk": [
-              { "size": "{{ fyre_additional_disk }}" }
-            ]
+            "additional_disks": [{ "size": "{{ fyre_additional_disk }}" }]
             {% endif %}
         }
     ]
