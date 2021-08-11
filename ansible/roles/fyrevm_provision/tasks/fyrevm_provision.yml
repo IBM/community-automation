@@ -9,8 +9,8 @@
 - name: create ssh dir
   file:
     path: "{{ lookup('env','HOME')}}/.ssh/known_hosts"
-    state: file
-    mode: '0700'    
+    state: touch
+    mode: '0600'     
 - name: Ensure SSH Key
   openssh_keypair:
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
