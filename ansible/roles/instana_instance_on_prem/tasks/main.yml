@@ -167,7 +167,7 @@
     msg: "{{ licenseOutput.stdout_lines }}"
 
 - name: Store instana information for subsequent roles
-  set_facts: 
+  set_fact: 
     instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: .*') }}"
     instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: .*') }}"
     instana_version: "{{ instanaVersion.stdout }}"
