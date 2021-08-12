@@ -130,13 +130,17 @@
   debug: 
     msg: "{{ instanaOutput.stdout_lines }}"
 
+- name: instana admin credentials
+  shell: 'cat instanaCreds 2>/dev/null || (instana configure admin >instanaCreds; cat instanaCreds)'
+  register: instanaAdmin
+
 - name: instana version
   shell: 'instana version'
-  register: instanaOutput
+  register: instanaVersion
   
 - name: instana version output
   debug: 
-    msg: "{{ instanaOutput.stdout_lines }}"
+    msg: "{{ instanaVersion.stdout_lines }}"
 
 - name: instana license download
   shell: 'instana license download'
@@ -161,3 +165,9 @@
 - name: instana license verify output
   debug: 
     msg: "{{ licenseOutput.stdout_lines }}"
+
+- name: Store instana information for subsequent roles
+  set_facts: 
+    instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: .*') }}"
+    instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: .*') }}"
+    instana_version: "{{ instanaVersion.stdout }}"
