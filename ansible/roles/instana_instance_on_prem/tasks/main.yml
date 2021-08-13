@@ -175,6 +175,6 @@
 
 - name: Store instana information for subsequent roles
   set_fact: 
-    instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: (.*)','\\1') }}"
-    instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: (.*)','\\1') }}"
+    instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: (.*)','\\1') | first }}"
+    instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: (.*)','\\1') | first }}"
     instana_version: "{{ instanaVersion.stdout }}"
