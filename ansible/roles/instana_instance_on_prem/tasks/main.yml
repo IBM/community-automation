@@ -28,15 +28,15 @@
   ### umount for re-run testing
   - name: umount /dev/vdb1
     mount: 
-    path: /mnt
-    src: /dev/vdb1
-    state: unmounted
+      path: /mnt
+      src: /dev/vdb1
+      state: unmounted
     ignore_errors: true
 
   - name: copy fdisk.create
     template:
-    src: fdisk.create.j2
-    dest: fdisk.create
+      src: fdisk.create.j2
+      dest: fdisk.create
 
   - name: create the /dev/vdb partition
     shell: 'fdisk /dev/vdb < fdisk.create'
@@ -61,10 +61,10 @@
 
   - name: mount /dev/vdb1
     mount: 
-    path: /mnt
-    src: /dev/vdb1
-    state: mounted
-    fstype: xfs
+      path: /mnt
+      src: /dev/vdb1
+      state: mounted
+      fstype: xfs
     register: mountOutput
     
   - name: mount output
@@ -105,18 +105,18 @@
 
   - name: copy settings.hcl
     template:
-    src: settings.hcl.j2
-    dest: /root/settings.hcl
+      src: settings.hcl.j2
+      dest: /root/settings.hcl
 
   - name: Add Instana key
     apt_key:
-    url: https://self-hosted.instana.io/signing_key.gpg
-    state: present
+      url: https://self-hosted.instana.io/signing_key.gpg
+      state: present
 
   - name: Add Instana repository
     apt_repository:
-    repo: deb [arch=amd64] https://self-hosted.instana.io/apt generic main
-    state: present
+      repo: deb [arch=amd64] https://self-hosted.instana.io/apt generic main
+      state: present
 
   - name: Run the equivalent of "apt-get update" as a separate step
     apt:
@@ -125,11 +125,8 @@
   - name: install pre-req packages
     become: yes
     apt:
-    name: "{{ packages }}"
-    state: present
-    vars:
-    packages:
-    - 'instana-console'
+      name: "instana-console"
+      state: present
 
   - name: instana init -f settings.hcl -y
     shell: 'instana init -f settings.hcl -y'
