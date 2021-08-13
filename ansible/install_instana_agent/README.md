@@ -44,3 +44,11 @@ Once you have configured the `inventory` file, run the playbook using:
 ansible-playbook -i inventory install_instana_agent.yml 
 
 ```
+
+## Change / update the Instana agent zone
+
+Set the instana_zone in the inventory, the run the playbook using:
+
+```
+ansible-playbook -i inventory instana_agent_zone.yml
+

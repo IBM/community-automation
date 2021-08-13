@@ -1,0 +1,36 @@
+---
+
+- block: 
+  - name: set the zone in etc/instana/configuration-zone.yaml
+    win_template:
+     src: configuration-zone.yaml.j2
+     dest: 'C:\Program Files\Instana\instana-agent\etc\instana\configuration-zone.yaml'
+    when:
+    - ansible_shell_type is defined
+    - ansible_shell_type == 'cmd' or ansible_shell_type == 'powershell'
+
+  - block:
+    - name: check if instana custom is installed
+      stat:
+       path: "{{ instana_dir_custom }}/etc/instana"
+      register: isInstana
+    - name: set common instana_dir var
+      set_fact:
+        instana_dir: "{{ instana_dir_custom }}/etc/instana/"
+      when: isInstana.stat.exists == True
+    
+    - name: check if instana normal is installed
+      stat:
+       path: "{{ instana_dir_normal }}/etc/instana"
+      register: isInstana
+    - name: set common instana_dir var
+      set_fact:
+        instana_dir: "{{ instana_dir_normal }}/etc/instana/"
+      when: isInstana.stat.exists == True
+    - name: set the zone in etc/instana/configuration-zone.yaml
+      become: yes
+      template:
+       src: configuration-zone.yaml.j2
+       dest: "{{ instana_dir }}configuration-zone.yaml"
+    when: ansible_shell_type is undefined 
+  when: instana_zone is defined  and instana_zone | length > 1
