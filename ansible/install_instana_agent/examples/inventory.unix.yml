@@ -3,6 +3,7 @@ all:
   agent_key: ''
   instana_host: ''
   instana_port: '1444'
+  instana_zone: ''
   custom_agent_url: ''
   instana_mode: 'dynamic' #  dynamic or  static
   instana_runtime: '-j' # blank is azul , -j is Eclipse OpenJ9 11
