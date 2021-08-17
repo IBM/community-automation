@@ -14,7 +14,7 @@
       stat:
        path: "{{ instana_dir_custom }}/etc/instana"
       register: isInstana
-    - name: set common instana_dir var
+    - name: set custom instana_dir var
       set_fact:
         instana_dir: "{{ instana_dir_custom }}/etc/instana/"
       when: isInstana.stat.exists == True
@@ -23,7 +23,7 @@
       stat:
        path: "{{ instana_dir_normal }}/etc/instana"
       register: isInstana
-    - name: set common instana_dir var
+    - name: set normal instana_dir var
       set_fact:
         instana_dir: "{{ instana_dir_normal }}/etc/instana/"
       when: isInstana.stat.exists == True
@@ -32,5 +32,6 @@
       template:
        src: configuration-zone.yaml.j2
        dest: "{{ instana_dir }}configuration-zone.yaml"
+      when: instana_dir is defined
     when: ansible_shell_type is undefined 
   when: instana_zone is defined  and instana_zone | length > 1
