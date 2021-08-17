@@ -1,5 +1,7 @@
 ---
 - include_tasks: anylinux.yml 
+  when: 
+  - ansible_system == 'Linux' 
 - include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
   when: 
   - ansible_system == 'Linux' 
