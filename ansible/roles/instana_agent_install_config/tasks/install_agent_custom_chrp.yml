@@ -1,5 +1,5 @@
 ---
-- name: install custom Instana archive
+- name: install custom AIX Instana archive
   unarchive:
     src: "{{ custom_agent_url }}/instana-agent-{{ ansible_architecture }}.tar"
     dest: /opt
