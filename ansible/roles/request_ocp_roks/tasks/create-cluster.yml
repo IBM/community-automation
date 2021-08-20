@@ -8,7 +8,7 @@
 - name: set-fact-resource-group-id
   set_fact: rg="{{ output_resource_group.resource }}"
     
-- name: create-cluster
+- name: create-cluster async
   ibm.cloudcollection.ibm_container_cluster:
     disk_encryption: False
     machine_type: "{{ machineType }}"
@@ -23,8 +23,18 @@
     resource_group_id: "{{ rg.id }}"
     ibmcloud_api_key: "{{ apikey }}"
     entitlement: "{{ entitlement }}"
-  register: iccluster
-
+  async: 86400 #timeout after 1 day
+  poll: 0
+  register: long_task
+  
+- name: Check on an async task
+  async_status:
+    jid: "{{ long_task.ansible_job_id }}"
+  register: long_task_result
+  until: long_task_result.finished
+  retries: 120 # Retries for 2 hours
+  delay: 60  
+  
 - name: create-cluster-output
   debug:
     var: iccluster.resource
