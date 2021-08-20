@@ -35,6 +35,3 @@
   retries: 120 # Retries for 2 hours
   delay: 60  
   
-- name: create-cluster-output
-  debug:
-    var: iccluster.resource
