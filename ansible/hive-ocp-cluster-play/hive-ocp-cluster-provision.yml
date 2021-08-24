@@ -1,0 +1,31 @@
+---
+- name: Provision OCP Cluster(s) using Hive Instance
+  hosts: bastion
+  vars: 
+    admin_task: "delete"
+
+  vars_files:
+    - common-vars.yml
+    - "{{ cloud }}-vars.yml"
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    - role: aws_route53
+      when: 'cloud == "vsphere"'
+
+    - role: hive_ocp_cluster_provision
+
+    - role: ocp_cluster_tag
+      when: 'cloud != "vsphere" and cloud != "google"'
+
+  tasks:
+
+    - name: Display cluster details
+      command: cat {{ CLUSTER_NAME }}_details.log
+      register: cluster_details
+
+    - name: Print details
+      debug:
+        msg: "{{ cluster_details.stdout }}"
