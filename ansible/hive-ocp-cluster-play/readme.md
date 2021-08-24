@@ -36,7 +36,7 @@ community-automation/ansible/hive-ocp-cluster-play
 ## Playbooks
 
 - community-automation/ansible/hive-ocp-cluster-play/hive-ocp-cluster-provision.yml
-- community-automation/ansible/hive-ocp-cluster-play/hive-ocp-delete.yml
+- community-automation/ansible/hive-ocp-cluster-play/hive-ocp-cluster-delete.yml
 
 
 ## Important files
