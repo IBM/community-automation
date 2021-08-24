@@ -2,7 +2,7 @@
 - name: Provision OCP Cluster(s) using Hive Instance
   hosts: bastion
   vars: 
-    admin_task: "delete"
+    admin_task: "provision"
 
   vars_files:
     - common-vars.yml

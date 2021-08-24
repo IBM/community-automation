@@ -1,6 +1,9 @@
 ---
 - name: Delete OCP Cluster(s) using Hive Instance
   hosts: bastion
+  vars: 
+    admin_task: "delete"
+
   vars_files:
     - common-vars.yml
     - "{{ cloud }}-vars.yml"
