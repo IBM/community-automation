@@ -87,3 +87,9 @@ Following pulls cluster name from common-vars.yml
 ```
 ansible-playbook -i inventory hive-ocp-cluster-delete.yml
 ```
+
+When choosing to add variables to command line
+
+```
+ansible-playbook -i inventory hive-ocp-cluster-delete.yml -e "CLUSTER_NAME=your_cluster_name" -e "cloud=aws"
+```
