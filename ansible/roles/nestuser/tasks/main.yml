@@ -68,7 +68,8 @@
      backup: yes
     become: yes
   when:
-  - ansible_architecture == 'Linux'
+  - ansible_architecture == 'x86_64'
+  - ansible_system == 'Linux'
 
 - name: nest ulimit nofile
   lineinfile:
