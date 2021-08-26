@@ -39,7 +39,11 @@ The following is an example of how to run the role.
     ocpVersion: "4.3"
 ```
 
-For Fyre the ansible role has support for deploying using some custom urls:
+## Custom URLS/Version
+
+This role has support for deploying using some custom urls into Fyre:
+e.g. 
+
 ```
 - role: request_ocp_fyre
   clusterName: "myfirstcluster"
@@ -50,12 +54,18 @@ For Fyre the ansible role has support for deploying using some custom urls:
 ```
 
 The additional parms for custom installations basically fill in sub directories of the URLs. Following are the additional parms:
-rhcos_version_path - In the URLs above this parm would replace a section of the api parms keranel_url, initramfs_url and metal_url URLs as follows:
+rhcos_version_path 
+
+- In the URLs above this parm would replace a section of the api parms keranel_url, initramfs_url and metal_url URLs as follows:
+```
 "kernel_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-kernel-x86_64"
 "initramfs_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-installer-initramfs.x86_64.img"
 "metal_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/<rhcos_version_path>/rhcos-metal.x86_64.raw.gz"
-ocp_version_path - In the URLs above this parm would replace a section of the api parms install_url and client_url as follows:
+```
+- ocp_version_path - In the URLs above this parm would replace a section of the api parms install_url and client_url as follows:
+```
 "install_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/<ocp_version_path>/openshift-install-linux.tar.gz"
 "client_url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/<ocp_version_path>/openshift-client-linux.tar.gz"
+```
 
 Getting the right combination of rhcos_version_path and ocp_version_path can take some work. So have a look on https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/ and https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ and pick the version path you want to try.
