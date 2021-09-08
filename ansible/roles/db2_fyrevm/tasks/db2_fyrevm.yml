@@ -11,5 +11,4 @@
    fyre_comment: 'RH Jmeter'
    clusterName_prefix: db2
    target_group: db2
-  extra_props: 
-    vnc: "{{ vnc }}"
+   vnc: "{{ vnc }}"
