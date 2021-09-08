@@ -1,13 +1,15 @@
 ---
 - name: Create FyreVM with appropriate spec
-  include_role: fyrevm_provision
-  fyre_platform: x
-  fyre_cpu: 2
-  fyre_memory: 4 
-  fyre_os: 'Redhat 8.4'
-  fyre_site: "{{ site }}"
-  fyre_comment: 'RH Jmeter'
-  clusterName_prefix: db2
-  target_group: db2
+  include_role: 
+   name: fyrevm_provision
+  vars:
+   fyre_platform: x
+   fyre_cpu: 2
+   fyre_memory: 4 
+   fyre_os: 'Redhat 8.4'
+   fyre_site: "{{ site }}"
+   fyre_comment: 'RH Jmeter'
+   clusterName_prefix: db2
+   target_group: db2
   extra_props: 
     vnc: "{{ vnc }}"
