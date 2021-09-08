@@ -13,9 +13,8 @@
    clusterName_prefix: crc
    target_group: crc
    target_user: "{{ crc_username }}"
-  extra_props: 
-    crc_username: "{{ crc_username }}"
-    vnc: "{{ vnc }}"
+   crc_username: "{{ crc_username }}"
+   vnc: "{{ vnc }}"
 
 - block:
   - name: check the host for cpu type

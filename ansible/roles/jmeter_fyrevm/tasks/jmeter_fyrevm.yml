@@ -13,6 +13,5 @@
    clusterName_prefix: crc
    target_group: jmeter
    target_user: "{{ jmeterUser }}"
-  extra_props: 
-    jmeterUser: "{{ jmeterUser }}"
-    vnc: "{{ vnc }}"
+   jmeterUser: "{{ jmeterUser }}"
+   vnc: "{{ vnc }}"
