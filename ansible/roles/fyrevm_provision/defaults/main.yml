@@ -4,7 +4,7 @@ noLog: False
 
 fyre_addAnsibleHost: true
 fyre_emberSuffix: "1"
-clusterName: "{{ stackName|default(clusterName_prefix+'-'+ (999999|random))"
+clusterName: "{{ stackName|default(clusterName_prefix+'-'+ (999999|random)|string) }}"
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
 #Default Specs

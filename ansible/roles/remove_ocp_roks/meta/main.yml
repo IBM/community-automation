@@ -1,5 +1,5 @@
 galaxy_info:
-  role_name: request_ocp_roks
+  role_name: remove_ocp_roks
   author: Jason Erickson
   description: Create a ROKS cluster in IBM Cloud
   company: IBM

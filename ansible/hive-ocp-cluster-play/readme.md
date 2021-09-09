@@ -33,6 +33,12 @@ Tag settings can be found in common-vars.yml. See vars file for tag details
 
 community-automation/ansible/hive-ocp-cluster-play
 
+## Playbooks
+
+- community-automation/ansible/hive-ocp-cluster-play/hive-ocp-cluster-provision.yml
+- community-automation/ansible/hive-ocp-cluster-play/hive-ocp-cluster-delete.yml
+
+
 ## Important files
 
 - examples/inventory  # example inventory file, rarely changes
@@ -63,13 +69,15 @@ Run the collection install command
 ## Create cluster
 
 When using variable files
+
 ```
-ansible-playbook -i inventory hive-ocp-cluster.yml
+ansible-playbook -i inventory hive-ocp-cluster-provision.yml
 ```
 
 When choosing to add variables to command line
+
 ```
-ansible-playbook -i inventory hive-ocp-cluster.yml -e "CLSUTER_NAME=your_cluster_name" -e "admin_task=provision" -e "cloud=aws"
+ansible-playbook -i inventory hive-ocp-cluster-provision.yml -e "CLUSTER_NAME=your_cluster_name" -e "cloud=aws"
 ```
 
 ## Destroy cluster
@@ -77,11 +85,11 @@ ansible-playbook -i inventory hive-ocp-cluster.yml -e "CLSUTER_NAME=your_cluster
 Following pulls cluster name from common-vars.yml
 
 ```
-ansible-playbook -i inventory hive-ocp-cluster.yml -e "admin_task=delete"
+ansible-playbook -i inventory hive-ocp-cluster-delete.yml
 ```
 
-Following uses command line to specify extra params that will overwrite what is in common-var.yml
+When choosing to add variables to command line
 
 ```
-ansible-playbook -i inventory hive-ocp-cluster.yml -e "CLSUTER_NAME=your_cluster_name" -e "admin_task=delete" -e "cloud=aws"
+ansible-playbook -i inventory hive-ocp-cluster-delete.yml -e "CLUSTER_NAME=your_cluster_name" -e "cloud=aws"
 ```

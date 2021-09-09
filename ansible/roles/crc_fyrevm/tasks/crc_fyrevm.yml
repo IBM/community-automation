@@ -1,19 +1,20 @@
 ---
 
 - name: Create FyreVM with appropriate spec
-  include_role: fyrevm_provision
-  fyre_platform: x
-  fyre_cpu: 6
-  fyre_memory: 32  
-  fyre_os: 'Redhat 8.2'
-  fyre_site: "{{ site }}"
-  fyre_comment: 'RH OpenShift crc'
-  clusterName_prefix: crc
-  target_group: crc
-  target_user: "{{ crc_username }}"
-  extra_props: 
-    crc_username: "{{ crc_username }}"
-    vnc: "{{ vnc }}"
+  include_role: 
+   name: fyrevm_provision
+  vars:
+   fyre_platform: x
+   fyre_cpu: 6
+   fyre_memory: 32  
+   fyre_os: 'Redhat 8.2'
+   fyre_site: "{{ site }}"
+   fyre_comment: 'RH OpenShift crc'
+   clusterName_prefix: crc
+   target_group: crc
+   target_user: "{{ crc_username }}"
+   crc_username: "{{ crc_username }}"
+   vnc: "{{ vnc }}"
 
 - block:
   - name: check the host for cpu type

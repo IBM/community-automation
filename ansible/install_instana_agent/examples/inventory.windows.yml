@@ -3,6 +3,7 @@ all:
   agent_key: ''
   instana_host: ''
   instana_mode: '' # blank is dynamic offline is static
+  instana_zone: ''
   instana_runtime: 'j9' # blank is azul j9 is Eclipse OpenJ9 11
 
   # windows only required variables

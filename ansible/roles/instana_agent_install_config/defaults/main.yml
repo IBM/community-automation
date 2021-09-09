@@ -6,6 +6,7 @@ instana_host: 'thisIsAllowsOverridden'
 instana_port: '1444'
 instana_region: 'singlebox-onprem'
 custom_agent_url: 'thisIsAllowsOverridden'
+instana_zone: '' # default is undefined
 instana_mode: '' # Windows: blank is dynamic offline is static Unix: dynamic or static
 instana_runtime: 'j9' # Windows: blank is azul j9 is Eclipse OpenJ9 11, Unix: blank or -j
 get_normal_linux_agent: 'https://setup.instana.io/agent'

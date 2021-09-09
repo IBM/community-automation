@@ -1,0 +1,4 @@
+---
+- name: set the instana agent zone if present
+  include_role: 
+   name: instana_agent_zone
