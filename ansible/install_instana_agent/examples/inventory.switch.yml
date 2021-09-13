@@ -1,0 +1,21 @@
+all:
+ vars:
+  agent_key: ''
+  instana_host: ''
+  instana_port: '443'
+
+ # adjust the contents below to match your configuration
+ hosts:         
+ children:
+  Unix:
+   vars:
+    ansible_user: root # user on the target envs
+   hosts:
+    rhel8.fyre.ibm.com
+  # windows only required variables
+  Windows:
+   vars:
+    ansible_user: Administrator # user on the target envs
+    ansible_shell_type: cmd 
+   hosts:
+    win1.fyre.ibm.com
