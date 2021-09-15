@@ -89,7 +89,7 @@
     mode: 0755
 
 - name: Execute Provision monitoring script
-  shell:  "/tmp/{{ CLUSTER_NAME }}.sh"
+  shell:  "/tmp/{{ CLUSTER_NAME }}.sh {{ CLUSTER_NAME }}"
   register: provision_results
 
 - name: Change to cluster namespace
