@@ -82,7 +82,7 @@
   shell: "oc apply -f  {{ cloud }}-clusterdeployment-cr.yml"
   register: provision_results
 
-- name: "copy provision script to tmp"
+- name: "copy monitoring script to tmp"
   copy:
     src: files/provision.sh
     dest: "/tmp/{{ CLUSTER_NAME }}.sh"
