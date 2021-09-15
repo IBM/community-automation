@@ -95,6 +95,8 @@
     KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: provision_results
 
+- debug: msg="{{ provsion_results.stdout }}"
+
 - name: Change to cluster namespace
   shell: "oc project {{ CLUSTER_NAME }}"
 
@@ -109,10 +111,6 @@
   register: console_url
 
 - debug: msg="{{ console_url.stdout }}"
-
-- name: save install log locally
-  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive > {{ CLUSTER_NAME }}_ocp_install.log"
-  register: log_save
 
 - name: create output details
   lineinfile:
