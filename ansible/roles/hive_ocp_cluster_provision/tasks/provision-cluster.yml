@@ -75,39 +75,22 @@
   register: template_results
 
 - name: Create Namespace based on cluster name
-  shell: "oc create namespace {{ CLUSTER_NAME }}"
+  shell: "oc get project {{ CLUSTER_NAME }} || oc create namespace {{ CLUSTER_NAME }}"
   register: ns_results
 
 - name: Apply provision yaml to ACM/Hive cluster
   shell: "oc apply -f  {{ cloud }}-clusterdeployment-cr.yml"
   register: provision_results
 
-- name: Get the provisioning pod name
-  shell:  "oc --no-headers=true get pods -n {{ CLUSTER_NAME }} -l hive.openshift.io/job-type=provision,hive.openshift.io/cluster-deployment-name={{ CLUSTER_NAME }} -o name | cut -d / -f2"
-  register: pro_pod_results
-  until: 'pro_pod_results.stdout != ""'
-  retries: 10
-  delay: 30
+- name: "copy provision script to tmp"
+  copy:
+    src: files/provision.sh
+    dest: "/tmp/{{ CLUSTER_NAME }}.sh"
+    mode: 0755
 
-- name: Setting fact variable
-  set_fact:
-    provision_podname: "{{ pro_pod_results.stdout }}"
-
-- name: Check for bootstrap complete, wait up to 60 minutes
-  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
-  register: bootstrap_results
-  until: '(bootstrap_results.stdout.find("Bootstrap status: complete") != -1) or (bootstrap_results.stdout.find("error") > 0)'
-  retries: 60
-  delay: 60
-  failed_when: '(bootstrap_results.stdout.find("error") > 0)'
-
-- name: Check provisioning progress, waiting up to 60 minutes
-  shell: "oc logs -n {{ CLUSTER_NAME }} {{ provision_podname }} -c hive"
-  register: monitor_results
-  until: '(monitor_results.stdout.find("install completed successfully") != -1) or (monitor_results.stdout.find("error") > 0)'
-  retries: 60
-  delay: 60
-  failed_when: '(monitor_results.stdout.find("error") > 0)'
+- name: Execute Provision monitoring script
+  shell:  "/tmp/{{ CLUSTER_NAME }}.sh"
+  register: provision_results
 
 - name: Change to cluster namespace
   shell: "oc project {{ CLUSTER_NAME }}"
