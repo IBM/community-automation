@@ -90,6 +90,9 @@
 
 - name: Execute Provision monitoring script
   shell:  "/tmp/{{ CLUSTER_NAME }}.sh {{ CLUSTER_NAME }}"
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: provision_results
 
 - name: Change to cluster namespace
