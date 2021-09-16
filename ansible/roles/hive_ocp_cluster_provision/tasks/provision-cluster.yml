@@ -107,8 +107,6 @@
   delay: 60
   failed_when: job_result.finished != 1
 
-- debug: msg="{{ provision_results.stdout }}"
-
 - name: Change to cluster namespace
   shell: "oc project {{ CLUSTER_NAME }}"
 
