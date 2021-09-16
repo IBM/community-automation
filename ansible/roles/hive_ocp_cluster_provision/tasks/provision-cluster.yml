@@ -89,13 +89,25 @@
     mode: 0755
 
 - name: Execute Provision monitoring script
-  shell:  "/tmp/{{ CLUSTER_NAME }}.sh {{ CLUSTER_NAME }}"
+  shell: "/tmp/{{ CLUSTER_NAME }}.sh {{ CLUSTER_NAME }}"
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
     KUBECONFIG: "{{ kubeconfig_location }}/config"
+  changed_when: false
+  async: 3600
+  poll: 0
   register: provision_results
 
-- debug: msg="{{ provsion_results.stdout }}"
+- name: Check on monitoring script, wait up to 1 hour
+  async_status:
+    jid: "{{ provision_results.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 60
+  delay: 60
+  failed_when: job_result.finished != 1
+
+- debug: msg="{{ provision_results.stdout }}"
 
 - name: Change to cluster namespace
   shell: "oc project {{ CLUSTER_NAME }}"
