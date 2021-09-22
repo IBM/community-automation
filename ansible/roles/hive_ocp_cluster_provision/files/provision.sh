@@ -6,8 +6,6 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-set -x
-
 CLUSTER_NAME=$1
 deploy_log=/tmp/$CLUSTER_NAME.log
 retries=120
