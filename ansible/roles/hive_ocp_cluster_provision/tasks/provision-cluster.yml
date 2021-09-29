@@ -84,7 +84,7 @@
 
 - name: "copy monitoring script to tmp"
   copy:
-    src: files/provision.sh
+    src: files/logmon.sh
     dest: "/tmp/{{ CLUSTER_NAME }}.sh"
     mode: 0755
 
