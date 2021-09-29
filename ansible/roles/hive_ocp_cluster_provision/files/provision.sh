@@ -18,7 +18,7 @@ for (( i=0; i <= retries; i++ )); do
    # get provising name
     echo "Finding provisioning pod name..."
     previous_podname=$provision_podname
-    provision_podname=$(oc --no-headers=true get pods -n "$CLUSTER_NAME" -l hive.openshift.io/job-type=provision,hive.openshift.io/cluster-deployment-name="$CLUSTER_NAME" -o name | tail -1 | cut -d / -f2)
+    provision_podname=$(oc --no-headers=true get pods -n "$CLUSTER_NAME" -l hive.openshift.io/job-type=provision,hive.openshift.io/cluster-deployment-name="$CLUSTER_NAME" -o name | tail -1 | cut -d / -f2) || true
     [[ $provision_podname == '' ]] && { sleep 10; continue; } || true
    # check to see if install failed and has restarted new pod.
    [[ $provision_podname != "$previous_podname" ]] && { previous_podname=$provision_podname; bootstrap_complete=0; } || true  
