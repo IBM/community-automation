@@ -95,7 +95,7 @@
     KUBECONFIG: "{{ kubeconfig_location }}/config"
   changed_when: false
   register: provision_results
-  until: provision_results.stdout.find('Complete') != -1
+  until: provision_results.stdout.find('Install Complete') != -1
   retries: 120
   delay: 60
   args:

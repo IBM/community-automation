@@ -19,5 +19,5 @@ oc logs -n "$CLUSTER_NAME" "$provision_podname" -c hive > "$deploy_log" || true
 # check content of deploy log
 grep -i "Bootstrap failed to complete" "$deploy_log" && { echo "Bootstrap failed"; exit 1; } || true
 grep -i "bootstrap status: complete" "$deploy_log" && echo "Bootstrap Complete" || true
-grep -i "install completed successfully" "$deploy_log" && { echo "Complete"; exit 0; }  || true
+grep -i "install completed successfully" "$deploy_log" && { echo "Install Complete"; exit 0; }  || true
 
