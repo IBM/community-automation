@@ -1,0 +1,54 @@
+---
+- name: Provision OCP Cluster using IPI
+  hosts: bastion
+  vars:
+    cloud: vsphere
+    device_name: sdb
+
+  vars_files:
+    - common-vars.yml
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    # used to login into RHACM/HIVE cluster
+    - role: oc_client_install
+    - role: get_ocp_installer
+    - role: aws_route53
+    - role: ipi_ocp_cluster_provision
+
+  tasks:
+    - name: Display cluster details
+      command: cat {{ CLUSTER_NAME }}_details.log
+      register: cluster_details
+
+    - name: Print details
+      debug:
+        msg: "{{ cluster_details.stdout }}"
+
+- name: "Using new OCP cluster"
+  hosts: ocp_provisioned_cluster
+  gather_facts: yes
+  vars:
+    device_name: sdb
+
+  vars_files:
+    - vsphere-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    - role: ocp_login # claimed cluster login
+    - role: wait_for_cluster_ready
+    - role: deploy_ingress_router_vmware
+    - role: deploy_vmdisk_vmware
+    - role: csi_cephfs_vmware
+
+  tasks:
+    - name: logout of cluster
+      shell: "oc logout"
+      register: logout_results
+      ignore_errors: yes
