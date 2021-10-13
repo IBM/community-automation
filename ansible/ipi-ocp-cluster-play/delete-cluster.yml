@@ -4,11 +4,12 @@
   vars:
     cloud: vsphere
     device_name: sdb
-    admin_task: "delete"
+    route_task: "delete"
 
   vars_files:
     - common-vars.yml
     - vsphere-vars.yml
+    - aws-vars.yml
 
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
@@ -16,7 +17,6 @@
   roles:
 
     - role: ipi_ocp_cluster_delete
-
     - role: aws_route53
 
   tasks:

@@ -1,13 +1,17 @@
 ---
 - name: create install-config
   template:
-    src: "{{ cloud }}-install-config-template.j2"
+    src: "{{ cloud }}-install-config.template.j2"
     dest: "/tmp/{{ CLUSTER_NAME }}/install-config.yaml"
     backup: false
   register: template_results
 
+- name: set logfile fact
+  set_fact:
+    logfile: "{{ CLUSTER_NAME }}_details.log"
+
 - name: Provision cluster
-  shell: "openshift-install create cluster --dir=/tmp/{{ CLUSTER_NAME }}/install-config.yaml | tee /tmp/{{ CLUSTER_NAME }}/log/provision.log"
+  shell: " echo openshift-install create cluster --dir=/tmp/{{ CLUSTER_NAME }}/install-config.yaml | tee {{ logfile }}"
   async: 3600
   poll: 0
   register: provision_results
@@ -20,3 +24,31 @@
   retries: 60
   delay: 60
   failed_when: job_result.finished != 1
+
+- name: get admin userid
+  shell:
+    cmd: grep -i login "{{ logfile }}" | cut -d ' ' -f8 | cut -d\" -f2
+  register: kubeuser
+
+- name: get kubeadmin password
+  shell:
+    cmd: grep -i login "{{ logfile }}" | cut -d ' ' -f11 | cut -d\" -f2
+  register: kubeadmin_pw
+
+- name: get web console
+  shell:
+    cmd: grep -i web-console "{{ logfile }}" | cut -d ' ' -f7
+  register: console_url
+
+- name: Create new inventory host (ocp_provisioned_cluster)
+  add_host:
+    name: "{{ console_url.stdout.split('.')[2] }}"
+    groups: "ocp_provisioned_cluster"
+    ansible_connection: "local"
+    ansible_python_interpreter: "/usr/bin/python3"
+    kubeadmin_password: "{{ kubeadmin_pw.stdout }}"
+    kubeadmin_user: "{{ kubeuser.stdout }}"
+    ocp_api_url: "api.{{ console_url.stdout.split('.',2)[2] }}"
+    cluster_name: "{{ console_url.stdout.split('.')[2] }}"
+    admin_task: "provision"
+  changed_when: false

@@ -19,33 +19,27 @@
     - role: aws_route53
     - role: ipi_ocp_cluster_provision
 
-  tasks:
-    - name: Display cluster details
-      command: cat {{ CLUSTER_NAME }}_details.log
-      register: cluster_details
-
-    - name: Print details
-      debug:
-        msg: "{{ cluster_details.stdout }}"
-
 - name: "Using new OCP cluster"
   hosts: ocp_provisioned_cluster
   gather_facts: yes
   vars:
     device_name: sdb
+    kubeconfig_location: "/tmp/{{ CLUSTER_NAME }}/"
 
   vars_files:
     - vsphere-vars.yml
-
+    - common-vars.yml
+  
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
 
   roles:
-    - role: ocp_login # claimed cluster login
-    - role: wait_for_cluster_ready
-    - role: deploy_ingress_router_vmware
-    - role: deploy_vmdisk_vmware
-    - role: csi_cephfs_vmware
+    - role: ocp_login # new cluster login
+    #- role: wait_for_cluster_ready
+    #- role: deploy_ingress_router_vmware
+    #- role: deploy_vmdisk_vmware
+    #- role: csi_cephfs_vmware
+    - role: collect_ips
 
   tasks:
     - name: logout of cluster
