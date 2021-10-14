@@ -1,8 +1,14 @@
 ---
+- name: Create  install directory
+  file:
+    path: "install/{{ CLUSTER_NAME }}"
+    state: directory
+    mode: '0755'
+
 - name: create install-config
   template:
     src: "{{ cloud }}-install-config.template.j2"
-    dest: "/tmp/{{ CLUSTER_NAME }}/install-config.yaml"
+    dest: "install/{{ CLUSTER_NAME }}/install-config.yaml"
     backup: false
   register: template_results
 
@@ -11,7 +17,9 @@
     logfile: "{{ CLUSTER_NAME }}_details.log"
 
 - name: Provision cluster
-  shell: " echo openshift-install create cluster --dir=/tmp/{{ CLUSTER_NAME }}/install-config.yaml | tee {{ logfile }}"
+  shell: "openshift-install create cluster --dir=install/{{ CLUSTER_NAME }} 2>&1 | tee {{ logfile }}"
+  args:
+    executable: /bin/bash
   async: 3600
   poll: 0
   register: provision_results

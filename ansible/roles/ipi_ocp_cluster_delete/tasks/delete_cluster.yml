@@ -1,6 +1,8 @@
 ---
 - name: Destroy cluster
-  shell: " echo openshift-install destroy cluster --dir=/tmp/{{ CLUSTER_NAME }}/install-config.yaml | tee /tmp/{{ CLUSTER_NAME }}/log/provision.log"
+  shell: "openshift-install destroy cluster --dir=install/{{ CLUSTER_NAME }} 2>&1 | tee install/delete.log"
+  args:
+    executable: /bin/bash
   async: 1800
   poll: 0
   register: destroy_results

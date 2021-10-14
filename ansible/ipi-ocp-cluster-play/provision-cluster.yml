@@ -8,6 +8,7 @@
   vars_files:
     - common-vars.yml
     - vsphere-vars.yml
+    - aws-vars.yml
 
   environment:
     PATH: ".:{{ ansible_env.PATH }}"

@@ -49,3 +49,8 @@
         - name: cleanup leases
           include_role: 
             name: cleanup_dhcp_leases
+
+        - name: Delete install content & directory
+          file:
+            state: absent
+            path: install
