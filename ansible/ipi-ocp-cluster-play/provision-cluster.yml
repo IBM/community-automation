@@ -36,10 +36,10 @@
 
   roles:
     - role: ocp_login # new cluster login
-    #- role: wait_for_cluster_ready
-    #- role: deploy_ingress_router_vmware
-    #- role: deploy_vmdisk_vmware
-    #- role: csi_cephfs_vmware
+    - role: wait_for_cluster_ready
+    - role: deploy_ingress_router_vmware
+    - role: deploy_vmdisk_vmware
+    - role: csi_cephfs_vmware
     - role: collect_ips
 
   tasks:
