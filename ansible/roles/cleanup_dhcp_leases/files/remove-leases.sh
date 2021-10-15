@@ -15,7 +15,7 @@ echo "Stop dhcp server..."
 systemctl stop isc-dhcp-server.service
 
 while IFS= read -r ip || [[ -n "$ip" ]]; do
-   grep -q "9\." <<< $ip || continue
+   grep -q "^9\." <<< $ip || continue
    echo $ip
    remove=false
    while IFS= read -r line || [[ -n "$line" ]]; do
