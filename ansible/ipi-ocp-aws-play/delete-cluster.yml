@@ -1,56 +1,20 @@
 ---
-- name: Delete cluster
+- name: Delete AWS cluster
   hosts: bastion
   vars:
-    cloud: vsphere
-    device_name: sdb
-    route_task: "delete"
+    cloud: aws
 
   vars_files:
     - common-vars.yml
-    - vsphere-vars.yml
     - aws-vars.yml
 
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
 
   roles:
-
     - role: ipi_ocp_cluster_delete
-    - role: aws_route53
 
-  tasks:
-    - set_fact:
-        route_task: "delete"
-
-    - name: Run aws_route53 delete - vsphere only
-      include_role:
-        name: aws_route53
-
-    - name: Clean kubevols - vsphere only
-      include_role:
-        name: clean_vmware_kubevols
-    
-  
-- name: Cleanup DHCP server
-  hosts: dhcp
-  vars_files:
-    - common-vars.yml
-
-  tasks:
-    - name: Run cleanup tasks
-      block:
-        - name: copy detailed cluster file to DHCP server
-          copy:
-            src: "{{ CLUSTER_NAME }}_details.log"
-            dest: /root/bin
-            mode: 0755
-
-        - name: cleanup leases
-          include_role: 
-            name: cleanup_dhcp_leases
-
-        - name: Delete install content & directory
-          file:
-            state: absent
-            path: install
+- name: Delete install content & directory
+  file:
+    state: absent
+    path: install
