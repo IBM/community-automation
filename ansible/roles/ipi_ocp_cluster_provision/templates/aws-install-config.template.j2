@@ -1,40 +1,41 @@
 apiVersion: v1
 baseDomain: {{ BASE_DOMAIN }}
-compute:
-- name: worker
-  platform:
-    aws:
-      rootVolume:
-      iops: 100
-      size: {{ WORKER_VOLUME_SIZE }}
-      type: gp2
-      type: {{ WORKER_VM_SIZE }}
-  replicas: 3
 controlPlane:
+  hyperthreading: Enabled
   name: master
   platform:
     aws:
       rootVolume:
-         iops: 100
-         size: {{ MASTER_VOLUME_SIZE }}
-         type: gp2
-         type: {{ MASTER_VM_SIZE }}
+        iops: 100
+        size: {{ WORKER_VOLUME_SIZE }}
+        type: gp2
+      type: {{ WORKER_VM_SIZE }}
   replicas: 3
- metadata:
-   creationTimestamp: null
-   name: {{ CLUSTER_NAME }}
- networking:
-   clusterNetwork:
-   - cidr: 10.128.0.0/14
-     hostPrefix: 23
-   machineNetwork:
-      - cidr: 10.0.0.0/16
-        networkType: OpenShiftSDN
-        serviceNetwork:
-        - 172.30.0.0/16
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform:
+    aws:
+      rootVolume:
+        iops: 100
+        size: {{ MASTER_VOLUME_SIZE }}
+        type: gp2
+      type: {{ MASTER_VM_SIZE }}
+  replicas: 3
+metadata:
+  name: {{ CLUSTER_NAME }}
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
 platform:
   aws:
     region: {{ AWS_REGION }}
-pullSecret: '{{ PULL_SECRET }}'
+fips: false
 sshKey: {{ SSH_PUBLIC_KEY }}
-type: Opaque
+pullSecret: '{{ PULL_SECRET }}'
