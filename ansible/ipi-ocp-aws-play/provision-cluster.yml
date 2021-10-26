@@ -37,5 +37,7 @@
   tasks:
     - name: logout of cluster
       shell: "oc logout"
+      environment:
+         KUBECONFIG: "{{ kubeconfig_location ]}/config"
       register: logout_results
       ignore_errors: yes

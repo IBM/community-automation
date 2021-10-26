@@ -14,7 +14,8 @@
   roles:
     - role: ipi_ocp_cluster_delete
 
-- name: Delete install content & directory
-  file:
-    state: absent
-    path: install
+  tasks: 
+    - name: Delete install content & directory
+      file:
+        state: absent
+        path: install

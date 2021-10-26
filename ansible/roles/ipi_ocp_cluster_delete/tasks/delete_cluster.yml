@@ -7,9 +7,9 @@
   poll: 0
   register: destroy_results
 
-- name: Check destroy, wait up to 30
+- name: Check destroy, wait up to 30 min
   async_status:
-    jid: "{{ delete_results.ansible_job_id }}"
+    jid: "{{ destroy_results.ansible_job_id }}"
   register: job_result
   until: job_result.finished
   retries: 30
