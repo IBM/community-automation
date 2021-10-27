@@ -14,8 +14,6 @@
     AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
 
   roles:
-    - role: oc_client_install
-    - role: get_ocp_installer
     - role: ipi_ocp_cluster_provision
 
 - name: "Using new OCP cluster"
@@ -32,12 +30,4 @@
     PATH: ".:{{ ansible_env.PATH }}"
 
   roles:
-    - role: ocp_login # new cluster login
-
-  tasks:
-    - name: logout of cluster
-      shell: "oc logout"
-      environment:
-         KUBECONFIG: "{{ kubeconfig_location ]}/config"
-      register: logout_results
-      ignore_errors: yes
+    - role: validate_ocp_install
