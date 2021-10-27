@@ -25,7 +25,7 @@
   register: provision_results
 
 - name: Wait for bootstrap complete
-  shell: cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
+  shell: "cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
   register: boot_results
   until: '"Bootstrap status: complete" | string in boot_results.stdout or "fail" in boot_results.stdout'
   retries: 40
@@ -33,7 +33,7 @@
   failed_when: '"fail" in boot_results.stdout'
 
 - name: Wait for install complete
-  shell: cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
+  shell: "cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
   register: install_results
   until: '"Install complete" in install_results.stdout or "fail" in install_results.stdout'
   retries: 60
