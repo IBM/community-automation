@@ -24,14 +24,21 @@
   poll: 0
   register: provision_results
 
-- name: Check provisioning, wait up to 1 hour
-  async_status:
-    jid: "{{ provision_results.ansible_job_id }}"
-  register: job_result
-  until: job_result.finished
+- name: Wait for bootstrap complete
+  shell: cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
+  register: boot_results
+  until: '"Bootstrap status: complete" | string in boot_results.stdout or "fail" in boot_results.stdout'
+  retries: 40
+  delay: 60
+  failed_when: '"fail" in boot_results.stdout'
+
+- name: Wait for install complete
+  shell: cat install/{{ CLUSTER_NAME }}/.openshift_install.log"
+  register: install_results
+  until: '"Install complete" in install_results.stdout or "fail" in install_results.stdout'
   retries: 60
   delay: 60
-  failed_when: job_result.finished != 1
+  failed_when: '"fail" in install_results.stdout'
 
 - name: get admin userid
   shell:
