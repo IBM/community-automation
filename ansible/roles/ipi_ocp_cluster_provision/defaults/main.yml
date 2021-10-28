@@ -10,8 +10,3 @@
 "WORKER_CPUS": "16"
 "WORKER_MEMORY": "73728"
 "WORKER_DISK_SIZE": "200"
-"WORKER_DISK2_SIZE": "500"   # For cephfs
-
-#Cephfs deply - No changes needed
-rook_cephfs_release: v1.6.8  # Rook-ceph release from https://github.com/rook/rook/releases
-default_sc: file-storage

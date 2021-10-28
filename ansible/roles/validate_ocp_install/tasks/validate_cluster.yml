@@ -2,20 +2,20 @@
 - name: list cluster nodes
   shell: "oc get nodes"
   environment:
-    KUBECONFIG: "{{ kubeconfig_location ]}/config"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: node_results
   ignore_errors: yes
 
 - name: dump all pods
   shell: "oc get pods --all-namespaces"
   environment:
-    KUBECONFIG: "{{ kubeconfig_location ]}/config"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: pod_results
   ignore_errors: yes
 
 - name: logout of cluster
   shell: "oc logout"
   environment:
-    KUBECONFIG: "{{ kubeconfig_location ]}/config"
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: logout_results
   ignore_errors: yes
