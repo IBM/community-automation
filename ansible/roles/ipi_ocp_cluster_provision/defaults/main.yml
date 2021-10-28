@@ -10,3 +10,6 @@
 "WORKER_CPUS": "16"
 "WORKER_MEMORY": "73728"
 "WORKER_DISK_SIZE": "200"
+
+"WORKER_VM_SIZE": "m5.2xlarge" # size of worker VM instances
+"MASTER_VM_SIZE": "m5.2xlarge" # sice of master VM instances
