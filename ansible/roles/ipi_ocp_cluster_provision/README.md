@@ -25,4 +25,6 @@ These variables can be
 ```yaml
 BASE_DOMAIN: "<your base domain>"
 CLUSTER_NAME: "<cluster name>"
+WORKER_VM_SIZE: "<aws VM size>" # (eg. m5.2xlarge )
+MASTER_VM_SIZE: "<aws VM size>" # (eg. m5.2xlarge )
 ```
