@@ -20,7 +20,7 @@ This role can be used to provision OCP clusters using the IPI Installer.
 
 ## Additional variables
 
-These variables can be
+These variables can be set in vars files, or passed via command line.
 
 ```yaml
 BASE_DOMAIN: "<your base domain>"
