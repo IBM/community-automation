@@ -1,6 +1,6 @@
 # AWS IPI install playbook
 
-This playbook will install an OCP cluster using RH IPI installer
+This playbook will install an OCP cluster using RH IPI installer on AWS cloud infrastructure.
 
 ## Variables
 
