@@ -1,0 +1,23 @@
+---
+# Worker details (Defaults) uncomment if you have changes
+# WORKER_CPUS: 16
+# WORKER_MEMORY:
+# WORKER_DISK_SIZE: 300
+# WORKER_COUNT: 3
+
+# MASTER details (Defaults) uncomment if you have changes
+# MASTER_CPUS: 10
+# MASTER_MEMORY: 32xxx
+# MASTER_DISK_SIZE: 200
+# MASTER_COUNT: 3
+
+# vCenter details
+API_PUBLIC_IP: "9.x.x.x"
+VCENTER_CLUSTERNAME: ""
+VCENTER_DATACENTER: ""
+VCENTER_DATASOURCE: ""
+APPS_PUBLIC_IP: "9.x.x.x"
+VCENTER_NETWORK: ""
+VCENTER_PASSWORD: ""
+VCENTER_ADMIN_USER: ""
+VCENTER_SERVER: ""

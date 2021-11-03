@@ -84,7 +84,7 @@
 
 - name: "copy monitoring script to tmp"
   copy:
-    src: files/provision.sh
+    src: files/logmon.sh
     dest: "/tmp/{{ CLUSTER_NAME }}.sh"
     mode: 0755
 
@@ -94,18 +94,13 @@
     PATH: ".:{{ ansible_env.PATH }}"
     KUBECONFIG: "{{ kubeconfig_location }}/config"
   changed_when: false
-  async: 3600
-  poll: 0
   register: provision_results
-
-- name: Check on monitoring script, wait up to 1 hour
-  async_status:
-    jid: "{{ provision_results.ansible_job_id }}"
-  register: job_result
-  until: job_result.finished
-  retries: 60
+  until: provision_results.stdout.find('Install Complete') != -1
+  retries: 120
   delay: 60
-  failed_when: job_result.finished != 1
+  args:
+    warn: no
+  failed_when: provision_results.rc != 0 
 
 - name: Change to cluster namespace
   shell: "oc project {{ CLUSTER_NAME }}"

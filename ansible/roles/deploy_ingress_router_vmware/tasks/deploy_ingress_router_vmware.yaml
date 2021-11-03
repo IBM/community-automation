@@ -17,6 +17,8 @@
 
 - name: Patch ingress router to be enabled on all worker nodes
   shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch '{{ router_json.stdout }}' --type=merge"
+  environment:
+     KUBECONFIG: "{{ kubeconfig_location }}/config"
   args:
       warn: false
   register: ingress_routes

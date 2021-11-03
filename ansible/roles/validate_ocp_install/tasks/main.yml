@@ -1,0 +1,2 @@
+---
+- include_tasks: validate_cluster.yml
