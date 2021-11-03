@@ -1,0 +1,17 @@
+---
+- name: Create bin dir
+  file:
+    path: /root/bin
+    state: directory
+
+- name: copy removal script to dhcp server
+  copy: 
+    src: files/remove-lease.sh 
+    dest: /root/bin
+    mode: 0755
+
+- name: cleanup DHCP leases
+  shell: ./remove-lease.sh "{{ CLUSTER_NAME }}"
+  args:
+    chdir: /root/bin 
+  register: command_results

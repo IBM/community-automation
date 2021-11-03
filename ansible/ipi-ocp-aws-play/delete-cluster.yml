@@ -1,0 +1,21 @@
+---
+- name: Delete AWS cluster
+  hosts: bastion
+  vars:
+    cloud: aws
+
+  vars_files:
+    - common-vars.yml
+    - aws-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    - role: ipi_ocp_cluster_delete
+
+  tasks: 
+    - name: Delete install content & directory
+      file:
+        state: absent
+        path: install

@@ -1,0 +1,17 @@
+---
+- name: Destroy cluster
+  shell: "openshift-install destroy cluster --dir=install/{{ CLUSTER_NAME }} 2>&1 | tee install/delete.log"
+  args:
+    executable: /bin/bash
+  async: 1800
+  poll: 0
+  register: destroy_results
+
+- name: Check destroy, wait up to 30 min
+  async_status:
+    jid: "{{ destroy_results.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: 30
+  delay: 60
+  failed_when: job_result.finished != 1

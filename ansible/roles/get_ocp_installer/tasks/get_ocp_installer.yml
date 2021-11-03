@@ -1,0 +1,7 @@
+---
+- name : Download and unpack IPI installer
+  unarchive:
+    src: "{{ installer_url }}/{{ installer_version }}/{{ installer_file }}"
+    dest: "/usr/local/bin"
+    remote_src: yes
+    mode: 0755

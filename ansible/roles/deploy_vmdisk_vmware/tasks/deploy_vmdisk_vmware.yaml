@@ -2,6 +2,8 @@
 # Download from URL oav and deploy to vCenter
 - name: Create list of worker nodes
   shell: "oc get no | tr -s ' ' | cut -f1 -d' ' | grep worker"
+  environment:
+     KUBECONFIG: "{{ kubeconfig_location }}/config"
   register: worker_nodes
 
 - name: Add disk to virtaul machine by vm name

@@ -1,0 +1,33 @@
+---
+- name: Provision OCP Cluster using IPI
+  hosts: bastion
+  vars:
+    cloud: aws
+
+  vars_files:
+    - common-vars.yml
+    - aws-vars.yml
+
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+
+  roles:
+    - role: ipi_ocp_cluster_provision
+
+- name: "Using new OCP cluster"
+  hosts: ocp_provisioned_cluster
+  gather_facts: yes
+  vars:
+    kubeconfig_location: "/tmp/{{ CLUSTER_NAME }}/"
+
+  vars_files:
+    - common-vars.yml
+    - aws-vars.yml
+  
+  environment:
+    PATH: ".:{{ ansible_env.PATH }}"
+
+  roles:
+    - role: validate_ocp_install
