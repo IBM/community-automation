@@ -79,8 +79,8 @@ oc create -f rook/cluster/examples/kubernetes/ceph/cluster.yaml
 echo "Exit from cluster.yaml $?"
 
 num_worker_nodes=$(oc get no | tr -s ' ' | cut -f3 -d' ' | grep worker  | wc -l)
-echo "Check for the number of ceph nodes running is equal to numbers of worker nodes - wait up to 1 hour"
-ceph_sleep_count=60
+echo "Check for the number of ceph nodes running is equal to numbers of worker nodes - wait up to 2 hour"
+ceph_sleep_count=120
 while [[ $ceph_sleep_count -ne 0 ]]; do
   num_ceph_nodes=$(oc get po -n rook-ceph | grep rook-ceph-osd | grep -v prepare | grep -e Running | wc -l)
   if [[ $num_worker_nodes -ne $num_ceph_nodes ]] ; then

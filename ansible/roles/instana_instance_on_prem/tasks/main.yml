@@ -162,7 +162,7 @@
 #END BLOCK
 
 - name: instana admin credentials
-  shell: 'cat instanaCreds 2>/dev/null || (instana configure admin >instanaCreds; cat instanaCreds)'
+  shell: '(grep "E-Mail" instanaCreds >/dev/null 2>&1 || (instana configure admin >instanaCreds)); cat instanaCreds'
   register: instanaAdmin
   changed_when: false
 

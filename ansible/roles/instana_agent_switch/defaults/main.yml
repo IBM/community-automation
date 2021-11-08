@@ -1,0 +1,6 @@
+### instana dir's are hard coded
+instana_dir_custom: '/opt/instana-agent'
+instana_dir_normal: '/opt/instana/agent'
+agent_key: 'thisIsAllowsOverridden'
+instana_host: 'thisIsAllowsOverridden'
+instana_port: '1444'

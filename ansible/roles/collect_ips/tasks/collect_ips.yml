@@ -1,0 +1,8 @@
+---
+- name: Collect cluster IP's
+  shell: oc --no-headers=true get nodes -o wide | awk '{ print $6 }' >> "{{ cluster_name }}"_details.log
+  environment:
+    KUBECONFIG: "{{ kubeconfig_location }}/config"
+  args:
+    executable: /bin/bash
+  register: ip_results

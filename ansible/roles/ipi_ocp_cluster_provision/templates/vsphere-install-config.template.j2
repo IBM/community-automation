@@ -1,0 +1,48 @@
+apiVersion: v1
+baseDomain: {{ BASE_DOMAIN }}
+compute:
+- name: worker
+  platform:
+    vsphere:
+      cpus: {{ WORKER_CPUS }}
+      coresPerSocket: 1
+      memoryMB: {{ WORKER_MEMORY }}
+      osDisk:
+        diskSizeGB: {{ WORKER_DISK_SIZE }}
+  replicas: {{ WORKER_COUNT }}
+controlPlane:
+  name: master
+  platform:
+    vsphere:
+      cpus: {{ MASTER_CPUS }}
+      coresPerSocket: 1
+      memoryMB: {{ MASTER_MEMORY }}
+      osDisk:
+        diskSizeGB: {{ MASTER_DISK_SIZE }}
+  replicas: {{ MASTER_COUNT }}
+metadata:
+  creationTimestamp: null
+  name: {{ CLUSTER_NAME }}
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  vsphere:
+    apiVIP: {{ API_PUBLIC_IP }}
+    cluster: {{ VCENTER_CLUSTERNAME }}
+    datacenter: {{ VCENTER_DATACENTER }}
+    defaultDatastore:  {{ VCENTER_DATASOURCE }}
+    ingressVIP: {{ APPS_PUBLIC_IP }}
+    network: {{ VCENTER_NETWORK }}
+    password: {{ VCENTER_PASSWORD }}
+    username: {{ VCENTER_ADMIN_USER }}
+    vCenter:  {{ VCENTER_SERVER }}
+pullSecret: '{{ PULL_SECRET }}'
+sshKey: |
+  {{ SSH_PUBLIC_KEY }}
