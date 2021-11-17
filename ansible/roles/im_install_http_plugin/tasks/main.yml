@@ -44,7 +44,7 @@
 - name:  clear wct dir
   shell: "rm -rf {{ install_base }}/{{ wct_dir }}"
 - name:  clear the hidden .ibm/
-  shell: "rm -rf {{ install_base }}/.ibm/
+  shell: "rm -rf {{ install_base }}/.ibm/"
 
 - name:  generate secureStorageFile.store
   shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store"
