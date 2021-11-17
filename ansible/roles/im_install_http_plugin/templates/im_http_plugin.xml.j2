@@ -33,5 +33,18 @@
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
     <offering profile='Web Server Plug-ins for IBM WebSphere Application Server V9.0' id='com.ibm.java.jdk.v8' features='com.ibm.sdk.8'/>
   </install>
+  <profile id='WebSphere Customization Toolbox V9.0' installLocation='{{ install_base }}/{{ wct_dir }}'>
+    <data key='cic.selector.arch' value='{{ ansible_architecture }}'/>
+    <data key='cic.selector.os' value='{{ ansible_system|lower }}'/>
+  </profile>
+  <install>
+    <!-- WebSphere Customization Toolbox 9.0.5.10 -->
+    <offering profile='WebSphere Customization Toolbox V9.0' id='com.ibm.websphere.WCT.v90' features='core.feature,pct,zpmt,zmmt'/>
+    <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
+    <offering profile='WebSphere Customization Toolbox V9.0' id='com.ibm.java.jdk.v8' features='com.ibm.sdk.8'/>
+  </install>
   <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
 </agent-input>
+
+
+
