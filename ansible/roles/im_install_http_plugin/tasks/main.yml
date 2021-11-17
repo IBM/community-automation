@@ -17,21 +17,25 @@
   stat:
     path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
   register: isimcl
+  failed_when: isimcl.stat.exists == False
 
-- block:
-  - name: copy ihs_plugin.xml template
+- name: copy ihs_plugin.xml template
   template:
    src: im_http_plugin.xml.j2
    dest: "im_http_plugin.xml"
-  when: isimcl.stat.exists == True
-  failed_when: isimcl.stat.exists == False
 
-# default install location: ~/IBM/InstallationManager/eclipse/tools
-# tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
-#- name: ./userinstc -acceptLicense
-#  shell: './userinstc -acceptLicense'
-#  register: userinstcOutput
+- name:  uninstallAll
+  shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstallAll"
+  register: uninstallAllOutput
     
-  #- name: userinstc output
-  #debug: 
-  # msg: "{{ userinstcOutput.stdout_lines }}"
+- name: uninstallAllOutput
+  debug: 
+  msg: "{{ uninstallAllOutput.stdout_lines }}"
+
+- name:  clear http dir
+  shell: "rm -rf {{ install_base }}/{{ http_dir }}"
+- name:  clear plugins dir
+  shell: "rm -rf {{ install_base }}/{{ http_dir }}"
+
+- name:  generate secureStorageFile.store
+  shell: "{{instal_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store
