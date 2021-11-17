@@ -24,6 +24,11 @@
    src: im_http_plugin.xml.j2
    dest: "im_http_plugin.xml"
 
+- name: copy https_conf template
+  template:
+   src: https_conf.j2
+   dest: "{{ http_dir }}/conf/https_conf"
+
 - name:  uninstallAll
   shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstallAll"
   register: uninstallAllOutput
@@ -53,8 +58,22 @@
    dest: "wct_definition.xml"
 
 - name:  configure plugin
-  shell: "{{install_base }}WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+  shell: "{{install_base }}/WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
   register: configurepluginOutput
+
+- name: Insert/Update https config
+  blockinfile:
+    path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
+    block: |
+LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
+Listen {{ https_port }}
+SSLCheckCertificateExpiration 30
+<VirtualHost *:{{ https_port }}>
+ ServerName {{ ansible_hostname }}
+ SSLEnable
+ Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</VirtualHost>
+KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
 - name: installOutput
   debug: 
