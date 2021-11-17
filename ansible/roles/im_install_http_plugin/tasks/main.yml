@@ -41,7 +41,7 @@
   shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store"
 
 - name:  install http and plugins
-  shell: "{{install_base }}IBM/InstallationManager/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+  shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
   register: installOutput
 
 - name: installOutput
@@ -49,7 +49,7 @@
    msg: "{{ installOutput.stdout_lines }}"
 
 - name:  listInstalledPackages
-  shell: "{{install_base }}IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages"
+  shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages"
   register: packageOutput
 
 - name: packageOutput
