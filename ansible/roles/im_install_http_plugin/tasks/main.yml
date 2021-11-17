@@ -46,6 +46,16 @@
   shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
   register: installOutput
 
+#https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-toolhttps://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
+- name: copy wct_definition.xml template
+  template:
+   src: wct_definition.xml.j2
+   dest: "wct_definition.xml"
+
+- name:  configure plugin
+  shell: "{{install_base }}WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+  register: configurepluginOutput
+
 - name: installOutput
   debug: 
    msg: "{{ installOutput.stdout_lines }}"
@@ -57,3 +67,8 @@
 - name: packageOutput
   debug: 
    msg: "{{ packageOutput.stdout_lines }}"
+
+- name: configurepluginOutput
+  debug: 
+   msg: "{{ configurepluginOutput.stdout_lines }}"
+
