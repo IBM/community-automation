@@ -4,10 +4,6 @@
 ### "ansible_architecture": "x86_64",
 ### "ansible_architecture": "chrp", --- AIX
 
-#copy to target
-
-#im_http_plugin.xml.j2
-
 #uninstall all
 #IBM/InstallationManager/eclipse/tools/imcl uninstallAll
 
@@ -24,6 +20,10 @@
 
 - block:
   when: isimcl.stat.exists == True
+  - name: copy ihs_plugin.xml template
+  template:
+   src: im_http_plugin.xml.j2
+   dest: "im_http_plugin.xml"
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
