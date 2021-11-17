@@ -45,3 +45,13 @@
    src: ~/im_install/im.zip
    dest: '~/im_install'
    remote_src: True
+
+# default install location: ~/IBM/InstallationManager/eclipse/tools
+# tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
+- name: ./userinstc -acceptLicense
+  shell: './userinstc -acceptLicense'
+  register: userinstcOutput
+    
+- name: userinstc output
+  debug: 
+   msg: "{{ userinstcOutput.stdout_lines }}"
