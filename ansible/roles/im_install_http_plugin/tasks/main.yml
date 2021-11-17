@@ -20,9 +20,10 @@
 - name: check if imcl installed as a prereq
   stat:
     path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
-  changed_when: false
-  failed_when: false
+  register: isimcl
 
+- block:
+  when: isimcl.stat.exists == True
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
