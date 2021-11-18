@@ -90,6 +90,12 @@
       </VirtualHost>
       KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
+- name: update admin.config @@AdminPort@@
+  lineinfile:
+    path: "{{ install_base }}/{{ http_dir }}/conf/admin.conf"
+    regexp: '@@AdminPort@@'
+    line: "{{ admin_port }}"
+
 - name: enable server-status
   lineinfile:
     path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
