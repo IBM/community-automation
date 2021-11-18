@@ -82,6 +82,13 @@
       </VirtualHost>
       KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
+- name: enable server-status
+  lineinfile:
+    path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
+    search_string: 'Require all denied'
+    insertafter: 'SetHandler server-status'
+    line: '#    Require all denied'
+
 - name:  configure plugin
   shell: "{{install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
   args:
@@ -125,3 +132,14 @@
 - name: starthttpdOutput
   debug: 
    msg: "{{ starthttpdOutput.stdout_lines }}"
+
+- name: Check server-status
+  uri:
+    url: "http://localhost:{{ https_port }}"
+    return_content: yes
+    validate_certs: false
+  register: serverstatusOutput
+
+- name: serverstatusOutput
+  debug: 
+   msg: "{{ serverstatusOutput.stdout_lines }}"
