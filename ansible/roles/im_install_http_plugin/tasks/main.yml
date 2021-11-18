@@ -61,7 +61,7 @@
 - name: copy wct_definition.xml template
   template:
    src: ihsserverkey.sh.j2
-   dest: "{{ install_base }}/{{ http_dir }}/confg/ihsserverkey.sh"
+   dest: "{{ install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
    mode: 0755
 
 - name:  configure plugin
