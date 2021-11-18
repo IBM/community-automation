@@ -29,6 +29,14 @@
    src: https_conf.j2
    dest: "https_conf"
 
+- name:  stop httpd
+  ignore_error: true
+  shell: "{{install_base }}/{{ http_dir }}/bin/apachectl stop"
+
+- name:  stop adminctl
+  ignore_error: true
+  shell: "{{install_base }}/{{ http_dir }}/bin/adminctl stop"
+
 - name:  uninstallAll
   shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstallAll"
   register: uninstallAllOutput
@@ -117,25 +125,23 @@
 
 - name:  start httpd
   shell: "{{install_base }}/{{ http_dir }}/bin/apachectl start"
-  args:
   register: starthttpdOutput
 
 - name: starthttpdOutput
   debug: 
    msg: "{{ starthttpdOutput.stdout_lines }}"
 
-- name:  check the server-status 
-  shell: "{{install_base }}/{{ http_dir }}/bin/apachectl start"
-  args:
-  register: starthttpdOutput
+- name:  start adminctl
+  shell: "{{install_base }}/{{ http_dir }}/bin/adminctl start "
+  register: startadminctlOutput
 
-- name: starthttpdOutput
+- name: startadminctlOutput
   debug: 
-   msg: "{{ starthttpdOutput.stdout_lines }}"
+   msg: "{{ startadminctlOutput.stdout_lines }}"
 
 - name: Check server-status
   uri:
-    url: "http://localhost:{{ https_port }}"
+    url: "https://localhost:{{ https_port }}"
     return_content: yes
     validate_certs: false
   register: serverstatusOutput
