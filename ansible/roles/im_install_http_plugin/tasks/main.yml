@@ -58,6 +58,11 @@
   template:
    src: wct_definition.xml.j2
    dest: "wct_definition.xml"
+- name: copy wct_definition.xml template
+  template:
+   src: ihsserverkey.sh.j2
+   dest: "{{ install_base }}/{{ http_dir }}/confg/ihsserverkey.sh"
+   mode: 0755
 
 - name:  configure plugin
   shell: "{{install_base }}/WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
@@ -77,6 +82,12 @@
       </VirtualHost>
       KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
+- name:  configure plugin
+  shell: "{{install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+  args:
+    chdir: "{{ install_base }}/{{ http_dir }}/conf"
+  register: createihsseververkdbOutput
+
 - name: installOutput
   debug: 
    msg: "{{ installOutput.stdout_lines }}"
@@ -93,3 +104,6 @@
   debug: 
    msg: "{{ configurepluginOutput.stdout_lines }}"
 
+- name: createihsseververkdbOutput
+  debug: 
+   msg: "{{ createihsseververkdbOutput.stdout_lines }}"
