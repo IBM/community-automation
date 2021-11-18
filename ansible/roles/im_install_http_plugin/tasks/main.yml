@@ -30,11 +30,11 @@
    dest: "https_conf"
 
 - name:  stop httpd
-  ignore_error: true
+  ignore_errors: true
   shell: "{{install_base }}/{{ http_dir }}/bin/apachectl stop"
 
 - name:  stop adminctl
-  ignore_error: true
+  ignore_errors: true
   shell: "{{install_base }}/{{ http_dir }}/bin/adminctl stop"
 
 - name:  uninstallAll
