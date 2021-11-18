@@ -107,3 +107,21 @@
 - name: createihsseververkdbOutput
   debug: 
    msg: "{{ createihsseververkdbOutput.stdout_lines }}"
+
+- name:  start httpd
+  shell: "{{install_base }}/{{ http_dir }}/bin/apachectl start"
+  args:
+  register: starthttpdOutput
+
+- name: starthttpdOutput
+  debug: 
+   msg: "{{ starthttpdOutput.stdout_lines }}"
+
+- name:  check the server-status 
+  shell: "{{install_base }}/{{ http_dir }}/bin/apachectl start"
+  args:
+  register: starthttpdOutput
+
+- name: starthttpdOutput
+  debug: 
+   msg: "{{ starthttpdOutput.stdout_lines }}"
