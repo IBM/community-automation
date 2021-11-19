@@ -54,3 +54,4 @@
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes
+

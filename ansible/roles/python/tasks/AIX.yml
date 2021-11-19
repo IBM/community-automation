@@ -1,0 +1,25 @@
+---
+
+- name:  check if aixtoolbox is installed
+  raw: "/opt/freeware/bin/dnf"
+  register: "istoolbox"
+  ignore_errors: true
+  changed_when: false
+
+- block:
+  - name: get aixtoolbox get_url
+    get_url:
+     url: "http://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/dnf_aixtoolbox.sh"
+     dest: dnf_aixtoolbox.sh
+     validate_certs: false
+     delegate_to: localhost
+  - name: Copy dnf_aixtoolbox.sh to target
+    copy:
+      src: dnf_aixtoolbox.sh
+      dest: dnf_aixtoolbox.sh
+      owner: root
+      group: root
+      mode: '0755'
+  - name: install aixtoolbox rpms
+    raw: './dnf_aixtoolbox.sh -y'
+  when: istoolbox is search('not found')

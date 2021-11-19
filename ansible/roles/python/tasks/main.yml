@@ -1,0 +1,6 @@
+---
+- include_tasks: "{{ item }}"
+  with_first_found:
+    - files:
+      - "{{ python_install_type }}.yml"
+      - default.yml

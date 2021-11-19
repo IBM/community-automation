@@ -11,10 +11,10 @@
     path: "{{ lookup('env','HOME')}}/.ssh/known_hosts"
     state: touch
     mode: '0600'     
-- name: Ensure SSH Key
-  openssh_keypair:
-    path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
-    regenerate: never
+    #- name: Ensure SSH Key
+    #  openssh_keypair:
+    #    path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
+    #    regenerate: never
 
 - name: Check VM Existance
   no_log: "{{ noLog }}"

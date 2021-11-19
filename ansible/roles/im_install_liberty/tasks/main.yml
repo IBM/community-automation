@@ -16,7 +16,7 @@
   - name: copy im_liberty.xml.xml template
     template:
      src: im_liberty.xml.j2
-     dest: "im_liberty.xml.xml"
+     dest: "im_liberty.xml"
 
   - name:  stop any running servers
     ignore_errors: true
@@ -39,7 +39,7 @@
     shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store"
 
   - name:  install liberty
-    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
     register: installOutput
 
   - name: installOutput

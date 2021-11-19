@@ -1,0 +1,4 @@
+---  
+#No common way to install python lets just check if python is installed sufficiently for ansible
+- name: Test Python is installed sufficiently for ansible
+  setup:
