@@ -11,7 +11,7 @@
   failed_when: false
 
 - set_fact:
-   archive_name_match: 'agent.installer.linux.gtk.x86_{{ im_driver }}.zip'
+   archive_name_match: 'agent.installer.linux.gtk.x86_64_{{ im_driver }}.zip'
   when:
   - ansible_architecture == 'x86_64'
   - ansible_system == 'Linux'
