@@ -3,6 +3,13 @@
 ### "ansible_architecture": "ppc64le",
 ### "ansible_architecture": "x86_64",
 ### "ansible_architecture": "chrp", --- AIX
+
+- name: check if imcl installed as a prereq
+  stat:
+    path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
+  changed_when: false
+  failed_when: false
+
 - set_fact:
    archive_name_match: 'agent.installer.linux.gtk.x86_{{ im_driver }}.zip'
   when:
@@ -50,6 +57,8 @@
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
 - name: ./userinstc -acceptLicense
   shell: './userinstc -acceptLicense'
+  args:
+    chdir: '~/im_install'
   register: userinstcOutput
     
 - name: userinstc output
