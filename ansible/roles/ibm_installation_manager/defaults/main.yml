@@ -2,3 +2,4 @@
 im_driver_version: 'latest'
 im_driver: '1.9.1006.20210614_1906'
 im_archive: 'https://rtpgsa.ibm.com/gsa/rtpgsa/home/w/a/wasngi/web/public/NGI/IM/recommended/drivers/{{ im_driver_version }}/ga'
+install_base: '/home/nest'
