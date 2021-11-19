@@ -1,0 +1,7 @@
+---
+im_driver: 'cl220120211119-0300.47.linux'
+install_base: '/home/nest'
+liberty_dir: 'wlp'
+shared_dir: '/IBM/IMShared'
+gsa_user: 'gsauser'
+gsa_pass: 'gsapass'
