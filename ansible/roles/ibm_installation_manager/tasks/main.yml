@@ -56,9 +56,7 @@
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
 - name: ./userinstc -acceptLicense
-  shell: './userinstc -acceptLicense'
-  args:
-    chdir: '~/im_install'
+  shell: '~/im_install/userinstc -acceptLicense'
   register: userinstcOutput
     
 - name: userinstc output
