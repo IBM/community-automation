@@ -58,7 +58,7 @@
 - name: ./userinstc -acceptLicense
   shell: './userinstc -acceptLicense'
   args:
-    chdir: '{{ install_base }}'
+    chdir: '{{ install_base }}/im_install'
   register: userinstcOutput
     
 - name: userinstc output
