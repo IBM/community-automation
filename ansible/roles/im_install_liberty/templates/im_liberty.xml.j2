@@ -4,7 +4,7 @@
     <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
-    <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/daily/{{ im_driver }}/linux/zipper/externals/installables/repository/'/>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ daily_or_test }}/{{ im_driver }}/linux/zipper/externals/installables/repository/'/>
   </server>
   <profile id='WebSphere Liberty' installLocation='{{ install_base }}/{{ liberty_dir }}'>
     <data key='cic.selector.arch' value='{{ ansible_architecture }}'/>
@@ -15,8 +15,10 @@
     <data key='user.removeAssets' value='#NULL'/>
     <data key='user.useLibertyRepository' value='false'/>
     <data key='user.accept.license' value='true'/>
+    <!--
     <data key='user.internal.use.only.wlp.imembed.zip.repository' value='com.ibm.ws.liberty.embedded.core.assets_21.0.12.20211119_0300.zip'/>
     <data key='user.internal.use.only.wlp.imembed.noncore.zip.repository' value='com.ibm.ws.liberty.embedded.noncore.assets_21.0.12.20211119_0300.zip'/>
+    -->
     <data key='user.internal.use.only.wlp.install.all.assets' value='com.ibm.websphere.appserver.baseBundle'/>
     <data key='user.internal.use.only.wlp.assetsLoaded' value='true'/>
   </profile>
