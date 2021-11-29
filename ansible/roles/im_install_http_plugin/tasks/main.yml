@@ -49,7 +49,7 @@
     shell: "rm -rf {{ install_base }}/.ibm/"
 
   - name:  generate secureStorageFile.store
-    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store"
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
 
   - name:  install http plugins wct
     shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"

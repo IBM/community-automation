@@ -36,7 +36,7 @@
     #    shell: "rm -rf {{ install_base }}/.ibm/"
 
   - name:  generate secureStorageFile.store
-    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/secureStorageFile.store"
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
 
   - name:  install liberty
     shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
