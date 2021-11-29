@@ -30,7 +30,7 @@
     debug: 
      msg: "{{ uninstallAllOutput.stdout_lines }}"
 
-  - name:  clear http dir
+  - name:  clear liberty dir
     shell: "rm -rf {{ install_base }}/{{ liberty_dir }}"
     #  - name:  clear plugins dir
     #    shell: "rm -rf {{ install_base }}/.ibm/"
