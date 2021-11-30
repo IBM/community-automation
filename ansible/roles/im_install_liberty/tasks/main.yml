@@ -22,13 +22,13 @@
     ignore_errors: true
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop wlp1"
 
-  - name:  uninstallAll
-    shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstallAll"
-    register: uninstallAllOutput
+  - name:  uninstall liberty and java
+    shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
+    register: uninstallOutput
     
-  - name: uninstallAllOutput
+  - name: uninstall liberty and java output
     debug: 
-     msg: "{{ uninstallAllOutput.stdout_lines }}"
+     msg: "{{ uninstallOutput.stdout_lines }}"
 
   - name:  clear liberty dir
     shell: "rm -rf {{ install_base }}/{{ liberty_dir }}"

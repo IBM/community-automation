@@ -25,11 +25,11 @@
   </profile>
   <install>
     <!-- IBM WebSphere Application Server V8.5.5 Liberty Network Deployment Trial 21.0.0.11 -->
-    <offering profile='WebSphere Liberty' id='com.ibm.websphere.liberty.NDTRIAL.v85' features='liberty'/>
+    <offering profile='WebSphere Liberty' id='{{ im_liberty_package }}' features='liberty'/>
   </install>
   <install>
     <!-- IBM Semeru Runtime Certified Edition Version 11 11.0.13.0 -->
-    <offering profile='WebSphere Liberty' id='com.ibm.java.jdk.v11' features='com.ibm.sdk.11'/>
+    <offering profile='WebSphere Liberty' id='{{ im_java_package }}' features='com.ibm.sdk.11'/>
   </install>
   <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
 </agent-input>
