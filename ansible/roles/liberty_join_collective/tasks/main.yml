@@ -13,10 +13,11 @@
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
 
-  - name: set controller hostname
-    set_fact:
-      cc_hostname: "{{ ansible_hostname }}"
-    when: "'cc' in group_names"
+    #does not work due to cc out of scope
+    #    - name: set controller hostname
+    #    set_fact:
+    #      cc_hostname: "{{ ansible_hostname }}"
+    #    when: "'cc' in group_names"
 
   - name:  join collective
     shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ admin_port }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --autoAcceptCertificates"
