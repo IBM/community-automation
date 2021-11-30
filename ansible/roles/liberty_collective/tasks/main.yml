@@ -48,6 +48,12 @@
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2"'
 
+  - name: autoAcceptCertificates
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.env"
+      regexp: 'autoAcceptCertificates'
+      line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
+
   - name: include controller.xml in server.xml
     lineinfile:
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
@@ -69,6 +75,11 @@
     - '        <feature>dynamicRouting-1.0</feature>'
     - '        <feature>scalingController-1.0</feature>'
     - '        <feature>monitor-1.0</feature>'
+
+  - name: copy jvm.options template
+    template:
+     src: jvm.options.j2
+     dest: " {{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
 
     # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server
