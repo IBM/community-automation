@@ -61,6 +61,13 @@
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/controller.xml" />'
 
+  - name: listen externally
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^host="*"'
+      insertbefore: 'httpPort='
+      line: '                  host="*"'
+
   - name: add controller features
     lineinfile:
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
