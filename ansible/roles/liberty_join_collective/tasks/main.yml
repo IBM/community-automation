@@ -1,0 +1,27 @@
+---
+- name: join collective
+  tags: join_collective 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name:  stop existing server process
+    ignore_errors: true
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    when: iscc.stat.exists == True
+
+  - name: set controller hostname
+    set_fact:
+      cc_hostname: "{{ ansible_hostname }}"
+    when: "'cc' in group_names"
+
+  - name:  join collective
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ admin_port }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --autoAcceptCertificates"
+    register: joinOutput
+
+- debug:
+   msg: "{{ joinOutput.stdout_lines }}"
+

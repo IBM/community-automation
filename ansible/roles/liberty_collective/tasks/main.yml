@@ -79,7 +79,7 @@
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
-     dest: " {{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
 
     # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server

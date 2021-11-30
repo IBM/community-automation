@@ -28,7 +28,7 @@
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
-     dest: " {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
 
   - name: autoAcceptCertificates
     lineinfile:
