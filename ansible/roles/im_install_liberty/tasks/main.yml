@@ -21,6 +21,8 @@
   - name:  stop any running servers
     ignore_errors: true
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop wlp1"
+    register: stopOutput
+    failed_when: ( stopOutput.rc not in [ 0, 2, 127 ] )
 
   - name:  uninstall liberty and java
     shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
