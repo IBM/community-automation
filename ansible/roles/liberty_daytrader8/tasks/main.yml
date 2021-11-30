@@ -33,12 +33,12 @@
 
   - name: copy db2jcc4.jar 
     copy:
-      src: files/db2jcc4.jar
+      src: /tmp/db2jcc4.jar
       dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc4.jar"
       mode: '0755'
   - name: copy db2jcc_license_cu.jar 
     copy:
-      src: files/db2jcc_license_cu.jar
+      src: /tmp/db2jcc_license_cu.jar
       dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc_license_cu.jar"
       mode: '0755'
 
