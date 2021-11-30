@@ -53,7 +53,7 @@
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
-      line: '     <include location="${server.config.dir}/controller.xml" />'
+      line: '    <include location="${server.config.dir}/controller.xml" />'
 
   - name: add controller features
     lineinfile:
@@ -62,18 +62,19 @@
       insertbefore: '</featureManager>'
       line: "{{ item }}"
     with_items: 
-    - '     <feature>restConnector-1.0</feature>'
-    - '     <feature>localConnector-1.0</feature>'
-    - '     <feature>adminCenter-1.0</feature>'
-    - '     <feature>ssl-1.0</feature>'
-    - '     <feature>dynamicRouting-1.0</feature>'
-    - '     <feature>scalingController-1.0</feature>'
-    - '     <feature>monitor-1.0</feature>'
+    - '        <feature>restConnector-1.0</feature>'
+    - '        <feature>localConnector-1.0</feature>'
+    - '        <feature>adminCenter-1.0</feature>'
+    - '        <feature>ssl-1.0</feature>'
+    - '        <feature>dynamicRouting-1.0</feature>'
+    - '        <feature>scalingController-1.0</feature>'
+    - '        <feature>monitor-1.0</feature>'
 
+    # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server
     failed_when: false
     command:
-      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+      cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
   - name: check server status
     failed_when: false
     command:
