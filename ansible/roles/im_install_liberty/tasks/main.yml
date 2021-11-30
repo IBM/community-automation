@@ -25,6 +25,7 @@
   - name:  uninstall liberty and java
     shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
     register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
   - name: uninstall liberty and java output
     debug: 
