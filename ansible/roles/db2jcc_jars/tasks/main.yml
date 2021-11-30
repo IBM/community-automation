@@ -1,0 +1,11 @@
+---
+- name: fetch db2jcc4.jar
+    fetch:
+      src: ~/sqllib/java/db2jcc4.jar
+      dest: /tmp/db2jcc4.jar
+      flat: yes
+- name: fetch db2jcc_license_cu.jar
+    fetch:
+      src: ~/sqllib/java/db2jcc_license_cu.jar
+      dest: /tmp/db2jcc_license_cu.jar
+      flat: yes
