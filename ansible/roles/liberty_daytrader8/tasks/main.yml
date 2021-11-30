@@ -44,6 +44,6 @@
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.env"
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
