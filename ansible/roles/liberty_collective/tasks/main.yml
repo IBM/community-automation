@@ -61,17 +61,17 @@
       regexp: '^controller.xml'
       insertbefore: '</featureManager>'
       line: "{{ item }}"
-      with_items: 
-      - '     <feature>restConnector-1.0</feature>'
-      - '     <feature>localConnector-1.0</feature>'
-      - '     <feature>adminCenter-1.0</feature>'
-      - '     <feature>ssl-1.0</feature>'
-      - '     <feature>dynamicRouting-1.0</feature>'
-      - '     <feature>scalingController-1.0</feature>'
-      - '     <feature>monitor-1.0</feature>'
+    with_items: 
+    - '     <feature>restConnector-1.0</feature>'
+    - '     <feature>localConnector-1.0</feature>'
+    - '     <feature>adminCenter-1.0</feature>'
+    - '     <feature>ssl-1.0</feature>'
+    - '     <feature>dynamicRouting-1.0</feature>'
+    - '     <feature>scalingController-1.0</feature>'
+    - '     <feature>monitor-1.0</feature>'
 
   - name: Start Liberty Controller Server
     failed_when: false
     command:
-      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server } --clean"
+      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
 
