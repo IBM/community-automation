@@ -31,7 +31,7 @@
 	<include location="${server.config.dir}/collectiveMember.xml" />
 	<include optional="true" location="${server.config.dir}/hostAuth.xml" />
 	<include optional="true" location="${shared.config.dir}/hostSingleton.xml" />
-	<clusterMember name="${clusterName}"/>
+	<clusterMember name="{{ cluster_name }}"/>
    <applicationManager startTimeout="1m"/>
 	<webApplication id="daytrader8" location="io.openliberty.sample.daytrader8.war" name="daytrader8" context-root="daytrader8">
         <application-bnd>
