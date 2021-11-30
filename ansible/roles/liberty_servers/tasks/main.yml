@@ -1,0 +1,37 @@
+---
+- name: Configure
+  tags: configure 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: does server exist?
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+    register: iscc
+
+  - name:  stop existing server process
+    ignore_errors: true
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    when: iscc.stat.exists == True
+
+  - name:  remove current server
+    ignore_errors: true
+    shell: "rm -rf {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+
+  - name:  create server
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+
+  - name: copy jvm.options template
+    template:
+     src: jvm.options.j2
+     dest: " {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
+
+  - name: autoAcceptCertificates
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.env"
+      regexp: 'autoAcceptCertificates'
+      line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
