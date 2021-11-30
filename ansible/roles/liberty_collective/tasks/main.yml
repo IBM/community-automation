@@ -16,7 +16,7 @@
   - name:  stop existing controller process
     ignore_errors: true
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
-    when: iscc.status.exists == True
+    when: iscc.stat.exists == True
 
   - name:  remove current controller server
     ignore_errors: true
@@ -62,13 +62,13 @@
       insertbefore: '</featureManager>'
       line: "{{ item }}"
       with_items: 
-        - '     <feature>restConnector-1.0</feature>'
-        - '     <feature>localConnector-1.0</feature>'
-        - '     <feature>adminCenter-1.0</feature>'
-        - '     <feature>ssl-1.0</feature>'
-        - '     <feature>dynamicRouting-1.0</feature>'
-        - '     <feature>scalingController-1.0</feature>'
-        - '     <feature>monitor-1.0</feature>'
+      - '     <feature>restConnector-1.0</feature>'
+      - '     <feature>localConnector-1.0</feature>'
+      - '     <feature>adminCenter-1.0</feature>'
+      - '     <feature>ssl-1.0</feature>'
+      - '     <feature>dynamicRouting-1.0</feature>'
+      - '     <feature>scalingController-1.0</feature>'
+      - '     <feature>monitor-1.0</feature>'
 
   - name: Start Liberty Controller Server
     failed_when: false
