@@ -1,6 +1,6 @@
 ---
-- name: Configure
-  tags: configure 
+- name: daytrader8
+  tags: daytrader8 
   block:
   - name: check if liberty is installed
     stat:
@@ -8,27 +8,31 @@
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
-  - name: does server exist?
-    stat:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
-    register: iscc
-
-  - name:  stop existing server process
-    ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
-    when: iscc.stat.exists == True
-
-  - name:  remove current server
-    ignore_errors: true
-    shell: "rm -rf {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
-
-  - name:  create server
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
-
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
      dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
+  - name: copy server.xml template
+    template:
+     src: server.xml.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+
+  - name: copy application war
+    copy:
+      src: files/io.openliberty.sample.daytrader8.war
+      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/apps/io.openliberty.sample.daytrader8.war"
+      mode: '0755'
+
+  - name: copy db2jcc4.jar 
+    copy:
+      src: files/db2jcc4.jar
+      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jcc4.jar"
+      mode: '0755'
+  - name: copy db2jcc_license_cu.jar 
+    copy:
+      src: files/db2jcc_license_cu.jar
+      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jcc_license_cu.jar"
+      mode: '0755'
 
   - name: autoAcceptCertificates
     lineinfile:
