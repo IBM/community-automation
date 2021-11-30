@@ -1,0 +1,77 @@
+---
+- name: Configure
+  tags: configure 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: does controller exist?
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    register: iscc
+
+  - name:  stop existing controller process
+    ignore_errors: true
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
+    when: iscc.status.exists == True
+
+  - name:  remove current controller server
+    ignore_errors: true
+    shell: "rm -rf {{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+
+  - name:  create server
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+
+  - name:  create controller 
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{admin_pass }} --createConfigFile=controller.xml"
+    args:
+      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+
+  - name: update admin user
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: 'userName=""'
+      replace: 'userName="{{ admin_user }}"'
+  - name: update admin password
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: 'userPassword=""'
+      replace: 'userPassword="{{ admin_pass }}"'
+
+  - name: update to tlsv1.2
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: '^sslProtocol="TLSv1.2"'
+      insertafter: '<ssl id="defaultSSLConfig"'
+      line: '     sslProtocol="TLSv1.2"'
+
+  - name: include controller.xml in server.xml
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^controller.xml'
+      insertbefore: '</server>'
+      line: '     <include location="${server.config.dir}/controller.xml" />'
+
+  - name: add controller features
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^controller.xml'
+      insertbefore: '</featureManager>'
+      line: "{{ item }}"
+      with_items: 
+        - '     <feature>restConnector-1.0</feature>'
+        - '     <feature>localConnector-1.0</feature>'
+        - '     <feature>adminCenter-1.0</feature>'
+        - '     <feature>ssl-1.0</feature>'
+        - '     <feature>dynamicRouting-1.0</feature>'
+        - '     <feature>scalingController-1.0</feature>'
+        - '     <feature>monitor-1.0</feature>'
+
+  - name: Start Liberty Controller Server
+    failed_when: false
+    command:
+      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server } --clean"
+
