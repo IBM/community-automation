@@ -1,0 +1,9 @@
+---
+install_base: '/home/nest'
+liberty_dir: 'wlp'
+admin_user: 'admin'
+admin_pass: 'adminpwd'
+cc_server: 'cc'
+wl_server: 'server'
+min_heap: '1G'
+max_heap: '3G'
