@@ -51,3 +51,12 @@
   - name: gskcapicmd
     debug: 
      msg: "{{ gskcapicmdcertOutput.stdout_lines }}"
+
+  - name: HTTPServer graceful load new routing
+    failed_when: false
+    shell: "{{install_base }}/{{ http_dir }}/bin/apachectl graceful"
+    register: gracefulOutput
+
+  - name: gracefulOutput
+    debug: 
+     msg: "{{ gracefulOutput.stdout_lines }}"
