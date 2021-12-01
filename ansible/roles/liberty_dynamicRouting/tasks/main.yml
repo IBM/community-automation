@@ -23,13 +23,23 @@
     debug: 
      msg: "{{ dynamicRoutingOutput.stdout_lines }}"
 
-  - name: fetch plugin-cfg.xml
+  - name: Remove file local fetched files
+    delegate: localhost
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - plugin-cfg.xml
+    - plugin-key.p12
+
+  - name: fetch generated files
     fetch:
-      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/plugin-cfg.xml"
+      src: "{{ item }}"
       dest: plugin-cfg.xml
       flat: yes
-  - name: fetch plugin-key.p12
-    fetch:
-      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/plugin-cfg.p12"
-      dest: plugin-cfg.p12
-      flat: yes
+    args:
+      chdir:
+        "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    with_items:
+    - plugin-cfg.xml
+    - plugin-key.p12
