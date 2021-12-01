@@ -1,0 +1,31 @@
+---
+- name: dynamicRouting
+  tags: dynamicRouting 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/dynamicRouting"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+
+  - name: copy jvm.options template
+    template:
+     src: jvm.options.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
+
+    # some values defaults from
+    # im_install_http_plugin/templates/wct_definition.xml.j2
+    # im_install_http_plugin/defaults/main.yml
+    # liberty_dynamicRouting/defaults/main.yml
+  - name: generate the dynamic routing files
+    failed_when: false
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/dynamicRouting setup --port={{ admin_port }} --host={{ cc_hostname }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --pluginINstallRoot={{ install_base }}/{{ plugin_dir }} --webServernames=webserver1"
+    args:
+      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    register: dynamicRoutingOutput
+
+  - name: dynamicRoutingOutput
+    debug: 
+     msg: "{{ dynamicRoutingOutput.stdout_lines }}"
+
