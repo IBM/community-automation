@@ -8,12 +8,6 @@
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
-
-  - name: copy jvm.options template
-    template:
-     src: jvm.options.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
-
     # some values defaults from
     # im_install_http_plugin/templates/wct_definition.xml.j2
     # im_install_http_plugin/defaults/main.yml
@@ -29,3 +23,13 @@
     debug: 
      msg: "{{ dynamicRoutingOutput.stdout_lines }}"
 
+  - name: fetch plugin-cfg.xml
+    fetch:
+      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/plugin-cfg.xml"
+      dest: plugin-cfg.xml
+      flat: yes
+  - name: fetch plugin-key.p12
+    fetch:
+      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/plugin-cfg.p12"
+      dest: plugin-cfg.p12
+      flat: yes
