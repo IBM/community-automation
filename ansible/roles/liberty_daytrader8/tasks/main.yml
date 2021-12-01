@@ -49,8 +49,15 @@
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
 - name: Scaling
-  tags: enable_scaling 
+  tags: enablescaling 
   block:
+  - name: create configDropins/overrides directory
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+    - "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides"
+
   - name: copy scaling.xml template to configDropins/overrides
     template:
      src: scaling.xml.j2
