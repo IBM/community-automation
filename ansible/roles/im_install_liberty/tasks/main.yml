@@ -33,10 +33,12 @@
     debug: 
      msg: "{{ uninstallOutput.stdout_lines }}"
 
-  - name:  clear liberty dir
-    shell: "rm -rf {{ install_base }}/{{ liberty_dir }}"
-    #  - name:  clear plugins dir
-    #    shell: "rm -rf {{ install_base }}/.ibm/"
+  - name: Remove previous liberty dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ install_base }}/{{ liberty_dir }}"
 
   - name:  generate secureStorageFile.store
     shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
