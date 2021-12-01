@@ -1,5 +1,5 @@
 ---
-- name: daytrader8
+- name: DayTrader8
   tags: daytrader8 
   block:
   - name: check if liberty is installed
@@ -49,7 +49,7 @@
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
 - name: Scaling
-  tags: scaling 
+  tags: enable_scaling 
   block:
   - name: copy scaling.xml template to configDropins/overrides
     template:
