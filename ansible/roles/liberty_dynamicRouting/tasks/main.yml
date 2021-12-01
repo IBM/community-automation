@@ -24,7 +24,7 @@
      msg: "{{ dynamicRoutingOutput.stdout_lines }}"
 
   - name: Remove file local fetched files
-    delegate: localhost
+    delegate_to: localhost
     file:
       path: "{{ item }}"
       state: absent
@@ -34,12 +34,9 @@
 
   - name: fetch generated files
     fetch:
-      src: "{{ item }}"
-      dest: plugin-cfg.xml
+      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/{{ item }}"
+      dest: "{{ item }}"
       flat: yes
-    args:
-      chdir:
-        "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
     with_items:
     - plugin-cfg.xml
     - plugin-key.p12
