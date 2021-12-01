@@ -2,3 +2,4 @@
 install_base: '/home/nest'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
+admin_pass: 'adminpwd'
