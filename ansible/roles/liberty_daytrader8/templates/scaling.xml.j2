@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<server description="production scaling definitions">
+
+        <featureManager>
+                <feature>scalingController-1.0</feature>
+        </featureManager>
+
+        <scalingDefinitions>
+                <defaultScalingPolicy enabled="false" />
+                <scalingPolicy id="DayTrader8ScalingPolicy" enabled="true"
+                        min="2" max="2">
+                        <bind clusters="DayTrader8" />
+                        <!-- DELETE CPU -->   
+                        <metric name="cpu" min="20" max="85" />
+                        <out amount="1" units="instance" minInterval="2m30s" />
+                           
+                        <in amount="1" units="instance" minInterval="5m" />
+
+                </scalingPolicy>
+        </scalingDefinitions>
+
+</server>

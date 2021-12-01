@@ -47,3 +47,11 @@
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
+
+- name: Scaling
+  tags: scaling 
+  block:
+  - name: copy scaling.xml template to configDropins/overrides
+    template:
+     src: scaling.xml.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides/scaling.xml"
