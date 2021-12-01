@@ -47,6 +47,20 @@
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
+    # must use nohup else the server stops after the controller process exits
+  - name: Stop Liberty Server
+    failed_when: false
+    command:
+      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+     # must use nohup else the server stops after the controlling process exits
+  - name: Start Liberty Server
+    failed_when: false
+    command:
+      cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+  - name: check server status
+    failed_when: false
+    command:
+      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
 
 - name: Scaling
   tags: enablescaling 
