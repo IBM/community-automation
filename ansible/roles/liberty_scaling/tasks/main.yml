@@ -1,15 +1,2 @@
 ---
-- name: Scaling
-  tags: enablescaling 
-  block:
-  - name: create configDropins/overrides directory
-    file:
-      path: "{{ item }}"
-      state: directory
-    with_items:
-    - "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides"
-
-  - name: copy scaling.xml template to configDropins/overrides
-    template:
-     src: scaling.xml.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides/scaling.xml"
+- include_tasks: liberty_scaling.yml

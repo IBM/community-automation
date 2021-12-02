@@ -1,0 +1,194 @@
+---
+### "ansible_architecture": "s390x",
+### "ansible_architecture": "ppc64le",
+### "ansible_architecture": "x86_64",
+### "ansible_architecture": "chrp", --- AIX
+
+- name: Install
+  tags: install 
+  block:
+  - name: check if imcl installed as a prereq
+    stat:
+      path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: copy ihs_plugin.xml template
+    template:
+     src: im_http_plugin.xml.j2
+     dest: "im_http_plugin.xml"
+
+  - name: copy https_conf template
+    template:
+     src: https_conf.j2
+     dest: "https_conf"
+
+  - name:  stop httpd
+    ignore_errors: true
+    shell: "{{install_base }}/{{ http_dir }}/bin/apachectl stop"
+
+  - name:  stop adminctl
+    ignore_errors: true
+    shell: "{{install_base }}/{{ http_dir }}/bin/adminctl stop"
+
+  - name:  uninstall wct
+    shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_wct_package }} {{ im_wct_java_package }} -installationDirectory {{ install_base }}/{{ wct_dir }}"
+    register: uninstallWCTOutput
+    failed_when: ( uninstallWCTOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstallWCTOutput
+    debug: 
+     msg: "{{ uninstallWCTOutput.stdout_lines }}"
+
+  - name:  uninstall plugin
+    shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_plugin_package }} {{ im_plugin_java_package }} -installationDirectory {{ install_base }}/{{ plugin_dir }}"
+    register: uninstallPLGOutput
+    failed_when: ( uninstallPLGOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstallPLGOutput
+    debug: 
+     msg: "{{ uninstallPLGOutput.stdout_lines }}"
+
+  - name:  uninstall http
+    shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_http_package }} {{ im_http_java_package }} -installationDirectory {{ install_base }}/{{ http_dir }}"
+    register: uninstallIHSOutput
+    failed_when: ( uninstallIHSOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstallIHSOutput
+    debug: 
+     msg: "{{ uninstallIHSOutput.stdout_lines }}"
+
+  - name: Remove previous liberty dir 
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ install_base }}/{{ http_dir }}"
+    - "{{ install_base }}/{{ plugin_dir }}"
+    - "{{ install_base }}/{{ wct_dir }}"
+    - "{{ install_base }}/.ibm"
+
+  - name:  generate secureStorageFile.store
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+
+  - name:  install http plugins wct
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+    register: installOutput
+
+  - name: installOutput
+    debug: 
+     msg: "{{ installOutput.stdout_lines }}"
+
+  #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-toolhttps://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
+  - name: copy wct_definition.xml template
+    template:
+     src: wct_definition.xml.j2
+     dest: "wct_definition.xml"
+  - name: copy wct_definition.xml template
+    template:
+     src: ihsserverkey.sh.j2
+     dest: "{{ install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+     mode: 0755
+
+  - name:  configure plugin
+    shell: "{{install_base }}/WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+    register: configurepluginOutput
+
+  - name: configurepluginOutput
+    debug: 
+     msg: "{{ configurepluginOutput.stdout_lines }}"
+
+  - name: Insert/Update https config
+    blockinfile:
+      path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
+      block: |
+        LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
+        Listen {{ https_port }}
+        SSLCheckCertificateExpiration 30
+        <VirtualHost *:{{ https_port }}>
+         ServerName {{ ansible_hostname }}
+         SSLEnable
+         Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        </VirtualHost>
+        KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+
+  - name: update admin.config @@AdminPort@@
+    replace:
+      path: "{{ install_base }}/{{ http_dir }}/conf/admin.conf"
+      regexp: '@@AdminPort@@'
+      replace: "{{ admin_port }}"
+
+  - name: enable server-status
+    replace:
+      path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
+      regexp: '    Require all denied'
+      after: '    SetHandler server-status'
+      before: 'To allow access from a specific IP:'
+      replace: '#    Require all denied'
+  
+  - name:  configure plugin
+    shell: "{{install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+    args:
+      chdir: "{{ install_base }}/{{ http_dir }}/conf"
+    register: createihsseververkdbOutput
+  
+  - name: createihsseververkdbOutput
+    debug: 
+     msg: "{{ createihsseververkdbOutput.stdout_lines }}"
+  
+  - name:  listInstalledPackages
+    shell: "{{install_base }}/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages"
+    register: packageOutput
+  
+  - name: packageOutput
+    debug: 
+     msg: "{{ packageOutput.stdout_lines }}"
+
+  - name:  start httpd
+    shell: "{{install_base }}/{{ http_dir }}/bin/apachectl start"
+    register: starthttpdOutput
+  
+  - name: starthttpdOutput
+    debug: 
+     msg: "{{ starthttpdOutput.stdout_lines }}"
+
+  - name:  start adminctl
+    shell: "{{install_base }}/{{ http_dir }}/bin/adminctl start "
+    register: startadminctlOutput
+  
+  - name: startadminctlOutput
+    debug: 
+     msg: "{{ startadminctlOutput.stdout_lines }}"
+  
+  - name: Check server-status
+    uri:
+      url: "https://localhost:{{ https_port }}"
+      return_content: no
+      validate_certs: false
+- name: Versions
+  tags: version 
+  block:
+  - name: HTTPServer version
+    shell: "{{install_base }}/{{ http_dir }}/bin/versionInfo.sh" 
+    register: HTTPServerVersionOutput
+
+  - name: HTTPServerVersionOutput
+    debug: 
+     msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
+
+  - name: Plugin version
+    shell: "{{install_base }}/{{ plugin_dir }}/bin/versionInfo.sh" 
+    register: PluginVersionOutput
+
+  - name: PluginVersionOutput
+    debug: 
+     msg: "{{ PluginVersionOutput.stdout_lines }}"
+
+  - name: WCT version
+    shell: "{{install_base }}/{{ wct_dir }}/bin/versionInfo.sh" 
+    register: WCTVersionOutput
+
+  - name: WCTVersionOutput
+    debug: 
+     msg: "{{ WCTVersionOutput.stdout_lines }}"
+
