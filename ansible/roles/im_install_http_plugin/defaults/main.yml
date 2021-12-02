@@ -1,6 +1,7 @@
 ---
 im_driver: 'f5102145.01'
 install_base: '/home/nest'
+daily_or_test: 'test'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'

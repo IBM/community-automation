@@ -4,7 +4,7 @@
    <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
-	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/WAS90.IM/test/{{ im_driver }}.linux/linux/zipper/repository/'/>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/WAS90.IM/{{ daily_or_test }}/{{ im_driver }}.linux/linux/zipper/repository/'/>
   </server>
   <profile id='IBM HTTP Server V9.0' installLocation='{{ install_base }}/{{ http_dir }}'>
     <data key='cic.selector.arch' value='{{ ansible_architecture }}'/>
