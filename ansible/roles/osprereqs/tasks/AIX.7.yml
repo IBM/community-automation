@@ -5,48 +5,55 @@
   become: yes
 - name: check if aixtoolbox is installed
   stat:
-   path: /usr/bin/yum 
+   path: /opt/freeware/bin/dnf
   register: istoolbox
 - block:
-        # FAILS with unzip error ....
-        #  - name: get aixtoolbox
-        #    unarchive:
-        #      validate_certs: False
-        #      src: "http://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
-        #      dest: /tmp
-        #      remote_src: yes
-        #    become: yes
-        #
   - name: create aixtoolbox dir
     file:
      path: /tmp/aixtoolbox
      state: directory
   - name: get aixtoolbox get_url
     get_url:
-            # FAILS with ssl3 comm error
-            #     url: "http://nest-reports1.fyre.ibm.com/opt/downloads/yum_bundle.tar"
-     url: "http://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/yum_bundle.tar"
-     dest: /tmp/aixtoolbox
+     url: "https://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/dnf_aixtoolbox.sh"
+     dest: /tmp/aixtoolbox/dnf_aixtoolbox.sh
      validate_certs: false
     become: yes
-  - name: get aixtoolbox
-    command: 'tar -xf yum_bundle.tar'
+  - name: chmod +x dnf_aixtoolbox.sh 
+    ansible.builtin.file:
+      path: /tmp/aixtoolbox/dnf_aixtoolbox.sh
+      owner: root
+      mode: '1777'
+    become: yes
+  - name: install aixtoolbox 
+    command: '/tmp/aixtoolbox/dnf_aixtoolbox.sh -y'
     args:
      chdir: /tmp/aixtoolbox
-    become: yes
-  - name: install aixtoolbox rpms
-    command: 'rpm -Uvh --force *.rpm'
-    args:
-     chdir: /tmp/aixtoolbox
-    become: yes
-  - name: Install the latest version sudo
-    yum:
-     name: sudo
-     state: latest
     become: yes
   when: istoolbox.stat.exists == False
-- name: yum update all latest
-  yum:
+- name: add /opt/freeware/bin to the path
+  lineinfile:
+    path: "~/.profile"
+    regexp: '/opt/freeware/bin'
+    line: 'export PATH=/opt/freeware/bin:$PATH'
+  become: yes
+- name: Remove any python2
+  dnf:
+   name: python2*
+   state: absent
+  become: yes
+- name: Install the latest version sudo
+  dnf:
+   name: "{{ packages }}"
+   state: latest
+  vars:
+   packages:
+   - sudo
+   - zip
+   - unzip
+   - less
+  become: yes
+- name: dnf update all latest
+  dnf:
    name: '*'
    state: latest
   become: yes
@@ -54,4 +61,3 @@
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes
-
