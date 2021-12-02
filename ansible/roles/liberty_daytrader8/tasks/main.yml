@@ -47,32 +47,20 @@
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
-    # must use nohup else the server stops after the controller process exits
+
   - name: Stop Liberty Server
-    failed_when: false
     command:
       cmd: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
      # must use nohup else the server stops after the controlling process exits
   - name: Start Liberty Server
-    failed_when: false
     command:
       cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
   - name: check server status
-    failed_when: false
     command:
       cmd: "{{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
-
-- name: Scaling
-  tags: enablescaling 
-  block:
-  - name: create configDropins/overrides directory
-    file:
-      path: "{{ item }}"
-      state: directory
-    with_items:
-    - "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides"
-
-  - name: copy scaling.xml template to configDropins/overrides
-    template:
-     src: scaling.xml.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/configDropins/overrides/scaling.xml"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )

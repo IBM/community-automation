@@ -20,9 +20,19 @@
 
   - name:  stop any running servers
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop wlp1"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
     register: stopOutput
     failed_when: ( stopOutput.rc not in [ 0, 2, 127 ] )
+    with_items:
+    - "{{ wl_server }}"
+    - "{{ cc_server }}"
+
+   # blindly try fuser ( linux )
+  - name:  blindly try fuser ( linux )
+    ignore_errors: true
+    shell: "fuser -k {{install_base }}/{{ liberty_dir }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
   - name:  uninstall liberty and java
     shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"

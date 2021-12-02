@@ -7,9 +7,9 @@
 
         <scalingDefinitions>
                 <defaultScalingPolicy enabled="false" />
-                <scalingPolicy id="DayTrader8ScalingPolicy" enabled="true"
+		<scalingPolicy id="{{ cluster_name }}ScalingPolicy" enabled="true"
                         min="2" max="2">
-                        <bind clusters="DayTrader8" />
+			<bind clusters="{{ cluster_name }}" />
                         <!-- DELETE CPU -->   
                         <metric name="cpu" min="20" max="85" />
                         <out amount="1" units="instance" minInterval="2m30s" />
