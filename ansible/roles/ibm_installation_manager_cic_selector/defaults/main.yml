@@ -1,0 +1,13 @@
+---
+#https://www.ibm.com/docs/en/installation-manager/1.8.5?topic=line-command-arguments-imcl-command#r_tools__cic_selector
+cic_selector_arch:
+  chrp: 'ppc64'
+  ppc64le: 'ppc64le'
+  x86_64: 'x86_64'
+  x86: 'x86'
+  s390x: 's390x'
+cic_selector_os:
+  AIX: 'aix'
+  Linux: 'linux'
+  Windows: 'win32'
+  ZOS: 'zos'

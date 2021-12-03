@@ -58,7 +58,7 @@
     debug: 
      msg: "{{ uninstallIHSOutput.stdout_lines }}"
 
-  - name: Remove previous liberty dir 
+  - name: Remove previous http/plugin/wct/.ibm dir 
     file:
       path: "{{ item }}"
       state: absent
