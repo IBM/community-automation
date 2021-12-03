@@ -1,0 +1,4 @@
+---
+install_base: '/home/nest'
+liberty_dir: 'wlp'
+wl_server: 'server'

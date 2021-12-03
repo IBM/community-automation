@@ -1,0 +1,42 @@
+---
+- name: dynamicRouting
+  tags: dynamicRouting 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/dynamicRouting"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+    # some values defaults from
+    # im_install_http_plugin/templates/wct_definition.xml.j2
+    # im_install_http_plugin/defaults/main.yml
+    # liberty_dynamicRouting/defaults/main.yml
+  - name: generate the dynamic routing files
+    failed_when: false
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/dynamicRouting setup --port={{ admin_port }} --host={{ ansible_hostname }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --pluginINstallRoot={{ install_base }}/{{ plugin_dir }} --autoAcceptCertificates --webServernames=webserver1"
+    args:
+      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    register: dynamicRoutingOutput
+
+  - name: dynamicRoutingOutput
+    debug: 
+     msg: "{{ dynamicRoutingOutput.stdout_lines }}"
+
+  - name: Remove file local fetched files
+    delegate_to: localhost
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - plugin-cfg.xml
+    - plugin-key.p12
+
+  - name: fetch generated files
+    fetch:
+      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/{{ item }}"
+      dest: "{{ item }}"
+      flat: yes
+    with_items:
+    - plugin-cfg.xml
+    - plugin-key.p12

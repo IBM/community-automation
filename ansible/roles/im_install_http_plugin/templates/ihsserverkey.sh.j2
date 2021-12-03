@@ -1,0 +1,14 @@
+kdb=ihsserverkey.kdb
+ihshost=`hostname`
+rm -f ${kdb} ihsserverkey.rdb ihsserverkey.crl ihsserverkey.sth
+
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ install_base }}/{{ http_dir }}/gsk8/lib64
+export PATH={{ install_base }}/{{ http_dir }}/gsk8/bin/:$PATH
+echo "Creating $kdb"
+gsk8capicmd_64 -keydb -create -db ${kdb} -type cms -pw 'Just4T3st!ng' -stash -expire 7300
+echo "Creating certificates"
+gsk8capicmd_64 -cert -create -db ${kdb} -type cms -label ihs -pw 'Just4T3st!ng' -DN CN=$ihshost -size 2048 -default_cert yes -expire 7300
+gsk8capicmd_64 -cert -details -label "ihs" -db ${kdb} -pw 'Just4T3st!ng'
+echo "Completed creating ldap certificates"
+gsk8capicmd_64 -cert -list -db ${kdb} -pw 'Just4T3st!ng'
+gsk8capicmd_64 -cert -extract -db ${kdb} -type cms -label ihs -pw 'Just4T3st!ng' -target $ihshost.base64.cert

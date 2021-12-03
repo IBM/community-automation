@@ -1,0 +1,103 @@
+---
+- name: Configure
+  tags: configure 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: does controller exist?
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    register: iscc
+
+  - name:  stop existing controller process
+    ignore_errors: true
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
+    when: iscc.stat.exists == True
+
+  - name: Remove current controller server
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+
+  - name:  create server
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+
+  - name:  create controller 
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{admin_pass }} --createConfigFile=controller.xml"
+    args:
+      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+
+  - name: update admin user
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: 'userName=""'
+      replace: 'userName="{{ admin_user }}"'
+  - name: update admin password
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: 'userPassword=""'
+      replace: 'userPassword="{{ admin_pass }}"'
+
+  - name: update to tlsv1.2
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      regexp: '^sslProtocol="TLSv1.2"'
+      insertafter: '<ssl id="defaultSSLConfig"'
+      line: '     sslProtocol="TLSv1.2"'
+
+  - name: autoAcceptCertificates
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.env"
+      regexp: 'autoAcceptCertificates'
+      line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
+
+  - name: include controller.xml in server.xml
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^controller.xml'
+      insertbefore: '</server>'
+      line: '    <include location="${server.config.dir}/controller.xml" />'
+
+  - name: listen externally
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^host="*"'
+      insertbefore: 'httpPort='
+      line: '                  host="*"'
+
+  - name: add controller features
+    lineinfile:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '^controller.xml'
+      insertbefore: '</featureManager>'
+      line: "{{ item }}"
+    with_items: 
+    - '        <feature>restConnector-1.0</feature>'
+    - '        <feature>localConnector-1.0</feature>'
+    - '        <feature>adminCenter-1.0</feature>'
+    - '        <feature>ssl-1.0</feature>'
+    - '        <feature>dynamicRouting-1.0</feature>'
+    - '        <feature>scalingController-1.0</feature>'
+    - '        <feature>monitor-1.0</feature>'
+
+  - name: copy jvm.options template
+    template:
+     src: jvm.options.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
+
+    # must use nohup else the server stops after the controller process exits
+  - name: Start Liberty Controller Server
+    failed_when: false
+    command:
+      cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+  - name: check server status
+    failed_when: false
+    command:
+      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
+

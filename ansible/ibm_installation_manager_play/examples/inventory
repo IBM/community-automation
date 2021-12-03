@@ -1,0 +1,8 @@
+[all]
+myhost
+
+[all:vars]
+ansible_user=root
+im_driver_version=latest
+gsa_user='yourgsauser'
+gsa_pass='yourgsapass'
