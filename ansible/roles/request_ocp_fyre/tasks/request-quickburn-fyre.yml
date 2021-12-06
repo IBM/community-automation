@@ -6,6 +6,7 @@
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
     validate_certs: False
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   register: ocpexistance
   changed_when: false
   failed_when: false
@@ -36,6 +37,7 @@
     user:  "{{ fyreuser }}"
     validate_certs: False
     password: "{{ fyreapikey }}"
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: error_status
 
@@ -56,6 +58,7 @@
     validate_certs: False
     password: "{{ fyreapikey }}"
     return_content: yes
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: cluster_status_response
   until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "failed")

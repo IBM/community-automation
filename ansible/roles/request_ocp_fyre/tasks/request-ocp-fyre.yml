@@ -7,6 +7,7 @@
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
     validate_certs: False
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   register: ocpexistance
   changed_when: false
   failed_when: false
@@ -27,6 +28,7 @@
       password: "{{ fyreapikey }}"
       validate_certs: False
       body_format: "json"
+      force_basic_auth: "{{ fyre_force_basic_auth }}"
       body: 
         fyre: 
           creds: 
@@ -61,6 +63,7 @@
     user:  "{{ fyreuser }}"
     validate_certs: False
     password: "{{ fyreapikey }}"
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: error_status
 
@@ -83,6 +86,7 @@
     password: "{{ fyreapikey }}"
     return_content: yes
     body_format: json
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: cluster_status_response
   until: (cluster_status_response.status == 200) and cluster_status_response.json is defined and (cluster_status_response.json.clusters[0].deployment_status  =="deployed" or cluster_status_response.json.clusters[0].deployment_status == "error")
@@ -108,6 +112,7 @@
     password: "{{ fyreapikey }}"
     return_content: yes
     body_format: json
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: cluster_details_response
   until: (cluster_details_response.status == 200) and (cluster_details_response.json[ clusterName ] | selectattr("node", 'equalto', clusterName+"-bootstrap") | list | count == 0)
@@ -124,6 +129,7 @@
     password: "{{ fyreapikey }}"
     return_content: yes
     body_format: json
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: all_user_clusters_response
   until: (all_user_clusters_response.status == 200) and (all_user_clusters_response.json.clusters | selectattr('name', 'equalto', clusterName) | map(attribute='status') | list | first == 'deployed')

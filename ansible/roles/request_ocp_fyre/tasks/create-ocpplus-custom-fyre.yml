@@ -21,6 +21,7 @@
     password: "{{ fyreapikey }}"
     validate_certs: False
     body_format: "json"
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
     body:
       name : "{{ clusterName }}"
       platform: "{{ ocpPlatform }}"
