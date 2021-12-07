@@ -6,6 +6,7 @@
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
     validate_certs: False
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   register: ocpexistance
   changed_when: false
   failed_when: false
@@ -40,6 +41,7 @@
     user:  "{{ fyreuser }}"
     validate_certs: False
     password: "{{ fyreapikey }}"
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: error_status
 
@@ -59,6 +61,7 @@
     user:  "{{ fyreuser }}"
     validate_certs: False
     password: "{{ fyreapikey }}"
+    force_basic_auth: "{{ fyre_force_basic_auth }}"
     return_content: yes
   changed_when: false
   register: cluster_status_response

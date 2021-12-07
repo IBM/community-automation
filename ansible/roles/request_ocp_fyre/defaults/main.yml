@@ -11,6 +11,7 @@ fyre_site: "svl"
 fyre_group_id: "0"
 fyre_ocptype: "ocp"
 fyre_addAnsibleHost: true
+fyre_force_basic_auth: yes
 # this will read the value from the file, submitting just the filename does not work
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
