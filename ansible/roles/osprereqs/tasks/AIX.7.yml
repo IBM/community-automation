@@ -46,13 +46,6 @@
 - name: whereIsDNF
   debug: 
    msg: "{{ isdnf.stdout_lines }}"
-- name: Remove any python2
-  dnf:
-   name: python2*
-   state: absent
-  become: yes
-  environment: 
-   PATH: '/opt/freeware/bin:{{ ansible_env.PATH }}'
 - name: Install the latest version sudo
   dnf:
    name: "{{ packages }}"
