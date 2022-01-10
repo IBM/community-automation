@@ -53,7 +53,7 @@
    validate: 'visudo -cf %s'
    backup: yes
   become: yes
-  when: issudoers.stat.exists == False
+  when: issudoers.stat.exists == True
   
 - block:
   - name: nest hard ulimit nofile
