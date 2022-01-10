@@ -91,7 +91,7 @@
   file:
    path: '{{ item }}'
    state: directory
-   recurse: yes
+   recurse: no
    owner: "{{ user_username }}"
    group: "{{ user_username }}"
   with_items:
