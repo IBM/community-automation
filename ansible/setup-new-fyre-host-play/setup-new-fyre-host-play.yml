@@ -8,8 +8,8 @@
   - ansible_ssh_common_args: -o StrictHostKeyChecking=no
   - ansible_user: root
   roles:
-  - role: nestuser
   - role: osprereqs
+  - role: nestuser
   - role: fix_fyre_hosts_file
   - role: timezone
   - role: authorized_keys
