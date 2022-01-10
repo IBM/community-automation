@@ -39,7 +39,7 @@
     mode: 0755
   become: yes
 - name: where is the dnf tool?
-  command: 'which dnf'
+  shell: 'which dnf'
   register: isdnf
   become: yes
 - name: whereIsDNF
