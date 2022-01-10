@@ -31,15 +31,16 @@
     become: yes
   when: istoolbox.stat.exists == False
 - name: add /opt/freeware/bin to the path
-  replace:
-    dest: "/etc/environment.test"
+  lineinfile:
+    path: "~/.profile"
     regexp: '/opt/freeware/bin'
-    replace: '\1 :/opt/freeware/bin'
+    line: 'export PATH=/opt/freeware/bin:$PATH'
   become: yes
 - name: where is the dnf tool?
   shell: 'which dnf'
   register: isdnf
   become: yes
+  environment: "PATH=$PATH:/opt/freeware/bin"
 - name: whereIsDNF
   debug: 
    msg: "{{ isdnf.stdout_lines }}"
@@ -48,6 +49,7 @@
    name: python2*
    state: absent
   become: yes
+  environment: "PATH=$PATH:/opt/freeware/bin"
 - name: Install the latest version sudo
   dnf:
    name: "{{ packages }}"
@@ -59,12 +61,14 @@
    - unzip
    - less
   become: yes
+  environment: "PATH=$PATH:/opt/freeware/bin"
 - name: dnf update all latest
   dnf:
    name: '*'
    state: latest
   become: yes
   register: isupdated
+  environment: "PATH=$PATH:/opt/freeware/bin"
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes
