@@ -32,7 +32,7 @@
   when: istoolbox.stat.exists == False
 - name: add /opt/freeware/bin to the path
   lineinfile:
-    path: "~/.profile"
+    path: "/etc/profile"
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
   become: yes
