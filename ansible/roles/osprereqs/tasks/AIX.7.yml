@@ -33,7 +33,7 @@
 - name: add /opt/freeware/bin to the path
   replace:
     dest: "/etc/environment.test"
-    regexp: '\/opt\/freeware\/bin'
+    regexp: '/opt/freeware/bin'
     replace: '\1 :/opt/freeware/bin'
   become: yes
 - name: where is the dnf tool?
