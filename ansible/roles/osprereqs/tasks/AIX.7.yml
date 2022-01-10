@@ -36,6 +36,13 @@
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
   become: yes
+- name: where is the dnf tool?
+  command: 'which dnf'
+  register: isdnf
+  become: yes
+- name: whereIsDNF
+  debug: 
+   msg: "{{ isdnf.stdout_lines }}"
 - name: Remove any python2
   dnf:
    name: python2*
