@@ -37,36 +37,14 @@
     line: 'export PATH=/opt/freeware/bin:$PATH'
     create: true
   become: yes
-- name: where is the dnf tool?
-  shell: 'which dnf'
-  register: isdnf
-  become: yes
-  environment: 
-   PATH: '/opt/freeware/bin:{{ ansible_env.PATH }}'
-- name: whereIsDNF
-  debug: 
-   msg: "{{ isdnf.stdout_lines }}"
 - name: Install the latest version sudo
-  dnf:
-   name: "{{ packages }}"
-   state: latest
-  vars:
-   packages:
-   - sudo
-   - zip
-   - unzip
-   - less
+  ignore_errors: yes
+  command: '/opt/freeware/bin/dnf -y install sudo zip unzip less'
   become: yes
-  environment: 
-   PATH: '/opt/freeware/bin:{{ ansible_env.PATH }}'
 - name: dnf update all latest
-  dnf:
-   name: '*'
-   state: latest
+  ignore_errors: yes
+  command: '/opt/freeware/bin/dnf -y update'
   become: yes
-  register: isupdated
-  environment: 
-   PATH: '/opt/freeware/bin:{{ ansible_env.PATH }}'
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes
