@@ -32,11 +32,9 @@
   when: istoolbox.stat.exists == False
 - name: add /opt/freeware/bin to the path
   lineinfile:
-    path: "~/.profile"
+    path: "/etc/environment"
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
-    create: true
-    mode: 0755
   become: yes
 - name: where is the dnf tool?
   shell: 'which dnf'
