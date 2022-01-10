@@ -31,10 +31,10 @@
     become: yes
   when: istoolbox.stat.exists == False
 - name: add /opt/freeware/bin to the path
-  lineinfile:
-    path: "/etc/environment"
-    regexp: '/opt/freeware/bin'
-    line: 'export PATH=/opt/freeware/bin:$PATH'
+  replace:
+    dest: "/etc/environment.test"
+    regexp: '\/opt\/freeware\/bin'
+    replace: '\1 :/opt/freeware/bin'
   become: yes
 - name: where is the dnf tool?
   shell: 'which dnf'
