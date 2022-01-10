@@ -35,12 +35,13 @@
     path: "~/.profile"
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
+    create: true
   become: yes
 - name: where is the dnf tool?
   shell: 'which dnf'
   register: isdnf
   become: yes
-  environment: "PATH=$PATH:/opt/freeware/bin"
+  environment: "PATH=/opt/freeware/bin:/usr/bin:/etc:/usr/sbin:/usr/ucb:/sbin"
 - name: whereIsDNF
   debug: 
    msg: "{{ isdnf.stdout_lines }}"
@@ -49,7 +50,7 @@
    name: python2*
    state: absent
   become: yes
-  environment: "PATH=$PATH:/opt/freeware/bin"
+  environment: "PATH=/opt/freeware/bin:/usr/bin:/etc:/usr/sbin:/usr/ucb:/sbin"
 - name: Install the latest version sudo
   dnf:
    name: "{{ packages }}"
@@ -61,14 +62,14 @@
    - unzip
    - less
   become: yes
-  environment: "PATH=$PATH:/opt/freeware/bin"
+  environment: "PATH=/opt/freeware/bin:/usr/bin:/etc:/usr/sbin:/usr/ucb:/sbin"
 - name: dnf update all latest
   dnf:
    name: '*'
    state: latest
   become: yes
   register: isupdated
-  environment: "PATH=$PATH:/opt/freeware/bin"
+  environment: "PATH=/opt/freeware/bin:/usr/bin:/etc:/usr/sbin:/usr/ucb:/sbin"
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes
