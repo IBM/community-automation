@@ -9,7 +9,7 @@
   block:
   - name: check if imcl installed as a prereq
     stat:
-      path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
+     path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
@@ -23,13 +23,20 @@
      src: https_conf.j2
      dest: "https_conf"
 
+  - name: check if previous ihs installed
+    stat:
+     path: "{{install_base }}/{{ http_dir }}/bin/apachectl"
+    register: isihs
+
   - name:  stop httpd
     ignore_errors: true
     shell: "{{install_base }}/{{ http_dir }}/bin/apachectl stop"
+    when: isihs.stat.exists == True
 
   - name:  stop adminctl
     ignore_errors: true
     shell: "{{install_base }}/{{ http_dir }}/bin/adminctl stop"
+    when: isihs.stat.exists == True
 
   - name:  uninstall wct
     shell: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_wct_package }} {{ im_wct_java_package }} -installationDirectory {{ install_base }}/{{ wct_dir }}"
