@@ -35,29 +35,16 @@
     path: "~/.profile"
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
-  become: yes
-- name: Remove any python2
-  dnf:
-   name: python2*
-   state: absent
+    create: true
   become: yes
 - name: Install the latest version sudo
-  dnf:
-   name: "{{ packages }}"
-   state: latest
-  vars:
-   packages:
-   - sudo
-   - zip
-   - unzip
-   - less
+  ignore_errors: yes
+  command: '/opt/freeware/bin/dnf -y install sudo zip unzip less'
   become: yes
 - name: dnf update all latest
-  dnf:
-   name: '*'
-   state: latest
+  ignore_errors: yes
+  command: '/opt/freeware/bin/dnf -y update'
   become: yes
-  register: isupdated
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
   become: yes

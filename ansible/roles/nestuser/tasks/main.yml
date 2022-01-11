@@ -39,17 +39,23 @@
    manage_dir: yes
    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
-- block:
-  - name: nest sudoers
-    lineinfile:
-     path: /etc/sudoers
-     state: present
-     regexp: "^{{ user_username }}"
-     line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
-     validate: 'visudo -cf %s'
-     backup: yes
-    become: yes
+- name: is sudo installed?
+  stat:
+    path: "/etc/sudoers"
+  register: issudoers
+
+- name: nest sudoers
+  lineinfile:
+   path: /etc/sudoers
+   state: present
+   regexp: "^{{ user_username }}"
+   line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
+   validate: 'visudo -cf %s'
+   backup: yes
+  become: yes
+  when: issudoers.stat.exists == True
   
+- block:
   - name: nest hard ulimit nofile
     lineinfile:
      path: /etc/security/limits.conf
@@ -85,7 +91,7 @@
   file:
    path: '{{ item }}'
    state: directory
-   recurse: yes
+   recurse: no
    owner: "{{ user_username }}"
    group: "{{ user_username }}"
   with_items:
