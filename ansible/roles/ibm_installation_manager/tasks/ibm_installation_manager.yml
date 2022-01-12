@@ -37,20 +37,20 @@
 
 - name: temp im install dir
   file:
-   path: ~/im_install
+   path: "{{ install_base }}/im_install"
    state: directory
 
 - name: get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: ~/im_install/im.zip
+   dest: "{{ install_base }}/im_install/im.zip"
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
 
 - name: unarchive im.zip
   unarchive:
-   src: ~/im_install/im.zip
-   dest: '~/im_install'
+   src: "{{ install_base }}/im_install/im.zip"
+   dest: "{{ install_base }}/im_install"
    remote_src: True
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
