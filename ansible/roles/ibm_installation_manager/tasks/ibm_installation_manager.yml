@@ -6,7 +6,7 @@
 
 - name: check if imcl installed as a prereq
   stat:
-    path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
+    path: "~/IBM/InstallationManager/eclipse/tools/imcl"
   changed_when: false
   failed_when: false
 
