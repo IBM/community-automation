@@ -6,7 +6,7 @@
 
 - name: check if imcl installed as a prereq
   stat:
-    path: "~/IBM/InstallationManager/eclipse/tools/imcl"
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
   changed_when: false
   failed_when: false
 
@@ -39,6 +39,10 @@
   file:
    path: "{{ install_base }}/im_install"
    state: directory
+- name: copy ibm_im_responsefile.xml template
+  template:
+   src: ibm_im_responsefile.xml.j2
+   dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
 - name: get im archive
   get_url:
@@ -55,8 +59,8 @@
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
-- name: ./userinstc -acceptLicense
-  shell: './userinstc -acceptLicense'
+- name: ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
+  shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
   args:
     chdir: '{{ install_base }}/im_install'
   register: userinstcOutput
