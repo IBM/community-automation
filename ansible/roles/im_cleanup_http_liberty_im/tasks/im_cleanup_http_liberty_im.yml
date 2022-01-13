@@ -1,0 +1,52 @@
+---
+
+- name: unInstall
+  tags: uninstall 
+  block:
+  - name: check if imcl installed as a prereq
+    stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+   # blindly try fuser ( linux )
+  - name:  blindly try fuser ( linux )
+    ignore_errors: true
+    shell: "fuser -k {{ item }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
+    with_items:
+    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ install_base }}/{{ http_dir }}"
+
+  - name:  uninstall liberty / http
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstallAll output
+    debug: 
+     msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name:  uninstall ibm installation manager
+    shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstallAll output
+    debug: 
+     msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Remove previous liberty dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ install_base }}/{{ shared_dir }}"
+    - "{{ install_base }}/{{ http_dir }}"
+    - "{{ install_base }}/{{ plugin_dir }}"
+    - "{{ install_base }}/{{ wct_dir }}"
+    - "{{ install_base }}/IM"
+    - "~/var/"
+    - "~/etc/"

@@ -1,0 +1,7 @@
+---
+install_base: '/home/nest'
+liberty_dir: 'wlp'
+http_dir: 'HTTPServer'
+plugin_dir: 'Plugins'
+wct_dir: 'WCT'
+shared_dir: 'IM-shared'
