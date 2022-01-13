@@ -1,7 +1,5 @@
 ---
 
-- name: unInstall
-  tags: uninstall 
 # blindly try fuser ( linux )
 - name:  blindly try fuser ( linux )
   ignore_errors: true
