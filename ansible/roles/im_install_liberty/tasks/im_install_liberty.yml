@@ -9,7 +9,7 @@
   block:
   - name: check if imcl installed as a prereq
     stat:
-      path: "~/IBM/InstallationManager/eclipse/tools/imcl"
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
@@ -35,7 +35,7 @@
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
   - name:  uninstall liberty and java
-    shell: "~/IBM/InstallationManager/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
@@ -51,13 +51,13 @@
     - "{{ install_base }}/{{ liberty_dir }}"
 
   - name:  generate secureStorageFile.store
-    shell: "~/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
 
   - name:  generate external ibm secureStorageFile.store
-    shell: "~/IBM/InstallationManager/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
 
   - name:  install liberty
-    shell: "~/IBM/InstallationManager/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IBM/secureStorageFile.store"
     register: installOutput
 
   - name: installOutput
@@ -65,7 +65,7 @@
      msg: "{{ installOutput.stdout_lines }}"
 
   - name:  listInstalledPackages
-    shell: "~/IBM/InstallationManager/eclipse/tools/imcl listInstalledPackages"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
     register: packageOutput
   
   - name: packageOutput
