@@ -91,7 +91,7 @@
     template:
      src: wct_definition.xml.j2
      dest: "wct_definition.xml"
-  - name: copy wct_definition.xml template
+  - name: copy ihsserverkey.sh template
     template:
      src: ihsserverkey.sh.j2
      dest: "{{ install_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
@@ -118,6 +118,11 @@
          Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         </VirtualHost>
         KeyFile {{ install_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+  - lineinfile: 
+      dest: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
+      state: absent 
+      regexp: "Header always set Strict-Transport-Security"
+    when: twas_release == 'WAS855'
 
   - name: update admin.config @@AdminPort@@
     replace:
