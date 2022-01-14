@@ -1,5 +1,6 @@
 ---
 im_driver: 'f5102145.01'
+twas_release: 'WAS90' # WAS855
 install_base: '/home/nest'
 daily_or_test: 'test'
 http_dir: 'HTTPServer'
@@ -13,9 +14,15 @@ https_port: '9444'
 admin_port: '8008'
 admin_user: 'ihsadmin'
 admin_pass: 'pihsadmin'
-im_wct_package: 'com.ibm.websphere.WCT.v90'
+im_wct_package: 
+  WAS90: 'com.ibm.websphere.WCT.v90'
+  WAS855: 'com.ibm.websphere.WCT.v855'
 im_wct_java_package: 'com.ibm.java.jdk.v8'
-im_plugin_package: 'com.ibm.websphere.PLG.v90'
+im_plugin_package: 
+  WAS90: 'com.ibm.websphere.PLG.v90'
+  WAS855: 'com.ibm.websphere.PLG.v855'
 im_plugin_java_package: 'com.ibm.java.jdk.v8'
-im_http_package: 'com.ibm.websphere.IHS.v90'
+im_http_package: 
+  WAS90: 'com.ibm.websphere.IHS.v90'
+  WAS855: 'com.ibm.websphere.IHS.v855'
 im_http_java_package: 'com.ibm.java.jdk.v8'
