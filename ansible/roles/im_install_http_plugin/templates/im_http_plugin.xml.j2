@@ -21,7 +21,7 @@
     <!-- IBM HTTP Server for WebSphere Application Server 9.0.5.10 -->
     <offering profile='IBM HTTP Server' id='{{ im_http_package[twas_release] }}'  features='core.feature'/>
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
-    <offering profile='IBM HTTP Server' id='{{ im_http_java_package[twas_release] }}' features='com.ibm.sdk.8'/>
+    <offering profile='IBM HTTP Server' id='{{ im_http_java_package }}' features='com.ibm.sdk.8'/>
   </install>
   <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ install_base }}/{{ plugin_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
@@ -31,7 +31,7 @@
     <!-- Web Server Plug-ins for IBM WebSphere Application Server 9.0.5.10 -->
     <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature'/>
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
-    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_java_package[twas_release] }}' features='com.ibm.sdk.8'/>
+    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_java_package }}' features='com.ibm.sdk.8'/>
   </install>
   <profile id='WebSphere Customization Toolbox' installLocation='{{ install_base }}/{{ wct_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
@@ -41,7 +41,7 @@
     <!-- WebSphere Customization Toolbox 9.0.5.10 -->
     <offering profile='WebSphere Customization Toolbox' id='{{ im_wct_package[twas_release] }}' features='core.feature,pct'/>
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
-    <offering profile='WebSphere Customization Toolbox' id='{{ im_wct_java_package[twas_release] }}' features='com.ibm.sdk.8'/>
+    <offering profile='WebSphere Customization Toolbox' id='{{ im_wct_java_package }}' features='com.ibm.sdk.8'/>
   </install>
   <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
 </agent-input>
