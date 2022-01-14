@@ -15,7 +15,7 @@
 
   - name: copy ihs_plugin.xml template
     template:
-     src: im_http_plugin.xml.j2
+     src: "im_http_plugin_{{ twas_release }}.xml.j2"
      dest: "im_http_plugin.xml"
 
   - name: copy https_conf template
