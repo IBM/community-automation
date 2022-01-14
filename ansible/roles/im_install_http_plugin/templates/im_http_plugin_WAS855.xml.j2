@@ -28,7 +28,7 @@
   </profile>
   <install>
     <!-- Web Server Plug-ins for IBM WebSphere Application Server 8.5.5.x -->
-    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature'/>
+    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature,com.ibm.jre.71_64bit'/>
   </install>
   <profile id='WebSphere Customization Toolbox' installLocation='{{ install_base }}/{{ wct_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
