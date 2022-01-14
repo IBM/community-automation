@@ -16,13 +16,13 @@ admin_user: 'ihsadmin'
 admin_pass: 'pihsadmin'
 im_wct_package: 
   WAS90: 'com.ibm.websphere.WCT.v90'
-  WAS855: 'com.ibm.websphere.WCT.v855'
+  WAS855: 'com.ibm.websphere.WCT.v85'
 im_wct_java_package: 'com.ibm.java.jdk.v8'
 im_plugin_package: 
   WAS90: 'com.ibm.websphere.PLG.v90'
-  WAS855: 'com.ibm.websphere.PLG.v855'
+  WAS855: 'com.ibm.websphere.PLG.v85'
 im_plugin_java_package: 'com.ibm.java.jdk.v8'
 im_http_package: 
   WAS90: 'com.ibm.websphere.IHS.v90'
-  WAS855: 'com.ibm.websphere.IHS.v855'
+  WAS855: 'com.ibm.websphere.IHS.v85'
 im_http_java_package: 'com.ibm.java.jdk.v8'
