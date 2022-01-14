@@ -3,8 +3,8 @@
 <server>
  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ daily_or_test }}/{{ im_driver }}.linux/linux/zipper/repository'/>
 </server>
-<profile installLocation='/opt/WAS' id='WebSphere Application Server - ND_1'>
-    <data key='eclipseLocation' value='{{ install_base }}/{{ twas_dir }}'/>
+<profile installLocation='{{ install_base }}/{{ twas_dir }}' id='WebSphere Application Server - ND_1'>
+    <data key='eclipseLocation' value='{{ install_base }}/IM'/>
     <data key='cic.selector.nl' value='en'/>
     <data key='user.wasjava' value='java8'/>
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
