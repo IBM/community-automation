@@ -35,7 +35,7 @@
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
   - name:  uninstall twas
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package }}"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
