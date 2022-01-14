@@ -17,7 +17,7 @@
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- IBM HTTP Server for WebSphere Application Server 9.0.5.10 -->
+    <!-- IBM HTTP Server for WebSphere Application Server 8.5.5.x -->
     <offering profile='IBM HTTP Server' id='{{ im_http_package[twas_release] }}'  features='core.feature,arch.64bit'/>
   </install>
   <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ install_base }}/{{ plugin_dir }}'>
@@ -27,7 +27,7 @@
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- Web Server Plug-ins for IBM WebSphere Application Server 9.0.5.10 -->
+    <!-- Web Server Plug-ins for IBM WebSphere Application Server 8.5.5.x -->
     <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature'/>
   </install>
   <profile id='WebSphere Customization Toolbox' installLocation='{{ install_base }}/{{ wct_dir }}'>
@@ -37,7 +37,7 @@
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- WebSphere Customization Toolbox 9.0.5.10 -->
+    <!-- WebSphere Customization Toolbox 8.5.5.x -->
     <offering profile='WebSphere Customization Toolbox' id='{{ im_wct_package[twas_release] }}' features='core.feature,pct'/>
   </install>
   <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>

@@ -20,7 +20,7 @@
 
   - name: copy https_conf template
     template:
-     src: https_conf.j2
+     src: https_conf_{{ twas_release }}.j2
      dest: "https_conf"
 
   - name: check if previous ihs installed
