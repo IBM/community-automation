@@ -31,13 +31,13 @@
   register: islib
 
 - name:  stop any running servers
-   ignore_errors: true
-   shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-   register: stopOutput
-   failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-   with_items:
-   - "{{ wl_server }}"
-   - "{{ cc_server }}"
+  ignore_errors: true
+  shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+  register: stopOutput
+  failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+  with_items:
+  - "{{ wl_server }}"
+  - "{{ cc_server }}"
   when: islib.stat.exists == True
 
 - name:  uninstall liberty / http
