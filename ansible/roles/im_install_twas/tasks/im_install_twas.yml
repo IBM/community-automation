@@ -1,0 +1,85 @@
+---
+### "ansible_architecture": "s390x",
+### "ansible_architecture": "ppc64le",
+### "ansible_architecture": "x86_64",
+### "ansible_architecture": "chrp", --- AIX
+
+- name: Install
+  tags: install 
+  block:
+  - name: check if imcl installed as a prereq
+    stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: copy im_twas.xml template
+    template:
+     src: im_twas.xml.j2
+     dest: "im_twas.xml"
+
+     #  - name:  stop any running servers
+     #    ignore_errors: true
+     #    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+     #    register: stopOutput
+     #    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+     #    with_items:
+     #    - "{{ wl_server }}"
+     #    - "{{ cc_server }}"
+
+   # blindly try fuser ( linux )
+  - name:  blindly try fuser ( linux )
+    ignore_errors: true
+    shell: "fuser -k {{install_base }}/{{ twas_dir }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
+
+  - name:  uninstall twas
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstall twas 
+    debug: 
+     msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Remove previous twas dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ install_base }}/{{ twas_dir }}"
+
+  - name:  generate secureStorageFile.store
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  generate external ibm secureStorageFile.store
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  install twas
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: installOutput
+
+  - name: installOutput
+    debug: 
+     msg: "{{ installOutput.stdout_lines }}"
+
+  - name:  listInstalledPackages
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    register: packageOutput
+  
+  - name: packageOutput
+    debug: 
+     msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Versions
+  tags: version 
+  block:
+  - name: tWAS version
+    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+    register: twasVersionOutput
+
+  - name: twasVersionOutput
+    debug: 
+     msg: "{{ twasVersionOutput.stdout_lines }}"
+

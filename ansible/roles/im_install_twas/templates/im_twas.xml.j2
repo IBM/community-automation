@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-input clean='true'>
+<server>
+ <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ daily_or_test }}/{{ im_driver }}.linux/linux/zipper/repository'/>
+</server>
+<profile installLocation='/opt/WAS' id='WebSphere Application Server - ND_1'>
+<data key='eclipseLocation' value='{{ install_base }}/{{ twas_dir }}'/>
+<data key='cic.selector.nl' value='en'/>
+</profile>
+<install>
+ <offering profile='WebSphere Application Server - ND_1' features='core.feature,thinclient,ejbdeploy,embeddablecontainer,samples,com.ibm.sdk.6_64bit' id='{{ im_twas_package }}' />
+</install>
+<preference value='/opt/IM-shared' name='com.ibm.cic.common.core.preferences.eclipseCache'/>
+<preference value='false' name='offering.service.repositories.areUsed'/>
+<preference name='disableOSPrereqChecking' value='false'/>
+</agent-input>
