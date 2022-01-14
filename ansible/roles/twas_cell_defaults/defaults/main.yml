@@ -1,0 +1,33 @@
+---
+# /opt/WAS/bin/manageprofiles.sh -create -profileName node5 -profilePath "/opt/WAS/profiles/node5" -templatePath "/opt/WAS/profileTemplates/managed" -cellName node5 -nodeName node5 -hostName p10aix033.rtp.raleigh.ibm.com -omitAction
+#
+# /opt/WAS/bin/manageprofiles.sh -create -profileName dmgr -profilePath "/opt/WAS/profiles/dmgr" -templatePath "/opt/WAS/profileTemplates/dmgr" -cellName ndcell -nodeName dmgr -hostName p10aix033.rtp.raleigh.ibm.com -omitAction
+#
+profile_templatePath:
+  managed: '{{ install_base }}/{ twas_dir }}/profileTemplates/managed'
+  dmgr: '{{ install_base }}/{ twas_dir }}/profileTemplates/dmgr'
+
+cellName: 'ndcell'
+nodeName: 'node1'
+
+le_package_extension:
+  chrp: ''
+  ppc64le: '.le'
+  x86_64: ''
+  x86: ''
+  s390x: ''
+im_twas_package:
+  WAS90: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v85'
+im_wct_package:
+  WAS90: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v85'
+im_wct_java_package: 'com.ibm.java.jdk.v8'
+im_plugin_package:
+  WAS90: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v85'
+im_plugin_java_package: 'com.ibm.java.jdk.v8'
+im_http_package:
+  WAS90: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v85'
+im_http_java_package: 'com.ibm.java.jdk.v8'
