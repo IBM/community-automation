@@ -4,8 +4,8 @@
 # /opt/WAS/bin/manageprofiles.sh -create -profileName dmgr -profilePath "/opt/WAS/profiles/dmgr" -templatePath "/opt/WAS/profileTemplates/dmgr" -cellName ndcell -nodeName dmgr -hostName p10aix033.rtp.raleigh.ibm.com -omitAction
 #
 profile_templatePath:
-  managed: '{{ install_base }}/{ twas_dir }}/profileTemplates/managed'
-  dmgr: '{{ install_base }}/{ twas_dir }}/profileTemplates/management'
+  managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
+  dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
 
 cellName: 'ndcell'
 nodeName: 'node1'

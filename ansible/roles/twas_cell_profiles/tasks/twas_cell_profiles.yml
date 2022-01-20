@@ -7,12 +7,6 @@
   register: killOutput
   failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
-- name:  list current profile
-  ignore_errors: true
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -getName -profilePath {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
-  register: listProfile
-  failed_when: ( listProfile.rc not in [ 0, 1, 2, 127 ] )
-
 #[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -listProfiles
 #[dmgr]
 #[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -getName -profilePath /home/nest/was/profiles/dmgr
@@ -25,7 +19,7 @@
 
 - name:  list current profile
   ignore_errors: true
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -getName -profilePath {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
+  shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -getName -profilePath {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
   register: listProfile
   failed_when: ( listProfile.rc not in [ 0, 1, 2 ] )
 
@@ -41,7 +35,7 @@
 - name:  delete current profile
   when: ( listProfile.rc in [ 0 ] )
   ignore_errors: true
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -delete -profileName {{ profile_name }}"
+  shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -delete -profileName {{ profile_name }}"
   register: deleteProfile
   failed_when: ( deleteProfile.rc not in [ 0, 1, 2 ] )
 
@@ -53,7 +47,7 @@
   - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
 
 - name:  create profile
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -create -profileName {{ profile_name }} -profilePath {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -templatePath {{ profile_templatePath[{{ profile_type }}] -cellName {{ cellName }} -nodeName {{ profile_name }} -omitAction"
+  shell: "{{ install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -create -profileName {{ profile_name }} -profilePath {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -templatePath {{ profile_templatePath[profile_type] }} -cellName {{ cellName }} -nodeName {{ profile_name }} -omitAction"
   register: createProfile
   failed_when: ( createProfile.rc not in [ 0, 1, 2 ] )
 
