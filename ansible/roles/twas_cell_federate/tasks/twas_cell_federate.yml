@@ -1,7 +1,7 @@
 ---
 
 - block:
-  when: profile_type == 'dmgr'
+  when: 'profile_type == "dmgr"'
   - name:  start the dmgr
     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager.sh"
     register: startManager
@@ -11,7 +11,7 @@
      msg: "{{ listProfile.stdout_lines }}"
 
 - block:
-  when: profile_type == 'managed'
+  when: 'profile_type == "managed"'
   - name:  addNode
     shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/addNode.sh {{ dmgr_hostname }} -conntype RMI -username {{ twas_username }} -password {{ twas_password }} -profileName {{ profile_name }}"
     register: addNodeOutput
