@@ -24,7 +24,7 @@
       - "tignervnc"
 
    - name: install the workstation group
-     command: "dnf -y groupinstall 'workstation' --skip-broken"
+     command: "dnf -y groupinstall 'Server with GUI'"
      args:
        warn: no
      register: manualdnf
