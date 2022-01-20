@@ -5,7 +5,7 @@
 #
 profile_templatePath:
   managed: '{{ install_base }}/{ twas_dir }}/profileTemplates/managed'
-  dmgr: '{{ install_base }}/{ twas_dir }}/profileTemplates/dmgr'
+  dmgr: '{{ install_base }}/{ twas_dir }}/profileTemplates/management'
 
 cellName: 'ndcell'
 nodeName: 'node1'
