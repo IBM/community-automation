@@ -53,7 +53,7 @@
   - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
 
 - name:  create profile
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -create -profileName {{ profile_name }} -profilePath {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -templatePath {{ profile_templatePath[ {{ profileType }} -cellName {{ cellName }} -nodeName {{ profileName }} -omitAction"
+  shell: "{{install_base }}/{{ twas_dir }}/bin/manageProfiles.sh -create -profileName {{ profile_name }} -profilePath {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -templatePath {{ profile_templatePath[{{ profile_type }}] -cellName {{ cellName }} -nodeName {{ profile_name }} -omitAction"
   register: createProfile
   failed_when: ( createProfile.rc not in [ 0, 1, 2 ] )
 
