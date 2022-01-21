@@ -1,0 +1,57 @@
+"""
+   Copyright IBM Corp. 1996, 2012
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
+"""
+   This script deletes existing unmanaged node, then creates the unmanaged node for the webserver on the dmgr
+"""
+cellname="{{ cellName }}"
+webnode="{{ webNode }}"
+webservername="{{ webServerName }}"
+dmgr_hostname="{{ dmgr_hostname }}"
+os_type="linux"
+webPort="{{ http_port }}"
+webInstallRoot="{{ install_base }}/{{ http_dir }}"
+pluginInstallRoot="{{ install_base }}/{{ plugin_dir }}"
+configurationFile=""
+webAppMapping="ALL"
+adminPort="{{ admin_port }}"
+adminUserID="{{ admin_user }}"
+adminPasswd="{{ admin_pass }}""
+
+execfile('wsadminlib.py')
+
+enableDebugMessages()
+
+# [1/21/22 16:17:37:701 EST] Nodes > Remove Node
+print "--- checking the unmanaged node ---"
+# get a list of all nodes
+nodelist=listNodes()
+if nodelist != '':
+  for nodename in nodelist:
+    print "--- checking  nodename: %s ---" % nodename
+    if nodeIsUnmanaged( nodename ): 
+      print "--- Delete the unmanaged node ---"
+      AdminTask.removeUnmanagedNode('[-nodeName '+ webnode +']')
+
+# [1/21/22 15:49:25:578 EST] Nodes > New...
+print "--- create the unmanaged node ---"
+AdminTask.createUnmanagedNode('[-nodeName '+ webnode +' -hostName '+ dmgr_hostname +' -nodeOperatingSystem '+ os_type +']')
+
+print "--- create the webserver ---"
+createWebserver(webservername, webnode, webPort, webInstallRoot, pluginInstallRoot, configurationFile, webAppMapping, adminPort, adminUserID, adminPasswd)
+
+print "--- save ---"
+AdminConfig.save()
