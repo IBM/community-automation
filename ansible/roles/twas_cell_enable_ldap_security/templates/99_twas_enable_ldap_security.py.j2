@@ -9,13 +9,13 @@ import os
 #
 # bin/wsadmin.sh -lang jython -username user -password pass -f 99_twas_enable_ldap_security.py.j2
 #
-ldapServer = "{{ ldapServer }} | default('yourldap.ldap.example.com', true) }}"
-ldapPort = "{{ ldapPort }} | default('389', true) }}"
-ldapUser = "{{ ldapUser }} | default('youruser', true) }}"
-ldapBaseDN = "{{ ldapBaseDN }} | default('o=ibm,c=us', true) }}"
-ldapServerType = "{{ ldapServerType }} | default('IBM_DIRECTORY_SERVER', true) }}"
-ldapBindDN = "{{ ldapBindDN }} | default('', true) }}"
-ldapBindPassword = "{{ ldapBindPassword }} | default('', true) }}"
+ldapServer = "{{ ldapServer }}"
+ldapPort = "{{ ldapPort }}"
+ldapUser = "{{ ldapUser }}"
+ldapBaseDN = "{{ ldapBaseDN }}"
+ldapServerType = "{{ ldapServerType }}"
+ldapBindDN = "{{ ldapBindDN }}"
+ldapBindPassword = "{{ ldapBindPassword }}"
 
 #---------------------------------------------------------------------
 #  ldap wizard Administration Procedures
