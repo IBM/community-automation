@@ -8,7 +8,8 @@ profile_templatePath:
   dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
 
 cellName: 'ndcell'
-nodeName: 'node1'
+clusterName: 'Cluster'
+serverName: 'Server'
 
 le_package_extension:
   chrp: ''
