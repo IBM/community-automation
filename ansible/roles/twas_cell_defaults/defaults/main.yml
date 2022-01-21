@@ -1,8 +1,8 @@
 ---
-# /opt/WAS/bin/manageprofiles.sh -create -profileName node5 -profilePath "/opt/WAS/profiles/node5" -templatePath "/opt/WAS/profileTemplates/managed" -cellName node5 -nodeName node5 -hostName p10aix033.rtp.raleigh.ibm.com -omitAction
-#
-# /opt/WAS/bin/manageprofiles.sh -create -profileName dmgr -profilePath "/opt/WAS/profiles/dmgr" -templatePath "/opt/WAS/profileTemplates/dmgr" -cellName ndcell -nodeName dmgr -hostName p10aix033.rtp.raleigh.ibm.com -omitAction
-#
+
+install_base: '/home/nest'
+twas_dir: 'was'
+
 profile_templatePath:
   managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
   dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
