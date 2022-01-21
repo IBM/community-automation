@@ -1,0 +1,51 @@
+"""
+   Copyright IBM Corp. 1996, 2012
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
+"""
+   This script deletes all existing clusters, creates a named cluster and a cluster member 
+   on each defined node in the cell
+"""
+cellname="{{ cellName }}"
+clustername="{{ clusterName }}"
+servername="{{ serverName }}""
+
+execfile('wsadminlib.py')
+
+enableDebugMessages()
+
+print "--- Delete all clusters ---"
+deleteAllServerClusters()
+replicationid=AdminConfig.list('DataReplicationDomain', AdminConfig.getid( '/Cell:ndcell/'))
+if replicationid != '':
+  # [1/21/22 13:57:38:392 EST] Replication domains
+  AdminConfig.remove(replicationid)
+
+AdminConfig.save()
+
+print "--- Create cluster: %s ---" % clustername
+clusterid=createCluster( cellname, clustername, True )
+print "--- ClusterID: %s ---" % clusterid
+
+# get a list of all nodes
+nodelist=listAppServerNodes()
+print "--- nodelist: %s ---" % nodelist
+if nodelist != '':
+  for nodename in nodelist:
+    print "--- nodename: %s ---" % nodename
+    createServerInCluster( clustername, nodename, servername, True )
+
+AdminConfig.save()
+
