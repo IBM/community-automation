@@ -1,0 +1,12 @@
+---
+
+- name: dmgr
+  when: profile_type == 'dmgr'
+  block:
+   - name: stop the dmgr
+     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
+     register: stopManagerOutput
+     failed_when: ( stopManagerOutput.rc not in [ 0, 255 ] )
+   - name: stopManagerOutput
+     debug:
+      msg: "{{ stopManagerOutput.stdout_lines }}"

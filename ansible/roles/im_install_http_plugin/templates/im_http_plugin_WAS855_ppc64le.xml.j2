@@ -1,0 +1,44 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<agent-input>
+  <variables>
+   <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
+  </variables>
+  <server>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ daily_or_test }}/{{ im_driver }}.linux/linux/zipper/repository/'/>
+  </server>
+  <profile id='IBM HTTP Server' installLocation='{{ install_base }}/{{ http_dir }}'>
+    <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
+    <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>	  
+    <data key='user.wasjava' value='java8'/>
+    <data key='user.ihs.allowNonRootSilentInstall' value='false'/>
+    <data key='user.ihs.http.server.service.name' value='none'/>
+    <data key='user.ihs.httpPort' value='8180'/>
+    <data key='user.ihs.installHttpService' value='false'/>
+    <data key='user.internal.use.only.prev.wasjava' value='java8'/>
+  </profile>
+  <install>
+    <!-- IBM HTTP Server for WebSphere Application Server 9.0.5.10 -->
+    <offering profile='IBM HTTP Server' id='{{ im_http_package[twas_release] }}'  features='core.feature,arch.64bit'/>
+  </install>
+  <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ install_base }}/{{ plugin_dir }}'>
+    <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
+    <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
+    <data key='user.wasjava' value='java8'/>
+    <data key='user.internal.use.only.prev.wasjava' value='java8'/>
+  </profile>
+  <install>
+    <!-- Web Server Plug-ins for IBM WebSphere Application Server 9.0.5.10 -->
+    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature'/>
+  </install>
+  <profile id='WebSphere Customization Toolbox' installLocation='{{ install_base }}/{{ wct_dir }}'>
+    <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
+    <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
+    <data key='user.wasjava' value='java8'/>
+    <data key='user.internal.use.only.prev.wasjava' value='java8'/>
+  </profile>
+  <install>
+    <!-- WebSphere Customization Toolbox 9.0.5.10 -->
+    <offering profile='WebSphere Customization Toolbox' id='{{ im_wct_package[twas_release] }}' features='core.feature,pct'/>
+  </install>
+  <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
+</agent-input>

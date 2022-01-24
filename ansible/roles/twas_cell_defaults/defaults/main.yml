@@ -1,0 +1,34 @@
+---
+
+install_base: '/home/nest'
+twas_dir: 'was'
+
+profile_templatePath:
+  managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
+  dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
+
+cellName: 'ndcell'
+clusterName: 'Cluster'
+serverName: 'Server'
+
+le_package_extension:
+  chrp: ''
+  ppc64le: '.le'
+  x86_64: ''
+  x86: ''
+  s390x: ''
+im_twas_package:
+  WAS90: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v85'
+im_wct_package:
+  WAS90: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v85'
+im_wct_java_package: 'com.ibm.java.jdk.v8'
+im_plugin_package:
+  WAS90: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v85'
+im_plugin_java_package: 'com.ibm.java.jdk.v8'
+im_http_package:
+  WAS90: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v90'
+  WAS855: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v85'
+im_http_java_package: 'com.ibm.java.jdk.v8'

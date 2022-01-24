@@ -1,0 +1,59 @@
+import sys
+import os
+
+#-----------------------------------------------------------------
+# WARNING: Jython/Python is extremely sensitive to indentation
+# errors. Please ensure that tabs are configured appropriately
+# for your editor of choice.
+#-----------------------------------------------------------------
+#
+# bin/wsadmin.sh -lang jython -username user -password pass -f 99_twas_enable_ldap_security.py.j2
+#
+ldapServer = "{{ ldapServer }}"
+ldapPort = "{{ ldapPort }}"
+ldapUser = "{{ ldapUser }}"
+ldapBaseDN = "{{ ldapBaseDN }}"
+ldapServerType = "{{ ldapServerType }}"
+ldapBindDN = "{{ ldapBindDN }}"
+ldapBindPassword = "{{ ldapBindPassword }}"
+
+#---------------------------------------------------------------------
+#  ldap wizard Administration Procedures
+#---------------------------------------------------------------------
+
+def enableGlobalSecurityWithLDAP():
+    print "enable Global security ..."
+    # [10/19/21 22:03:01:948 UTC] Global security > Standalone LDAP registry > Advanced Lightweight Directory Access Protocol (LDAP) user registry settings
+    # attempted to setup CUSTOM user / group filter for bitnami openldap
+    # the wizard fails with no user filter
+    #
+    #AdminTask.configureAdminLDAPUserRegistry('[-userFilter (&(cn=%v)(objectclass=person)(objectclass=inetOrgPerson)) -groupFilter (&(cn=%v)(|(objectclass=group)(objectclass=groupofnames)(objectclass=groupofuniquenames))) -userIdMap *:uid -groupIdMap *:cn -groupMemberIdMap ibm-allGroups:member;ibm-allGroups:uniqueMember;groupOfNames:member;groupOfUniqueNames:uniqueMember -certificateFilter  -certificateMapMode EXACT_DN -krbUserFilter (&(krbPrincipalName=%v)(objectclass=ePerson)) -customProperties ["com.ibm.websphere.security.ldap.recursiveSearch="] -verifyRegistry false ]') 
+
+    AdminTask.applyWizardSettings('[-secureApps true -secureLocalResources false -userRegistryType LDAPUserRegistry -ldapServerType '+ldapServerType+' -ldapHostName '+ldapServer+' -ldapPort '+ldapPort+' -ldapBaseDN '+ldapBaseDN+' -ldapBindDN '+ldapBindDN+' -ldapBindPassword '+ldapBindPassword+' -adminName '+ldapUser+' ]')
+    print "Saving..."
+    AdminConfig.save()
+    
+#endDef 
+
+
+print ""
+print "------------------------------------------------"
+print " tWAS StandAlone ldap Configuration Script"
+print ""
+print " ldapServer:		",ldapServer
+print " ldapPort:		",ldapPort
+print " ldapUser:		",ldapUser
+print " ldapBaseDN:		",ldapBaseDN
+print " ldapServerType:		",ldapServerType
+print " ldapBindDN:		",ldapBindDN
+print " ldapBindPassword:	",ldapBindPassword
+print "------------------------------------------------"
+
+#---------------------------------------------------------------------
+# procedures
+#---------------------------------------------------------------------
+
+enableGlobalSecurityWithLDAP()
+
+
+

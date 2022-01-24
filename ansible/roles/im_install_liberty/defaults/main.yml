@@ -2,7 +2,7 @@
 im_driver: 'cl211120211019-1900.52.linux'
 install_base: '/home/nest'
 liberty_dir: 'wlp'
-shared_dir: '/IBM/IMShared'
+shared_dir: 'IM-shared'
 wl_server: 'server'
 cc_server: 'cc'
 gsa_user: 'gsauser'

@@ -1,5 +1,5 @@
 ---
 dependencies:
-  - role: ibm_installation_manager_cic_selector
   - role: twas_cell_defaults
   - role: http_defaults
+  - role: ibm_installation_manager_cic_selector

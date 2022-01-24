@@ -13,42 +13,42 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: copy im_liberty.xml.xml template
+  - name: copy im_twas.xml template
     template:
-     src: im_liberty.xml.j2
-     dest: "im_liberty.xml"
+     src: im_twas.xml.j2
+     dest: "im_twas.xml"
 
-  - name:  stop any running servers
-    ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-    register: stopOutput
-    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-    with_items:
-    - "{{ wl_server }}"
-    - "{{ cc_server }}"
+     #  - name:  stop any running servers
+     #    ignore_errors: true
+     #    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+     #    register: stopOutput
+     #    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+     #    with_items:
+     #    - "{{ wl_server }}"
+     #    - "{{ cc_server }}"
 
    # blindly try fuser ( linux )
   - name:  blindly try fuser ( linux )
     ignore_errors: true
-    shell: "fuser -k {{install_base }}/{{ liberty_dir }}"
+    shell: "fuser -k {{install_base }}/{{ twas_dir }}"
     register: killOutput
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
-  - name:  uninstall liberty and java
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
+  - name:  uninstall twas
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
-  - name: uninstall liberty and java output
+  - name: uninstall twas 
     debug: 
      msg: "{{ uninstallOutput.stdout_lines }}"
 
-  - name: Remove previous liberty dir
+  - name: Remove previous twas dir
     file:
       path: "{{ item }}"
       state: absent
     with_items:
-    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ install_base }}/{{ twas_dir }}"
 
   - name:  generate secureStorageFile.store
     shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
@@ -56,8 +56,8 @@
   - name:  generate external ibm secureStorageFile.store
     shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
-  - name:  install liberty
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+  - name:  install twas
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: installOutput
@@ -75,11 +75,11 @@
 - name: Versions
   tags: version 
   block:
-  - name: Liberty version
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server version" 
-    register: libertyVersionOutput
+  - name: tWAS version
+    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+    register: twasVersionOutput
 
-  - name: libertyVersionOutput
+  - name: twasVersionOutput
     debug: 
-     msg: "{{ libertyVersionOutput.stdout_lines }}"
+     msg: "{{ twasVersionOutput.stdout_lines }}"
 

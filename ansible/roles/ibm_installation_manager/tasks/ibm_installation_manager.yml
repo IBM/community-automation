@@ -6,57 +6,61 @@
 
 - name: check if imcl installed as a prereq
   stat:
-    path: "{{ install_base }}/IBM/InstallationManager/eclipse/tools/imcl"
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
   changed_when: false
   failed_when: false
 
 - set_fact:
-   archive_name_match: 'agent.installer.linux.gtk.x86_64_{{ im_driver }}.zip'
+   archive_name_match: 'agent.installer.linux.gtk.x86_64_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'x86_64'
   - ansible_system == 'Linux'
 - set_fact:
-    archive_name_match: 'agent.installer.linux.gtk.ppc64le_{{ im_driver }}.zip'
+    archive_name_match: 'agent.installer.linux.gtk.ppc64le_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'ppc64le'
   - ansible_system == 'Linux'
 - set_fact:
-    archive_name_match: 'agent.installer.win32.win32.x86_64_{{ im_driver }}.zip'
+    archive_name_match: 'agent.installer.win32.win32.x86_64_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'x86_64'
   - ansible_system == 'Windows'
 - set_fact:
-    archive_name_match: 'agent.installer.linux.gtk.s390x_{{ im_driver }}.zip'
+    archive_name_match: 'agent.installer.linux.gtk.s390x_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 's390x'
   - ansible_system == 'Linux'
 - set_fact:
-    archive_name_match: 'agent.installer.aix.gtk.ppc_{{ im_driver }}.zip'
+    archive_name_match: 'agent.installer.aix.gtk.ppc_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'chrp'
 
 - name: temp im install dir
   file:
-   path: ~/im_install
+   path: "{{ install_base }}/im_install"
    state: directory
+- name: copy ibm_im_responsefile.xml template
+  template:
+   src: ibm_im_responsefile.xml.j2
+   dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
 - name: get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: ~/im_install/im.zip
+   dest: "{{ install_base }}/im_install/im.zip"
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
 
 - name: unarchive im.zip
   unarchive:
-   src: ~/im_install/im.zip
-   dest: '~/im_install'
+   src: "{{ install_base }}/im_install/im.zip"
+   dest: "{{ install_base }}/im_install"
    remote_src: True
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
-- name: ./userinstc -acceptLicense
-  shell: './userinstc -acceptLicense'
+- name: ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
+  shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
   args:
     chdir: '{{ install_base }}/im_install'
   register: userinstcOutput

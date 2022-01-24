@@ -1,0 +1,12 @@
+---
+
+- name: addnode
+  when: profile_type == 'managed'
+  block:
+   - name: addNode
+     shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/addNode.sh {{ dmgr_hostname }} -conntype SOAP -username {{ twas_username }} -password {{ twas_password }} -profileName {{ profile_name }}"
+     register: addNodeOutput
+     failed_when: ( addNodeOutput.rc not in [ 0, 1, 2 ] )
+   - name: addNodeOutput
+     debug:
+      msg: "{{ addNodeOutput.stdout_lines }}"
