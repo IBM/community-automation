@@ -12,7 +12,7 @@ docker_install="false"
 
 if [ $ansible_installed == false ]; then
 # check rhel 8 and update/install
-[[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && rhel8_support $@ || true
+[[ -f /etc/redhat-release ]] && [[ $(grep '8.' /etc/redhat-release) ]] && { . ./rhel8-functions.sh; rhel8_support $@; } || true
 
 ubuntu_release=$(grep VERSION= /etc/os-release | cut -d\" -f2 | cut -d. -f1)
 
