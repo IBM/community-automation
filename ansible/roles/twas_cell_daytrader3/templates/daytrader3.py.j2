@@ -453,7 +453,7 @@ if (operation == "all" or operation == "install"):
 	parms +=  ",cluster="
 	parms += DefaultClusterName
 	parms += "+WebSphere:cell="
-	parms += getNameFromIdFromId(getCellId())
+	parms += getNameFromId(getCellId())
 	parms += ",node={{ webNode }},server={{ webServerName }}]"
 	parms += " ]]"
 	print ("AdminApp.edit Manage Modules parms="+parms)
