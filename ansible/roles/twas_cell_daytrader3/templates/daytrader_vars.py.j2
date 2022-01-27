@@ -1,0 +1,45 @@
+#-----------------------------------------------------------------
+# WARNING: Jython/Python is extremely sensitive to indentation
+# errors. Please ensure that tabs are configured appropriately
+# for your editor of choice.
+#-----------------------------------------------------------------
+#-----------------------------------------------------------------
+# daytrader_vars.py - custom daytrader options that override options set in daytrader_cluster_splittier.py
+#-----------------------------------------------------------------
+#
+# NOTE: edit daytrader_vars.py for custom settings
+#       if any of the defaults in this script need changing, move to the daytrader_vars.py
+#
+# 2014-06-19 schader@us.ibm.com - renamed the source daytrader_vars..py to daytrader_vars.py.TEMPLATE such it will not override local content
+# 2014-04-23 schader@us.ibm.com - created a new input file daytrader_vars.py where overrides can be placed
+# Security options
+# Note: If global security is enabled or will be enabled at some point and
+#   time, the AdminAuthAlias should be updated with a valid administrative
+#   userid and password. In single-server configurations, this can be provided
+#   by role-based auth (default), local OS auth, LDAP, etc. For cluster 
+#   configurations, LDAP, Windows Active Directory or some other form of 
+#   centralized authentication mechanism must be used to validate the userid.
+SecurityEnabled="true"
+DefaultAdminUser="{{ twas_username }}"
+DefaultAdminPasswd="{{ twas_password }}"
+
+# Datasource options
+# Note: For Oracle, default port is 1521. For DB2, 50000.
+### var substituion from some vars above
+DefaultDBscope="cell"
+DefaultProviderType="DB2 Using IBM JCC Driver"
+DefaultDatabaseName="{{ db_name }}"
+DefaultMEDatabaseName="{{ db_name }}"
+MEStore="DB"
+DefaultHostname="{{ db_host }}"
+DefaultPort="{{ db_port }}"
+DefaultUser="{{ db_user }}"
+DefaultPasswd="{{ db_pass }}"
+defaultWebServerHostPort="{{ http_port }}"
+defaultWebServerHostPortS="{{ https_port }}"
+DefaultClusterName="{{ clusterName }}"
+
+
+DefaultEarFile = "{{ DefaultEarFile }}"
+DefaultTradeAppName = "{{ DefaultAppName }}"
+# END

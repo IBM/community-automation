@@ -1,0 +1,786 @@
+#--------------------------------------------------------------------
+# WebSphere Tuning Script for DayTrader
+#--------------------------------------------------------------------
+#
+# This script is designed to modify some of the most common
+# WebSphere configuration parameters and tuning knobs.
+# In order to tune the config parameters, simply change the values
+# provided below. This script assumes that all server names in a
+# cluster configuration are unique.
+#
+# To invoke the script, type:
+#   wsadmin -f tuneDayTrader.py <scope> <id>
+#      scope      - 'cluster' or 'server'
+#      id         - name of target object within scope (ie. servername)
+#
+# Examples:
+#   wsadmin -f tuneDayTrader.py server server1
+#
+#   wsadmin -f tuneDayTrader.py cluster TradeCluster
+#   wsadmin -f tuneDayTrader.py cluster DT20EJBCluster DT20WebCluster
+#
+#
+# 2015-09-02 schader@us.ibm.com added user2/persona1/persona2 as console admins
+# 2013-04-03 schader@us.ibm.com checked changes in CMVC defect: 746707
+# 2013-03-18 schader@us.ibm.com added split-tier cluster tuning RTC Task: 96728
+# 2013-04-01 schader@us.ibm.com added proxy section 
+#--------------------------------------------------------------------
+
+AdminConfig.setValidationLevel("NONE" )
+from sys import registry
+import string
+
+print "Starting script..."
+print "Reading config parameters..."
+
+#--------------------------------------------------------------------
+# COMMON CONFIG PARAMETERS
+# - Adjust these parameters based on the intended target system
+#--------------------------------------------------------------------
+
+# ORB properties (false)
+noLocalCopies = "true"
+
+# ORB Thread Pool Manager ( recommended) - For split-tier configurations
+# WAS80 default 10
+minOrbPoolTManager = 100
+# WAS80 default 50
+maxOrbPoolTManager = 200
+# WAS80 default = false
+enableOrbPoolTManager = "true"
+
+# ORB Thread Pool (10,50) - For split-tier configurations
+# WAS80 not recommeded but default
+minOrbPool = 10
+maxOrbPool = 50
+
+# WebContainer Thread Pool (false, 10,50)
+enableServletCache = "false"
+minWebPool = 50
+# rns change to 150
+maxWebPool = 300
+
+# Proxy Server settings
+# ThreadPool: WebContainer defaults ( 10, 50 )
+proxyMinWebContainerPool = 50
+proxyMaxWebContainerPool = 200
+# ThreadPool: Proxy defaults ( 5, 20 )
+proxyMinProxyPool = 5
+proxyMaxProxyPool = 20
+# ThreadPool: Default defaults ( 5, 20 )
+proxyMinDefaultPool = 5
+proxyMaxDefaultPool = 20
+# default: False
+threadPoolGrowable="True"
+
+proxyMinHeap = 50
+proxyMaxHeap = 1024
+proxyVerboseGC = "true"
+# proxy enable access logging ( default="true")
+proxyenableLogging="false"
+
+# Default Thread Pool (5,20)
+minDefaultPool = 99
+maxDefaultPool = 199
+
+# HTTP KeepAlive settings (true, 100)
+keepAliveEnabled = "true"
+maxPersistentRequests = -1
+
+# wimConfig timeouts seconds
+# not enabled by default
+wimPoolTimeOut = "180"
+# WAS default=20 seconds
+wimConnectTimeout = "30"
+
+# JVM properties
+# Note: OS specific changes to the heap size settings are located
+#  in the next section -> "Base OS Specific JVM settings". Changes
+#  to the generic JVM arguments are handled below.
+dmgr_minHeap=50
+dmgr_maxHeap=1024
+minHeap = 128
+maxHeap = 1024
+verboseGC = "true"
+genericArgs = ""
+#envJDKArgs = ["TR_Options","verbose,vlog=was_8552_jitedmethods.log"]
+envJDKArgs = []
+
+# OS Specific JVM options - ensure to put a space in front
+IBMJDKoptions = "-Xverbosegclog:logs/${WAS_SERVER_NAME}/verbosegc.log,500,60000"
+#  Commented options are problematic on Solaris 11
+#SUNJDKoptions = "-XX:+UseTLAB -Xnoclassgc -XX:MaxPermSize=64m -Xmn256m -XX:SurvivorRatio=16"
+# This option recommended on java 6 by WAS
+SUNJDKoptions = "-XX:PermSize=128m -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintHeapAtGC"
+HPJDKoptions = "-Xmn512m -XX:PermSize=80m -XX:+ForceMmapReserved -XX:SurvivorRatio=16 -Xoptgc -XX:+UseParallelGC -Djava.nio.channels.spi.SelectorProvider=sun.nio.ch.DevPollSelectorProvider -XX:-ExtraPollBeforeRead -XX:+UseSpinning"
+#ISeriesJDKoptions = "-Djava.compiler=jitc"
+ISeriesJDKoptions = "-Xverbosegclog:logs/${WAS_SERVER_NAME}/verbosegc.log,500,60000"
+
+# SystemOut and SystemErr log rollover type (default SIZE) TIME/SIZE/NONE/BOTH
+#rollover = "NONE"
+rollover = "SIZE"
+
+# TraceService settings {"*=all=disabled",20,1}
+#traceSpec = "*=all=disabled"
+traceSpec = "*=info"
+traceRolloverSize = 100
+maxFiles = 30
+
+# Java2 Security (false for 5.1 and true for 6.0)
+j2Security = "false"
+
+# PMI service
+PMIstatus = "true"
+
+# TradeDataSource config properies (10, 1,10)
+statementCache = 60
+minTradeDSPool = maxWebPool + maxDefaultPool
+maxTradeDSPool = maxWebPool + maxDefaultPool
+
+# TradeBrokerQCF config properties (1,10)
+minBrokerPool = 1
+maxBrokerPool = maxDefaultPool
+
+# TradeStreamerTCF config properties (1,10)
+minStreamerPool = 1
+maxStreamerPool = maxDefaultPool
+
+# Uninstall default applications
+# Possibly uninstall applications - DefaultApplication, ivtApp
+uninstallApps = "true"
+uninstallList = ["ivtApp", "DefaultApplication", "query"]
+
+#---------------------------------------------------------------------
+# Base OS Specific JVM settings
+#---------------------------------------------------------------------
+
+os = registry.getProperty("os.name")
+
+if (os.find("Windows") > -1):
+        genericArgs = genericArgs + IBMJDKoptions
+elif (os.find("AIX") > -1):
+        genericArgs = genericArgs + IBMJDKoptions
+elif (os.find("Linux") > -1):
+        genericArgs = genericArgs + IBMJDKoptions
+elif (os.find("SunOS") > -1):
+        genericArgs = genericArgs + SUNJDKoptions
+elif (os.find("HP-UX") > -1):
+        genericArgs = genericArgs + HPJDKoptions
+elif (os.find("z/OS") > -1):
+        genericArgs = genericArgs + IBMJDKoptions
+        minHeap = 768
+        maxHeap = 768
+elif (os.find("OS/400") > -1):
+        genericArgs = genericArgs + ISeriesJDKoptions
+        #maxHeap = 0
+#endIf
+
+
+#---------------------------------------------
+# Check/Print Usage
+#---------------------------------------------
+
+def printUsageAndExit (  ):
+        print " "
+        print "Usage: wsadmin -f tuneTrade.jacl server <server_name>"
+        print "or:"
+        print "Usage: wsadmin -f tuneTrade.jacl cluster <single_cluster_name>"
+        print "or split-tier:"
+        print "Usage: wsadmin -f tuneTrade.jacl cluster <ejb_cluster_name> <web_cluster_name>"
+        sys.exit()
+#endDef 
+
+#---------------------------------------------
+# Misc Procedures
+#---------------------------------------------
+
+def getName (objectId):
+        endIndex = (objectId.find("(c") - 1)
+        stIndex = 0
+        if (objectId.find("\"") == 0):
+                stIndex = 1
+        #endIf
+        return objectId[stIndex:endIndex+1]
+#endDef
+
+#---------------------------------------------
+# Parse command line arguments
+#---------------------------------------------
+
+print "Parsing command line arguments..."
+
+clusterNamesList = []
+if (len(sys.argv) < 2):
+        printUsageAndExit( )
+else:
+        scope = sys.argv[0]
+        print "Scope:   "+`scope`
+        if (scope == "cluster"):
+                clusterNamesList.append(sys.argv[1])
+               	print "Cluster: "+clusterNamesList[0]
+                if ( len(sys.argv) == 3 ):
+                	clusterNamesList.append(sys.argv[2])
+               		print "Cluster: "+clusterNamesList[1]
+        elif (scope == "server"):
+                servername = sys.argv[1]
+                print "Server:  "+servername
+        else:
+                print "Error: Invalid Argument ("+scope+")"
+                printUsageAndExit( )
+        #endElse 
+#endElse 
+
+#---------------------------------------------
+# Obtain LDAP / WIM setup info to see if we need to update some timeouts
+# schader@us.ibm.com - I am very novice at these wsadmin commands.  There is prob a better way to get the information dynamically
+#---------------------------------------------
+
+print ""
+print "Obtaining security info...."
+
+activeSecuritySettings=AdminTask.getActiveSecuritySettings()
+
+wimReg=activeSecuritySettings.find("WIMUserRegistry")
+if ( wimReg > 0 ):
+	print "WIMTUNE: Using Wimconfig Federated repos.  Tuning"
+	repoList = []
+	repoList = AdminTask.listIdMgrRepositories()
+	# not sure how to do this easily.  Find the first LDAP entry, then use the host= to find the hostname and use the first part of the DNS name as the ID
+	for repoMember in repoList[1:-1].split("},"):
+		if ( repoMember.find("LDAP") > -1 ):
+			wimName = ""
+			print "WIMTUNE: Found an LDAP Server:"+repoMember
+			for findWimHostName in repoMember.split("={"):
+                                if ( wimName == "" ):
+                                   wimName = findWimHostName
+				for wimHostName in findWimHostName.split(","):
+				   if ( wimHostName.find("host") > -1 ):
+						for foundWimHostName in  wimHostName.split("="):
+						   if ( foundWimHostName.find("host") < 0 ):
+   						      finalHostName = foundWimHostName.replace( "}","")
+   						      print "WIMTUNE tuning: "+wimName+" hostname:"+finalHostName
+						      # enable the connectionPool
+						      AdminTask.updateIdMgrLDAPServer("[-id "+wimName+" -host "+finalHostName+" -connectionPool true -connectTimeout "+wimConnectTimeout+"]")
+						      # update the poolTimeout
+						      AdminTask.setIdMgrLDAPContextPool("[-id "+wimName+" -enabled true -initPoolSize 1 -maxPoolSize 0 -prefPoolSize 3 -poolTimeOut "+wimPoolTimeOut+"]")
+						      # these are available updates, defualts for V8
+						      #AdminTask.setIdMgrLDAPAttrCache("[-id "+wimName+" -enabled true -cacheSize 4000 -cacheDistPolicy none -cacheTimeOut 1200]")
+						      #AdminTask.setIdMgrLDAPSearchResultCache("[-id "+wimName+" -enabled true -cacheSize 2000 -cacheDistPolicy none -cacheTimeOut 600]")
+						      break
+						   #endIf
+						#endFor
+					#endFor
+				#endIf					
+			#endFor
+		#endIf
+	#endFor
+	
+#endIf
+
+#---------------------------------------------
+# Obtain server list
+#---------------------------------------------
+
+print ""
+print "Obtaining server list..."
+
+serverList = []
+if (scope == "cluster"):
+        for clusterName in clusterNamesList:
+        	cluster = AdminConfig.getid("/ServerCluster:"+clusterName+"/" )
+		#print "SRS: cluster="+cluster
+        	memberList = AdminConfig.showAttribute(cluster, "members" )
+        	for member in memberList[1:-1].split(" "):
+                	#print "SRS: member="+member
+                	member = member.rstrip()
+                	memberName = getName(member )
+                	#print "SRS: memberName="+memberName
+                	serverList.append(AdminConfig.getid("/Server:"+memberName+"/" ))
+        	#endFor 
+        #endFor 
+else:
+        server = AdminConfig.getid("/Server:"+servername+"/" )
+        serverList.append(server)
+#endElse 
+
+#---------------------------------------------
+# Obtain server list for log update
+#---------------------------------------------
+
+print ""
+print "Obtaining server log list..."
+
+serverLogList = []
+proxyServerList = []
+SVRList=AdminConfig.list('Server').split(lineSeparator)
+for server in SVRList: 
+      serverType=AdminConfig.showAttribute(server, "serverType")
+      #print "SRS: serverName:" + server+" serverType:"+serverType
+      if ( serverType == "PROXY_SERVER" ):
+         proxyServerList.append(server)
+      if ( serverType == "DEPLOYMENT_MANAGER" ):
+         dmgrServer=server
+      serverLogList.append(server)
+#endFor
+
+#---------------------------------------------
+# Print config properties
+#---------------------------------------------
+
+print ""
+print "WebSphere configuration"
+print "-----------------------"
+print ""
+print "   Enforce Java2 Security:      "+j2Security+" "
+print ""
+
+print "Servers:"
+for server in serverList:
+        print "   " + getName(server)
+#endFor 
+print ""
+print " EJB/ORB ----------------------------------------"
+print "   NoLocalCopies:               "+noLocalCopies
+print "   Min ORB Pool Size:           "+str(minOrbPool)
+print "   Max ORB Pool Size:           "+str(maxOrbPool)
+print " Web --------------------------------------------"
+print "   Enable Servlet Cache:        "+enableServletCache
+print "   Min WebContainer Pool Size:  "+str(minWebPool)
+print "   Max WebContainer Pool Size:  "+str(maxWebPool)
+print " Default (JMS) Thread Pool ----------------------"
+print "   Min Default Pool Size:       "+str(minDefaultPool)
+print "   Max Default Pool Size:       "+str(maxDefaultPool)
+print " HTTP Inbound Channel ---------------------------"
+print "   Keepalives Enabled:          "+keepAliveEnabled
+print "   Maximum Persistent Requests: "+str(maxPersistentRequests)
+print " JVM --------------------------------------------"
+print "   Min JVM Heap Size:           "+str(minHeap)
+print "   Max JVM Heap Size:           "+str(maxHeap)
+print "   Verbose GC:                  "+verboseGC
+print "   Generic JVM Arguments:  "
+print "      "+genericArgs
+print " Logging ----------------------------------------"
+print "   System Log Rollover Type:    "+rollover
+print "   Trace Specification:         "+traceSpec
+print "   Rollover Size:               "+str(traceRolloverSize)
+print "   Max Backup Files:            "+str(maxFiles)
+print " Misc -------------------------------------------"
+print "   Enable PMI Service:          "+PMIstatus
+print ""
+print "   Uninstall default apps:      "+uninstallApps
+print ""
+print " TradeDataSource Config -------------------------"
+print "   Statement Cache Size:        "+str(statementCache)
+print "   Min Connection Pool Size:    "+str(minTradeDSPool)
+print "   Max Connection Pool Size:    "+str(maxTradeDSPool)
+print " TradeBrokerQCF Config --------------------------"
+print "   Min Connection Pool Size:    "+str(minBrokerPool)
+print "   Max Connection Pool Size:    "+str(maxBrokerPool)
+print " TradeStreamerTCF Config --------------------------"
+print "   Min Connection Pool Size:    "+str(minStreamerPool)
+print "   Max Connection Pool Size:    "+str(maxStreamerPool)
+print ""
+
+#---------------------------------------------
+# Modify cell parameters
+#---------------------------------------------
+
+# Accessing cell based security config
+print "Accessing security configuration..."
+sec = AdminConfig.list("Security" )
+attrs = [["enforceJava2Security", j2Security]]
+print "Updating security..."
+AdminConfig.modify(sec, attrs )
+
+
+#---------------------------------------------
+# Modify server log parameters
+# New function setting all the servers ( dmgr/nodeagents/servers ) log settings
+# schader@us.ibm.com
+#---------------------------------------------
+for server in serverLogList:
+        servername = getName(server )
+        print ""
+        print "Server: "+servername+" ================================================================================================"
+        print ""
+        # Accessing System log file config
+        # Modified by Robert rns
+        print "Accessing Server log file configuration..."
+        logList = AdminConfig.list("StreamRedirect", server )
+        # need to check here incase generic / web  server
+        if (logList):
+          for log in logList.split("\n"):
+              log = log.rstrip()
+              print AdminConfig.showAttribute(log,"fileName")+" Rollover Type    (old/new):  "+AdminConfig.showAttribute(log,"rolloverType")+"/"+rollover
+
+              print AdminConfig.showAttribute(log,"fileName")+" Rollover Size    (old/new):  "+AdminConfig.showAttribute(log,"rolloverSize")+"/"+str(traceRolloverSize)
+
+              print AdminConfig.showAttribute(log,"fileName")+" Rollover Backups (old/new):  "+AdminConfig.showAttribute(log,"maxNumberOfBackupFiles")+"/"+str(maxFiles)
+              attrs = [["rolloverType", rollover], ["rolloverSize", traceRolloverSize], ["maxNumberOfBackupFiles", maxFiles] ]
+              print "Updating JVM logs..."
+              print " "
+              AdminConfig.modify(log, attrs )
+          #endFor 
+
+          # Accessing Trace Service config
+          print "Accessing Trace Service configuration..."
+          traceService = AdminConfig.list("TraceService", server )
+          traceLog = AdminConfig.showAttribute(traceService, "traceLog" )
+          print "Trace Spec (old/new):          "+AdminConfig.showAttribute(traceService, "startupTraceSpecification")+"/"+traceSpec
+          print "Rollover File Size (old/new):  "+AdminConfig.showAttribute(traceLog, "rolloverSize")+"/"+str(traceRolloverSize)
+          print "Max Backup Files (old/new):    "+AdminConfig.showAttribute(traceLog, "maxNumberOfBackupFiles")+"/"+str(maxFiles)
+          attrs = [["startupTraceSpecification", traceSpec]]
+          attrs2 = [["rolloverSize", traceRolloverSize], ["maxNumberOfBackupFiles", maxFiles]]
+          print "Updating Trace Service..."
+          print " "
+          AdminConfig.modify(traceService, attrs )
+          AdminConfig.modify(traceLog, attrs2 )
+          #endIf 
+#endFor 
+
+
+#---------------------------------------------
+# Modify proxySserver log / jvm parameters
+# New function setting all the proxy servers 
+# schader@us.ibm.com
+#---------------------------------------------
+for server in proxyServerList:
+        servername = getName(server )
+        print ""
+        print "Proxy Server: "+servername+" ================================================================================================"
+        print ""
+        # Accessing System log file config
+        # Modified by Robert rns
+
+        # Accessing JVM config
+        print "Proxy Accessing JVM configuration..."
+        jvm = AdminConfig.list("JavaVirtualMachine", server )
+        print "Initial Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "initialHeapSize")+"/"+str(proxyMinHeap)
+        print "Maximum Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "maximumHeapSize")+"/"+str(proxyMaxHeap)
+        print "VerboseGC Enabled (old/new):  "+AdminConfig.showAttribute(jvm, "verboseModeGarbageCollection")+"/"+proxyVerboseGC
+        print "Generic Arguments (old/new):  "+AdminConfig.showAttribute(jvm, "genericJvmArguments")+"/"+genericArgs
+        attrs = [["initialHeapSize", proxyMinHeap], ["maximumHeapSize", proxyMaxHeap], ["verboseModeGarbageCollection", proxyVerboseGC], ["genericJvmArguments", genericArgs]]
+        print "1-Updating JVM..."
+        print " "
+        AdminConfig.modify(jvm, attrs )
+        
+        print "set JVM custom property IBM_HEAPDUMP=true"
+        attrs2='[[systemProperties [[[name IBM_HEAPDUMP][required false][value true]]] ]]'
+        AdminConfig.modify(jvm,attrs2)
+
+        print "set JVM custom property IBM_HEAPDUMP_OUTOFMEMORY=true"
+        attrs2='[[systemProperties [[[name IBM_HEAPDUMP_OUTOFMEMORY][required false][value true]]] ]]'
+        AdminConfig.modify(jvm,attrs2)
+
+        if ( len(envJDKArgs) > 0 ):
+           print "JVMID=%s" % str(jvm)
+           print "set JVM ENV property %s = %s " % (envJDKArgs[0],envJDKArgs[1])
+           attrs3 = [['validationExpression', ''], ['name', envJDKArgs[0]], ['value', envJDKArgs[1]], ['required', 'false'], ['description', '']]
+           AdminConfig.create('Property', jvm,attrs3)
+           print "Created JVM Property..."
+        #endif
+
+
+        tpList = AdminConfig.list("ThreadPool", server )
+        webPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "WebContainer"):
+                webPool = pool
+                break
+                #endIf
+        #endFor
+        print "proxy WebContainer ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(webPool, "maximumSize")+"/"+str(proxyMaxWebContainerPool)
+        print "proxy WebContainer ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(webPool, "minimumSize")+"/"+str(proxyMinWebContainerPool)
+        attrs2 = [["maximumSize", proxyMaxWebContainerPool], ["minimumSize", proxyMinWebContainerPool]]
+        print "Updating proxy web container pool..."
+        print " "
+        AdminConfig.modify(webPool, attrs2 )
+
+        ProxyPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "Proxy"):
+                ProxyPool = pool
+                break
+                #endIf
+        #endFor
+        print "proxy ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(ProxyPool, "maximumSize")+"/"+str(proxyMaxProxyPool)
+        print "proxy ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(ProxyPool, "minimumSize")+"/"+str(proxyMinProxyPool)
+        attrs2 = [["maximumSize", proxyMaxProxyPool], ["minimumSize", proxyMinProxyPool], ["isGrowable", threadPoolGrowable]]
+        print "Updating proxy proxy pool ..."
+        print " "
+        AdminConfig.modify(ProxyPool, attrs2 )
+
+        DefaultPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "Default"):
+                DefaultPool = pool
+                break
+                #endIf
+        #endFor
+        print "default ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(DefaultPool, "maximumSize")+"/"+str(proxyMaxDefaultPool)
+        print "default ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(DefaultPool, "minimumSize")+"/"+str(proxyMinDefaultPool)
+        attrs2 = [["maximumSize", proxyMaxDefaultPool], ["minimumSize", proxyMinDefaultPool], ["isGrowable", threadPoolGrowable]]
+        print "Updating proxy default pool ..."
+        print " "
+        AdminConfig.modify(DefaultPool, attrs2 )
+
+        # Accessing proxy access logging
+        print "Accessing proxyServer access logging configuration..."
+        proxySettings = AdminConfig.list("ProxySettings", server )
+        print "Initial access log setting (old/new):  "+AdminConfig.showAttribute(proxySettings, "enableLogging")+"/"+str(proxyenableLogging)
+        attrs = [["enableLogging", proxyenableLogging]]
+        print "Updating proxy access logging settings..."
+        print " "
+        AdminConfig.modify(proxySettings, attrs )
+#endFor 
+
+
+
+#---------------------------------------------
+# Modify server parameters
+#---------------------------------------------
+
+for server in serverList:
+        servername = getName(server )
+        print ""
+        print "Server: "+servername+" ================================================================================================"
+        print ""
+
+        # Accessing orb config
+        print "Accessing ORB configuration..."
+        orb = AdminConfig.list("ObjectRequestBroker", server )
+        print "ORB noLocalCopies (old/new):              "+AdminConfig.showAttribute(orb,"noLocalCopies")+"/"+noLocalCopies
+	# enable Use the ORB.thread.pool settings associated with the Thread Pool Manager (recommended)
+        attrs = [["noLocalCopies", noLocalCopies], ["useServerThreadPool", enableOrbPoolTManager]]
+        orbPool = AdminConfig.showAttribute(orb, "threadPool" )
+        print "ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(orbPool, "maximumSize")+"/"+str(maxOrbPool)
+        print "ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(orbPool, "minimumSize")+"/"+str(minOrbPool)
+        attrs2 = [["maximumSize", maxOrbPool], ["minimumSize", minOrbPool]]
+        print "Updating ORB..."
+        print " "
+        AdminConfig.modify(orb, attrs )
+        AdminConfig.modify(orbPool, attrs2 )
+
+        # Accessing web container thread pool config
+        print "Accessing web container configuration..."
+        webCont = AdminConfig.list("WebContainer", server )
+        print "Enable Servlet Caching (old/new):         "+AdminConfig.showAttribute(webCont, "enableServletCaching")+"/"+enableServletCache
+        attrs = [["enableServletCaching", enableServletCache]]
+
+        tpList = AdminConfig.list("ThreadPool", server )
+        webPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "WebContainer"):
+                webPool = pool
+                break
+                #endIf
+        #endFor
+        print "ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(webPool, "maximumSize")+"/"+str(maxWebPool)
+        print "ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(webPool, "minimumSize")+"/"+str(minWebPool)
+        attrs2 = [["maximumSize", maxWebPool], ["minimumSize", minWebPool]]
+        print "Updating web container..."
+        print " "
+        AdminConfig.modify(webCont, attrs)
+        AdminConfig.modify(webPool, attrs2 )
+
+        tpList = AdminConfig.list("ThreadPool", server )
+        webPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "ORB.thread.pool"):
+                orbThreadPool = pool
+        	print "ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(orbThreadPool, "maximumSize")+"/"+str(maxOrbPoolTManager)
+        	print "ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(orbThreadPool, "minimumSize")+"/"+str(minOrbPoolTManager)
+        	attrs = [["maximumSize", maxOrbPoolTManager], ["minimumSize", minOrbPoolTManager]]
+        	print "Updating ORB.thread.pool..."
+        	print " "
+        	AdminConfig.modify(orbThreadPool, attrs)
+                #endIf
+        #endFor
+
+        # Accessing web container thread pool config
+        print "Accessing default thread pool configuration..."
+        tpList = AdminConfig.list("ThreadPool", server )
+        DefaultPool = ""
+        for pool in tpList.split("\n"):
+            pool = pool.rstrip()
+            if (getName(pool) == "Default"):
+                DefaultPool = pool
+                break
+                #endIf
+        #endFor
+        print "ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(DefaultPool, "maximumSize")+"/"+str(maxDefaultPool)
+        print "ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(DefaultPool, "minimumSize")+"/"+str(minDefaultPool)
+        attrs = [["maximumSize", maxDefaultPool], ["minimumSize", minDefaultPool]]
+        print "Updating web container thread pool..."
+        print " "
+        AdminConfig.modify(DefaultPool, attrs )
+
+        # Accessing HTTP keepalive config
+        print "Accessing HTTP KeepAlive configuration..."
+        HTTPInbound = AdminConfig.list("HTTPInboundChannel", server )
+        http2 = ""
+
+        for inbound in HTTPInbound.split("\n"):
+            inbound = inbound.rstrip()
+            if (getName(inbound) == "HTTP_2"):
+                http2 = inbound
+                break
+            #endIf
+        #endFor
+        print "KeepAlive Enabled (old/new):        "+AdminConfig.showAttribute(http2,"keepAlive")+"/"+keepAliveEnabled
+        print "Max Persistent Requests (old/new):  "+AdminConfig.showAttribute(http2,"maximumPersistentRequests")+"/"+str(maxPersistentRequests)
+        attrs = [["keepAlive", keepAliveEnabled], ["maximumPersistentRequests", maxPersistentRequests]]
+        print "Updating HTTP KeepAlives..."
+        print " "
+        AdminConfig.modify(http2, attrs )
+
+        # Accessing JVM config
+        print "Accessing JVM configuration..."
+        jvm = AdminConfig.list("JavaVirtualMachine", server )
+        print "Initial Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "initialHeapSize")+"/"+str(minHeap)
+        print "Maximum Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "maximumHeapSize")+"/"+str(maxHeap)
+        print "VerboseGC Enabled (old/new):  "+AdminConfig.showAttribute(jvm, "verboseModeGarbageCollection")+"/"+verboseGC
+        print "Generic Arguments (old/new):  "+AdminConfig.showAttribute(jvm, "genericJvmArguments")+"/"+genericArgs
+        attrs = [["initialHeapSize", minHeap], ["maximumHeapSize", maxHeap], ["verboseModeGarbageCollection", verboseGC], ["genericJvmArguments", genericArgs]]
+        print "2-Updating JVM..."
+        print " "
+        AdminConfig.modify(jvm, attrs )
+
+        print "set JVM custom property IBM_HEAPDUMP=true"
+        attrs2='[[systemProperties [[[name IBM_HEAPDUMP][required false][value true]]] ]]'
+        AdminConfig.modify(jvm,attrs2)
+
+        print "set JVM custom property IBM_HEAPDUMP_OUTOFMEMORY=true"
+        attrs2='[[systemProperties [[[name IBM_HEAPDUMP_OUTOFMEMORY][required false][value true]]] ]]'
+        AdminConfig.modify(jvm,attrs2)
+
+        if ( len(envJDKArgs) > 0 ):
+           print "set JVM ENV property %s = %s " % (envJDKArgs[0],envJDKArgs[1])
+           attrs3 = [["validationExpression", ""], ["name", envJDKArgs[0]], ["value", envJDKArgs[1]], ["required", "false"], ["description", ""]]
+           AdminConfig.create('Property', jvm,attrs3)
+           print "3-Updating JVM..."
+        #endif
+
+        # Accessing PMI service config
+        print "Accessing PMI service configuration..."
+        pmi = AdminConfig.list("PMIService", server )
+        print "Enable (old/new):  "+AdminConfig.showAttribute(pmi, "enable")+"/"+PMIstatus
+        attrs = [["enable", PMIstatus]]
+        print "Updating PMI..."
+        print " "
+        AdminConfig.modify(pmi, attrs )
+
+        # Accessing TradeDataSource config
+        print "Accessing TradeDataSource configuration..."
+        tradeDSlist = AdminConfig.getid("/DataSource:TradeDataSource/")
+	tradeDS=tradeDSlist.split("\n")
+
+	for tradeDSid in tradeDS:
+	        print "Statement Cache Size (old/new):  "+AdminConfig.showAttribute(tradeDSid, "statementCacheSize")+"/"+str(statementCache)
+  		attrs = [["statementCacheSize", statementCache]]
+	        connPool = AdminConfig.showAttribute(tradeDSid, "connectionPool")
+	        print "Connection Pool MaxSize (old/new):             "+AdminConfig.showAttribute(connPool, "maxConnections")+"/"+str(maxTradeDSPool)
+	        print "Connection Pool MinSize (old/new):             "+AdminConfig.showAttribute(connPool, "minConnections")+"/"+str(minTradeDSPool)
+	        attrs2 = [["maxConnections", maxTradeDSPool], ["minConnections", minTradeDSPool]]
+	        print "Updating TradeDataSource..."
+	        print " "
+	        AdminConfig.modify(tradeDSid, attrs)
+	        AdminConfig.modify(connPool, attrs2)
+	#endFor
+
+        # Accessing TradeBrokerQCF config
+        print "Accessing TradeBrokerQCF configuration..."
+        brokerQCF = AdminConfig.getid("/ConnectionFactory:TradeBrokerQCF/")
+        connPool = AdminConfig.showAttribute(brokerQCF, "connectionPool")
+        print "Connection Pool MaxSize (old/new):             "+AdminConfig.showAttribute(connPool, "maxConnections")+"/"+str(maxBrokerPool)
+        print "Connection Pool MinSize (old/new):             "+AdminConfig.showAttribute(connPool, "minConnections")+"/"+str(minBrokerPool)
+        attrs = [["maxConnections", maxBrokerPool], ["minConnections", minBrokerPool]]
+        print "Updateing TradeBrokerQCF..."
+        print " "
+        AdminConfig.modify(connPool, attrs)
+
+        # Accessing TradeStreamerTCF config
+        print "Accessing TradeStreamerTCF configuration..."
+        streamerTCF = AdminConfig.getid("/ConnectionFactory:TradeStreamerTCF/")
+        connPool = AdminConfig.showAttribute(streamerTCF, "connectionPool")
+        print "Connection Pool MaxSize (old/new):             "+AdminConfig.showAttribute(connPool, "maxConnections")+"/"+str(maxStreamerPool)
+        print "Connection Pool MinSize (old/new):             "+AdminConfig.showAttribute(connPool, "minConnections")+"/"+str(minStreamerPool)
+        attrs = [["maxConnections", maxStreamerPool], ["minConnections", minStreamerPool]]
+        print "Updateing TradeStreamerTCF..."
+        print " "
+        AdminConfig.modify(connPool, attrs)
+
+        # Uninstalling default applications
+        # Possibly uninstall applications - DefaultApplication, ivtApp, UDDIRegistry, ManagementEJB
+        if (uninstallApps):
+                print "Uninstalling default applications..."
+                appList = AdminApp.list( )
+                for app in appList:
+                        if (app in uninstallList):
+                                print "Removing application "+app+"..."
+                                AdminApp.uninstall(app )
+                        #endIf 
+                #endFor 
+        #endIf 
+#endFor 
+
+if 'dmgrServer' in locals():
+	# set the dmgr heap
+	# Accessing JVM config
+	print dmgrServer + " Accessing JVM configuration..."
+	jvm = AdminConfig.list("JavaVirtualMachine", dmgrServer )
+	print "dmgr jvm: " + jvm
+	print "Initial Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "initialHeapSize")+"/"+str(dmgr_minHeap)
+	print "Maximum Heap Size (old/new):  "+AdminConfig.showAttribute(jvm, "maximumHeapSize")+"/"+str(dmgr_maxHeap)
+	print "VerboseGC Enabled (old/new):  "+AdminConfig.showAttribute(jvm, "verboseModeGarbageCollection")+"/"+verboseGC
+	print "Generic Arguments (old/new):  "+AdminConfig.showAttribute(jvm, "genericJvmArguments")+"/"+genericArgs
+	attrs = [["initialHeapSize", dmgr_minHeap], ["maximumHeapSize", dmgr_maxHeap], ["verboseModeGarbageCollection", verboseGC], ["genericJvmArguments", genericArgs]]
+	print "4-Updating JVM..."
+	print " "
+	AdminConfig.modify(jvm, attrs )
+
+	print "set JVM custom property IBM_HEAPDUMP=true"
+	attrs2='[[systemProperties [[[name IBM_HEAPDUMP][required false][value true]]] ]]'
+	AdminConfig.modify(jvm,attrs2)
+	
+	print "set JVM custom property IBM_HEAPDUMP_OUTOFMEMORY=true"
+	attrs2='[[systemProperties [[[name IBM_HEAPDUMP_OUTOFMEMORY][required false][value true]]] ]]'
+	AdminConfig.modify(jvm,attrs2)
+
+print "Saving config..."
+AdminConfig.save( )
+
+print "Getting u1list for persona"
+u1list=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter persona* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+print "Getting u1list for personaAD"
+u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter personaAD* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+print "Getting u1list for user"
+u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter user* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+print "Start u1list loop - If this has already been run it will fail out - schader@us.ibm.com looking for way to check existing user"
+if 'u1list' in locals():
+	for u1 in u1list:
+	        #print "u1="+u1
+		if u1:
+	        	user = u1[u1.find(" ")+1:u1.find("]")]
+		        #print "user="+user
+		        accessid = u1[u1.find("user:"):len(u1)]
+		        accessid = accessid[0:accessid.find("]")]
+		        #print "accessid="+accessid
+			if AdminAuthorizations.listAuthorizationGroupsForUserID(user):
+				AdminAuthorizations.removeUserFromAllAdminRoles(user)
+		        AdminTask.mapUsersToAdminRole(['-accessids', '['+accessid+']', '-userids', '['+user+']', '-roleName', 'adminsecuritymanager'])
+		        AdminTask.mapUsersToAdminRole(['-accessids', '['+accessid+']', '-userids', '['+user+']', '-roleName', 'administrator'])
+		#endIf u1
+	#endFor
+#endIf
+
+
+print ""
+print "Script completed..."
+print "Saving config..."
+AdminConfig.save( )
