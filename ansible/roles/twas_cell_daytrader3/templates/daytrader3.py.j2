@@ -132,7 +132,7 @@ DefaultDatasourceAuthAliasName =  "TradeDataSourceAuthData"
 DefaultNoTxDatasourceName = "NoTxTradeDataSource"
 
 DefaultStmtCacheSize =  100
-DefaultXA = "false"
+DefaultXA = "false"_
 DefaultClusterMEDatasourceName = "MEDataSource"
 
 # JMS (Messaging) Config Parameters
@@ -207,38 +207,14 @@ def printUsageAndExit (  ):
 	sys.exit()
 #endDef 
 
-def findServerPort( node, serverName ):
-   serverEntries = AdminConfig.list('ServerEntry', node).split(java.lang.System.getProperty('line.separator'))
-   
-   for serverEntry in serverEntries:
-     sName = AdminConfig.showAttribute(serverEntry, "serverName")
-     if sName == serverName:
-        sepString = AdminConfig.showAttribute(serverEntry, "specialEndpoints")
-        sepList = sepString[1:len(sepString)-1].split(" ")
-        for specialEndPoint in sepList:
-           endPointNm = AdminConfig.showAttribute(specialEndPoint, "endPointName")
-           if endPointNm == "WC_defaulthost":
-              ePoint = AdminConfig.showAttribute(specialEndPoint, "endPoint")
-              defaultHostPort = AdminConfig.showAttribute(ePoint, "port")
-              if defaultHostPort != "9080":
-                 print ("Update Virtual Hosts port:"+defaultHostPort)
-                 addHostAliasToDefaultHost( defaultHostPort )
-           if endPointNm == "WC_defaulthost_secure":
-              ePoint = AdminConfig.showAttribute(specialEndPoint, "endPoint")
-              defaultHostPort = AdminConfig.showAttribute(ePoint, "port")
-              if defaultHostPort != "9443":
-                 print ("Update Virtual Hosts port:"+defaultHostPort)
-                 addHostAliasToDefaultHost( defaultHostPort )
-
-#endDef
-
 def createJDBC_DataSource( scope ):
 	provider = createJdbcProvider( scope, DefaultProviderType, DefaultPathName, DefaultNativePathName, implementationClassName, '', DefaultProviderType )
 
 	datasource = createDataSource ( provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
 	noTxDatasource = createDataSource ( provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
 	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
-
+	updateDB2orDerbyDatasource(datasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
+	updateDB2orDerbyDatasource(noTxDatasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
 	# Create the JMS config objects
 	print ("")
 	print ("------------------------------------------------")
@@ -311,16 +287,8 @@ if (operation == "all" or operation == "configure"):
 		AdminConfig.modify(tuningId, '[[writeContents "ALL_SESSION_ATTRIBUTES"] [writeFrequency "END_OF_SERVLET_SERVICE"] [scheduleInvalidation "false"]]')
 	#endFor
 	# add webserver port 
-	###addHostAliasToDefaultHost( defaultWebServerHostPort )
-	###addHostAliasToDefaultHost( defaultWebServerHostPortS )
-    # hard code in case the proxy fall on 81/82
-	###addHostAliasToDefaultHost( "81" )
-	###addHostAliasToDefaultHost( "82" )
-	###addHostAliasToDefaultHost( "8180" )
-	# hard code - not sure what's wrong with the port check function
-	###addHostAliasToDefaultHost( "9081" )
-	###addHostAliasToDefaultHost( "9082" )
-
+	ensureHostAlias('default_host', '*', defaultWebServerHostPort )
+	ensureHostAlias('default_host', '*', defaultWebServerHostPortS )
 	#endIf
 	print ("")
 	print ("------------------------------------------------")
