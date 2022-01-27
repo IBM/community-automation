@@ -18,8 +18,8 @@
    dest: "tuneDayTrader.py"
 - name: copy daytrader app
   copy:
-   src: "{{ DefaultAppName }}"
-   dest: "~/{{ DefaultAppName }}"
+   src: "{{ DefaultEarFile }}"
+   dest: "~/{{ DefaultEarFile }}"
 
 - name: run the daytrader3 setup jython script
   shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader3.py"
