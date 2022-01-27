@@ -132,7 +132,7 @@ DefaultDatasourceAuthAliasName =  "TradeDataSourceAuthData"
 DefaultNoTxDatasourceName = "NoTxTradeDataSource"
 
 DefaultStmtCacheSize =  100
-DefaultXA = "false"_
+DefaultXA = "false"
 DefaultClusterMEDatasourceName = "MEDataSource"
 
 # JMS (Messaging) Config Parameters
@@ -212,19 +212,19 @@ def createJDBC_DataSource( scope ):
 
 	datasource = createDataSource ( provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
 	noTxDatasource = createDataSource ( provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
+	
+	datasource = createDataSource_ext ( scope, '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '', 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	noTxDatasource = createDataSource_ext ( scope, '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '', 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
-	updateDB2orDerbyDatasource(datasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
-	updateDB2orDerbyDatasource(noTxDatasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
+	
 	# Create the JMS config objects
 	print ("")
 	print ("------------------------------------------------")
 	print (" Configuring JMS Resources")
 	print (" Scope: "+scope)
 	print ("------------------------------------------------")
-
 	#creates ME datasource
-	datasource = createDataSource ( provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
-	updateDB2orDerbyDatasource(datasource, DefaultMEDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
+	datasource = createDataSource_ext ( scope, '', '', '', provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '', 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 #endDef
 
 #---------------------------------------------------------------------
