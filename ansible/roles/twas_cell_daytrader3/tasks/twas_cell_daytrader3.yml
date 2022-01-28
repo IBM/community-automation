@@ -1,0 +1,31 @@
+---
+
+- name: copy daytrader3.py.j2 template
+  template:
+   src: "daytrader3.py.j2"
+   dest: "daytrader3.py"
+- name: copy daytrader_vars.py.j2 template
+  template:
+   src: "daytrader_vars.py.j2"
+   dest: "daytrader_vars.py"
+- name: copy resource_scripts.py.j2 template
+  template:
+   src: "resource_scripts.py.j2"
+   dest: "resource_scripts.py"
+- name: copy tuneDayTrader.py.j2 template
+  template:
+   src: "tuneDayTrader.py.j2"
+   dest: "tuneDayTrader.py"
+- name: copy daytrader app
+  copy:
+   src: "{{ DefaultEarFile }}"
+   dest: "~/{{ DefaultEarFile }}"
+
+- name: run the daytrader3 setup jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader3.py"
+  register: daytrader3Output
+  failed_when: ( daytrader3Output.rc not in [ 0, 255 ] )
+- name: daytrader3Output
+  debug:
+   msg: "{{ daytrader3Output.stdout_lines }}"
+
