@@ -182,11 +182,11 @@ elif (os.find("OS/400") > -1):
 
 def printUsageAndExit (  ):
         print (" ")
-        print ("Usage: wsadmin -f tuneTrade.jacl server <server_name>")
+        print ("Usage: wsadmin -lang jython -f tuneDayTrader.py server <server_name>")
         print ("or:")
-        print ("Usage: wsadmin -f tuneTrade.jacl cluster <single_cluster_name>")
+        print ("Usage: wsadmin -lang jython -f tuneDayTrade..py cluster <single_cluster_name>")
         print ("or split-tier:")
-        print ("Usage: wsadmin -f tuneTrade.jacl cluster <ejb_cluster_name> <web_cluster_name>")
+        print ("Usage: wsadmin -lang jython -f tuneDayTrader.py cluster <ejb_cluster_name> <web_cluster_name>")
         sys.exit()
 #endDef 
 
