@@ -9,15 +9,15 @@
 # cluster configuration are unique.
 #
 # To invoke the script, type:
-#   wsadmin -f tuneDayTrader.py <scope> <id>
+#   wsadmin -lang jython -f tuneDayTrader.py <scope> <id>
 #      scope      - 'cluster' or 'server'
 #      id         - name of target object within scope (ie. servername)
 #
 # Examples:
-#   wsadmin -f tuneDayTrader.py server server1
+#   wsadmin -lang jython -f tuneDayTrader.py server server1
 #
-#   wsadmin -f tuneDayTrader.py cluster TradeCluster
-#   wsadmin -f tuneDayTrader.py cluster DT20EJBCluster DT20WebCluster
+#   wsadmin -lang jython -f tuneDayTrader.py cluster TradeCluster
+#   wsadmin -lang jython -f tuneDayTrader.py cluster DT20EJBCluster DT20WebCluster
 #
 #
 # 2015-09-02 schader@us.ibm.com added user2/persona1/persona2 as console admins
@@ -25,6 +25,10 @@
 # 2013-03-18 schader@us.ibm.com added split-tier cluster tuning RTC Task: 96728
 # 2013-04-01 schader@us.ibm.com added proxy section 
 #--------------------------------------------------------------------
+# wsadminlib.py is needed
+#https://github.com/wsadminlib/wsadminlib/blob/master/bin/wsadminlib.py
+wsadminlib = "wsadminlib.py"
+execfile(wsadminlib)
 
 AdminConfig.setValidationLevel("NONE" )
 from sys import registry
@@ -181,7 +185,6 @@ elif (os.find("OS/400") > -1):
 #---------------------------------------------
 
 def printUsageAndExit (  ):
-        print (" ")
         print ("Usage: wsadmin -lang jython -f tuneDayTrader.py server <server_name>")
         print ("or:")
         print ("Usage: wsadmin -lang jython -f tuneDayTrade..py cluster <single_cluster_name>")
@@ -189,19 +192,6 @@ def printUsageAndExit (  ):
         print ("Usage: wsadmin -lang jython -f tuneDayTrader.py cluster <ejb_cluster_name> <web_cluster_name>")
         sys.exit()
 #endDef 
-
-#---------------------------------------------
-# Misc Procedures
-#---------------------------------------------
-
-def getName (objectId):
-        endIndex = (objectId.find("(c") - 1)
-        stIndex = 0
-        if (objectId.find("\"") == 0):
-                stIndex = 1
-        #endIf
-        return objectId[stIndex:endIndex+1]
-#endDef
 
 #---------------------------------------------
 # Parse command line arguments
@@ -288,22 +278,15 @@ print ("Obtaining server list...")
 serverList = []
 if (scope == "cluster"):
         for clusterName in clusterNamesList:
-        	cluster = AdminConfig.getid("/ServerCluster:"+clusterName+"/" )
-		#print ("SRS: cluster="+cluster
-        	memberList = AdminConfig.showAttribute(cluster, "members" )
-        	for member in memberList[1:-1].split(" "):
-                	#print ("SRS: member="+member
-                	member = member.rstrip()
-                	memberName = getName(member )
-                	#print ("SRS: memberName="+memberName
-                	serverList.append(AdminConfig.getid("/Server:"+memberName+"/" ))
+                serverIDList = getServerIDsForClusters([clusterName])
+                for (serverId, nodeName, serverName) in serverIDList:
+                        serverList.append(serverId)
         	#endFor 
         #endFor 
 else:
         server = AdminConfig.getid("/Server:"+servername+"/" )
         serverList.append(server)
 #endElse 
-
 #---------------------------------------------
 # Obtain server list for log update
 #---------------------------------------------
@@ -316,7 +299,7 @@ proxyServerList = []
 SVRList=AdminConfig.list('Server').split(lineSeparator)
 for server in SVRList: 
       serverType=AdminConfig.showAttribute(server, "serverType")
-      #print ("SRS: serverName:" + server+" serverType:"+serverType
+      #print ("SRS: serverName:" + server+" serverType:"+serverType)
       if ( serverType == "PROXY_SERVER" ):
          proxyServerList.append(server)
       if ( serverType == "DEPLOYMENT_MANAGER" ):
@@ -337,7 +320,7 @@ print ("")
 
 print ("Servers:")
 for server in serverList:
-        print ("   " + getName(server))
+        print ("   " + getNameFromId(server))
 #endFor 
 print ("")
 print (" EJB/ORB ----------------------------------------")
@@ -400,7 +383,7 @@ AdminConfig.modify(sec, attrs )
 # schader@us.ibm.com
 #---------------------------------------------
 for server in serverLogList:
-        servername = getName(server )
+        servername = getNameFromId(server )
         print ("")
         print ("Server: "+servername+" ================================================================================================")
         print ("")
@@ -446,7 +429,7 @@ for server in serverLogList:
 # schader@us.ibm.com
 #---------------------------------------------
 for server in proxyServerList:
-        servername = getName(server )
+        servername = getNameFromId(server )
         print ("")
         print ("Proxy Server: "+servername+" ================================================================================================")
         print ("")
@@ -486,7 +469,7 @@ for server in proxyServerList:
         webPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "WebContainer"):
+            if (getNameFromId(pool) == "WebContainer"):
                 webPool = pool
                 break
                 #endIf
@@ -501,7 +484,7 @@ for server in proxyServerList:
         ProxyPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "Proxy"):
+            if (getNameFromId(pool) == "Proxy"):
                 ProxyPool = pool
                 break
                 #endIf
@@ -516,7 +499,7 @@ for server in proxyServerList:
         DefaultPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "Default"):
+            if (getNameFromId(pool) == "Default"):
                 DefaultPool = pool
                 break
                 #endIf
@@ -545,7 +528,7 @@ for server in proxyServerList:
 #---------------------------------------------
 
 for server in serverList:
-        servername = getName(server )
+        servername = getNameFromId(server )
         print ("")
         print ("Server: "+servername+" ================================================================================================")
         print ("")
@@ -575,7 +558,7 @@ for server in serverList:
         webPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "WebContainer"):
+            if (getNameFromId(pool) == "WebContainer"):
                 webPool = pool
                 break
                 #endIf
@@ -592,7 +575,7 @@ for server in serverList:
         webPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "ORB.thread.pool"):
+            if (getNameFromId(pool) == "ORB.thread.pool"):
                 orbThreadPool = pool
                 print ("ThreadPool MaxSize (old/new):             "+AdminConfig.showAttribute(orbThreadPool, "maximumSize")+"/"+str(maxOrbPoolTManager))
                 print ("ThreadPool MinSize (old/new):             "+AdminConfig.showAttribute(orbThreadPool, "minimumSize")+"/"+str(minOrbPoolTManager))
@@ -609,7 +592,7 @@ for server in serverList:
         DefaultPool = ""
         for pool in tpList.split("\n"):
             pool = pool.rstrip()
-            if (getName(pool) == "Default"):
+            if (getNameFromId(pool) == "Default"):
                 DefaultPool = pool
                 break
                 #endIf
@@ -628,7 +611,7 @@ for server in serverList:
 
         for inbound in HTTPInbound.split("\n"):
             inbound = inbound.rstrip()
-            if (getName(inbound) == "HTTP_2"):
+            if (getNameFromId(inbound) == "HTTP_2"):
                 http2 = inbound
                 break
             #endIf
@@ -762,7 +745,6 @@ print ("Getting u1list for personaAD")
 u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter personaAD* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
 print ("Getting u1list for user")
 u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter user* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
-print ("Start u1list loop - If this has already been run it will fail out - schader@us.ibm.com looking for way to check existing user")
 if 'u1list' in locals():
 	for u1 in u1list:
 	        #print ("u1="+u1)
@@ -784,4 +766,4 @@ if 'u1list' in locals():
 print ("")
 print ("Script completed...")
 print ("Saving config...")
-AdminConfig.save( )
+AdminConfig.save()
