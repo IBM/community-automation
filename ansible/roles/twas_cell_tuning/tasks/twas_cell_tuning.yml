@@ -6,7 +6,7 @@
    dest: "tuneDayTrader.py"
 
 - name: run the daytrader tuning jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f tuneDayTrader.py"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f tuneDayTrader.py cluster {{ clusterName }}"
   register: tuningOutput
   failed_when: ( tuningOutput.rc not in [ 0, 255 ] )
 - name: tuningOutput
