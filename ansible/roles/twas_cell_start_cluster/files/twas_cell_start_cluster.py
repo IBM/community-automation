@@ -2,7 +2,7 @@
 #https://github.com/wsadminlib/wsadminlib/blob/master/bin/wsadminlib.py
 wsadminlib = "wsadminlib.py"
 execfile(wsadminlib)
-
+enableDebugMessages()
 #---------------------------------------------
 # Check/Print Usage
 #---------------------------------------------
