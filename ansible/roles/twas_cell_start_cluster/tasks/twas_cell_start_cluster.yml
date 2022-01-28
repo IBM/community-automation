@@ -6,7 +6,7 @@
    dest: "~/twas_cell_start_cluster.py"
 
 - name: run the twas_cell_start_cluster.py script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f twas_cell_start_cluster.py {{ clusterName }}"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f twas_cell_start_cluster.py cluster {{ clusterName }}"
   register: startClusterOutput
   failed_when: ( startClusterOutput.rc not in [ 0, 255 ] )
 - name: startClusterOutput
