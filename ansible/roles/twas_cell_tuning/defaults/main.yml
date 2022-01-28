@@ -1,0 +1,5 @@
+---
+
+applicationServerminHeap: 128
+applicationServermaxHeap: 1024
+

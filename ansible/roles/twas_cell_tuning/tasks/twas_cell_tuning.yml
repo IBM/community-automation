@@ -1,0 +1,15 @@
+---
+
+- name: copy tuneDayTrader.py.j2 template
+  template:
+   src: "tuneDayTrader.py.j2"
+   dest: "tuneDayTrader.py"
+
+- name: run the daytrader tuning jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f tuneDayTrader.py"
+  register: tuningOutput
+  failed_when: ( tuningOutput.rc not in [ 0, 255 ] )
+- name: tuningOutput
+  debug:
+   msg: "{{ tuningOutput.stdout_lines }}"
+
