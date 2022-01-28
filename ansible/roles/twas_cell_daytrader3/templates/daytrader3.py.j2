@@ -210,9 +210,6 @@ def printUsageAndExit (  ):
 def createJDBC_DataSource( scope ):
 	provider = createJdbcProvider( scope, DefaultProviderType, DefaultPathName, DefaultNativePathName, implementationClassName, '', DefaultProviderType )
 
-	datasource = createDataSource ( provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
-	noTxDatasource = createDataSource ( provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '' )
-	
 	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '', 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 	noTxDatasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, '', 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
