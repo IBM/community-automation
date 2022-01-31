@@ -1,0 +1,2 @@
+---
+- include_tasks: twas_cell_db_drop_sib_tables.py
