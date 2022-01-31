@@ -18,17 +18,5 @@ le_package_extension:
   x86: ''
   s390x: ''
 im_twas_package:
-  WAS90: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v90'
+  WAS90: 'com.ibm.websphere.ND.v90'
   WAS855: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v85'
-im_wct_package:
-  WAS90: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v90'
-  WAS855: 'com.ibm.websphere.WCT{{le_package_extension[ansible_architecture]}}.v85'
-im_wct_java_package: 'com.ibm.java.jdk.v8'
-im_plugin_package:
-  WAS90: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v90'
-  WAS855: 'com.ibm.websphere.PLG{{le_package_extension[ansible_architecture]}}.v85'
-im_plugin_java_package: 'com.ibm.java.jdk.v8'
-im_http_package:
-  WAS90: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v90'
-  WAS855: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v85'
-im_http_java_package: 'com.ibm.java.jdk.v8'
