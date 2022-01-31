@@ -437,6 +437,12 @@ if (operation == "all" or operation == "install"):
 	print ("generatePluginCfg:start")
 	generatePluginCfg('{{ webServerName }}', '{{ webNode }}')
 	print ("generatePluginCfg:completed")
+	wVersion = AdminTask.getNodeBaseProductVersion('[-nodeName dmgr ]')
+	# [1/31/22 12:21:36:608 EST] Web servers > webserver1 > Plug-in properties
+	print ("generatePluginCfg:propagateKeyring:start")
+	AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process=dmgr,platform=common,node=dmgr,version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'propagateKeyring', '[{{ twas_dir }}/profiles/dmgr/config ndcell {{ webNode }} {{ webServerName }}]')
+	print ("generatePluginCfg:propagateKeyring:completed")
+
 #endIf
 
 if (operation == "uninstall"):
