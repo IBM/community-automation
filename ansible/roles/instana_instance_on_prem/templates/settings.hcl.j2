@@ -14,6 +14,13 @@ cert {
   key = ""
 }
 
+retention {
+  metric_roll_up_5     = "86400"
+  metric_roll_up_60    = "259200"
+  metric_roll_up_300   = "432000"
+  metric_roll_up_3600  = "604800"
+}
+
 dir {
   metrics = "/mnt/metrics"
   traces  = "/mnt/traces"

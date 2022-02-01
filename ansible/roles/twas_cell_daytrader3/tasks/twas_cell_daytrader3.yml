@@ -12,10 +12,6 @@
   template:
    src: "resource_scripts.py.j2"
    dest: "resource_scripts.py"
-- name: copy tuneDayTrader.py.j2 template
-  template:
-   src: "tuneDayTrader.py.j2"
-   dest: "tuneDayTrader.py"
 - name: copy daytrader app
   copy:
    src: "{{ DefaultEarFile }}"

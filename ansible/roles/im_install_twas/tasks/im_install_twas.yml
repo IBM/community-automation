@@ -15,7 +15,7 @@
 
   - name: copy im_twas.xml template
     template:
-     src: im_twas.xml.j2
+     src: "im_twas_{{ twas_release }}.xml.j2"
      dest: "im_twas.xml"
 
      #  - name:  stop any running servers

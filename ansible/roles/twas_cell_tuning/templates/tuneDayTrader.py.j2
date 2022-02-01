@@ -29,6 +29,7 @@
 #https://github.com/wsadminlib/wsadminlib/blob/master/bin/wsadminlib.py
 wsadminlib = "wsadminlib.py"
 execfile(wsadminlib)
+enableDebugMessages()
 
 AdminConfig.setValidationLevel("NONE" )
 from sys import registry
@@ -767,3 +768,6 @@ print ("")
 print ("Script completed...")
 print ("Saving config...")
 AdminConfig.save()
+print ("syncall.....started")
+syncall()
+print ("syncall.....completed")

@@ -3,5 +3,5 @@
 - name: get wsadminlib.py 
   get_url:
    url: "https://raw.githubusercontent.com/wsadminlib/wsadminlib/master/bin/wsadminlib.py"
-   dest: wsadminlib.py
+   dest: "~/wsadminlib.py"
    validate_certs: false
