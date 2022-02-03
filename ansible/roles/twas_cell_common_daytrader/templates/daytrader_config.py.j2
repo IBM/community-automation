@@ -318,6 +318,7 @@ if (operation == "all" or operation == "configure"):
 	meIndex=1
 	while (idx < len(ClusterMemberNames)):
 		target=[DefaultClusterName]
+		print("---createMessageEngine---")
 		createMessageEngine(sibus, "false",("jdbc/"+DefaultClusterMEDatasourceName),target)
 		idx=idx+1
 		meIndex=meIndex+1
@@ -336,17 +337,21 @@ if (operation == "all" or operation == "configure"):
 		idx = idx + 1
 
 		# Modify the MEs to use the same datastore
+		print("---modifyMEDataStore---")
 		modifyMEDataStore(engine,DefaultDatasourceAuthAliasName,schema)
 	#end for
 
     # [10/1/14 10:43:43:164 EDT] Buses > DTEJBCluster > Bus members > Messaging engines for DTEJBCluster
+	print("---modifySIBusMemberPolicy---")
 	AdminTask.modifySIBusMemberPolicy(['-bus', DefaultClusterName, '-cluster', DefaultClusterName, '-enableAssistance', 'true', '-policyName', 'SCALABILITY_HA' ])
 	# RTC 185101 schader@us.ibm.com 2015-08-25
+	print("---modifySIBus---")
 	AdminTask.modifySIBus(['-bus', DefaultClusterName, '-configurationReloadEnabled', 'true', '-discardOnDelete', 'false', '-bootstrapPolicy', 'MEMBERS_ONLY', '-highMessageThreshold', '50000', '-protocol',  '-description', DefaultClusterName ])
 
 
 	target =[DefaultClusterName]
 	if (SecurityEnabled == "true"):
+		print("---createSIBusSecurityRole---")
 		createSIBusSecurityRole(sibus, DefaultAdminUser )
 	#endIf 
 
