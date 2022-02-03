@@ -4,6 +4,10 @@
   template:
    src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
    dest: "daytrader7.py"
+- name: copy daytrader_config.py.j2 template
+  template:
+   src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
+   dest: "daytrader_config.py"
 - name: copy daytrader_vars.py.j2 template
   template:
    src: "../twas_cell_common_daytrader/templates/daytrader_vars.py.j2"
@@ -17,7 +21,15 @@
    src: "{{ DefaultEarFile }}"
    dest: "~/{{ DefaultEarFile }}"
 
-- name: run the daytrader7 setup jython script
+- name: run the daytrader config jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
+  register: daytraderConfigOutput
+  failed_when: ( daytraderConfigOutput.rc not in [ 0, 255 ] )
+- name: daytraderConfigOutput
+  debug:
+   msg: "{{ daytraderConfigOutput.stdout_lines }}"
+
+- name: run the daytrader7 application install jython script
   shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
   register: daytrader7Output
   failed_when: ( daytrader7Output.rc not in [ 0, 255 ] )
