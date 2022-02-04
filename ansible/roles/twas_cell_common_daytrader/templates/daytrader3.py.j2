@@ -184,16 +184,6 @@ if (operation == "all" or operation == "install"):
 	print ("Saving...")
 	AdminConfig.save( )
 
-	# generate and prop the webserver plugin
-	print ("generatePluginCfg:start")
-	generatePluginCfg('{{ webServerName }}', '{{ webNode }}')
-	print ("generatePluginCfg:completed")
-	wVersion = AdminTask.getNodeBaseProductVersion('[-nodeName dmgr ]')
-	# [1/31/22 12:21:36:608 EST] Web servers > webserver1 > Plug-in properties
-	print ("generatePluginCfg:propagateKeyring:start")
-	AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process=dmgr,platform=common,node=dmgr,version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'propagateKeyring', '[{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config ndcell {{ webNode }} {{ webServerName }}]')
-	print ("generatePluginCfg:propagateKeyring:completed")
-
 #endIf
 
 if (operation == "uninstall"):
