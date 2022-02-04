@@ -195,6 +195,39 @@ def printUsageAndExit (  ):
 #endDef 
 
 #---------------------------------------------
+# Add ldap users to the admin / security roles
+#
+# this function still has issues
+#---------------------------------------------
+def setAdminRoles():
+        print ("Getting u1list for persona")
+        u1list=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter persona* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+        print ("Getting u1list for personaAD")
+        u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter personaAD* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+        print ("Getting u1list for user")
+        u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter user* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
+        if 'u1list' in locals():
+                for u1 in u1list:
+                        #print ("u1="+u1)
+                        if u1:
+                                user = u1[u1.find(" ")+2:u1.find("]")]
+                                #print ("user="+user)
+                                accessid = u1[u1.find("user:"):len(u1)]
+                                accessid = accessid[0:accessid.find("]")]
+                                #print ("accessid="+accessid)
+                                if AdminAuthorizations.listAuthorizationGroupsForUserID(user):
+                                  #print ("remove user="+user)
+                                  AdminAuthorizations.removeUserFromAllAdminRoles('["'+user+'"]')
+                                print ("mapUsersToAdminRole adminsecuritymanager: "+user)
+                                AdminTask.mapUsersToAdminRole(['-accessids', '["'+accessid+'"]', '-userids', '["'+user+'"]', '-roleName', 'adminsecuritymanager'])
+                                print ("mapUsersToAdminRole administrator: "+user)
+                                AdminTask.mapUsersToAdminRole(['-accessids', '["'+accessid+'"]', '-userids', '["'+user+'"]', '-roleName', 'administrator'])
+                        
+                                #endIf u1
+                #endFor
+        #endIf
+#endDef
+#---------------------------------------------
 # Parse command line arguments
 #---------------------------------------------
 
@@ -737,34 +770,11 @@ if 'dmgrServer' in locals():
 	attrs2='[[systemProperties [[[name IBM_HEAPDUMP_OUTOFMEMORY][required false][value true]]] ]]'
 	AdminConfig.modify(jvm,attrs2)
 
-print ("Saving config...")
-AdminConfig.save( )
-
-print ("Getting u1list for persona")
-u1list=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter persona* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
-print ("Getting u1list for personaAD")
-u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter personaAD* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
-print ("Getting u1list for user")
-u1list+=AdminTask.listRegistryUsers('[-displayAccessIds true -userFilter user* -numberOfUsers 22]').split(java.lang.System.getProperty('line.separator'))
-if 'u1list' in locals():
-	for u1 in u1list:
-	        #print ("u1="+u1)
-		if u1:
-                        user = u1[u1.find(" ")+1:u1.find("]")]
-                        #print ("user="+user)
-                        accessid = u1[u1.find("user:"):len(u1)]
-                        accessid = accessid[0:accessid.find("]")]
-                        #print ("accessid="+accessid)
-                        if AdminAuthorizations.listAuthorizationGroupsForUserID(user):
-                                AdminAuthorizations.removeUserFromAllAdminRoles(user)
-                        AdminTask.mapUsersToAdminRole(['-accessids', '['+accessid+']', '-userids', '['+user+']', '-roleName', 'adminsecuritymanager'])
-                        AdminTask.mapUsersToAdminRole(['-accessids', '['+accessid+']', '-userids', '['+user+']', '-roleName', 'administrator'])
-                        #endIf u1
-	#endFor
-#endIf
-
+#print ("Saving config...")
+#AdminConfig.save( )
 
 print ("")
+#setAdminRoles()
 print ("Script completed...")
 print ("Saving config...")
 AdminConfig.save()

@@ -1,0 +1,15 @@
+---
+
+- name: copy ihsplugin_gen_propagate.py.j2 template
+  template:
+   src: "ihsplugin_gen_propagate.py.j2"
+   dest: "ihsplugin_gen_propagate.py"
+
+- name: run the ihsplugin_gen_propagate jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
+  register: ihsplugin_gen_propagateOutput
+  failed_when: ( ihsplugin_gen_propagateOutput.rc not in [ 0, 255 ] )
+- name: ihsplugin_gen_propagateOutput
+  debug:
+   msg: "{{ ihsplugin_gen_propagateOutput.stdout_lines }}"
+   

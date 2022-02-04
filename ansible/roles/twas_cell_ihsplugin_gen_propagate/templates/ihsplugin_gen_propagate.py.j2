@@ -1,0 +1,38 @@
+import sys
+import os
+
+#-----------------------------------------------------------------
+# WARNING: Jython/Python is extremely sensitive to indentation
+# errors. Please ensure that tabs are configured appropriately
+# for your editor of choice.
+#-----------------------------------------------------------------
+
+#-----------------------------------------------------------------
+# ihsplugin_gen_propagate.py - tWAS generate and propagate IHS Plugin plugin-cfg.xml Script
+#-----------------------------------------------------------------
+#
+#-----------------------------------------------------------------
+# pre-reqs
+# 1. existing twas cell with at least 1 node, 1 cluster, 1 webserver
+#-----------------------------------------------------------------
+#
+print ("ihsplugin_gen_propagate.py")
+
+# Process the resource file containing all of the admin task definitions 
+# Modified 1/2/13 by Robert Stephenson to accomodate upload path
+wsadminlib = "wsadminlib.py"
+execfile(wsadminlib)
+
+enableDebugMessages()
+
+## schader@us.ibm.com  
+
+# generate and prop the webserver plugin
+print ("generatePluginCfg:start")
+generatePluginCfg('{{ webServerName }}', '{{ webNode }}')
+print ("generatePluginCfg:completed")
+wVersion = AdminTask.getNodeBaseProductVersion('[-nodeName dmgr ]')
+# [1/31/22 12:21:36:608 EST] Web servers > webserver1 > Plug-in properties
+print ("generatePluginCfg:propagateKeyring:start")
+AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process=dmgr,platform=common,node=dmgr,version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'propagateKeyring', '[{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config ndcell {{ webNode }} {{ webServerName }}]')
+print ("generatePluginCfg:propagateKeyring:completed")

@@ -1,0 +1,2 @@
+---
+- include_tasks: twas_cell_daytrader7.yml

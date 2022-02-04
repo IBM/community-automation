@@ -1,0 +1,207 @@
+import sys
+import os
+
+#-----------------------------------------------------------------
+# WARNING: Jython/Python is extremely sensitive to indentation
+# errors. Please ensure that tabs are configured appropriately
+# for your editor of choice.
+#-----------------------------------------------------------------
+
+#-----------------------------------------------------------------
+# daytrader3.py - DayTrader Cluster Install Script
+#-----------------------------------------------------------------
+#
+#-----------------------------------------------------------------
+# pre-reqs
+# 1. existing twas cell with at least 1 node, 1 cluster, 1 webserver
+#-----------------------------------------------------------------
+# "silent install" option the only option
+#  
+# To invoke the script type:
+#   wsadmin -f daytrader3.py [all|configure|cleanup|install|uninstall]
+#      where:   all        -  installs the app
+#               install    -  installs the DayTrader ear
+#               uninstall  -  uninstalls the DayTrader ear
+#
+# If no parameters are specified, "all" is assumed!
+#
+# NOTE: edit daytrader_vars.py for custom settings
+#       if any of the defaults in this script need changing, move to the daytrader_vars.py
+#
+# 2014-04-23 schader@us.ibm.com - created a new input file daytrader_vars.py where overrides can be placed
+# 2013-05-24 schader@us.ibm.com checked in CMVC defect 749029 - support for session replication 
+# 2013-04-03 schader@us.ibm.com checked in CMVC defect 746707
+# 2013-03-15 schader@us.ibm.com - modifed entire script to support slient and interactive splitTier setup RTC Task 96728
+
+print ("daytrader3.py")
+
+# Process the resource file containing all of the admin task definitions 
+# Modified 1/2/13 by Robert Stephenson to accomodate upload path
+resources = "resource_scripts.py"
+wsadminlib = "wsadminlib.py"
+execfile(wsadminlib)
+execfile(resources)
+
+# Edit this parameter to switch between Interactive and Silent installs
+SilentInstall = "true"
+
+#---------------------------------------------------------------------
+# Default Properties for Silent Install
+#
+# Edit the variables in this section to perform a silent install. 
+#---------------------------------------------------------------------
+
+# Silent install properties for Cluster
+# - Append items to this list for the desired nodes and cluster members
+DefaultClusterName = "Cluster"
+#
+#---------------------------------------------------------------------
+#  Misc options
+#---------------------------------------------------------------------
+
+CmdOptions =      ["all", "configure", "cleanup", "install", "uninstall"]
+
+#---------------------------------------------------------------------
+# Application specific config information
+#
+# NOTE: This should NOT be modified!!!
+#---------------------------------------------------------------------
+
+DefaultTradeAppName = "{{ DefaultAppName }}"
+DefaultEarFile = "{{ DefaultEarFile }}"
+
+
+# Deployment options
+DefaultRunEJBDeploy = "false"
+DefaultRunWSDeploy =  "false"
+DefaultBindings =     "true"
+DefaultUseMetadata =  "true"
+
+
+# NOTE: edit daytrader_vars.py for custom settings
+#       if any of the defaults in this script need changing, move to the daytrader_vars.py
+dtvars = "daytrader_vars.py"
+execfile(dtvars)
+
+# Deploy types include:
+DefaultEJBDeployType = "DB2UDB_V82"
+
+#---------------------------------------------------------------------
+#  Basic App Administration Procedures
+#---------------------------------------------------------------------
+
+
+def printUsageAndExit (  ):
+	print ("")
+	print ("Usage: wsadmin -f daytrader_cluster.py [all|configure|cleanup|install|uninstall] ")
+	print ("")
+	print ("   where:  all        -  installs the app")
+	print ("           install    -  installs the Daytrader ear")
+	print ("           uninstall  -  uninstalls the DayTrader ear")
+	print ("")
+	print ("   If no parameters are specified, \"all\" is assumed!")
+	print ("")
+	sys.exit()
+#endDef 
+
+
+
+#---------------------------------------------------------------------
+#  Parse Command Line
+#---------------------------------------------------------------------
+
+if (len(sys.argv) == 0):
+	operation = "all"
+elif (sys.argv[0] in CmdOptions):
+	operation = sys.argv[0]
+else:
+	printUsageAndExit( )
+#endElse 
+
+print ("")
+print ("------------------------------------------------")
+print (" Daytrader Install Script")
+print ("")
+print (" Operation:  " + operation)
+print (" Silent:     " + SilentInstall)
+print ("------------------------------------------------")
+
+#---------------------------------------------------------------------
+# Daytrader configuration procedures
+#---------------------------------------------------------------------
+
+scope = ""
+enableDebugMessages()
+
+## schader@us.ibm.com  has removed the interactive setup since the script has moved beyond manual input
+##
+
+#---------------------------------------------------------------------
+# Daytrader install procedures
+#---------------------------------------------------------------------
+
+if (operation == "all" or operation == "install"):
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Installing DayTrader")
+	print ("------------------------------------------------")
+
+	target = [DefaultClusterName]
+	installApp(DefaultTradeAppName, DefaultEarFile, DefaultRunEJBDeploy, DefaultRunWSDeploy, DefaultBindings, DefaultUseMetadata, DefaultEJBDeployType, target )
+
+	parms = "[  -MapModulesToServers ["
+	parms += "[ \"DayTrader Enterprise Bean Definitions\" dt-ejb.jar,META-INF/ejb-jar.xml WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms +=  ",cluster="
+	parms += DefaultClusterName
+	parms += "+WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms += ",node={{ webNode }},server={{ webServerName }}]"
+	parms += "[ \"DayTrader Web\" web.war,WEB-INF/web.xml  WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms +=  ",cluster="
+	parms += DefaultClusterName
+	parms += "+WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms += ",node={{ webNode }},server={{ webServerName }}]"
+	parms += "[ \"Rest.war\" Rest.war,WEB-INF/web.xml WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms +=  ",cluster="
+	parms += DefaultClusterName
+	parms += "+WebSphere:cell="
+	parms += getNameFromId(getCellId())
+	parms += ",node={{ webNode }},server={{ webServerName }}]"
+	parms += " ]]"
+	print ("AdminApp.edit Manage Modules parms="+parms)
+	AdminApp.edit(DefaultTradeAppName, parms )
+#endif
+	print ("")
+	print ("------------------------------------------------")
+	print (" DayTrader Installation Completed!!!")
+	print ("------------------------------------------------")
+
+	print ("")
+	print ("Saving...")
+	AdminConfig.save( )
+
+#endIf
+
+if (operation == "uninstall"):
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Uninstalling DayTrader")
+	print ("------------------------------------------------")
+
+	uninstallApp(DefaultTradeAppName)
+
+	print ("")
+	print ("------------------------------------------------")
+	print (" DayTrader Uninstall Completed!!!")
+	print ("------------------------------------------------")  
+#endIf
+
+print ("")
+print ("Saving config...")
+AdminConfig.save( )
+
+

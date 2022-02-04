@@ -37,7 +37,7 @@ import os
 # 2013-04-03 schader@us.ibm.com checked in CMVC defect 746707
 # 2013-03-15 schader@us.ibm.com - modifed entire script to support slient and interactive splitTier setup RTC Task 96728
 
-print ("daytrader3.py")
+print ("daytrader_config.py")
 
 # Process the resource file containing all of the admin task definitions 
 # Modified 1/2/13 by Robert Stephenson to accomodate upload path
@@ -195,13 +195,11 @@ DefaultEJBDeployType = "DB2UDB_V82"
 
 def printUsageAndExit (  ):
 	print ("")
-	print ("Usage: wsadmin -f daytrader_cluster.py [all|configure|cleanup|install|uninstall] ")
+	print ("Usage: wsadmin -f daytrader_config.py [all|configure|cleanup] ")
 	print ("")
 	print ("   where:  all        -  configures JDBC and JMS resources and installs the app")
 	print ("           configure  -  only configures the JDBC and JMS resource")
 	print ("           cleanup    -  removes the JDBC and JMS resources")
-	print ("           install    -  installs the Daytrader ear")
-	print ("           uninstall  -  uninstalls the DayTrader ear")
 	print ("")
 	print ("   If no parameters are specified, \"all\" is assumed!")
 	print ("")
@@ -239,7 +237,7 @@ else:
 
 print ("")
 print ("------------------------------------------------")
-print (" Daytrader Install/Configuration Script")
+print (" Daytrader Configuration Script")
 print ("")
 print (" Operation:  " + operation)
 print (" Silent:     " + SilentInstall)
@@ -320,6 +318,7 @@ if (operation == "all" or operation == "configure"):
 	meIndex=1
 	while (idx < len(ClusterMemberNames)):
 		target=[DefaultClusterName]
+		print("---createMessageEngine---")
 		createMessageEngine(sibus, "false",("jdbc/"+DefaultClusterMEDatasourceName),target)
 		idx=idx+1
 		meIndex=meIndex+1
@@ -338,17 +337,21 @@ if (operation == "all" or operation == "configure"):
 		idx = idx + 1
 
 		# Modify the MEs to use the same datastore
+		print("---modifyMEDataStore---")
 		modifyMEDataStore(engine,DefaultDatasourceAuthAliasName,schema)
 	#end for
 
     # [10/1/14 10:43:43:164 EDT] Buses > DTEJBCluster > Bus members > Messaging engines for DTEJBCluster
+	print("---modifySIBusMemberPolicy---")
 	AdminTask.modifySIBusMemberPolicy(['-bus', DefaultClusterName, '-cluster', DefaultClusterName, '-enableAssistance', 'true', '-policyName', 'SCALABILITY_HA' ])
 	# RTC 185101 schader@us.ibm.com 2015-08-25
+	print("---modifySIBus---")
 	AdminTask.modifySIBus(['-bus', DefaultClusterName, '-configurationReloadEnabled', 'true', '-discardOnDelete', 'false', '-bootstrapPolicy', 'MEMBERS_ONLY', '-highMessageThreshold', '50000', '-protocol',  '-description', DefaultClusterName ])
 
 
 	target =[DefaultClusterName]
 	if (SecurityEnabled == "true"):
+		print("---createSIBusSecurityRole---")
 		createSIBusSecurityRole(sibus, DefaultAdminUser )
 	#endIf 
 
@@ -384,85 +387,6 @@ if (operation == "all" or operation == "configure"):
 	print ("Saving...")
 	AdminConfig.save( )
 #endIf 
-
-
-#---------------------------------------------------------------------
-# Daytrader install procedures
-#---------------------------------------------------------------------
-
-if (operation == "all" or operation == "install"):
-	print (" ")
-	print ("------------------------------------------------")
-	print (" Installing DayTrader")
-	print ("------------------------------------------------")
-
-	target = [DefaultClusterName]
-	installApp(DefaultTradeAppName, DefaultEarFile, DefaultRunEJBDeploy, DefaultRunWSDeploy, DefaultBindings, DefaultUseMetadata, DefaultEJBDeployType, target )
-
-	parms = "[  -MapModulesToServers ["
-	parms += "[ \"DayTrader Enterprise Bean Definitions\" dt-ejb.jar,META-INF/ejb-jar.xml WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms +=  ",cluster="
-	parms += DefaultClusterName
-	parms += "+WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms += ",node={{ webNode }},server={{ webServerName }}]"
-	parms += "[ \"DayTrader Web\" web.war,WEB-INF/web.xml  WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms +=  ",cluster="
-	parms += DefaultClusterName
-	parms += "+WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms += ",node={{ webNode }},server={{ webServerName }}]"
-	parms += "[ \"Rest.war\" Rest.war,WEB-INF/web.xml WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms +=  ",cluster="
-	parms += DefaultClusterName
-	parms += "+WebSphere:cell="
-	parms += getNameFromId(getCellId())
-	parms += ",node={{ webNode }},server={{ webServerName }}]"
-	parms += " ]]"
-	print ("AdminApp.edit Manage Modules parms="+parms)
-	AdminApp.edit(DefaultTradeAppName, parms )
-#endif
-	print ("")
-	print ("------------------------------------------------")
-	print (" DayTrader Installation Completed!!!")
-	print ("------------------------------------------------")
-
-	print ("")
-	print ("Saving...")
-	AdminConfig.save( )
-
-	# generate and prop the webserver plugin
-	print ("generatePluginCfg:start")
-	generatePluginCfg('{{ webServerName }}', '{{ webNode }}')
-	print ("generatePluginCfg:completed")
-	wVersion = AdminTask.getNodeBaseProductVersion('[-nodeName dmgr ]')
-	# [1/31/22 12:21:36:608 EST] Web servers > webserver1 > Plug-in properties
-	print ("generatePluginCfg:propagateKeyring:start")
-	AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process=dmgr,platform=common,node=dmgr,version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'propagateKeyring', '[{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config ndcell {{ webNode }} {{ webServerName }}]')
-	print ("generatePluginCfg:propagateKeyring:completed")
-
-#endIf
-
-if (operation == "uninstall"):
-	print (" ")
-	print ("------------------------------------------------")
-	print (" Uninstalling DayTrader")
-	print ("------------------------------------------------")
-
-	uninstallApp(DefaultTradeAppName)
-
-	print ("")
-	print ("------------------------------------------------")
-	print (" DayTrader Uninstall Completed!!!")
-	print ("------------------------------------------------")
-
-	print ("")
-	print ("Saving...")
-	AdminConfig.save( )    
-#endIf
 
 if (operation == "cleanup"):
 	print (" ")

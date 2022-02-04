@@ -1,9 +1,9 @@
 ---
 
-- name: copy daytrader3.py.j2 template
+- name: copy daytrader7.py.j2 template
   template:
-   src: "../twas_cell_common_daytrader/templates/daytrader3.py.j2"
-   dest: "daytrader3.py"
+   src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
+   dest: "daytrader7.py"
 - name: copy daytrader_config.py.j2 template
   template:
    src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
@@ -28,11 +28,12 @@
 - name: daytraderConfigOutput
   debug:
    msg: "{{ daytraderConfigOutput.stdout_lines }}"
-   
-- name: run the daytrader3 application install jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader3.py"
-  register: daytrader3Output
-  failed_when: ( daytrader3Output.rc not in [ 0, 255 ] )
-- name: daytrader3Output
+
+- name: run the daytrader7 application install jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
+  register: daytrader7Output
+  failed_when: ( daytrader7Output.rc not in [ 0, 255 ] )
+- name: daytrader7Output
   debug:
-   msg: "{{ daytrader3Output.stdout_lines }}"
+   msg: "{{ daytrader7Output.stdout_lines }}"
+
