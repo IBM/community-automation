@@ -2,6 +2,8 @@
 install_base: '/home/nest'
 liberty_dir: 'wlp'
 twas_dir: 'was'
+wl_server: 'server'
+cc_server: 'cc'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'
