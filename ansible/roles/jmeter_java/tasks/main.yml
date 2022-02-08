@@ -24,9 +24,9 @@
 
   - name: check if java dir
     file:
-    path: "{{ javaDir }}"
-    state: directory
-    owner: "{{ jmeterUser }}"
+      path: "{{ javaDir }}"
+      state: directory
+      owner: "{{ jmeterUser }}"
 
   - name: install Java
     unarchive:
