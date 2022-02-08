@@ -30,9 +30,9 @@
 
   - name: check if jmeter dir
     file:
-    path: "{{ jmeterDir }}"
-    state: directory
-    owner: "{{ jmeterUser }}"
+      path: "{{ jmeterDir }}"
+      state: directory
+      owner: "{{ jmeterUser }}"
 
   - name: install Jmeter
     unarchive:
