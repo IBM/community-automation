@@ -11,9 +11,10 @@ def jobProps = [
 def paramsList = [
     string(name: 'stackName', defaultValue: 'changeMyFQDNName', description: 'FQDN of the target jmeter host'),
     string(name: 'jmeterUser', defaultValue: 'changeMyjmeterUser', description: 'name of non-root user ( Do not use jmeter )'),
-    string(name: 'javaArchive', defaultValue: 'https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.10+9_openj9-0.24.0/OpenJDK11U-jdk_x64_linux_openj9_linuxXL_11.0.10_9_openj9-0.24.0.tar.gz',description: 'url of source java archive'),
-    string(name: 'jmeterArchive', defaultValue: 'http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.4.1.tgz', description: 'url of source jmeter archive'),
+    string(name: 'javaArchive', defaultValue: 'https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.2+8_openj9-0.30.0/ibm-semeru-open-jdk_x64_linux_17.0.2_8_openj9-0.30.0.tar.gz',description: 'url of source java archive'),
+    string(name: 'jmeterArchive', defaultValue: 'http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.4.3.tgz', description: 'url of source jmeter archive'),
     string(name: 'jmeterManagerPluginUrl', defaultValue: 'https://jmeter-plugins.org/get/'),
+    booleanParam(name: 'forceReplace', defaultValue: false, description: 'force replace java and jmeter'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -29,7 +30,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
-          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-jmeter-fyre-play/jmeter-play.yml -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} 
+          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-jmeter-fyre-play/jmeter-play.yml -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} -e forceReplace=${params.forceReplace}
         """.stripIndent()
       }
    }
