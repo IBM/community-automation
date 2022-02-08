@@ -21,6 +21,13 @@
      url: "{{ javaArchive }}"
      dest: /tmp/java.tgz
 
+  - name: Remove previous Java dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ javaDir }}"
+
   - name: install Java
     unarchive:
      src: /tmp/java.tgz
@@ -47,4 +54,4 @@
      backup: yes
      mode: '0644'
     become: yes
-  when: isjava.stat.exists == False
+  when: isjava.stat.exists == False or forceReplace == True

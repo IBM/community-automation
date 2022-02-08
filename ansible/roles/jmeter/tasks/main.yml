@@ -27,6 +27,13 @@
      url: "{{ jmeterArchive }}"
      dest: /tmp/jmeter.tgz
 
+  - name: Remove previous Jmeter dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ jmeterDir }}"
+
   - name: install Jmeter
     unarchive:
      src: /tmp/jmeter.tgz
@@ -58,4 +65,4 @@
     get_url:
      url: "{{ jmeterManagerPluginUrl }}"
      dest: "{{ jmeterDir }}/{{ jVersion.stdout }}/lib/ext/jmeter-plugin-manager.jar"
-  when: isjmeter.stat.exists == False
+  when: isjmeter.stat.exists == False or forceReplace == True
