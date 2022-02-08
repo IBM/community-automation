@@ -1,11 +1,5 @@
 ---
 
-- name: check if java dir
-  file:
-   path: "{{ javaDir }}"
-   state: directory
-   owner: "{{ jmeterUser }}"
-
 - name: find java exec
   shell: "find {{ javaDir }} -type f -name java"
   register: javaexec
@@ -27,6 +21,12 @@
       state: absent
     with_items:
     - "{{ javaDir }}"
+
+  - name: check if java dir
+    file:
+    path: "{{ javaDir }}"
+    state: directory
+    owner: "{{ jmeterUser }}"
 
   - name: install Java
     unarchive:
@@ -54,4 +54,4 @@
      backup: yes
      mode: '0644'
     become: yes
-  when: isjava.stat.exists == False or forceReplace == True
+  when: isjava.stat.exists == False or forceReplace|bool == True

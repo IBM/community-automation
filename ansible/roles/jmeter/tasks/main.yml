@@ -6,12 +6,6 @@
    dest: "/home/{{ jmeterUser }}/"
    mode: '0755'
 
-- name: check if jmeter dir
-  file:
-   path: "{{ jmeterDir }}"
-   state: directory
-   owner: "{{ jmeterUser }}"
-
 - name: find jmeter exec
   shell: "find {{ jmeterDir }} -type f -name jmeter"
   register: jmeterexec
@@ -33,6 +27,12 @@
       state: absent
     with_items:
     - "{{ jmeterDir }}"
+
+  - name: check if jmeter dir
+    file:
+    path: "{{ jmeterDir }}"
+    state: directory
+    owner: "{{ jmeterUser }}"
 
   - name: install Jmeter
     unarchive:
@@ -65,4 +65,4 @@
     get_url:
      url: "{{ jmeterManagerPluginUrl }}"
      dest: "{{ jmeterDir }}/{{ jVersion.stdout }}/lib/ext/jmeter-plugin-manager.jar"
-  when: isjmeter.stat.exists == False or forceReplace == True
+  when: isjmeter.stat.exists == False or forceReplace|bool == True
