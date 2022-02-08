@@ -5,6 +5,12 @@
    src: "scripts/"
    dest: "/home/{{ jmeterUser }}/"
    mode: '0755'
+   
+- name: check if jmeter dir
+  file:
+    path: "{{ jmeterDir }}"
+    state: directory
+    owner: "{{ jmeterUser }}"
 
 - name: find jmeter exec
   shell: "find {{ jmeterDir }} -type f -name jmeter"

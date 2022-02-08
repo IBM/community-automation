@@ -4,6 +4,12 @@
   shell: "find {{ javaDir }} -type f -name java"
   register: javaexec
 
+- name: check if java dir
+  file:
+    path: "{{ javaDir }}"
+    state: directory
+    owner: "{{ jmeterUser }}"
+
 - name: check if java
   stat:
    path: "{{ javaexec.stdout }}"
