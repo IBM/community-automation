@@ -52,12 +52,21 @@
 
 # windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
 # ansible_user: Administrator
+- name:  uninstall Windoze ibm installation manager
+  ignore_errors: true
+  shell: "~/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc"
+  register: uninstallOutput
+  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  when: 
+  - ansible_system == 'Windows' or 'CYG' in ansible_system
 
-- name:  uninstall ibm installation manager
+- name:  uninstall *nix ibm installation manager
   ignore_errors: true
   shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
   register: uninstallOutput
   failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  when: 
+  - ansible_system != 'Windows' or 'CYG' no in ansible_system
   
 - name: uninstallAll output
   debug: 
