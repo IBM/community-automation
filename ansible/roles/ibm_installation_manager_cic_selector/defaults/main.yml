@@ -10,4 +10,5 @@ cic_selector_os:
   AIX: 'aix'
   Linux: 'linux'
   Windows: 'win32'
+  CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
