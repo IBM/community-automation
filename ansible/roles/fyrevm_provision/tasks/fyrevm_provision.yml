@@ -74,7 +74,7 @@
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
-  no_log: "{{ noLog }}"
+  #no_log: "{{ noLog }}"
   uri:
     url: "{{fyre_clusterstatusurl}}"
     method: GET
