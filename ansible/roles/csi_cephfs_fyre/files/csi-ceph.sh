@@ -28,7 +28,7 @@ fi
 majorRelease=$(echo ${rookRelease:0:4})
 
 rookPath="rook/cluster/examples/kubernetes/ceph"
-[[ $(cut -d '.' -f2 <<< $majorRelease) -ge 8 ]] && rookPath=rook/deploy || true
+[[ $(cut -d '.' -f2 <<< $majorRelease) -ge 8 ]] && rookPath=rook/deploy/examples || true
 if [[ $majorRelease != "v1.4" ]]
 then
   echo "Doing crds.yaml"
@@ -75,7 +75,7 @@ echo "Doing sed of useAllDevices false"
 sed -i 's/useAllDevices: true/useAllDevices: false/g' $rookPath/cluster.yaml
 echo "Exit from useAllDevice $?"
 echo "Doing sed of deviceFilter"
-sed -i "s/#deviceFilter:/deviceFilter: $device/g" $rookPath/cluster.yaml
+sed -i 's/#deviceFilter:/deviceFilter: ^vd[b-z]$/g' $rookPath/cluster.yaml
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
 oc create -f $rookPath/cluster.yaml
