@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------------
 # configuretWasUsageMetering.py - configure tWAS server with usage metering feature  
-# https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server#cf-t-add-was__wsascript
+# https://www.ibm.com/docs/en/ws-automation?topic=monitoring-registering-websphere-application-server-traditional-servers
 #------------------------------------------------------------------------------------
 #
 #  This script configures a traditional WebSphere Application Server with the usage 
@@ -176,8 +176,7 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
    #-------------------------------------------------------------
    if len(certAlias) == 0:
        # use default certificate alias if it is not specified 
-       # NOTE: the alias is stored in all lower case even if it has CAPS.....
-       certAlias = "meteringalias".lower()
+       certAlias = "meteringalias"
        print "Using default certificate alias: " + certAlias
        
    # delete certificate if it exists in keystore
@@ -187,9 +186,8 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
        start = cert.find("alias")
        end = cert.find("] [version")
        alias = cert[start+6:end]
-       print "checking signer: " + alias
        if alias == certAlias.lower():
-           print "Deleting signer: " + alias
+           print "Deleting existing certificate ... " + alias
            AdminTask.deleteSignerCertificate(['-keyStoreName', trustStoreName, '-certificateAlias', alias ])
    
    # retrieve new certificate from api-usagemetering-host and port
@@ -1090,7 +1088,7 @@ else:
     if len(url) > 0:
         print "  url: " + url
     if len(apiKey) > 0:
-        print "  apiKey: " + "********"  #### schader@us.ibm.com - do not echo sensitive info
+        print "  apiKey: " + "********"
     if len(sslRef) > 0:
         print "  sslRef: " + sslRef
     if len(trustStoreName) > 0:
@@ -1113,3 +1111,5 @@ else:
     configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePassword, certAlias, nodeName, serverName, clusterName, startServers, namespace)
    
 #endIf
+
+
