@@ -13,6 +13,7 @@
   - role: jmeter_prereqs
   - role: nestuser
   - role: timezone
+  - role: podman
 
 - hosts: jmeter
   vars:
