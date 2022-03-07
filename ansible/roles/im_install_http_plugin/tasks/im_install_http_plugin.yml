@@ -12,6 +12,12 @@
      path: "{{ install_base }}/IM/eclipse/tools/imcl"
     register: isimcl
     failed_when: isimcl.stat.exists == False
+    
+  - set_fact:
+      install_base_win: 'c:\cygwin'
+    when:
+    - ansible_architecture == 'x86_64'
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
 
   - name: copy ihs_plugin.xml template
     template:

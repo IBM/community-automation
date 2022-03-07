@@ -2,10 +2,15 @@
 
 - hosts: all
   vars:
+  - ansible_user: root
+  roles:
+  - role: podman
+
+- hosts: all
+  vars:
   - ansible_user: "{{ jmeterUser }}"
   - javaDir: "/home/{{ jmeterUser }}/java"
   - jmeterDir: "/home/{{ jmeterUser }}/jmeter"
   roles:
   - role: jmeter_java
   - role: jmeter
-

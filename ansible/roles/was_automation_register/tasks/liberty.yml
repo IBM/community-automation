@@ -39,6 +39,13 @@
    liberty_usr_dir: "{{ usr_dir[usr_dir_index|int:usr_dir_len|int] }}"
    liberty_shared_config: "{{ usr_dir[usr_dir_index|int:usr_dir_len|int] }}/shared/config"
 
+- name: ensure the liberty shared directory exists
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+  - "{{ liberty_shared_config }}"
+
 - name: remove existing config
   file:
    path: "{{ item }}"
@@ -57,11 +64,6 @@
 - name: mask the password
   command: "{{ wa_target_path }}/{{ securityUtility_bin.stdout_lines[0] }} encode {{ wa_keystore_pass }}"
   register: xor # DO NOT CHANGE THIS NAME. ITS used in templates/was-usage-metering.xml.j2
-
-- name: Generate config files
-  template:
-   src: was-usage-metering.xml.j2
-   dest: "{{ liberty_shared_config }}/was-usage-metering.xml"
 
 - name: find the keytool
   command: "find . -name keytool"
@@ -85,6 +87,11 @@
   args:
    chdir: "{{ liberty_shared_config }}"
   register: import_cert
+
+- name: Generate config files
+  template:
+   src: was-usage-metering.xml.j2
+   dest: "{{ liberty_shared_config }}/was-usage-metering.xml"
 
 - name: add new config into the servers server.xml file
   lineinfile:
