@@ -26,16 +26,19 @@ if [[ $rookRelease != "master" ]]; then
 fi
 # if rook-ceph is version 1.5, then need to create/apply crd
 majorRelease=$(echo ${rookRelease:0:4})
+
+rookPath="rook/cluster/examples/kubernetes/ceph"
+[[ $(cut -d '.' -f2 <<< $majorRelease) -ge 8 ]] && rookPath=rook/deploy/examples || true
 if [[ $majorRelease != "v1.4" ]]
 then
   echo "Doing crds.yaml"
-  oc create -f rook/cluster/examples/kubernetes/ceph/crds.yaml
+  oc create -f $rookPath/crds.yaml
   echo "crds.yaml exit $?"
 else
   echo "No reason to apply crds.yaml as file may not exist"
 fi
 echo "Doing common.yaml"
-oc create -f rook/cluster/examples/kubernetes/ceph/common.yaml
+oc create -f $rookPath/common.yaml
 echo "common.yaml exit $?"
 
 echo "Setting up Docker registry image pull secrets"
@@ -54,7 +57,7 @@ fi
 echo "setup Docker registry image pull secrets exit"
 
 echo "Doing operator-openshift.yaml"
-oc create -f rook/cluster/examples/kubernetes/ceph/operator-openshift.yaml
+oc create -f $rookPath/operator-openshift.yaml
 echo "operator-openshift.yaml exit $?"
 sleep_count=30
 while [[ $sleep_count -gt 0 ]]; do
@@ -69,21 +72,21 @@ while [[ $sleep_count -gt 0 ]]; do
   fi
 done
 echo "Doing sed of useAllDevices false"
-sed -i 's/useAllDevices: true/useAllDevices: false/g' rook/cluster/examples/kubernetes/ceph/cluster.yaml
+sed -i 's/useAllDevices: true/useAllDevices: false/g' $rookPath/cluster.yaml
 echo "Exit from useAllDevice $?"
 echo "Doing sed of deviceFilter"
-sed -i "s/#deviceFilter:/deviceFilter: $device/g" rook/cluster/examples/kubernetes/ceph/cluster.yaml
+sed -i 's/#deviceFilter:/deviceFilter: ^vd[b-z]$/g' $rookPath/cluster.yaml
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
-oc create -f rook/cluster/examples/kubernetes/ceph/cluster.yaml
+oc create -f $rookPath/cluster.yaml
 echo "Exit from cluster.yaml $?"
 
 num_worker_nodes=$(oc get no | tr -s ' ' | cut -f3 -d' ' | grep worker  | wc -l)
 echo "Check for the number of ceph nodes running is equal to numbers of worker nodes - wait up to 2 hour"
-ceph_sleep_count=120
+ceph_sleep_count=60
 while [[ $ceph_sleep_count -ne 0 ]]; do
   num_ceph_nodes=$(oc get po -n rook-ceph | grep rook-ceph-osd | grep -v prepare | grep -e Running | wc -l)
-  if [[ $num_worker_nodes -ne $num_ceph_nodes ]] ; then
+  if [[ $num_ceph_nodes -ge $num_worker_nodes ]] ; then
     echo "Waiting for ceph nodes to come active"
     sleep 1m
     ((ceph_sleep_count--))
@@ -94,11 +97,11 @@ while [[ $ceph_sleep_count -ne 0 ]]; do
   fi
 done
 echo "Doing filessystem-test.yaml"
-oc create -f rook/cluster/examples/kubernetes/ceph/filesystem-test.yaml
+oc create -f $rookPath/filesystem-test.yaml
 echo "Exit from filesystem-test.yaml $?"
-oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
-sed -i "s/rook-cephfs/csi-cephfs/g" rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
-oc create -f rook/cluster/examples/kubernetes/ceph/csi/cephfs/storageclass.yaml
+oc create -f $rookPath/csi/cephfs/storageclass.yaml
+sed -i "s/rook-cephfs/csi-cephfs/g" $rookPath/csi/cephfs/storageclass.yaml
+oc create -f $rookPath/csi/cephfs/storageclass.yaml
 default_storage_class=$(oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' ')
 echo "default_storage_class is $default_storage_class"
 if [[ -z $default_storage_class ]]; then
@@ -109,4 +112,4 @@ else
 fi
 echo "Set default storageclass to $new_default_sc"
 oc patch storageclass $new_default_sc -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-oc create -f rook/cluster/examples/kubernetes/ceph/csi/rbd/storageclass-test.yaml
+oc create -f $rookPath/csi/rbd/storageclass-test.yaml
