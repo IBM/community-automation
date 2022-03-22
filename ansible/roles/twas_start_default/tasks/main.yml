@@ -1,2 +1,2 @@
 ---
-- include_tasks: twas_cell_start_dmgr.yml
+- include_tasks: twas_start_default.yml
