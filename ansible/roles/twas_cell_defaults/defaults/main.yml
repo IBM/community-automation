@@ -6,6 +6,7 @@ twas_dir: 'was'
 profile_templatePath:
   managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
   dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
+  default: '{{ install_base }}/{{ twas_dir }}/profileTemplates/default'
 
 cellName: 'ndcell'
 clusterName: 'Cluster'
