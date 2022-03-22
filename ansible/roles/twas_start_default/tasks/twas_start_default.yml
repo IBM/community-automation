@@ -10,3 +10,9 @@
    - name: startDefaultOutput
      debug:
       msg: "{{ startDefaultOutput.stdout_lines }}"
+   - name: cat AboutThisProfile.txt
+     shell: "cat {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/AboutThisProfile.txt"
+     register: AboutThisProfile
+   - name: AboutThisProfile
+     debug:
+      msg: "{{ AboutThisProfile.stdout_lines }}"
