@@ -1,2 +1,2 @@
 ---
-- include_tasks: twas_cell_enable_ldap_security.yml
+- include_tasks: twas_enable_wim_registry.yml
