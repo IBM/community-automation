@@ -12,5 +12,5 @@ num_devices: 1 #Num of additional disks per worker. Only support more than 1 for
 ocs_device: /dev/vdb
 ## For quickburn clusters only
 ocs_device_2: /dev/vdc
-quickburn: false # use with quickburn and OCP+, clusters built from fyre UI
+fyre_ui_build: false # use with quickburn and OCP+, clusters built from fyre UI
 ocs_stable_prefix: "stable"  # update to change prefix of desired OCS channel
