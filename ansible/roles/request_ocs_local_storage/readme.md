@@ -3,6 +3,7 @@
 ## Overview
 
 - This role installs Openshift Container Storage (OCS) on OCP 4.4, 4.5 and 4.6 or newer clusters.
+- Works on X, P, and Z cluster
 - To install OCS using `local storage` the OCP clusters require need the following min requirements.
   - Min of 3 worker nodes.
   - Total CPUs across all workers must total 48.
@@ -19,7 +20,8 @@
 
 ## Assumptions:
 
- - Ansible 2.9 or later installed, with python3.
+- Ansible 2.9 or later installed, with python3.
+- you are logged into the cluster you would like OCS installed on.
 
 ## Default parameters set in the defaults/main.yml
 
