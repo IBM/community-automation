@@ -47,6 +47,11 @@
     ocs_channel: "{{ ocs_stable_prefix }}-{{ oc_version.stdout }}"
     num_pvs: "{{ (num_workers.stdout*num_devices|int|abs) }}"
 
+- name: overwrite OCS channel
+  set_fact:
+    ocs_channel: "{{ ocs_channel_override }}"
+  when: ocs_channel_override != ""
+
 - name: set fact namespace and device set
   set_fact:
     local_storage_namespace: openshift-local-storage
@@ -122,69 +127,67 @@
   retries: 60
   delay: 10
 
-- name: Add extra device(s), when clsuter built by fyre UI
-  lineinfile:
-    path: "{{ ocs_bastion_setup_dir }}/local-volumes.yaml"
-    line: "        - {{ ocs_device_2 }}"
-  when: fyre_ui_build and oc_version.stdout is version('4.5', '<=')
+- name: setting up local volumes on older OCP version
+  block:
+   - name: Add extra device(s), when clsuter built by fyre UI
+     lineinfile:
+       path: "{{ ocs_bastion_setup_dir }}/local-volumes.yaml"
+       line: "        - {{ ocs_device_2 }}"
+     when: fyre_ui_build
 
-- name: Install local volumes for OCS 4.5 or older
-  shell: "oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes.yaml"
+   - name: Install local volumes for OCS 4.5 or older
+     shell: "oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes.yaml"
+     register: localvolumes
+
+   - name: Check for local volumes to be created
+     shell: oc get pod -n "{{ local_storage_namespace }}" | grep -E '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME'
+     register: local_storage_results
+     until: local_storage_results.rc ==0
+     retries: 30
+     delay: 5
+
+   - name: check for local block storage class
+     shell: oc get sc localblock -o name | grep "storageclass.storage.k8s.io/localblock"
+     register: block_storage_results
+     until: block_storage_results.rc ==0
+     retries: 30
+     delay: 5
+
   when: oc_version.stdout is version('4.5', '<=')
-  register: localvolumes
 
-- name: Check for local volumes to be created
-  shell: oc get pod -n "{{ local_storage_namespace }}" | grep -E '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME'
-  when: oc_version.stdout is version('4.5', '<=')
-  register: local_storage_results
-  until: local_storage_results.rc ==0
-  retries: 30
-  delay: 5
+- name: setup local storage on newer versions of OCP
+  block:
+   - name: OCS auto discovery of local volumes
+     shell: "oc project {{ local_storage_namespace }}; oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes-discovery.yaml"
+     register: local_discovery_results
 
-- name: check for local block storage class
-  shell: oc get sc localblock -o name | grep "storageclass.storage.k8s.io/localblock"
-  when: oc_version.stdout is version('4.5', '<=')
-  register: block_storage_results
-  until: block_storage_results.rc ==0
-  retries: 30
-  delay: 5
+   - name: get number of workers
+     shell: "oc get nodes --no-headers=true | grep worker | wc -l"
+     register: num_worker_results
 
-- name: OCS auto discovery of local volumes
-  shell: "oc project {{ local_storage_namespace }}; oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes-discovery.yaml"
+   - name: Waiting for discovery pods to start on all worker nodes
+     shell: "oc get pod -n {{ local_storage_namespace }} --no-headers=true | grep diskmaker-discovery | grep Running | wc -l"
+     register: discovery_pod_results
+     until: discovery_pod_results.stdout == num_worker_results.stdout
+     retries: 60
+     delay: 5
+
+   - name: apply local volumeset yaml
+     shell: "oc apply  -f {{ ocs_bastion_setup_dir }}/local-volume-set.yaml"
+     register: local_vol_results
+
+   - name: Waiting for pods to start
+     shell: "oc get pv -n {{ local_storage_namespace }} --no-headers=true | grep local-pv | grep Bound | wc -l"
+     register: pv_results
+     until: pv_results.stdout == num_pvs
+     retries: 60
+     delay: 5
+
   when: oc_version.stdout is version('4.6', '>=')
-  register: local_discovery_results
-  failed_when: local_discovery_results.rc !=0
-
-- name: get number of workers
-  shell: "oc get nodes --no-headers=true | grep worker | wc -l"
-  when: oc_version.stdout is version('4.6', '>=')
-  register: num_worker_results
-
-- name: Waiting for discovery pods to start on all worker nodes
-  shell: "oc get pod -n {{ local_storage_namespace }} --no-headers=true | grep diskmaker-discovery | grep Running | wc -l"
-  when: oc_version.stdout is version('4.6', '>=')
-  register: discovery_pod_results
-  until: discovery_pod_results.stdout == num_worker_results.stdout
-  retries: 60
-  delay: 5
-
-- name: apply local volumeset yaml
-  shell: "oc apply  -f {{ ocs_bastion_setup_dir }}/local-volume-set.yaml"
-  when: oc_version.stdout is version('4.6', '>=')
-  register: local_vol_results
-  failed_when: local_vol_results.rc !=0
-
-- name: Waiting for pods to start
-  shell: "oc get pv -n {{ local_storage_namespace }} --no-headers=true | grep local-pv | grep Available | wc -l"
-  register: pv_results
-  until: pv_results.stdout == num_pvs
-  retries: 60
-  delay: 5
 
 - name: Install storagecluster
   shell: "oc apply -f {{ ocs_bastion_setup_dir }}/storage-cluster.yaml"
   register: storageCluster_results
-  failed_when: storageCluster_results.rc !=0
 
 - name: Check for ocs-storagecluster storage class
   shell: "oc get sc --no-headers | cut -f1 -d' ' | grep 'ocs-storagecluster'"
@@ -199,9 +202,9 @@
   register: default_storage_results
 
 - name: update default storage class when exist
-  shell: "oc patch storageclass {{ default_storage_results.stdout }} -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'"
+  shell: oc patch storageclass "{{ default_storage_results.stdout }}" -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}'
   when: default_storage_results.stdout != ""
 
 - name: set default storage when there is no default
-  shell: "oc patch storageclass {{ default_sc }} -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+  shell: oc patch storageclass "{{ default_sc }}" -p '{"metadata":{"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
   when: default_storage_results.stdout == ""

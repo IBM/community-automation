@@ -15,6 +15,7 @@
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
   - `ocs-storagecluster-cephfs` - File storage (RWX)
+  - `openshift-storage.noobaa.io` - object storage
 - Sets `ocs-storagecluster-cephfs` as the default storageclass by default.
 
 ## Assumptions:
