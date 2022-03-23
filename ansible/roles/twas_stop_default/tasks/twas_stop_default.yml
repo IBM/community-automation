@@ -10,3 +10,26 @@
    - name: stopDefaultOutput
      debug:
       msg: "{{ stopDefaultOutput.stdout_lines }}"
+
+   # logic below to force kill rogue tWAS process
+   - name: Get running processes list from remote host com.ibm.ws.runtime.WsServer
+     ignore_errors: yes
+     shell: "ps -few | grep com.ibm.ws.runtime.WsServer | awk '{print $2}'"
+     register: running_processes
+ 
+   - name: Kill running processes
+     ignore_errors: yes
+     shell: "kill {{ item }}"
+     with_items: "{{ running_processes.stdout_lines }}"
+ 
+   - wait_for:
+      path: "/proc/{{ item }}/status"
+      state: absent
+     with_items: "{{ running_processes.stdout_lines }}"
+     ignore_errors: yes
+     register: WsServer_processes
+ 
+   - name: Force kill stuck processes
+     ignore_errors: yes
+     shell: "kill -9 {{ item }}"
+     with_items: "{{ WsServer_processes.results | select('failed') | map(attribute='item') | list }}"
