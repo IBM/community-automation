@@ -1,0 +1,3 @@
+---
+
+load_secrets_dir: "{{ lookup('env','ansible_secrets_dir') }}"
