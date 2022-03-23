@@ -1,61 +1,57 @@
 ---
 # tasks ocs  install
 
+- name: install jq
+  shell: apt install jq -y
+  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
+
+- name: install jq
+  shell: yum install jq -y
+  when: ansible_distribution == 'CentOS' or ansible_os_family == "RedHat"
+
 - name: Create ocs setup directory
   file:
     path: "{{ ocs_bastion_setup_dir }}"
-    state: "{{ item }}"
+    state: "directory"
     mode: '0755'
-  with_items:
-  - directory
+
+- name: Locating all setup files
+  find:
+    path: "{{ ocs_bastion_setup_dir }}"
+  register: cleanup
+  ignore_errors: true
+
+- name: Removing all setup files previously from previous run
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  with_items: "{{ cleanup.files }}"
+  ignore_errors: true
 
 - name: Get ocs version major.minor
-  shell: bash -lc "oc version | grep Server | cut -f1 -d'-' | rev | cut -f1 -d' '| cut -f1 -d'.' --complement| rev "
+  shell: "oc version | grep Server | cut -d ' ' -f3 | cut -d '.' -f1,2"
   register: oc_version
 
 - name: Get number of workers
-  shell: bash -lc "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l"
+  shell: "oc get no --no-headers=true | grep worker | cut -f1 -d' ' | wc -l"
   register: num_workers
 
-- set_fact:
+- name: set fact number of devices
+  set_fact:
     num_devices: 2
-  when: quickburn
+  when: fyre_ui_build
 
-- name: Get number of PVs
-  shell: bash -lc "echo \"$(({{ num_workers.stdout }}*{{ num_devices }}))\""
-  register: num_pvs
+- name: set fact localstore_version, ocs_channel, and num_pvs
+  set_fact:
+    localstore_version: "{{ oc_version.stdout }}"
+    ocs_channel: "{{ ocs_stable_prefix }}-{{ oc_version.stdout }}"
+    num_pvs: "{{ (num_workers.stdout*num_devices|int|abs) }}"
 
-- set_fact:
-    localstore_version: "4.6"
-  when: oc_version.stdout is version('4.6', '==')
-
-- set_fact:
-    localstore_version: "4.7"
-  when: oc_version.stdout is version('4.7', '>=')
-
-- set_fact:
-    localstore_version: "4.8"
-  when: oc_version.stdout is version('4.8', '>=')
-
-- set_fact:
+- name: set fact namespace and device set
+  set_fact:
     local_storage_namespace: openshift-local-storage
-  when: oc_version.stdout is version('4.6', '>=')
-
-- set_fact:
     device_set: ocs-deviceset-localblock
   when: oc_version.stdout is version('4.6', '>=')
-
-- set_fact:
-    ocs_channel: "stable-4.6"
-  when: oc_version.stdout is version('4.6', '==')
-
-- set_fact:
-    ocs_channel: "stable-4.7"
-  when: oc_version.stdout is version('4.7', '>=')
-
-- set_fact:
-    ocs_channel: "stable"
-  when: oc_version.stdout is version('4.8', '>=')
 
 - name: Generate OCS install files from templates and copy to dest
   template:
@@ -63,116 +59,149 @@
     dest: "{{ ocs_bastion_setup_dir }}/{{ item }}"
     mode: '0755'
   with_items:
-  - 01.ocs-operator.yaml
-  - 02.install-local-storage-operator.sh
-  - 02.local-storage-operator.yaml
-  - 03.local-volumes.yaml
-  - 04.storage-cluster.yaml
-  - 05.set-default-storageclass.sh
-  - 46.local-volume-set.sh
+  - ocs-operator.yaml
+  - local-storage-operator.yaml
+  - local-volumes.yaml
+  - storage-cluster.yaml
 
 - name: Copy OCS scripts to dest
   copy:
     src: files/
     dest: "{{ ocs_bastion_setup_dir }}/"
     mode: '0755'
+    force: true
 
 - name: Check for Min CPUs of 48
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.check-cpus.sh"
-  args:
-      warn: false
+  shell: "oc get node -o json | jq -r '.items[] | select(.metadata.labels[\"node-role.kubernetes.io/worker\"] != null) | .status.capacity.cpu' | awk '{s+=$1} END {print s}'"
   register: checkcpus
 
-- name: Output available CPUs
-  debug:
-    msg: "{{ checkcpus.stdout_lines }}"
+- name: cpu failed message
+  fail:
+    msg: OCS requires a total of 48 cpus across worker nodes
+  when: (checkcpus.stdout|int) < 48
 
-- name: Install OCS labels on worker nodes
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/00.label-nodes.sh"
-  args:
-      warn: false
-  register: installlabels
+- name: get worker node names
+  shell: "oc get nodes | grep worker | cut -f1 -d' '"
+  register: node_list
 
-- name: Viewing labels install log
-  debug:
-    msg: "{{ installlabels.stdout_lines }}"
+- name: update worker labels
+  shell: "oc label node/{{ item }} cluster.ocs.openshift.io/openshift-storage='' --overwrite=true"
+  loop: "{{ node_list.stdout_lines }}"
 
-- name: Install OCS operator
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/01.install-ocs-operator.sh"
-  args:
-      warn: false
-  register: ocsoperator
+- name: create openshift-storage namespace
+  shell:  "oc create namespace openshift-storage; oc project openshift-storage"
+  register: ocs_project_results
 
-- name: Viewing OCS operator install log
-  debug:
-    msg: "{{ ocsoperator.stdout_lines }}"
+- name: Apply OCS operator yaml
+  shell:  "oc apply -f {{ ocs_bastion_setup_dir }}/ocs-operator.yaml"
+  register: ocs_install_results
 
-- name: Install local storage operator
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/02.install-local-storage-operator.sh"
-  args:
-      warn: false
-  register: localstore
+- name: checking for container storage to be ready
+  shell:  "oc get csv -n openshift-storage --no-headers=true"
+  register: ocs_csv_results
+  until: "'Succeeded' in ocs_csv_results.stdout"
+  retries: 60
+  delay: 10
 
-- name: Viewing local storage operator log
-  debug:
-    msg: "{{ localstore.stdout_lines }}"
+- name: create and set local-storage-namespace
+  shell:  "oc create namespace {{ local_storage_namespace }}; oc project {{ local_storage_namespace }}"
+  register: ocs_project_results
 
-- name: Add extra quickburn device
-  shell: bash -lc "echo \"        - {{ ocs_device_2 }}\" >> {{ ocs_bastion_setup_dir }}/03.local-volumes.yaml"
-  when: quickburn and oc_version.stdout is version('4.5', '<=')
+- name: Apply  local storage operator yaml
+  shell:  "oc apply -f {{ ocs_bastion_setup_dir }}/local-storage-operator.yaml"
+  register: local_storage_install_results
+
+- name: checking for local storage csv
+  shell: "oc get csv -n {{ local_storage_namespace }} --no-headers=true"
+  register: local_storage_results
+
+- name: checking for container storage to be ready
+  shell:  "oc get csv -n {{ local_storage_namespace }} --no-headers=true"
+  register: ocs_csv_results
+  until: "'Succeeded' in ocs_csv_results.stdout"
+  retries: 60
+  delay: 10
+
+- name: Add extra device(s), when clsuter built by fyre UI
+  lineinfile:
+    path: "{{ ocs_bastion_setup_dir }}/local-volumes.yaml"
+    line: "        - {{ ocs_device_2 }}"
+  when: fyre_ui_build and oc_version.stdout is version('4.5', '<=')
 
 - name: Install local volumes for OCS 4.5 or older
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/03.install-local-volumes.sh"
+  shell: "oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes.yaml"
   when: oc_version.stdout is version('4.5', '<=')
-  args:
-      warn: false
   register: localvolumes
 
-- name: Viewing local volumes log
+- name: Check for local volumes to be created
+  shell: oc get pod -n "{{ local_storage_namespace }}" | grep -E '1/1|2/2|3/3|4/4|5/5|6/6|Completed|NAME'
   when: oc_version.stdout is version('4.5', '<=')
-  debug:
-    msg: "{{ localvolumes.stdout_lines }}"
+  register: local_storage_results
+  until: local_storage_results.rc ==0
+  retries: 30
+  delay: 5
+
+- name: check for local block storage class
+  shell: oc get sc localblock -o name | grep "storageclass.storage.k8s.io/localblock"
+  when: oc_version.stdout is version('4.5', '<=')
+  register: block_storage_results
+  until: block_storage_results.rc ==0
+  retries: 30
+  delay: 5
 
 - name: OCS auto discovery of local volumes
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volumes-discovery.sh"
+  shell: "oc project {{ local_storage_namespace }}; oc apply -f {{ ocs_bastion_setup_dir }}/local-volumes-discovery.yaml"
   when: oc_version.stdout is version('4.6', '>=')
-  args:
-      warn: false
-  register: autovolumediscovery
+  register: local_discovery_results
+  failed_when: local_discovery_results.rc !=0
 
-- name: Viewing auto discovery of local-volumes log
+- name: get number of workers
+  shell: "oc get nodes --no-headers=true | grep worker | wc -l"
   when: oc_version.stdout is version('4.6', '>=')
-  debug:
-    msg: "{{ autovolumediscovery.stdout_lines }}"
+  register: num_worker_results
 
-- name: OCS create localvolumeset
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/46.local-volume-set.sh"
+- name: Waiting for discovery pods to start on all worker nodes
+  shell: "oc get pod -n {{ local_storage_namespace }} --no-headers=true | grep diskmaker-discovery | grep Running | wc -l"
   when: oc_version.stdout is version('4.6', '>=')
-  args:
-      warn: false
-  register: volumeset
+  register: discovery_pod_results
+  until: discovery_pod_results.stdout == num_worker_results.stdout
+  retries: 60
+  delay: 5
 
-- name: Viewing localvolumeset log
+- name: apply local volumeset yaml
+  shell: "oc apply  -f {{ ocs_bastion_setup_dir }}/local-volume-set.yaml"
   when: oc_version.stdout is version('4.6', '>=')
-  debug:
-    msg: "{{ volumeset.stdout_lines }}"
+  register: local_vol_results
+  failed_when: local_vol_results.rc !=0
+
+- name: Waiting for pods to start
+  shell: "oc get pv -n {{ local_storage_namespace }} --no-headers=true | grep local-pv | grep Available | wc -l"
+  register: pv_results
+  until: pv_results.stdout == num_pvs
+  retries: 60
+  delay: 5
 
 - name: Install storagecluster
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/04.install-storage-cluster.sh"
-  args:
-      warn: false
-  register: storagecluster
+  shell: "oc apply -f {{ ocs_bastion_setup_dir }}/storage-cluster.yaml"
+  register: storageCluster_results
+  failed_when: storageCluster_results.rc !=0
 
-- name: Viewing storagecluster log
-  debug:
-    msg: "{{ storagecluster.stdout_lines }}"
+- name: Check for ocs-storagecluster storage class
+  shell: "oc get sc --no-headers | cut -f1 -d' ' | grep 'ocs-storagecluster'"
+  register: sc_results
+  until: sc_results.rc ==0
+  retries: 30
+  delay: 5
 
 - name: Set default storageclass to {{ default_sc }}  {{ setdefault }}
-  shell: bash -lc "{{ ocs_bastion_setup_dir }}/05.set-default-storageclass.sh"
-  args:
-      warn: false
-  register: storageclass
+  shell: "oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' '"
+  when: setdefault == true
+  register: default_storage_results
 
-- name: Viewing set default storageclass log
-  debug:
-    msg: "{{ storageclass.stdout_lines }}"
+- name: update default storage class when exist
+  shell: "oc patch storageclass {{ default_storage_results.stdout }} -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"false\"}}}'"
+  when: default_storage_results.stdout != ""
+
+- name: set default storage when there is no default
+  shell: "oc patch storageclass {{ default_sc }} -p '{\"metadata\": {\"annotations\":{\"storageclass.kubernetes.io/is-default-class\":\"true\"}}}'"
+  when: default_storage_results.stdout == ""
