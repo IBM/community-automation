@@ -31,6 +31,7 @@
 - setdefault: true  #Set parm defatul_sc as default storageclass when true
 - default_sc: ocs-storagecluster-cephfs # Default Storageclass
 - fyre_ui_build: false # true when cluster was built using the fyre website
+- ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
 
 ### Do not change the following ... dynamically changed to 4.6 values when "oc version" is 4.6 or greater
 
