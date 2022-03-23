@@ -4,6 +4,7 @@
   when: profile_type == 'default'
   block:
    - name: stop the default server
+     ignore_errors: true
      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh server1 -username {{ twas_username }} -password {{ twas_password }}" 
      register: stopDefaultOutput
      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
