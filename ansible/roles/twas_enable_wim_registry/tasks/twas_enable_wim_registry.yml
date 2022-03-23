@@ -6,7 +6,7 @@
    dest: "wim_wizard.py"
 
 - name: run the enable wim jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f wim_wizard.py"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -conntype NONE -username {{ twas_username }} -password {{ twas_password }} -f wim_wizard.py"
   register: enablewimOutput
   failed_when: ( enablewimOutput.rc not in [ 0, 255 ] )
 - name: enablewimOutput
