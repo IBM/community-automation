@@ -14,3 +14,4 @@ ocs_device: /dev/vdb
 ocs_device_2: /dev/vdc
 fyre_ui_build: false # use with quickburn and OCP+, clusters built from fyre UI
 ocs_stable_prefix: "stable"  # update to change prefix of desired OCS channel
+ocs_channel_override: "" # update with {{ ocs_stable_prefix }}-4.x" to override or just fill in detail "stable-4.9"
