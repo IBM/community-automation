@@ -1,13 +1,10 @@
 ---
 # tasks ocs  install
 
-- name: install jq
-  shell: apt install jq -y
-  when: ansible_distribution == 'Debian' or ansible_distribution == 'Ubuntu'
-
-- name: install jq
-  shell: yum install jq -y
-  when: ansible_distribution == 'CentOS' or ansible_os_family == "RedHat"
+- name: Install jq
+  package: >
+    name=jq
+    state=latest
 
 - name: Create ocs setup directory
   file:
