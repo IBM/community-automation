@@ -29,7 +29,7 @@
 - ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Where scripts/templates are copied.
 - setdefault: true  #Set parm defatul_sc as default storageclass when true
 - default_sc: ocs-storagecluster-cephfs # Default Storageclass
-- fyre_ui_built: false # true when cluster was built using the fyre website
+- fyre_ui_build: false # true when cluster was built using the fyre website
 
 ### Do not change the following ... dynamically changed to 4.6 values when "oc version" is 4.6 or greater
 
