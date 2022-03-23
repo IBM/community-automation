@@ -3,7 +3,7 @@
 ## Overview
 
 - This role installs Openshift Container Storage (OCS) on OCP 4.4, 4.5 and 4.6 or newer clusters.
-- Works on X, P, and Z cluster
+- Works on X, P, and Z clusters
 - To install OCS using `local storage` the OCP clusters require need the following min requirements.
   - Min of 3 worker nodes.
   - Total CPUs across all workers must total 48.
@@ -15,7 +15,6 @@
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
   - `ocs-storagecluster-cephfs` - File storage (RWX)
-  - `openshift-storage.noobaa.io` - Object storage (no on 4.6 and above)
 - Sets `ocs-storagecluster-cephfs` as the default storageclass by default.
 
 ## Assumptions:
