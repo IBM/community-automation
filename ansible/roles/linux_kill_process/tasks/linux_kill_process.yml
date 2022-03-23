@@ -3,7 +3,7 @@
 # logic below to force kill linux  process
 - name: Get running processes list from remote host 
   ignore_errors: yes
-  shell: "ps -few | {{ linux_process_to_kill }} | awk '{print $2}'"
+  shell: "ps -few | grep {{ linux_process_to_kill }} | awk '{print $2}'"
   register: running_processes
 
 - name: Kill running processes
