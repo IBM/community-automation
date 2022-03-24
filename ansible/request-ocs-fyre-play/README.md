@@ -68,9 +68,13 @@ Once you have configured the `inventory` file, run the playbook using one of the
 
 ```bash
 ansible-playbook  -i inventory request-ocs-fyre.yml
+```
+
+Passing parameters
 
 ```bash
-or pass parameters (This example sets storageclass `ocs-storagecluster-ceph-rbd` as the default storageclass)
+ansible-playbook  -i inventory request-ocs-fyre.yml -e "kubeadmin_password=QWET-EWETE-QWERW" -e "ocp_api_url=api.mycluster.cp.fyre.ibm.com"
+```
 
 ```bash
 ansible-playbook  -i inventory request-ocs-fyre.yml -e "default_sc=ocs-storagecluster-ceph-rbd"
@@ -82,12 +86,6 @@ Playbook run example for `Quickburn` or `fyre UI` clusters
 ansible-playbook  -i inventory request-ocs-fyre.yml -e "fyre_ui_build=true"
 ```
 
-Playbook run example if using ocs_install_vars.yaml
-
-```bash
-ansible-playbook  -i inventory -e @ocs_install_vars.yml request-ocs-fyre.yml
-```
-
-### License
+## License
 
 See LICENCE.txt
