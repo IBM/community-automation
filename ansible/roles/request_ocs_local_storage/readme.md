@@ -2,7 +2,7 @@
 
 ## Overview
 
-- This role installs Openshift Container Storage (OCS) on OCP 4.4, 4.5 and 4.6 or newer clusters.
+- This role installs Openshift Container Storage (OCS) on OCP 4.6 or newer clusters.
 - Works on X, P, and Z clusters
 - To install OCS using `local storage` the OCP clusters require need the following min requirements.
   - Min of 3 worker nodes.
@@ -32,13 +32,14 @@
 - default_sc: ocs-storagecluster-cephfs # Default Storageclass
 - fyre_ui_build: false # true when cluster was built using the fyre website
 - ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
+- ocs_channel_prefix: "stable" # update if you need to use another channel
 
 ### Do not change the following ... dynamically changed to 4.6 values when "oc version" is 4.6 or greater
 
 - local_storage_namespace: local-storage
 - device_set: ocs-deviceset
-- localstore_version: 4.5
-- ocs_channel: stable-4.5
+- localstore_version: 4.5 ( overwritten automatically )
+- ocs_channel: stable-4.5 ( overwritten automatically )
 
 ### used for OCP version less then 4.6, device discovery is used for cluster greater then 4.6
 
