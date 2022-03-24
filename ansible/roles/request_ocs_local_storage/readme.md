@@ -41,10 +41,6 @@
 - localstore_version: 4.5 ( overwritten automatically )
 - ocs_channel: stable-4.5 ( overwritten automatically )
 
-### used for OCP version less then 4.6, device discovery is used for cluster greater then 4.6
-
-- ocs_device: /dev/vdb # First additional disk drive definition. Currently setup for a fyre additional disk.
-
 ## Example Playbook use of role
 
 ----------------
