@@ -1,0 +1,5 @@
+---
+
+DefaultAppName: 'DayTrader-ee7.0.11'
+DefaultEarFile: '{{ DefaultAppName }}.ear'
+

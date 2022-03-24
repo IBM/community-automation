@@ -1,0 +1,15 @@
+---
+
+- name: copy twas config scripts to target host
+  copy:
+   src: "scripts/"
+   dest: ~/
+   mode: '0600'
+
+- name: run the config jython script
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f {{ twas_script }}"
+  register: twasConfigOutput
+  failed_when: ( twasConfigOutput.rc not in [ 0, 255 ] )
+- name: twasConfigOutput
+  debug:
+   msg: "{{ twasConfigOutput.stdout_lines }}"
