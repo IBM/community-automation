@@ -48,7 +48,9 @@
 
 ## edit variables file
 
-- cp examples/ocs_install_vars.yml
+```bash
+cp examples/ocs_install_vars.yml .
+```
 
 ```code
 setdefault: true  #Set the default storageclass to the value in defatult_sc
@@ -64,7 +66,7 @@ ocp_api_url: "api.myocp.cp.fyre.ibm.com"
 
 ## Run playbook
 
-Once you have configured the `inventory` file, run the playbook using one of the following methods:
+Once you have configured the `inventory` file and updated your vars file, run the playbook using one of the following methods:
 
 ```bash
 ansible-playbook  -i inventory request-ocs-fyre.yml
