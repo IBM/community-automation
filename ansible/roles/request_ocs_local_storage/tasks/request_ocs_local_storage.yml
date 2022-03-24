@@ -140,7 +140,7 @@
 - name: Waiting for pods to start
   shell: "oc get pv -n {{ local_storage_namespace }} --no-headers=true | grep local-pv | grep -E \"Available|Bound\" | wc -l"
   register: pv_results
-  until: pv_results.stdout == num_pvs
+  until: pv_results.stdout >= num_pvs
   retries: 60
   delay: 5
 
