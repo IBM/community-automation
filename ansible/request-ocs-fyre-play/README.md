@@ -34,7 +34,7 @@
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
   - `ocs-storagecluster-cephfs` - File storage (RWX)
-  - `openshift-storage.noobaa.io` - Object storage
+  - `openshift-storage.noobaa.io` - Object storage 
 
 - Sets `ocs-storagecluster-cephfs` as the default storageclass, but will check first for any current default sc and make it not the default. This is configurable, change the `examples/ocs_install_vars.yaml` file and move to current dir if you want something different, or change the variable in the run of the playbook per the example below.
 
@@ -58,6 +58,7 @@ ocp_client_version: "4.9.15"
 client_os: "linux" # mac|windows|linux
 
 login_retries: 10
+kubeadmin_password: "ASDAS"  # your cluster kubeadmin password
 ocp_api_url: "api.myocp.cp.fyre.ibm.com" 
 ```
 
