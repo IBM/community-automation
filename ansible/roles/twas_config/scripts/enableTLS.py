@@ -10,7 +10,7 @@
 import sys
 execfile('wsadminlib.py')
 
-print "Starting script..."
+print "Starting enableTLS.py script..."
 
 #--------------------------------------------------------------------
 if 1 <= len(sys.argv) < 2:
@@ -31,6 +31,7 @@ nodes = _splitlines(AdminConfig.list( 'Node' ))
 for node_id in nodes:
         nodename = getNodeName(node_id)
         managedNode=nodeHasServerOfType( nodename, 'NODE_AGENT' )
+        appNode=nodeHasServerOfType( nodename, 'APPLICATION_SERVER' )
         dmgrNode=nodeHasServerOfType( nodename, 'DEPLOYMENT_MANAGER' ) 
 
         if( dmgrNode ):
@@ -40,7 +41,7 @@ for node_id in nodes:
           print "-- Setting " + sslProtocol + " for XDADefaultSSLSettings"
           AdminTask.modifySSLConfig(['-alias', 'XDADefaultSSLSettings','-scopeName', '(cell):'+cellName,'-sslProtocol',sslProtocol ])
         #endif
-        if( managedNode ):
+        if( managedNode or appNode ):
 		# [1/19/16 9:06:02:610 EST] SSL certificate and key management > SSL configurations > NodeDefaultSSLSettings > Quality of protection (QoP) settings
 		print "-- Setting " + sslProtocol + " for node: " + nodename
 		AdminTask.modifySSLConfig(['-alias', 'NodeDefaultSSLSettings', '-scopeName','(cell):'+cellName+':(node):'+nodename,'-sslProtocol', sslProtocol ]) 
