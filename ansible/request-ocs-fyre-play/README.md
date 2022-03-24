@@ -8,7 +8,7 @@
 
   - Install using the `fyre inf` node.
     - Copy to current folder from the examples folder the `inventory_remote_inf_node` and  rename to inventory.
-       - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need to enter into the inventory file your fyre root user PW  and inf IP.
+      - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need to enter into the inventory file your fyre root user PW  and inf IP.
   - Install using a `local  ubuntu VM` using `oc login`.
     - Run oc login locally on local VM to your fyre cluster.
     - Copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the local VM.
@@ -30,7 +30,7 @@
 - Dynamically determines what OCP cluster version your on and automatically installs the correct OCS and Local Storage operator version on it.
 
 - OCS creates the following 4 storageclass's
-  - `localblock` 
+  - `localblock`
   - `ocs-storagecluster-ceph-rbd` - Block storage (RWX)
   - `ocs-storagecluster-ceph-rgw` - Bucket storage
   - `ocs-storagecluster-cephfs` - File storage (RWX)
