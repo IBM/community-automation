@@ -1,6 +1,7 @@
 setdefault: true  #Set the default storageclass to the value in defatult_sc
 default_sc: ocs-storagecluster-cephfs # OCS storageclass to set as the default.
 
+fyre_ui_build: true # false when you use the fyre API to create the cluster
 ocp_client_version: "4.9.15"
 client_os: "linux" # mac|windows|linux
 
