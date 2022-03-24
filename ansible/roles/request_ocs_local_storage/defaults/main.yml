@@ -2,6 +2,7 @@
 ocs_bastion_setup_dir: ~/setup-files/ocs-setup  # folder where processed templates reside
 setdefault: true  # Sets param defatul storage class when true
 default_sc: ocs-storagecluster-cephfs
+ocs_device: "/dev/vdb"
 local_storage_namespace: openshift-local-storage # current default for 4.6 and newer
 device_set: ocs-deviceset-localblock
 localstore_version: 4.6
