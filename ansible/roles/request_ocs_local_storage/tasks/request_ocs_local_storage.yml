@@ -46,7 +46,7 @@
 
 - name: overwrite OCS channel
   set_fact:
-    ocs_channel: "{{ ocs_channel_override }}"
+    ocs_channel: "{{ ocs_channel_prefix }}-{{ ocs_channel_override }}"
   when: ocs_channel_override != ""
 
 - name: Generate OCS install files from templates and copy to dest

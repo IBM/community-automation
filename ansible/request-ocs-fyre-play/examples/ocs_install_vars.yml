@@ -5,5 +5,5 @@ ocp_client_version: "4.9.15"
 client_os: "linux" # mac|windows|linux
 
 login_retries: 10
+kubeadmin_password: "" # your kubeadmin password 
 ocp_api_url: "api.myocp.cp.fyre.ibm.com"  # note: do not add the https://
-

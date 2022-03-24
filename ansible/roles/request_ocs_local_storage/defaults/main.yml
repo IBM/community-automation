@@ -10,4 +10,4 @@ ocs_channel: stable-4.6
 num_devices: 1 # Num of additional disks per worker. Only support more than 1 for OCP 4.6 or newer clusters.
 fyre_ui_build: false # use with quickburn and OCP+, clusters built from fyre UI
 ocs_channel_prefix: "stable"  # update to change prefix of desired OCS channel
-ocs_channel_override: "" # update with {{ ocs_stable_prefix }}-4.x" to override or just fill in detail "stable-4.9"
+ocs_channel_override: "" # update with 4.x to override or just fill in detail ocs_channel_prefix will be used.
