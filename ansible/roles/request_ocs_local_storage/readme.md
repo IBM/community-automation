@@ -2,6 +2,7 @@
 
 ## Overview
 
+- This will automatically login to your cluster
 - This role installs Openshift Container Storage (OCS) on OCP 4.6 or newer clusters.
 - Works on X, P, and Z clusters
 - To install OCS using `local storage` the OCP clusters require need the following min requirements.
@@ -21,7 +22,6 @@
 ## Assumptions:
 
 - Ansible 2.9 or later installed, with python3.
-- you are logged into the cluster you would like OCS installed on.
 
 ## Default parameters set in the defaults/main.yml
 
@@ -31,21 +31,11 @@
 - setdefault: true  #Set parm defatul_sc as default storageclass when true
 - default_sc: ocs-storagecluster-cephfs # Default Storageclass
 - fyre_ui_build: false # true when cluster was built using the fyre website
-- ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
 - ocs_channel_prefix: "stable" # update if you need to use another channel
+- ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
 
-### Do not change the following ... dynamically changed to 4.6 values when "oc version" is 4.6 or greater
-
-- local_storage_namespace: local-storage
-- device_set: ocs-deviceset
-- localstore_version: 4.5 ( overwritten automatically )
-- ocs_channel: stable-4.5 ( overwritten automatically )
+see [oc_login](https://github.com/IBM/community-automation/tree/master/ansible/roles/ocp_login) role
 
 ## Example Playbook use of role
 
-----------------
-
-    - name: Install OCS fyre
-      hosts: bastion
-      roles:
-      - request_ocs_local_storage
+see [request-ocs-fyre-play](https://github.com/IBM/community-automation/tree/master/ansible/request-ocs-fyre-play)
