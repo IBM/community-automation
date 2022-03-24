@@ -57,15 +57,9 @@
   with_items:
   - ocs-operator.yaml
   - local-storage-operator.yaml
-  - local-volumes.yaml
   - storage-cluster.yaml
-
-- name: Copy OCS scripts to dest
-  copy:
-    src: files/
-    dest: "{{ ocs_bastion_setup_dir }}/"
-    mode: '0755'
-    force: true
+  - local-volume-set.yaml
+  - local-volumes-discovery.yaml
 
 - name: Check for Min CPUs of 48
   shell: "oc get node -o json | jq -r '.items[] | select(.metadata.labels[\"node-role.kubernetes.io/worker\"] != null) | .status.capacity.cpu' | awk '{s+=$1} END {print s}'"

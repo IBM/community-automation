@@ -2,7 +2,7 @@ apiVersion: local.storage.openshift.io/v1alpha1
 kind: LocalVolumeSet
 metadata:
   name: localblock
-  namespace: openshift-local-storage
+  namespace: {{ local_storage_namespace }}
 spec:
   storageClassName: localblock
   volumeMode: Block
