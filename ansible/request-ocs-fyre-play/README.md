@@ -11,7 +11,7 @@
       - Ansible will use the oc already installed on the `inf` node and push all the scripts and templates to the `inf` node for running. You only need to enter into the inventory file your fyre root user PW  and inf IP.
   - Install using a `local  ubuntu VM` using `oc login`.
     - Run oc login locally on local VM to your fyre cluster.
-    - Copy from examples to current dir the `inventory_local`, renaming to `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the local VM.
+    - Copy from examples to current dir the `inventory`. Ansible will run scripts locally on the `ubuntu VM` and use the `oc` on the local VM.
 
 - To install OCS on Fyre `bare metal` clusters requires clusters with follow min resource requirements.
   - Min of 3 worker nodes.
@@ -23,7 +23,7 @@
   - Use the fyre.ibm.com GUI OCP+ cluster option with large size selected. This is the smallest cluster you can use with OCS on it.
   - Use the Fyre API to create an OCP+ cluster. See example of API use in the examples folder, `example_fyre_api`.
   - Create an OCP+ cluster using the Ansible play in this repo called `request-ocp-fyre-play`. Use from the example folder the  `ocp_vars_example.yaml` to modify the size of the cluster.
-  - From fyre.ibm.com use the Quickburn large cluster support. Use the additon of `-e quickburn=true` to the ansible play call.  
+  - From fyre.ibm.com use the Quickburn large cluster support. Use the additon of `-e fyre_ui_build=true` to the ansible play call.  
 
 - Dynamically installs the Local Storage operator found in the `OperatorHub` to create a base `localblock` storageclass, which uses the /dev/vdb `addtional disk` on each worker node, for OCS to use.
 
@@ -43,7 +43,7 @@
 - Ansible 2.9 or later installed, with python3.
 - A healthy Fyre OCP+/quickburn cluster in running state.
   - Min 3 worker nodes with /dev/vdb additional storage, 16 CPS and 64G mem. (32GB will work)
-- oc client installed and oc login done to OCP cluster, if running local using `examples/inventory_local` on ubuntu VM.
+- oc client installed and oc login done to OCP cluster, if running local using `examples/inventory` on ubuntu VM.
 - Fyre root user password, if running remote mode using `examples/inventory_remote_inf_node`, on cluster `inf` node.
 
 ## edit variables file
