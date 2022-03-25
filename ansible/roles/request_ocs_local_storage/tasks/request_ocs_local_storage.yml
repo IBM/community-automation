@@ -86,7 +86,7 @@
   shell:  "oc apply -f {{ ocs_bastion_setup_dir }}/ocs-operator.yaml"
   register: ocs_install_results
 
-- name: checking for container storage to be ready
+- name: checking for container storage to be ready (10 min max)
   shell:  "oc get csv -n openshift-storage --no-headers=true"
   register: ocs_csv_results
   until: "'Succeeded' in ocs_csv_results.stdout"
@@ -105,7 +105,7 @@
   shell: "oc get csv -n {{ local_storage_namespace }} --no-headers=true"
   register: local_storage_results
 
-- name: checking for container storage to be ready
+- name: checking for container storage to be ready (10 min max)
   shell:  "oc get csv -n {{ local_storage_namespace }} --no-headers=true"
   register: ocs_csv_results
   until: "'Succeeded' in ocs_csv_results.stdout"
@@ -120,7 +120,7 @@
   shell: "oc get nodes --no-headers=true | grep worker | wc -l"
   register: num_worker_results
 
-- name: Waiting for discovery pods to start on all worker nodes
+- name: Waiting for discovery pods to start on all worker nodes (5 min max)
   shell: "oc get pod -n {{ local_storage_namespace }} --no-headers=true | grep diskmaker-discovery | grep Running | wc -l"
   register: discovery_pod_results
   until: discovery_pod_results.stdout == num_worker_results.stdout
@@ -131,7 +131,7 @@
   shell: "oc apply  -f {{ ocs_bastion_setup_dir }}/local-volume-set.yaml"
   register: local_vol_results
 
-- name: Waiting for pods to start
+- name: Waiting for pods to start (5 min max)
   shell: "oc get pv -n {{ local_storage_namespace }} --no-headers=true | grep local-pv | grep -E \"Available|Bound\" | wc -l"
   register: pv_results
   until: pv_results.stdout >= num_pvs
@@ -142,11 +142,18 @@
   shell: "oc apply -f {{ ocs_bastion_setup_dir }}/storage-cluster.yaml"
   register: storageCluster_results
 
-- name: Check for ocs-storagecluster storage class
+- name: Check for ocs-storagecluster storage class, (10 min max)
   shell: "oc get sc --no-headers | cut -f1 -d' ' | grep 'ocs-storagecluster' | wc -l"
   register: sc_results
   until: ( sc_results.stdout|int ) >= 3
   retries: 60
+  delay: 10
+
+- name: Check for noobaa object storage class, this can take awhile (30 min max)
+  shell: "oc get sc --no-headers | cut -f1 -d' ' | grep 'noobaa' | wc -l"
+  register: sc_results
+  until: ( sc_results.stdout|int ) >= 3
+  retries: 180
   delay: 10
 
 - name: Set default storageclass to {{ default_sc }}  {{ setdefault }}
