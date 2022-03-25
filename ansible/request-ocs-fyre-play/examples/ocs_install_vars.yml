@@ -1,7 +1,11 @@
 setdefault: true  #Set the default storageclass to the value in defatult_sc
 default_sc: ocs-storagecluster-cephfs # OCS storageclass to set as the default.
 
-# Change to the additional disk definition for your cluster type.
-# Only used for OCP 4.5 or 4.4 clusters when OCS 4.5 is installed.
-# Not used for OCP 4.6 clusters when OCS 4.6 is installed.
-ocs_device: /dev/vdb # First additional disk drive definition.
+fyre_ui_build: true # false when you use the fyre API to create the cluster
+ocp_client_version: "4.9.15"
+client_os: "linux" # mac|windows|linux
+
+login_retries: 10
+kubeadmin_password: "" # your kubeadmin password 
+ocp_api_url: "api.myocp.cp.fyre.ibm.com"  # note: do not add the https://
+ocs_channel_override: "" # eg 4.9 for OCP 4.10 update if you need to use a different channel stable- will be pre-pended
