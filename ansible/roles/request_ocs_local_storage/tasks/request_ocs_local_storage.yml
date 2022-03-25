@@ -151,10 +151,11 @@
 
 - name: Check for noobaa object storage class, this can take awhile (30 min max)
   shell: "oc get sc --no-headers | cut -f1 -d' ' | grep 'noobaa' | wc -l"
-  register: sc_results
-  until: ( sc_results.stdout|int ) >= 3
+  register: noobaa_results
+  until: ( noobaa_results.stdout|int ) ==1
   retries: 180
   delay: 10
+  ignore_errors: true
 
 - name: Set default storageclass to {{ default_sc }}  {{ setdefault }}
   shell: "oc get sc  | grep -e default | cut -f1 -d' ' | tr -s ' '"
