@@ -10,9 +10,10 @@ def jobProps = [
 
 def paramsList = [
     string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
-    string(name: 'external_password_file', defaultValue: '/etc/ansible/nestvars.yml', description: 'location of password yml file'),
     string(name: 'regionTimeZone', defaultValue: 'America/New_York', description: 'set the timezone->https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'),
     string(name: 'authorized_keys_url', defaultValue: '', description: 'URL location of a file containg id_rsa.pub keys'),
+    password(name: 'load_secrets_dir', defaultValue: '/mnt/data/.load_secrets_dir', description: 'location secrets'),
+    password(name: 'passwordfile', defaultValue: '/mnt/data/.load_secrets_dir/.password', description: 'location secrets'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -28,7 +29,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
 	  export ANSIBLE_FORCE_COLOR=true
-          cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e external_password_file=${params.external_password_file} -e regionTimeZone=${params.regionTimeZone} -e authorized_keys_url=${params.authorized_keys_url}
+          cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i ${params.osnames}, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e regionTimeZone=${params.regionTimeZone} -e authorized_keys_url=${params.authorized_keys_url} -e load_secrets_dir=${params.load_secrets_dir} --vault-password-file=${params.passwordfile}
         """.stripIndent()
       }
    }
