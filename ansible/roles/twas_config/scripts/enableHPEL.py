@@ -10,13 +10,21 @@
 # 
 execfile('wsadminlib.py')
 
-print "Starting script..."
+print "Starting enableHPEL.py script..."
 
 #--------------------------------------------------------------------
 cellName = AdminControl.getCell()
+textlog_no=True
 # enable the HPEL requirement for every SSL config in the env... UGH>
 #productVersion=AdminTask.getNodeBaseProductVersion(['-nodeName', 'dmgr'])
 #print "modifying WAS version: " + productVersion
+
+
+if 1 <= len(sys.argv):
+    if sys.argv[0] == 'textlog_yes':
+        textlog_no=False
+    #endif
+#endif
 
 # get the list of servers and loop on every one minus webservers
 for (nodename,servername) in listServersOfType(None):
@@ -32,7 +40,13 @@ for (nodename,servername) in listServersOfType(None):
         HPELTrace = AdminConfig.list("HPELTrace", HPELService)
         AdminConfig.modify(HPELTrace, "[[purgeMaxSize 10000] [fileSwitchTime 02] [fileSwitchEnabled true]]")
         HPELTextLog = AdminConfig.list("HPELTextLog", HPELService)
-        AdminConfig.modify(HPELTextLog,"[[enabled false]]")
+        if textlog_no:
+            print ("-- HPELTextLog disabled....")
+            AdminConfig.modify(HPELTextLog,"[[enabled false]]")
+        else:
+            print ("-- HPELTextLog enabled....")
+            AdminConfig.modify(HPELTextLog,"[[enabled true]]")
+        #endif        
 
         
         parm2="/Cell:"+cellName+"/Node:"+nodename+"/Server:"+servername+"/RASLoggingService:/"
