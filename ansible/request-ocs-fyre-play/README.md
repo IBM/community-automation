@@ -3,7 +3,7 @@
 ## Overview
 
 - Installs Openshift Container Storage (OCS) on fyre 4.6 and above, default
-- Installs Openshift Data FOundation (ODF) on fyre 4.10 and above, optional
+- Installs Openshift Data Foundation (ODF) on fyre 4.10 and above, optional
   To begin clone this repository to a VM that meets the ansible requirements specified in README here
   - cd to the request-ocs-fyre-play dir.
 
