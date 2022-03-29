@@ -1,4 +1,4 @@
-# Ansible Playbook for installing Openshift Container Storage (OCS) onto Fyre OCP+ clusters and Quickburn large clusters.
+# Ansible Playbook for installing Openshift Container Storage (OCS) or Openshift Data Foundation (ODF) on Fyre clusters
 
 ## Overview
 
