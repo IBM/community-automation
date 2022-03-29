@@ -31,6 +31,20 @@ def setapiDiscovery( nodename, servername, apiDiscovery, ):
     result = AdminConfig.modify(webcontainer, [['apiDiscovery', apiDiscovery]])
     #sop(m,"Exit. result=%s" % ( repr(result), ))
 
+def ssossl():
+    ltpaId = _getLTPAId()
+    attrs1 = [["singleSignon", [["requiresSSL", "true"], ["enabled", "true"]]]]
+
+    if len(ltpaId) > 0:
+        try:
+            AdminConfig.modify(ltpaId, attrs1)
+        except:
+            print "AdminConfig.modify(%s,%s) caught an exception" % (ltpaId,repr(attrs1))
+            raise
+    else:
+        raise "SSO configId was not found"
+    return
+
 cellName = AdminControl.getCell()
 # get the list of servers and loop on every one minus webservers
 for (nodename,servername) in listServersOfType(None):
@@ -50,6 +64,8 @@ for (nodename,servername) in listServersOfType(None):
         setapiDiscovery( nodename, servername, 'true', )
         print("-- setting CookieName: PTSESSIONID")
         modifyCookiesSessionName( nodename, servername, 'true', 'PTSESSIONID' )
+        print("-- set single signon ssl: true")
+        ssossl()
 
         # example to add port
         # ensureHostAlias( 'default_host', '*', '9080' )
