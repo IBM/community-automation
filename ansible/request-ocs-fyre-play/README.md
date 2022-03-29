@@ -67,6 +67,10 @@ ocs_type: "ocs"  # ocs|odf (default is ocs)
 ocs_channel_override: "" # eg 4.9 for OCP 4.10 update if you need to use a different channel stable- will be pre-pended
 ```
 
+## Example output
+
+[Example Output](examples/sample-output.txt)
+
 ## Run playbook
 
 Once you have configured the `inventory` file and updated your vars file, run the playbook using one of the following methods:
