@@ -2,7 +2,8 @@
 
 ## Overview
 
-- Installs Openshift Container Storage (OCS) on fyre 4.6 and newer clusters
+- Installs Openshift Container Storage (OCS) on fyre 4.6 and above, default
+- Installs Openshift Data FOundation (ODF) on fyre 4.10 and above, optional
   To begin clone this repository to a VM that meets the ansible requirements specified in README here
   - cd to the request-ocs-fyre-play dir.
 
@@ -62,6 +63,8 @@ client_os: "linux" # mac|windows|linux
 login_retries: 10
 kubeadmin_password: "ASDAS"  # your cluster kubeadmin password
 ocp_api_url: "api.myocp.cp.fyre.ibm.com" 
+ocs_type: "ocs"  # ocs|odf (default is ocs)
+ocs_channel_override: "" # eg 4.9 for OCP 4.10 update if you need to use a different channel stable- will be pre-pended
 ```
 
 ## Run playbook
