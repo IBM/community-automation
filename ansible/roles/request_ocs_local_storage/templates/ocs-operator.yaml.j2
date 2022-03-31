@@ -15,11 +15,11 @@ spec:
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: ocs-operator
+  name: "{{ ocs_type }}-operator"
   namespace: openshift-storage
 spec:
   channel: "{{ ocs_channel }}"
   installPlanApproval: Automatic
-  name: ocs-operator
+  name: "{{ ocs_type }}-operator"
   source: redhat-operators
   sourceNamespace: openshift-marketplace

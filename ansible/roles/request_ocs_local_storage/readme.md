@@ -33,6 +33,7 @@
 - fyre_ui_build: false # true when cluster was built using the fyre website
 - ocs_channel_prefix: "stable" # update if you need to use another channel
 - ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
+- ocs_type: "ocs" # ocs|odf
 
 see [oc_login](https://github.com/IBM/community-automation/tree/master/ansible/roles/ocp_login) role
 

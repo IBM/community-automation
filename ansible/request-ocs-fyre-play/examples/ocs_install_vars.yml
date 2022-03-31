@@ -8,4 +8,5 @@ client_os: "linux" # mac|windows|linux
 login_retries: 10
 kubeadmin_password: "" # your kubeadmin password 
 ocp_api_url: "api.myocp.cp.fyre.ibm.com"  # note: do not add the https://
+ocs_type: "ocs"  # ocs|odf (default is ocs)
 ocs_channel_override: "" # eg 4.9 for OCP 4.10 update if you need to use a different channel stable- will be pre-pended
