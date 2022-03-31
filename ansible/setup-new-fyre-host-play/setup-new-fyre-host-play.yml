@@ -2,8 +2,6 @@
 
 - hosts: all
   gather_facts: true
-  vars_files:
-  - "{{ password_file }}"
   vars:
   - ansible_ssh_common_args: -o StrictHostKeyChecking=no
   - ansible_user: root

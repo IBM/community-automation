@@ -1,0 +1,3 @@
+param = '[-secureApps %s -secureLocalResources %s -userRegistryType %s -adminName %s -adminPassword %s]' % ('true','false','WIMUserRegistry','{{ twas_username }}','{{ twas_password }}')
+AdminTask.applyWizardSettings(param)
+AdminConfig.save()

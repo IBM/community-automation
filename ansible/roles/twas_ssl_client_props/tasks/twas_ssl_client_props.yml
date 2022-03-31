@@ -1,0 +1,7 @@
+---
+
+- name: update ssl.client.props SSL/TLS
+  replace:
+   path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/properties/ssl.client.props"
+   regexp: 'SSL_TLSv2'
+   replace: '{{ sslProtocol }}'

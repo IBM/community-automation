@@ -1,4 +1,3 @@
 ---
-password_file: "{{ external_password_file | default('/etc/ansible/nestvars.yml') }}"
 user_passfile: password.hash
 user_shell: '/bin/bash'
