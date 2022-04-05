@@ -1,0 +1,203 @@
+root@rayvm1:/workspace/storage/odf/community-automation/ansible/request-ocs-fyre-play# ansible-playbook -i inventory request-ocs-fyre.yml
+
+PLAY [Install ocs on fyre OCP+ env] ******************************************************************************************************************************************************
+
+TASK [Gathering Facts] *******************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [oc_client_install : include_tasks] *************************************************************************************************************************************************
+included: /workspace/storage/odf/community-automation/ansible/roles/oc_client_install/tasks/oc-client-install.yml for localhost
+
+TASK [oc_client_install : check for oc client] *******************************************************************************************************************************************
+fatal: [localhost]: FAILED! => {"changed": false, "cmd": "./oc version", "msg": "[Errno 2] No such file or directory: b'./oc'", "rc": 2}
+...ignoring
+
+TASK [oc_client_install : Download OCP CLI] **********************************************************************************************************************************************
+changed: [localhost]
+
+TASK [oc_client_install : Unpack OCP CLI] ************************************************************************************************************************************************
+changed: [localhost]
+
+TASK [oc_client_install : Copy oc command to local bin] **********************************************************************************************************************************
+ok: [localhost]
+
+TASK [oc_client_install : Copy kubectl to local bin] *************************************************************************************************************************************
+ok: [localhost]
+
+TASK [ocp_login : include_tasks] *********************************************************************************************************************************************************
+included: /workspace/storage/odf/community-automation/ansible/roles/ocp_login/tasks/ocp_login.yml for localhost
+
+TASK [ocp_login : Retrieve Kubeadmin_password if not already defined] ********************************************************************************************************************
+skipping: [localhost]
+
+TASK [ocp_login : Retrieve API URL if not already defined] *******************************************************************************************************************************
+skipping: [localhost]
+
+TASK [ocp_login : Create kube directory...] **********************************************************************************************************************************************
+ok: [localhost]
+
+TASK [ocp_login : OCP login] *************************************************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : Install jq] ********************************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : Create ocs setup directory] ****************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : Locating all setup files] ******************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : Removing all setup files previously from previous run] *************************************************************************************************
+changed: [localhost] => (item={'path': '/root/setup-files/ocs-setup/ocs-operator.yaml', 'mode': '0755', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 0, 'gid': 0, 'size': 525, 'inode': 403114724, 'dev': 64768, 'nlink': 1, 'atime': 1648565921.9629242, 'mtime': 1648565914.7948954, 'ctime': 1648565915.2828972, 'gr_name': 'root', 'pw_name': 'root', 'wusr': True, 'rusr': True, 'xusr': True, 'wgrp': False, 'rgrp': True, 'xgrp': True, 'woth': False, 'roth': True, 'xoth': True, 'isuid': False, 'isgid': False})
+changed: [localhost] => (item={'path': '/root/setup-files/ocs-setup/local-storage-operator.yaml', 'mode': '0755', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 0, 'gid': 0, 'size': 565, 'inode': 269542696, 'dev': 64768, 'nlink': 1, 'atime': 1648565977.1111457, 'mtime': 1648565915.6588988, 'ctime': 1648565915.8908997, 'gr_name': 'root', 'pw_name': 'root', 'wusr': True, 'rusr': True, 'xusr': True, 'wgrp': False, 'rgrp': True, 'xgrp': True, 'woth': False, 'roth': True, 'xoth': True, 'isuid': False, 'isgid': False})
+changed: [localhost] => (item={'path': '/root/setup-files/ocs-setup/storage-cluster.yaml', 'mode': '0755', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 0, 'gid': 0, 'size': 628, 'inode': 134625770, 'dev': 64768, 'nlink': 1, 'atime': 1648566113.3676932, 'mtime': 1648565916.3029015, 'ctime': 1648565916.5629025, 'gr_name': 'root', 'pw_name': 'root', 'wusr': True, 'rusr': True, 'xusr': True, 'wgrp': False, 'rgrp': True, 'xgrp': True, 'woth': False, 'roth': True, 'xoth': True, 'isuid': False, 'isgid': False})
+changed: [localhost] => (item={'path': '/root/setup-files/ocs-setup/local-volume-set.yaml', 'mode': '0755', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 0, 'gid': 0, 'size': 608, 'inode': 817545, 'dev': 64768, 'nlink': 1, 'atime': 1648566041.2274032, 'mtime': 1648565916.990904, 'ctime': 1648565917.2949054, 'gr_name': 'root', 'pw_name': 'root', 'wusr': True, 'rusr': True, 'xusr': True, 'wgrp': False, 'rgrp': True, 'xgrp': True, 'woth': False, 'roth': True, 'xoth': True, 'isuid': False, 'isgid': False})
+changed: [localhost] => (item={'path': '/root/setup-files/ocs-setup/local-volumes-discovery.yaml', 'mode': '0755', 'isdir': False, 'ischr': False, 'isblk': False, 'isreg': True, 'isfifo': False, 'islnk': False, 'issock': False, 'uid': 0, 'gid': 0, 'size': 344, 'inode': 537064975, 'dev': 64768, 'nlink': 1, 'atime': 1648566022.0593262, 'mtime': 1648565917.7269073, 'ctime': 1648565917.9869082, 'gr_name': 'root', 'pw_name': 'root', 'wusr': True, 'rusr': True, 'xusr': True, 'wgrp': False, 'rgrp': True, 'xgrp': True, 'woth': False, 'roth': True, 'xoth': True, 'isuid': False, 'isgid': False})
+
+TASK [request_ocs_local_storage : Get ocs version major.minor] ***************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Get number of workers] *********************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : set fact number of devices] ****************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : set fact localstore_version, ocs_channel, and num_pvs] *************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : overwrite OCS channel] *********************************************************************************************************************************
+ok: [localhost]
+
+TASK [request_ocs_local_storage : Generate OCS install files from templates and copy to dest] ********************************************************************************************
+changed: [localhost] => (item=ocs-operator.yaml)
+changed: [localhost] => (item=local-storage-operator.yaml)
+changed: [localhost] => (item=storage-cluster.yaml)
+changed: [localhost] => (item=local-volume-set.yaml)
+changed: [localhost] => (item=local-volumes-discovery.yaml)
+
+TASK [request_ocs_local_storage : Check for Min CPUs of 48] ******************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : cpu failed message] ************************************************************************************************************************************
+skipping: [localhost]
+
+TASK [request_ocs_local_storage : get worker node names] *********************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : update worker labels] **********************************************************************************************************************************
+changed: [localhost] => (item=worker0.ocp410odf5.cp.fyre.ibm.com)
+changed: [localhost] => (item=worker1.ocp410odf5.cp.fyre.ibm.com)
+changed: [localhost] => (item=worker2.ocp410odf5.cp.fyre.ibm.com)
+
+TASK [request_ocs_local_storage : create openshift-storage namespace] ********************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Apply OCS operator yaml] *******************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : checking for container storage to be ready (10 min max)] ***********************************************************************************************
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (60 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (59 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (58 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (57 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (56 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (55 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : create and set openshift-local-storage] ****************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Apply  local storage operator yaml] ********************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : checking for local storage csv] ************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : checking for container storage to be ready (10 min max)] ***********************************************************************************************
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (60 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (59 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (58 retries left).
+FAILED - RETRYING: checking for container storage to be ready (10 min max) (57 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : OCS auto discovery of local volumes] *******************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : get number of workers] *********************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Waiting for discovery pods to start on all worker nodes (5 min max)] ***********************************************************************************
+FAILED - RETRYING: Waiting for discovery pods to start on all worker nodes (5 min max) (60 retries left).
+FAILED - RETRYING: Waiting for discovery pods to start on all worker nodes (5 min max) (59 retries left).
+FAILED - RETRYING: Waiting for discovery pods to start on all worker nodes (5 min max) (58 retries left).
+FAILED - RETRYING: Waiting for discovery pods to start on all worker nodes (5 min max) (57 retries left).
+FAILED - RETRYING: Waiting for discovery pods to start on all worker nodes (5 min max) (56 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : apply local volumeset yaml] ****************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Waiting for pods to start (5 min max)] *****************************************************************************************************************
+FAILED - RETRYING: Waiting for pods to start (5 min max) (60 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (59 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (58 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (57 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (56 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (55 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (54 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (53 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (52 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (51 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (50 retries left).
+FAILED - RETRYING: Waiting for pods to start (5 min max) (49 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Install storagecluster] ********************************************************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Check for ocs-storagecluster storage class, (10 min max)] **********************************************************************************************
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (60 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (59 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (58 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (57 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (56 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (55 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (54 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (53 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (52 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (51 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (50 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (49 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (48 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (47 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (46 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (45 retries left).
+FAILED - RETRYING: Check for ocs-storagecluster storage class, (10 min max) (44 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Check for noobaa object storage class, this can take awhile (30 min max)] ******************************************************************************
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (180 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (179 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (178 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (177 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (176 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (175 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (174 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (173 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (172 retries left).
+FAILED - RETRYING: Check for noobaa object storage class, this can take awhile (30 min max) (171 retries left).
+changed: [localhost]
+
+TASK [request_ocs_local_storage : Set default storageclass to ocs-storagecluster-cephfs  True] *******************************************************************************************
+changed: [localhost]
+
+TASK [request_ocs_local_storage : update default storage class when exist] ***************************************************************************************************************
+skipping: [localhost]
+
+TASK [request_ocs_local_storage : set default storage when there is no default] **********************************************************************************************************
+changed: [localhost]
+
+PLAY RECAP *******************************************************************************************************************************************************************************
+localhost                  : ok=40   changed=26   unreachable=0    failed=0    skipped=4    rescued=0    ignored=1
