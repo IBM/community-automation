@@ -2,6 +2,7 @@
 # tasks ocs  install
 
 - name: Install jq
+  become: yes
   package: >
     name=jq
     state=latest
