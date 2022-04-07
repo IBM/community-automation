@@ -1,12 +1,14 @@
-ocp-cs: Common Services on OCP
+common_services
 =========
 
 This module will install Common Services on OCP. Supported versions starting with 3.3 and above.
 
+---------
+
 Requirements
 ------------
 
- - Running OCP 4.x cluster is needed.
+- Running OCP 4.x cluster is needed.
 
 Role Variables
 --------------
@@ -28,7 +30,7 @@ Role Variables
 Dependencies
 ------------
 
- - None
+- None
 
 Example Playbook
 ----------------
@@ -41,11 +43,10 @@ Example Playbook
 License
 -------
 
-See LICENCE.txt
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
 
 Author Information
 ------------------
 
 Xinchun Liu (xcliu@ca.ibm.com)
 Prajyot Parab (prajyot.parab@ibm.com)
-

@@ -1,30 +1,57 @@
-# Provision cluster using IPI installer
+ipi_ocp_cluster_provision
+=========
 
-This role can be used to provision OCP clusters using the IPI Installer.
+Provision OCP cluster using IPI installer
 
-## Defaults
+------------
 
-```yaml
-# Master nodes 
-"MASTER_CPUS": "10"
-"MASTER_MEMORY": "32768"
-"MASTER_DISK_SIZE": "300"
-"MASTER_COUNT": 3
+Only implemented for AWS at this time
 
-# Worker nodes
-"WORKER_COUNT": 3
-"WORKER_CPUS": "16"
-"WORKER_MEMORY": "73728"
-"WORKER_DISK_SIZE": "200"
-```
+Requirements
+------------
 
-## Additional variables
+- Access to a cloud platform
 
-These variables can be set in vars files, or passed via command line.
+Role Variables
+--------------
 
-```yaml
-BASE_DOMAIN: "<your base domain>"
-CLUSTER_NAME: "<cluster name>"
-WORKER_VM_SIZE: "<aws VM size>" # (eg. m5.2xlarge )
-MASTER_VM_SIZE: "<aws VM size>" # (eg. m5.2xlarge )
-```
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| MASTER_CPUS             | yes      | 10      | | |
+| MASTER_MEMORY           | yes      | 32768   | | |  
+| MASTER_DISK_SIZE        | yes     | 300     | | |
+| MASTER_COUNT            | yes     | 3       | | |
+| WORKER_COUNT            | yes     | 3        | | |
+| WORKER_CPUS             | yes     | 16      |  | |
+| WORKER_MEMORY           | yes      | 73728  | | |
+| WORKER_DISK_SIZE        | yes      | 200 | | |
+| WORKER_VM_SIZE          | yes      | m5.2xlarge | |  AWS size of worker VM instances |
+| MASTER_VM_SIZE          | yes      | m5.2xlarge | |  AWS of master VM instances |
+| BASE_DOMAIN             | yes      |  |  | purple-chesterfield.com |
+| CLUSTER_NAME            | yes      |  | string value |   |
+| cloud                   | yes      | AWS | AWS, google, azure, vsphere | AWS is only implementation at this time  |
+| logfile                 | yes      | /tmp/deploy.log | |   |
+
+Dependencies
+------------
+
+get_ocp_installer automatically included via meta
+
+Example Playbook
+----------------
+
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: all
+      roles:
+         - ipi_ocp_cluster_provision
+
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Ray Ashworth (ashworth@us.ibm.com)

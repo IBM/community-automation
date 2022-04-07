@@ -1,12 +1,24 @@
-deploy_vmdisk_vmware: deploy an second drive onto every worker in the vmware cluster.
+deploy_vmdisk_vmware
 =========
 
 Ansible role for deploy second disk (sdb) drive on to vmware worker nodes.
 
-Requirements:
+-----------
+
+Requirements
 ------------
 
- - Need to be on an linux box or docker image that has run `community-automation/scripts/common/install-prereqs.sh`.
+- Need to be on an linux box or docker image that has run `community-automation/scripts/common/install-prereqs.sh`.
+
+Role Variables
+--------------
+
+None
+
+Dependencies
+------------
+
+None
 
 Example Playbook
 ----------------
@@ -19,4 +31,9 @@ Example Playbook
 License
 -------
 
-See LICENCE.txt
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Add author

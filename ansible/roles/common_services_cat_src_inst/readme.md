@@ -1,24 +1,31 @@
-common-services-cat-src-inst: Install the CatalogSource for Common Services Operator
+common_services_cat_src_inst
 =========
 
 Ansible role for Install the CatalogSource for Common Services Operator.
 
-Description
 -----------
 
- - Install the CatalogSource for the Common Services Operation .
- - It takes as input the version of the Common Services CatalogSource to install.
- - Valid Common Services versions are `latest` or `dev-latest`.
-
-Requirements:
+Requirements
 ------------
 
- - Need to be on an linux system, with ansible 2.8 or later installed.
+- Need to be on an linux system, with ansible 2.8 or later installed.
+
+Role Variables
+--------------
+
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| catalog_source_version  | no       | latest   | latest, dev-latest       |                          |
+
+Dependencies
+------------
+
+N/A
 
 Example Playbook
 ----------------
 
-    - name: Install ova to vCenter
+    - name: Install common services catalog source
       hosts: bastion
       roles:
       - common_services_cat_src_inst
@@ -26,4 +33,9 @@ Example Playbook
 License
 -------
 
-See LICENCE.txt
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Authors
+-------
+
+Add author

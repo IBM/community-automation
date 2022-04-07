@@ -1,12 +1,16 @@
-git_install_fyre
+docker_ce_install
 =========
 
-This role will install git onto the inf node of a fyre OCP+ clusters version 4.4.3 or later.
+Install docker ce
+
+------------
+
+Currently used for Ubuntu 20
 
 Requirements
 ------------
 
-- Running fyre OCP+ cluster is needed.
+None
 
 Role Variables
 --------------
@@ -21,10 +25,11 @@ None
 Example Playbook
 ----------------
 
-    - name: Install git 
-      hosts: bastion
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: all
       roles:
-      - git_install_fyre
+         - docker_ce_install
 
 License
 -------
@@ -34,4 +39,4 @@ See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
 Author Information
 ------------------
 
-Walt Krapohl (krapohl@us.ibm.com)
+Add author

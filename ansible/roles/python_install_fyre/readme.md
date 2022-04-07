@@ -1,13 +1,24 @@
-python_install_fyre: python inf node of gyre on OCP cluster
+python_install_fyre
 =========
 
-This module will install git onto the inf node of a fyre OCP+Beta clusters version 4.4.3 or later.
+This module will install git onto the inf node of a fyre OCP clusters version 4.4.3 or later.
+
+------------
 
 Requirements
 ------------
 
- - Running fyre OCP+Beta cluster is needed.
+- Running fyre OCP+ cluster is needed.
 
+Role Variables
+--------------
+
+None
+
+Dependencies
+------------
+
+None
 
 Example Playbook
 ----------------
@@ -22,7 +33,7 @@ Example Playbook
 License
 -------
 
-See LICENCE.txt
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
 
 Author Information
 ------------------

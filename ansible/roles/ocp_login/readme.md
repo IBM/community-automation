@@ -1,10 +1,47 @@
-# OCP login
-Used to login to OCP clusters prior to running command line tasks.  This play role will also install a copy of the oc client.
+ocp_login
+=========
 
-## Expects the following variables
+Login to your ocp cluster
 
-- kubeadmin_user
-- kubeadmin_password
-- ocp_api_url   (example: "api.my-cluster.purple-chesterfield.com")
-- ocp_api_port ( OPTIONAL, defaults to 6443 )
-- kubeconfig_location ( OPTIONAL, default $HOME/.kube )
+------------
+
+Requirements
+------------
+
+- valid credential to cluster
+
+Role Variables
+--------------
+
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| kubeadmin_user          | yes       | kubeadmin   | valid admin user     |                        |
+| kubeadmin_password      | yes      |         |                 |                          |
+| ocp_api_url           | yes      |   |  | example: "api.my-cluster.purple-chesterfield.com") |
+| ocp_api_port          | yes   | 6443 |  |  |
+| kubeconfig_location   | yes   | $HOME/.kube | valid folder |  |  
+| login_retries         | yes   | 10 |  |  |  
+
+Dependencies
+------------
+
+- oc_client_install
+
+Example Playbook
+----------------
+
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: all
+      roles:
+         - ocp_login
+
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Ray Ashworth (ashworth@us.ibm.com)
