@@ -10,11 +10,13 @@ function getdescription () {
   local rline=""
   local descLine=""
 
-  [[ -f $readme ]] || { echo "No readme"; cp ../../docs/role.readme.template.md "$readme"; return; }
+  [[ -f $readme ]] || { echo "readme template added to role"; cp ../../docs/role.readme.template.md "$readme"; return; }
 
   while IFS= read -r rline || [[ -n "$rline" ]]; do
 
-    grep '--' && break
+    # stop at first set of dashes
+    grep '--' && break 
+    # skip over first set of equals
     grep '==' && continue
     descLine="$descLine\n $rline"
 
