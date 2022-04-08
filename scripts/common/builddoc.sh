@@ -10,15 +10,15 @@ function getdescription () {
   local rline=""
   local descLine=""
 
-  [[ -f $readme ]] || { echo "readme template added to role"; cp ../../docs/role.readme.template.md "$readme"; return; }
+  [[ ! -f $readme ]] && { echo "readme template added to role"; cp ../../docs/role.readme.template.md "$readme"; return; } || true
 
   while IFS= read -r rline || [[ -n "$rline" ]]; do
 
     # stop at first set of dashes
-    grep '--' && break 
+    grep -q '\-\-' <<< "$rline" && break 
     # skip over first set of equals
-    grep '==' && continue
-    descLine="$descLine\n $rline"
+    grep -q '==' <<< "$rline" && continue
+    descLine="$descLine<br> $rline"
 
   done < "$readme"
   echo -e "$descLine"
@@ -27,7 +27,7 @@ function getdescription () {
 
 roletable="/tmp/roletable.html"
 rolenamesfile="/tmp/rolenamefile"
-$(ls ../../ansible/roles | xargs -i basename {} > $rolenamesfile)
+ls ../../ansible/roles | xargs -i basename {} > $rolenamesfile
 
 echo -e "<html><table border=1>" > $roletable
 echo -e "<th>Role</th><th>Example Plays</th><th>Description</th>" >> $roletable
@@ -35,10 +35,10 @@ while IFS= read -r line || [[ -n "$line" ]]; do
   echo -e  "<tr><td>$line</td>" >> $roletable
 
   echo -e "<td>" >> $roletable
-  grep -E -rl $line ../../ansible | grep -vi -E "jenkins|roles|readme|inventory|example" | awk '{printf " "$1 "<br>"}' >> $roletable || true
+  grep -E -rl "$line" ../../ansible | grep -vi -E "jenkins|roles|readme|inventory|example" | awk '{printf " "$1 "<br>"}' >> $roletable || true
   echo -e "</td><td>" >> $roletable
 
-  getdescription $line >> $roletable || true
+  getdescription "$line" >> $roletable || true
 
   echo -e "</td></tr>" >> $roletable
 
