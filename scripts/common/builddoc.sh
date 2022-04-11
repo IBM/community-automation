@@ -28,7 +28,7 @@ function getdescription () {
 
 roletable="/tmp/roletable.html"
 rolenamesfile="/tmp/rolenamefile"
-ls ../../ansible/roles | xargs -i basename {} > $rolenamesfile
+ls ../../ansible/roles | xargs -I {}  basename {} > $rolenamesfile
 
 echo -e "<html><table border=1>" > $roletable
 echo -e "<th>Role</th><th>Example Plays</th><th>Description</th>" >> $roletable
