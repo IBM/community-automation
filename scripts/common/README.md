@@ -101,3 +101,7 @@ RHEL8
 # cd community-automation
 # scripts/common/install-prereqs.sh -u YOUR_REDHAT_USERNAME -p YOUR_REDHAT_PASSWOR
 ```
+
+## builddoc.sh
+
+This script will build an html table that will be loaded into github pages.  This script runs automatically on every PR.
