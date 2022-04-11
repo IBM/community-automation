@@ -9,6 +9,7 @@ function getdescription () {
   local readme="../../ansible/roles/$1/readme.md"
   local rline=""
   local descLine=""
+  local firstline="true"
 
   [[ ! -f $readme ]] && { echo "readme template added to role"; cp ../../docs/role.readme.template.md "$readme"; return; } || true
 
@@ -18,7 +19,7 @@ function getdescription () {
     grep -q '\-\-' <<< "$rline" && break 
     # skip over first set of equals
     grep -q '==' <<< "$rline" && continue
-    descLine="$descLine<br> $rline"
+    [[ $firstline == "true" ]] && firstline="false" || descLine="$descLine<br> $rline"
 
   done < "$readme"
   echo -e "$descLine"
