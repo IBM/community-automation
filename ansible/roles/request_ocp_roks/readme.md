@@ -1,14 +1,19 @@
-# createROKSCluster ansible role
+request_ocp_roks
+===========
 
-> role used to generate a new IBM Cloud ROKS cluster
+role used to generate a new IBM Cloud ROKS cluster
 
-## Requirements 
+-----------
+
+Requirements
+-----------
 
 1. The "ibm.cloudcollection". Version 1.28.0 is currently known to work. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
 2. IBM-Cloud terraform-provider-ibm v1.9.0
 3. Terraform v0.12.20
 
-## Variables
+Role Variables
+--------------
 
 | Name              | Description                            | Required | Type                   |
 |-------------------|----------------------------------------|----------|------------------------|
@@ -26,7 +31,8 @@
 | entitlement       | Set to 'cloud_pak' to use entitlement  | No       | string                 |
 | icaccount         | IBM Cloud Account GUID                 | No       | string                 |
 
-### Additional Variable Information
+Additional Variable Information
+-----------
 
 * dataCenter: This maps to the IBM Cloud Zone or datacenter to deploy to. Find options through the command line `ibmcloud cs zone ls --provider classic`
 * machineType: IBM Cloud specifies template machine specs supported in a cluster. Find options through the command line `ibmcloud cs flavors --provider classic --zone dal10`
@@ -38,8 +44,9 @@
 * icaccount: Add IBM Cloud Account GUID when API Key provided is used by multiple accounts.
 * dataCenter: This is the 5 character zone id for IBM Cloud (i.e. dal10). To see zones available use the IBM Cloud CLI `ibmcloud cs zones --provider classic`
 
-## Example Play
-
+Example Play
+-----------
+```yaml
     ---
     - hosts: localhost
       vars:
@@ -64,12 +71,14 @@
       - name: create roks cluster
         import_role: 
           name: request_ocp_roks
-
-## Deploying a cluster through an Ansible Container
-
-*Container Dockerfile that would include all tools necessary for running in a Docker container:*
-
 ```
+
+Deploying a cluster through an Ansible Container
+-----------
+
+Container Dockerfile that would include all tools necessary for running in a Docker container
+
+```text
 FROM centos:7
 # set up os and install ansible
 RUN yum install -y epel-release && yum update -y && yum install git openssh-clients.x86_64 ansible.noarch -y
@@ -88,7 +97,8 @@ WORKDIR /runner
 ENTRYPOINT [ "/usr/bin/ansible-playbook" ]
 ```
 
-*Running in a container*
+Running in a container*
+-----------
 
 * Map the location of your playbook files and roles to the /runner directory
 * Provide variables either as "extra vars" or in a file
@@ -96,3 +106,12 @@ ENTRYPOINT [ "/usr/bin/ansible-playbook" ]
 
 `docker run -it --rm -v <playbook directory>:/runner <image name> -i localhost -e "<variable name>=<value> <variable name>=<value> ..." <playbook name>`
 
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Add author

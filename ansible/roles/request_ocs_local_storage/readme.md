@@ -1,6 +1,9 @@
-# Ansible Role for installing Openshift Container Storage (OCS) using Local Storage OCP clusters.
+request_ocs_local_storage
+=======
 
-## Overview
+Ansible Role for installing Openshift Container Storage (OCS) using Local Storage OCP clusters.
+
+---------
 
 - This will automatically login to your cluster
 - This role installs Openshift Container Storage (OCS) on OCP 4.6 or newer clusters.
@@ -19,24 +22,48 @@
   - `openshift-storage.noobaa.io` - object storage
 - Sets `ocs-storagecluster-cephfs` as the default storageclass by default.
 
-## Assumptions:
+Requirements
+---------
 
 - Ansible 2.9 or later installed, with python3.
+- worker nodes must have equal number of extra drives
 
-## Default parameters set in the defaults/main.yml
+Role Variables
+------------
 
-### Variables for specific user needs
+Default parameters set in the defaults/main.yml
 
-- ocs_bastion_setup_dir: ~/setup-files/ocs-setup # Where scripts/templates are copied.
-- setdefault: true  #Set parm defatul_sc as default storageclass when true
-- default_sc: ocs-storagecluster-cephfs # Default Storageclass
-- fyre_ui_build: false # true when cluster was built using the fyre website
-- ocs_channel_prefix: "stable" # update if you need to use another channel
-- ocs_channel_override: "" # used when you need to specify an override for the ocs channel.  (eg. using 4.9 OCS on OCP 4.10)
-- ocs_type: "ocs" # ocs|odf
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| ocs_bastion_setup_dir   | yes       | ~/setup-files/ocs-setup   |               |                          |
+| setdefault              | yes      | true        |                  |                          |
+| default_sc              | yes      |  ocs-storagecluster-cephfs       |                  |                          |
+| local_storage_namespace | yes     | openshift-local-storage | string | | 
+| fyre_ui_build          | yes      |  false       | true, false                  |  cluster was built using the fyre web UI      |
+| ocs_channel_prefix     | yes      |  stable       | stable, fast, candidate       |  cluster was built using the fyre web UI      |
+| ocs_channel            | yes | stable-4.6 | | | 
+| ocs_channel_override    | yes      |  empty       |       |  used when you need to override the version of OCS      |
+| ocs_type               | yes      |  ocs       | odf, ocs       |        |
+| device_set               | yes      |   ocs-deviceset-localblock      |        |        |
+| localstore_version       | yes      |   4.6      |        | Redhat local storage operator version        |
+| num_devices            | yes   |   1      |    number    | devices are detected automatically using autoDiscovery   |
 
-see [oc_login](https://github.com/IBM/community-automation/tree/master/ansible/roles/ocp_login) role
+Dependencies
+--------
 
-## Example Playbook use of role
+Uses ocp_login role
+
+Example Playbook
+---------
 
 see [request-ocs-fyre-play](https://github.com/IBM/community-automation/tree/master/ansible/request-ocs-fyre-play)
+
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Ray Ashworth (ashworth@us.ibm.com)

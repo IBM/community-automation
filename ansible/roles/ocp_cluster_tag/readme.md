@@ -1,30 +1,53 @@
-# Tagging clusters
+ocp_cluster_tag
+=========
 
-Details about tagging can be found at the followign playbook link  
-https://playbook.cloudpaklab.ibm.com/public-cloud-management/
+Tag a cluster to keep it from being removed by cloud cleanup of any other reason yu might want to tag a cluster
 
-## NOTES
+------------
 
-- ansible playbook was run on Ubuntu 16.04 and 18.04
-- This role only works with AWS at this time.
+Details about tagging can be found at the following playbook link  
 
-## Variables used for tagging
+[playbook tagging details](https://playbook.cloudpaklab.ibm.com/public-cloud-management/)
 
-other public clouds credentials will become variables
+Requirements
+------------
 
-- cluster_tags
-- tag_task (add)
-- AWS_REGION
-- cloud (aws, google, azure, vsphere)
-- aws_access_key = AWS_ACCESS_KEY_ID
-- aws_secret_key = AWS_SECRET_ACCESS_KEY
+- admin access to the cloud
+- only works on AWS at this time
 
-## Cluster tag variable
+Role Variables
+--------------
 
-The cluster tag variable is a set of 1 to many key/value pairs as follows (eg. key1: value1, key2: value2)
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| tag_task                | yes       | add   | add, delete               |                          |
+| cluster_tags            | yes      |         |                 |     "cluster_tags": { cluster: <cluster_name>, owner: < email >, etc... }"                     |
+| cluster_name          | yes |  | automatically added | | 
+| AWS_REGION            |  yes      |       |  | example: us-east1 | |
+| cloud                 | yes       | aws | aws, google, azure, vsphere |  aws only |
+| aws_access_key = AWS_ACCESS_KEY_ID | yes | | valid aws access key | |
+| aws_secret_key = AWS_SECRET_ACCESS_KEY | yes | | valid aws secret access key | |
 
-tag name "cluster_name" will be added automatically
+Dependencies
+------------
 
-```
-"cluster_tags": { cluster: <cluster_name>, owner: <email>, etc... }
-```
+None
+
+Example Playbook
+----------------
+
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: all
+      roles:
+         - ocp_cluster_tag
+
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Ray Ashworth (ashworth@us.ibm.com)

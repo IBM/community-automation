@@ -1,13 +1,49 @@
-# oc client install
+oc_client_install
+=========
 
-When oc cli is needed you can include this role in your ansible/role/```<rolename>```/meta/main.yml 
-example:  
+Install openshift oc client
 
-```
----
-dependencies:
-  - role: oc-cli-install
-  - role: ocp_login
-```
+------------
 
-You will need to pass ```ocp_client_version (eg. 4.3.13, 4.4.0,etc...)``` or set in your defaults/main.yml
+Requirements
+------------
+
+None
+
+Role Variables
+--------------
+
+| Variable                | Required | Default | Choices                   | Comments                                 |
+|-------------------------|----------|---------|---------------------------|------------------------------------------|
+| ocp_client_version      | yes       | 4.5.10   | true, false             |                          |
+| client_os               | yes      | linux     | linux, mac, windows      |                         |
+
+Dependencies
+------------
+
+None
+
+Example Playbook
+----------------
+
+Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+
+    - hosts: all
+      roles:
+         - oc_cli_install
+
+Example meta/main.yml  
+--------
+
+    dependencies:
+      - role: oc-cli-install
+
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Ray Ashworth (ashwoth@us.ibm.com)

@@ -1,14 +1,19 @@
-# remove_ocp_roks ansible role
+remove_ocp_roks
+==============
 
-> role used to delete an IBM Cloud ROKS cluster
+role used to delete an IBM Cloud ROKS cluster
 
-## Requirements 
+-----------
+
+Requirements
+-----------
 
 1. The "ibm.cloudcollection". Version 1.8.2 is currently known to work. Newer versions are known to cause issues with the embedded roles. To install: `ansible-galaxy collection install ibm.cloudcollection`. You can also use the "requirements.yml" file located in 'ansible/request-ocp-roks-play'. 
 2. IBM-Cloud terraform-provider-ibm v1.9.0
 3. Terraform v0.12.20
 
-## Variables
+Role Variables
+-------------
 
 | Name              | Description                            | Required | Type                   |
 |-------------------|----------------------------------------|----------|------------------------|
@@ -18,13 +23,15 @@
 | resourceGroup     | Name of resource group to use          | No       | string                 |
 | hardware          | Shared or Dedicated hardware option    | No       | default: shared        |
 
-### Additional Variable Information
+Additional Variable Information
+----------
 
 * dataCenter: This maps to the IBM Cloud Zone or datacenter to deploy to. Find options through the command line `ibmcloud cs zone ls --provider classic`
 * apikey: IBM Cloud IAM API key is required to provision. See the following documentation: [API Key Information](https://cloud.ibm.com/docs/openshift?topic=openshift-users#api_key)
 * dataCenter: This is the 5 character zone id for IBM Cloud (i.e. dal10). To see zones available use the IBM Cloud CLI `ibmcloud cs zones --provider classic`
 
-## Example Play
+Example Play
+----------
 
     ---
     - hosts: localhost
@@ -43,7 +50,8 @@
         import_role: 
           name: remove_ocp_roks
 
-## Removing a cluster through an Ansible Container
+Removing a cluster through an Ansible Container
+-----------
 
 *Container Dockerfile that would include all tools necessary for running in a Docker container:*
 
@@ -74,3 +82,12 @@ ENTRYPOINT [ "/usr/bin/ansible-playbook" ]
 
 `docker run -it --rm -v <playbook directory>:/runner <image name> -i localhost -e "<variable name>=<value> <variable name>=<value> ..." <playbook name>`
 
+License
+-------
+
+See [LICENSE](https://github.com/IBM/community-automation/blob/master/LICENSE)
+
+Author Information
+------------------
+
+Add author

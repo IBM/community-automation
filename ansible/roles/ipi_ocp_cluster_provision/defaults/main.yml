@@ -1,4 +1,7 @@
 ---
+cloud: aws
+logfile: "/tmp/deploy.log"
+
 # Master nodes 
 "MASTER_CPUS": "10"
 "MASTER_MEMORY": "32768"

@@ -4,7 +4,7 @@ setdefault: true  # Sets param defatul storage class when true
 default_sc: ocs-storagecluster-cephfs
 local_storage_namespace: openshift-local-storage # current default for 4.6 and newer
 device_set: ocs-deviceset-localblock
-localstore_version: 4.6
+localstore_version: 4.6  # version of local storage operator
 ocs_channel: stable-4.6
 ocs_type: "ocs" # ocs|odf
 num_devices: 1 # Num of additional disks per worker, automatically set to 2 when fyre_ui_build it true
