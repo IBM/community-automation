@@ -66,10 +66,6 @@ for (nodename,servername) in listServersOfType(None):
         modifyCookiesSessionName( nodename, servername, 'true', 'PTSESSIONID' )
         print("-- set single signon ssl: true")
         ssossl()
-        print("-- set JVM initial heap: 50")
-        setJvmProperty(nodename,servername,'initialHeapSize','50')
-        print("-- set JVM Max heap: 1024")
-        setJvmProperty(nodename,servername,'maximumHeapSize','1024')
         # example to add port
         # ensureHostAlias( 'default_host', '*', '9080' )
         DEBUG_SOP=1
