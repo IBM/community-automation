@@ -1,14 +1,14 @@
 ---
 
-- name: find java exec
-  shell: "find {{ javaDir }} -type f -name java"
-  register: javaexec
-
 - name: check if java dir
   file:
     path: "{{ javaDir }}"
     state: directory
     owner: "{{ jmeterUser }}"
+
+- name: find java exec
+  shell: "find {{ javaDir }} -type f -name java"
+  register: javaexec
 
 - name: check if java
   stat:
