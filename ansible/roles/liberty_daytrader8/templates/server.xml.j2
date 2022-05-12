@@ -87,9 +87,9 @@
     </dataSource>
 
     <connectionManager id="Session" minPoolSize="20" maxPoolSize="400" connectionTimeout="60s"/>
-    <authData id="SessionSourceAuthData" user="{{ db_user1 }}" password="{{ db_pass1 }}" />
+    <authData id="SessionSourceAuthData" user="{{ db_user }}" password="{{ db_pass }}" />
     <dataSource id="SessionDS" jdbcDriverRef="DB2JCC" jndiName="jdbc/Sessions" connectionManagerRef="Session" containerAuthDataRef="SessionSourceAuthData">
-        <properties databaseName="{{ db_name1 }}" driverType="4" portNumber="{{ db_port1 }}" serverName="{{ db_host1 }}"/>
+        <properties databaseName="{{ db_name }}" driverType="4" portNumber="{{ db_port }}" serverName="{{ db_host }}"/>
     </dataSource>
 <!--
     <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions" writeContents="ALL_SESSION_ATTRIBUTES" writeFrequency="END_OF_SERVLET_SERVICE"/> 
