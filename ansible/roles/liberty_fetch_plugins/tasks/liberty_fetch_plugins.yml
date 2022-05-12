@@ -1,0 +1,18 @@
+---
+- name: Remove plugin-cfg.xml and plugin-key.p12 local fetched files
+  delegate_to: localhost
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - plugin-cfg.xml
+  - plugin-key.p12
+
+- name: fetch plugin-cfg.xml and plugin-key.p12 generated files
+  fetch:
+    src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/{{ item }}"
+    dest: "{{ item }}"
+    flat: yes
+  with_items:
+  - plugin-cfg.xml
+  - plugin-key.p12
