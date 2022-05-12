@@ -37,12 +37,12 @@
     replace:
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
       regexp: 'userName=""'
-      replace: 'userName="{{ admin_user }}"'
+      replace: 'userName="{{ liberty_admin_user }}"'
   - name: update admin password
     replace:
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
       regexp: 'userPassword=""'
-      replace: 'userPassword="{{ admin_pass }}"'
+      replace: 'userPassword="{{ liberty_admin_pass }}"'
 
   - name: update to tlsv1.2
     lineinfile:
