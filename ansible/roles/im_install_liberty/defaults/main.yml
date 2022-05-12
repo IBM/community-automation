@@ -1,5 +1,5 @@
 ---
-im_driver: 'cl211120211019-1900.52.linux'
+liberty_im_driver: 'cl211120211019-1900.52.linux'
 install_base: '/home/nest'
 liberty_dir: 'wlp'
 shared_dir: 'IM-shared'
