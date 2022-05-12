@@ -29,7 +29,7 @@
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
 
   - name:  create controller 
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{admin_pass }} --createConfigFile=controller.xml"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
     args:
       chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
 
