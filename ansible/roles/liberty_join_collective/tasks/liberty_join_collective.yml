@@ -20,7 +20,7 @@
     #    when: "'cc' in group_names"
 
   - name:  join collective
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ admin_port }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_port }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
     args:
       chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
     register: joinOutput

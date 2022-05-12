@@ -134,7 +134,7 @@
     replace:
       path: "{{ install_base }}/{{ http_dir }}/conf/admin.conf"
       regexp: '@@AdminPort@@'
-      replace: "{{ admin_port }}"
+      replace: "{{ ihs_admin_port }}"
 
   - name: enable server-status
     replace:

@@ -23,7 +23,7 @@
     </featureManager>
         
 	<!-- allow reuse of 'busy' ports for fast server recycling on linux (where ports remain blocked for up to 2 mins after server stops) ${tradelite.http.port} set in bootstrap.properties --> 
-	<httpEndpoint host="*" httpPort="9080" httpsPort="9443" id="defaultHttpEndpoint"> 
+	<httpEndpoint host="*" httpPort="{{ liberty_http_port }}" httpsPort="{{ liberty_http_ports }}" id="defaultHttpEndpoint"> 
 		<tcpOptions soReuseAddr="true"/> 
 		<httpOptions maxKeepAliveRequests="-1"/>
 	</httpEndpoint>
