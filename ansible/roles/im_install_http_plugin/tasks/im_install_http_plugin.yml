@@ -116,9 +116,9 @@
       path: "{{ install_base }}/{{ http_dir }}/conf/httpd.conf"
       block: |
         LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
-        Listen {{ https_port }}
+        Listen {{ ihs_https_port }}
         SSLCheckCertificateExpiration 30
-        <VirtualHost *:{{ https_port }}>
+        <VirtualHost *:{{ ihs_https_port }}>
          ServerName {{ ansible_hostname }}
          SSLEnable
          Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
@@ -180,7 +180,7 @@
   
   - name: Check server-status
     uri:
-      url: "https://localhost:{{ https_port }}"
+      url: "https://localhost:{{ ihs_https_port }}"
       return_content: no
       validate_certs: false
 - name: Versions
