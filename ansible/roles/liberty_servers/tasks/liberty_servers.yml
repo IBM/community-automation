@@ -24,3 +24,15 @@
 
   - name:  create server
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+
+  - name: update http port
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      regexp: '9080'
+      replace: "{{ liberty_http_port }}"
+
+  - name: update https port
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      regexp: '9443'
+      replace: "{{ liberty_http_ports }}"

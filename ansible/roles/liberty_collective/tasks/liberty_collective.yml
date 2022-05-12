@@ -57,6 +57,18 @@
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
+  - name: update http port
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '9080'
+      replace: "{{ liberty_admin_port }}"
+
+  - name: update https port
+    replace:
+      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      regexp: '9443'
+      replace: "{{ liberty_admin_ports }}"
+
   - name: include controller.xml in server.xml
     lineinfile:
       path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
