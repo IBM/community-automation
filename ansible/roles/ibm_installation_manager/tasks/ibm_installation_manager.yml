@@ -35,6 +35,10 @@
     archive_name_match: 'agent.installer.aix.gtk.ppc_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'chrp'
+- set_fact:
+    archive_name_match: 'agent.installer.os400.motif.ppc_{{ im_archive_driver }}.zip'
+  when:
+  - ansible_system == 'OS400'
 
 - name: temp im install dir
   file:
