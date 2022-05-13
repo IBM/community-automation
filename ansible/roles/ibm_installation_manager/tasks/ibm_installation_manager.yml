@@ -40,7 +40,7 @@
   when:
   - ansible_system == 'OS400'
 
-- name: Add authorized keys
+- name: as400 softlinks
   when: ansible_system == 'OS400'
   block:
   - name: check if softlinks zip/unzip/zipinfo exist on as400
