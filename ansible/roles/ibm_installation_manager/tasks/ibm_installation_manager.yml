@@ -40,7 +40,10 @@
   when:
   - ansible_system == 'OS400'
 - name: softlink the zip/zipinfo/unzip into default path
-   shell: 'ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo && ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip && ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip'
+  shell: |
+    ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo 
+    ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip 
+    ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip
   when:
   - ansible_system == 'OS400'
 
