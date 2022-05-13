@@ -13,4 +13,4 @@ cic_selector_os:
   Windows: 'win32'
   CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
-  OS400: 'oS400'
+  OS400: 'os400'
