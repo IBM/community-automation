@@ -39,6 +39,10 @@
     archive_name_match: 'agent.installer.os400.motif.ppc_{{ im_archive_driver }}.zip'
   when:
   - ansible_system == 'OS400'
+- name: softlink the zip/zipinfo/unzip into default path
+   shell: 'ln -s /QOpenSys/pkgs/bin/zipinfo /QOpenSys/usr/bin/zipinfo && ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip && ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip'
+  when:
+  - ansible_system == 'OS400'
 
 - name: temp im install dir
   file:
