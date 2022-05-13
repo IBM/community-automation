@@ -10,7 +10,7 @@
 
   - name: does server exist?
     stat:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: iscc
 
   - name:  stop existing server process
@@ -20,19 +20,19 @@
 
   - name:  remove current server
     ignore_errors: true
-    shell: "rm -rf {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+    shell: "rm -rf {{ wlp_usr_dir }}/servers/{{ wl_server }}"
 
   - name:  create server
     shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
 
   - name: update http port
     replace:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '9080'
       replace: "{{ liberty_http_port }}"
 
   - name: update https port
     replace:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '9443'
       replace: "{{ liberty_http_ports }}"

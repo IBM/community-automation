@@ -11,16 +11,16 @@
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
   - name: copy server.xml template
     template:
      src: server.xml.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
 
   - name: copy application war
     copy:
       src: files/io.openliberty.sample.daytrader8.war
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/apps/io.openliberty.sample.daytrader8.war"
+      dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader8.war"
       mode: '0755'
 
   - name: db2jars dir
@@ -29,22 +29,22 @@
       state: directory
       recurse: yes
     with_items:
-    - "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars"
+    - "{{ wlp_usr_dir }}/shared/resources/db2jars"
 
   - name: copy db2jcc4.jar 
     copy:
       src: /tmp/db2jcc4.jar
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc4.jar"
+      dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc4.jar"
       mode: '0755'
   - name: copy db2jcc_license_cu.jar 
     copy:
       src: /tmp/db2jcc_license_cu.jar
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc_license_cu.jar"
+      dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc_license_cu.jar"
       mode: '0755'
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 

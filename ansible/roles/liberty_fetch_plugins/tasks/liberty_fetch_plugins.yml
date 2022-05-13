@@ -10,7 +10,7 @@
 
 - name: fetch plugin-cfg.xml and plugin-key.p12 generated files
   fetch:
-    src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/{{ item }}"
+    src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/{{ item }}"
     dest: "{{ item }}"
     flat: yes
   with_items:

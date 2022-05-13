@@ -16,7 +16,7 @@
     failed_when: false
     shell: "{{install_base }}/{{ liberty_dir }}/bin/dynamicRouting setup --port={{ liberty_admin_ports }} --host={{ ansible_hostname }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --pluginINstallRoot={{ install_base }}/{{ plugin_dir }} --autoAcceptCertificates --webServernames=webserver1"
     args:
-      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+      chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: dynamicRoutingOutput
 
   - name: dynamicRoutingOutput
@@ -34,7 +34,7 @@
 
   - name: fetch generated files
     fetch:
-      src: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/{{ item }}"
+      src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/{{ item }}"
       dest: "{{ item }}"
       flat: yes
     with_items:

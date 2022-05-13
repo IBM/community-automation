@@ -22,7 +22,7 @@
   - name:  join collective
     shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
     args:
-      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+      chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: joinOutput
 
   - debug:
@@ -30,20 +30,20 @@
 
   - name: update to tlsv1.2
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/collectiveMember.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
       regexp: '^sslProtocol="TLSv1.2"'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2"'
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
   - name: include collectiveMember.xml in server.xml
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/collectiveMember.xml" />'
