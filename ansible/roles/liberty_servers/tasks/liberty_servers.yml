@@ -15,7 +15,7 @@
 
   - name:  stop existing server process
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
 
   - name:  remove current server
@@ -23,7 +23,7 @@
     shell: "rm -rf {{ wlp_usr_dir }}/servers/{{ wl_server }}"
 
   - name:  create server
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
 
   - name: update http port
     replace:

@@ -1,10 +1,12 @@
 ---
 - name: set wlp_usr_dir
   set_fact:
-   wlp_usr_dir: "{{ install_base }}/{{ liberty_dir }}/usr"
+   - wlp_usr_dir: "{{ install_base }}/{{ liberty_dir }}/usr"
+   - wlp_cmd: " "
   when: ansible_system != 'OS400'
 - name: set OS400 wlp_usr_dir
   set_fact: 
-   wlp_usr_dir: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/usr"
+   - wlp_usr_dir: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/usr"
+   - wlp_cmd: "qsh "
   when: ansible_system == 'OS400'
 
