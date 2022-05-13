@@ -14,8 +14,14 @@
     failed_when: isimcl.stat.exists == False
 
   - name: copy im_liberty.xml template
+    when: ansible_system != 'OS400'
     template:
      src: im_liberty.xml.j2
+     dest: "im_liberty.xml"
+  - name: copy OS400 im_liberty.xml template
+    when: ansible_system == 'OS400'
+    template:
+     src: im_liberty.OS400.xml.j2
      dest: "im_liberty.xml"
 
   - name:  stop any running servers
