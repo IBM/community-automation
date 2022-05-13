@@ -13,7 +13,7 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: copy im_liberty.xml.xml template
+  - name: copy im_liberty.xml template
     template:
      src: im_liberty.xml.j2
      dest: "im_liberty.xml"
