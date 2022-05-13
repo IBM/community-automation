@@ -6,11 +6,15 @@ cic_selector_arch:
   x86_64: 'x86_64'
   x86: 'x86'
   s390x: 's390x'
-  001300055A28: 'OS400'
+  001300055A28: 'ppc'
 cic_selector_os:
   AIX: 'aix'
   Linux: 'linux'
   Windows: 'win32'
   CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
-  OS400: 'OS400'
+  OS400: 'oS400'
+
+      <property name='cic.selector.os' value='os400'/>
+    <property name='cic.selector.arch' value='ppc'/>
+    <property name='cic.selector.ws' value='motif'/>
