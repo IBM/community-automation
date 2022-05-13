@@ -17,6 +17,10 @@
     ignore_errors: true
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name:  remove current server
     ignore_errors: true
@@ -24,6 +28,10 @@
 
   - name:  create server
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name: update http port
     replace:

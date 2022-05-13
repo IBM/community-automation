@@ -17,6 +17,10 @@
     ignore_errors: true
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
     when: iscc.stat.exists == True
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name: Remove current controller server
     file:
@@ -27,11 +31,19 @@
 
   - name:  create server
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name:  create controller 
     shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name: update admin user
     replace:
@@ -108,8 +120,16 @@
     failed_when: false
     command:
       cmd: "nohup {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
+
   - name: check server status
     failed_when: false
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
+    register: op
 
+  - debug:
+     msg: '{{ op.stdout_lines }}'

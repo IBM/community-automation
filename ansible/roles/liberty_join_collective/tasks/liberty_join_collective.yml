@@ -12,6 +12,10 @@
     ignore_errors: true
     shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
     #does not work due to cc out of scope
     #    - name: set controller hostname
