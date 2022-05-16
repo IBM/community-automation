@@ -53,10 +53,9 @@
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     register: cmdOutputStop
     failed_when: ( cmdOutputStop.rc not in [ 0, 1 ] )
-    register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+     msg: '{{ cmdOutputStop.rc.stdout_lines }}'
 
      # must use nohup else the server stops after the controlling process exits
   - name: Start Liberty Server 
