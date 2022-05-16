@@ -51,27 +51,27 @@
   - name: Stop Liberty Server 
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
-    register: cmdOutputStop
-    failed_when: ( cmdOutputStop.rc not in [ 0, 1 ] )
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
   - debug:
-     msg: '{{ cmdOutputStop.rc.stdout_lines }}'
+     msg: '{{ cmdOutput.stdout_lines }}'
 
      # must use nohup else the server stops after the controlling process exits
   - name: Start Liberty Server 
     command:
       cmd: "nohup {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
-    register: cmdOutputStart
-    failed_when: ( cmdOutputStart.rc not in [ 0, 1 ] )
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
   - debug:
-     msg: '{{ cmdOutputStart.stdout_lines }}'
+     msg: '{{ cmdOutput.stdout_lines }}'
 
   - name: check server status 
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
-    register: cmdOutputStatus
-    failed_when: ( cmdOutputStatus.rc not in [ 0, 1 ] )
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
   - debug:
-     msg: '{{ cmdOutputStatus.stdout_lines }}'
+     msg: '{{ cmdOutput.stdout_lines }}'
