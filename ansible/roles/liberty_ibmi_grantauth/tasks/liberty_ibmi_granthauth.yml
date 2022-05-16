@@ -1,0 +1,8 @@
+---
+- block:
+  - name:  OS400 iAdmin GRANTAUTH
+    shell: "{{ install_base }}/{{ liberty_dir }}/lib/native/os400/bin/iAdmin GRANTAUTH --rolename server --userprofilename {{ wlp_owner }}"
+    register: op
+  - debug:
+     msg: "{{ op.stdout_lines }}"
+  when: ansible_system == 'OS400'
