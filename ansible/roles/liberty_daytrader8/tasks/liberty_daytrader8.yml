@@ -48,7 +48,7 @@
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
-  - name: Stop Liberty Server
+  - name: Stop Liberty Server config application
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     register: cmdOutput
@@ -59,7 +59,7 @@
      msg: '{{ op.stdout_lines }}'
 
      # must use nohup else the server stops after the controlling process exits
-  - name: Start Liberty Server
+  - name: Start Liberty Server config application
     command:
       cmd: "nohup {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
     register: cmdOutput
@@ -68,7 +68,7 @@
   - debug:
      msg: '{{ cmdOutput.stdout_lines }}'
 
-  - name: check server status
+  - name: check server status config application
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
     register: cmdOutput
