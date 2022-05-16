@@ -9,6 +9,6 @@
    wlp_usr_dir: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/usr"
    wlp_cmd: "qsh "
    wlp_owner: qejbsvr
-   wlp_output: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/output/servers/"
+   wlp_output: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/output/servers"
   when: ansible_system == 'OS400'
 
