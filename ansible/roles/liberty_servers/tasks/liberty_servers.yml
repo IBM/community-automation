@@ -20,7 +20,7 @@
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+     msg: '{{ op }}'
 
   - name:  remove current server
     ignore_errors: true
@@ -44,3 +44,11 @@
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '9443'
       replace: "{{ liberty_http_ports }}"
+
+  - block:
+    - name:  OS400 perms qejbsvr
+      shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }}"
+      register: chmodOutput
+    - debug:
+       msg: "{{ chmodOutput.stdout_lines }}"
+    when: ansible_system == 'OS400'

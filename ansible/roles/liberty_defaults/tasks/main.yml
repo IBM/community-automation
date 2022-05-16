@@ -8,5 +8,6 @@
   set_fact: 
    wlp_usr_dir: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/usr"
    wlp_cmd: "qsh "
+   wlp_owner: qejbsvr
   when: ansible_system == 'OS400'
 

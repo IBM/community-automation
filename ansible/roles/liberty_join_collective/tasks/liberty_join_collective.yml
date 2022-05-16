@@ -15,13 +15,7 @@
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
-
-    #does not work due to cc out of scope
-    #    - name: set controller hostname
-    #    set_fact:
-    #      cc_hostname: "{{ ansible_hostname }}"
-    #    when: "'cc' in group_names"
+     msg: '{{ op }}'
 
   - name:  join collective
     shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
@@ -51,3 +45,11 @@
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/collectiveMember.xml" />'
+
+  - block:
+    - name:  OS400 perms qejbsvr
+      shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }}"
+      register: chmodOutput
+    - debug:
+       msg: "{{ chmodOutput.stdout_lines }}"
+    when: ansible_system == 'OS400'

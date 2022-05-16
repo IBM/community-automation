@@ -20,7 +20,7 @@
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+     msg: '{{ op }}'
 
   - name: Remove current controller server
     file:
@@ -114,6 +114,14 @@
     template:
      src: jvm.options.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/jvm.options"
+
+  - block:
+    - name:  OS400 perms qejbsvr
+      shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }}"
+      register: chmodOutput
+    - debug:
+       msg: "{{ chmodOutput.stdout_lines }}"
+    when: ansible_system == 'OS400'
 
     # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server
