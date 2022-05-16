@@ -125,7 +125,7 @@
 
   - block:
     - name:  OS400 perms qejbsvr
-      shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }}"
+      shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }} {{ wlp_output }}"
       register: chmodOutput
     - debug:
        msg: "{{ chmodOutput.stdout_lines }}"
