@@ -48,6 +48,14 @@
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
+  #### THIS IS ONLY TEMP SCHADER dirty fix
+  - name: THIS IS ONLY TEMP SCHADER dirty fix - switch to 64bit jdk
+    replace:
+      path: "{{install_base }}/{{ liberty_dir }}/etc/default.env"
+      regexp: '32bit'
+      replace: '64bit'
+    when: ansible_system == 'OS400'
+
   - name: Stop Liberty Server 
     command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
