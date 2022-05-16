@@ -22,9 +22,20 @@
   - debug:
      msg: '{{ op }}'
 
-  - name:  remove current server
-    ignore_errors: true
-    shell: "rm -rf {{ wlp_usr_dir }}/servers/{{ wl_server }}"
+  - name: Remove current server 
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
+  
+  - name: OS400 Remove current server output
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_output }}/{{ wl_server }}"
+    when: ansible_system == 'OS400'
 
   - name:  create server
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"

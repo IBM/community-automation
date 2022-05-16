@@ -29,6 +29,14 @@
     with_items:
     - "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
 
+  - name: OS400 Remove current controller server output
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_output }}/{{ cc_server }}"
+    when: ansible_system == 'OS400'
+
   - name:  create server
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
     register: op
