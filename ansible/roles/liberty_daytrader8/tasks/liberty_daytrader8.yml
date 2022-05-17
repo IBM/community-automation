@@ -59,8 +59,12 @@
   - name: create logs dir before setting ( IBM i HACK )
     when: ansible_system == 'OS400'
     file:
-      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+      path: "{{ item }}"
       state: directory
+    with_items:
+    - "{{ wlp_usr_dir }}/servers/{{ cc_server }}/logs"
+    - "{{ wlp_usr_dir }}/servers/.logs"
+    - "{{ wlp_usr_dir }}/servers/.pid"
 
   - name: Conditional role
     include_role:
