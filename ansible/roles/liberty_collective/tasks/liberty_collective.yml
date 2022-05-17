@@ -122,7 +122,14 @@
     template:
      src: jvm.options.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/jvm.options"
-  - name: Conditional role
+
+  - name: create logs dir before setting ( IBM i HACK )
+    when: ansible_system == 'OS400'
+    file:
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/logs"
+      state: directory
+
+  - name:  set IBM i perms
     include_role:
       name: liberty_ibmi_grantauth
 

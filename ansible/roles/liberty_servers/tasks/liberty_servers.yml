@@ -56,6 +56,11 @@
       regexp: '9443'
       replace: "{{ liberty_http_ports }}"
 
+  - name: create logs dir before setting ( IBM i HACK )
+    when: ansible_system == 'OS400'
+    file:
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+      state: directory
 
   - name: Conditional role
     include_role:
