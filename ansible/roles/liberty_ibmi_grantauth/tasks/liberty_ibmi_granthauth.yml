@@ -5,4 +5,10 @@
     register: op
   - debug:
      msg: "{{ op.stdout_lines }}"
+  # the GRANTAUTH does not fix all the perms :( when not using the default paths
+  - name:  OS400 perms qejbsvr
+    shell: "chown -R {{ wlp_owner }} {{ wlp_usr_dir }} {{ wlp_output }}"
+    register: chmodOutput
+  - debug:
+     msg: "{{ chmodOutput.stdout_lines }}"
   when: ansible_system == 'OS400'
