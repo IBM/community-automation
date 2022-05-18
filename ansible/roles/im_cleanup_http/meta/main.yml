@@ -1,4 +1,3 @@
 ---
 dependencies:
-  - role: liberty_defaults
   - role: http_defaults
