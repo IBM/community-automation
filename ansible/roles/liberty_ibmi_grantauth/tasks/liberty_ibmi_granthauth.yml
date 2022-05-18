@@ -14,8 +14,8 @@
      mode: 02775
      recurse: yes
      with_items:
-      - "{{ wlp_usr_dir }}"
-      - "{{ wlp_output }}"
+     - "{{ wlp_usr_dir }}"
+     - "{{ wlp_output }}"
     register: chmodOutput
   - debug:
      msg: "{{ chmodOutput.stdout_lines }}"
