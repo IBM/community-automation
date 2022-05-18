@@ -2,8 +2,8 @@ kdb=ihsserverkey.kdb
 ihshost=`hostname`
 rm -f ${kdb} ihsserverkey.rdb ihsserverkey.crl ihsserverkey.sth
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ install_base }}/{{ http_dir }}/gsk8/lib64
-export PATH={{ install_base }}/{{ http_dir }}/gsk8/bin/:$PATH
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ install_ihs_base }}/{{ http_dir }}/gsk8/lib64
+export PATH={{ install_ihs_base }}/{{ http_dir }}/gsk8/bin/:$PATH
 echo "Creating $kdb"
 gsk8capicmd_64 -keydb -create -db ${kdb} -type cms -pw 'Just4T3st!ng' -stash -expire 7300
 echo "Creating certificates"

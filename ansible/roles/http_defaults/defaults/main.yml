@@ -1,7 +1,7 @@
 ---
 ihs_im_driver: 'f5102145.01'
 twas_release: 'WAS90' # WAS855
-install_base: '/home/nest'
+install_ihs_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
 daily_or_test: 'test'

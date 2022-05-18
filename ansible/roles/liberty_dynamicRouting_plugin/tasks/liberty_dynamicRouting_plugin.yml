@@ -4,21 +4,21 @@
   block:
   - name: check if ihs is installed
     stat:
-      path: "{{ install_base }}/{{ http_dir }}/bin/gskcapicmd"
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/gskcapicmd"
     register: ishttp
     failed_when: ishttp.stat.exists == False
 
   - name: copy generated files
     copy:
       src: "{{ item }}"
-      dest: "{{install_base }}/{{ plugin_dir }}/config/webserver1/{{ item }}"
+      dest: "{{install_ihs_base }}/{{ plugin_dir }}/config/webserver1/{{ item }}"
     with_items:
     - plugin-cfg.xml
     - plugin-key.p12
 
   - name: Remove any previous plugin-key* files
     file:
-      path: "{{install_base }}/{{ plugin_dir }}/config/webserver1/{{ item }}"
+      path: "{{install_ihs_base }}/{{ plugin_dir }}/config/webserver1/{{ item }}"
       state: absent
     with_items:
     - plugin-key.kdb
@@ -32,9 +32,9 @@
     # liberty_dynamicRouting/defaults/main.yml
   - name: gskcapicmd convert
     failed_when: false
-    shell: "{{install_base }}/{{ http_dir }}/bin/gskcapicmd -keydb -convert -pw {{ liberty_admin_pass }} -db plugin-key.p12 -old_format pkcs12 -target plugin-key.kdb -new_format cms -stash"
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/gskcapicmd -keydb -convert -pw {{ liberty_admin_pass }} -db plugin-key.p12 -old_format pkcs12 -target plugin-key.kdb -new_format cms -stash"
     args:
-      chdir: "{{install_base }}/{{ plugin_dir }}/config/webserver1"
+      chdir: "{{install_ihs_base }}/{{ plugin_dir }}/config/webserver1"
     register: gskcapicmdOutput
 
   - name: gskcapicmdOutput
@@ -43,9 +43,9 @@
 
   - name: gskcapicmd setdefault cert aliase
     failed_when: false
-    shell: "{{install_base }}/{{ http_dir }}/bin/gskcapicmd -cert -setdefault -pw {{ liberty_admin_pass }} -db plugin-key.kdb -label default"
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/gskcapicmd -cert -setdefault -pw {{ liberty_admin_pass }} -db plugin-key.kdb -label default"
     args:
-      chdir: "{{install_base }}/{{ plugin_dir }}/config/webserver1"
+      chdir: "{{install_ihs_base }}/{{ plugin_dir }}/config/webserver1"
     register: gskcapicmdcertOutput
 
   - name: gskcapicmd
@@ -54,7 +54,7 @@
 
   - name: HTTPServer graceful load new routing
     failed_when: false
-    shell: "{{install_base }}/{{ http_dir }}/bin/apachectl graceful"
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl graceful"
     register: gracefulOutput
 
   - name: gracefulOutput
