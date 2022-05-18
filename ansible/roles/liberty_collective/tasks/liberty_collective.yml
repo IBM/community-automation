@@ -123,16 +123,6 @@
      src: jvm.options.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/jvm.options"
 
-  - name: create logs dir before setting ( IBM i HACK )
-    when: ansible_system == 'OS400'
-    file:
-      path: "{{ item }}"
-      state: directory
-    with_items:
-    - "{{ wlp_usr_dir }}/servers/{{ cc_server }}/logs"
-    - "{{ wlp_usr_dir }}/servers/.logs"
-    - "{{ wlp_usr_dir }}/servers/.pid"
-
   - name:  set IBM i perms
     include_role:
       name: liberty_ibmi_grantauth
@@ -141,7 +131,7 @@
   - name: Start Liberty Controller Server
     failed_when: false
     command:
-      cmd: "nohup {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
     register: op
 
   - debug:

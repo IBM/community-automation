@@ -1,15 +1,17 @@
 ---
-- name: set wlp_usr_dir
-  set_fact:
-   wlp_usr_dir: "{{ install_base }}/{{ liberty_dir }}/usr"
-   wlp_output: "{{ install_base }}/{{ liberty_dir }}/usr/servers"
-- name: set wlp_cmd
+- name: set wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
   set_fact:
    wlp_cmd: " "
+   wlp_nohup: "nohup "
+   wlp_usr_dir: "{{ install_base }}/{{ liberty_dir }}/usr"
+   wlp_output: "{{ install_base }}/{{ liberty_dir }}/usr/servers"
   when: ansible_system != 'OS400'
-- name: set OS400 wlp_cmd
+- name: set OS400 wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
   set_fact: 
    wlp_cmd: "qsh "
+   wlp_nohup: ""
    wlp_owner: qejbsvr
+   wlp_usr_dir: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/usr"
+   wlp_output: "/QIBM/UserData/WebSphere/Liberty/V85/ND/wlp/output/servers"
   when: ansible_system == 'OS400'
 
