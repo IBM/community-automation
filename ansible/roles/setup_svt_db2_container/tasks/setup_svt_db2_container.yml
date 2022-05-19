@@ -1,0 +1,25 @@
+---
+
+- name: check for RedHat distribution
+  fail:
+    msg: Target OS is not RedHat
+  when: ansible_distribution != "RedHat"
+
+- name: Install RHEL pre-reqs
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: latest
+  vars:
+   packages:
+   - podman
+
+- name: Pull the svt db2 image
+  containers.podman.podman_image:
+    name: quay.io/bitnami/wildfly
+  register: svtop
+
+- debug:
+   msg: '{{ svtop.stdout_lines }}'
+
+

@@ -1,0 +1,3 @@
+svt_registry_image: someimage
+svt_registry_user: user
+svt_registry_token: token
