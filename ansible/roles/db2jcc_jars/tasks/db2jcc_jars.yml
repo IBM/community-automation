@@ -5,7 +5,6 @@
   register: onprem
 
 - block:
-  when: onprem.stat.exists == True
   - name: fetch db2jcc4.jar
     fetch:
       src: ~/sqllib/java/db2jcc4.jar
@@ -16,13 +15,14 @@
       src: ~/sqllib/java/db2jcc_license_cu.jar
       dest: /tmp/db2jcc_license_cu.jar
       flat: yes
+  when: onprem.stat.exists == True
+
 - name: check container db2 for db2jcc jars
   stat:
    path: "~/dbdir/backup/db2jcc4.jar"
   register: container
 
 - block:
-  when: container.stat.exists == True
   - name: fetch db2jcc4.jar
     fetch:
       src: ~/dbdir/backup/db2jcc4.jar
@@ -33,3 +33,4 @@
       src: ~/dbdir/backup/db2jcc_license_cu.jar
       dest: /tmp/db2jcc_license_cu.jar
       flat: yes
+  when: container.stat.exists == True
