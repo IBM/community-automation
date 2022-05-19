@@ -14,7 +14,7 @@
    packages:
    - podman
 
-- name: Pull the svt db2 image
+- name: Pull the svt jmeter image
   containers.podman.podman_image:
     name: "{{ svt_jmeter_image }}"
     username: "{{ hyc_user }}"
