@@ -1,0 +1,31 @@
+---
+
+- name: check for RedHat distribution
+  fail:
+    msg: Target OS is not RedHat
+  when: ansible_distribution != "RedHat"
+
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
+- name: Run svtdb container
+  containers.podman.podman_container:
+    log_level: info
+    name: jmeter
+    privileged: no
+    image: "{{ svt_jmeter_image }}"
+    state: started
+    restart: yes
+    cmd_args:
+     - "-script {{ jmeter_script_id }}"
+     - "-host {{ jmeter_ihs_host }}"
+     - "-port {{ jmeter_ihs_port }}"
+     - "-protocol {{ jmeter_ihs_protocol }}"
+     - "-duration {{ jmeter_duration }}"
+     - "-rampUpSecs {{ jmeter_rampUpSecs }}"
+     - "-threads {{ jmeter_threads }}"
+     - "-auth {{ jmeter_auth }}"
+     - "-report {{ jmeter_report }}"
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
