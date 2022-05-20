@@ -6,13 +6,13 @@
   when: ansible_distribution != "RedHat"
 
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
-- name: Run svtdb container
+- name: operate on svtdb container
   containers.podman.podman_container:
     log_level: info
     name: jmeter
     privileged: no
     image: "{{ svt_jmeter_image }}"
-    state: started
+    state: "{{ jmeter_state }}" # started created absent stopped present
     restart: yes
     cmd_args:
      - "-script {{ jmeter_script_id }}"
