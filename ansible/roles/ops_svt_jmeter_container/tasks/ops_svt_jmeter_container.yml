@@ -52,3 +52,8 @@
 - debug:
    msg: '{{ svtop }}'
 
+- name: Gather facts for all containers
+  containers.podman.podman_container_info:
+  register: svtop
+- debug:
+   msg: '{{ svtop }}'
