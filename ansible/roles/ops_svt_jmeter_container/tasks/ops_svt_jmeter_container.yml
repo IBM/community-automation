@@ -5,6 +5,26 @@
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
+
+- name: check for RedHat distribution
+  fail:
+    msg: Target OS is not RedHat
+  when: ansible_distribution != "RedHat"
+- name: operate on svtdb container
+  containers.podman.podman_container:
+    log_level: info
+    name: jmeter
+    hostname: jmeter_container
+    privileged: no
+    subuidname: 1000
+    subgidname: 0
+    image: "{{ svt_jmeter_image }}"
+    state: stopped # started created absent stopped present
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
 - name: operate on svtdb container
   containers.podman.podman_container:
