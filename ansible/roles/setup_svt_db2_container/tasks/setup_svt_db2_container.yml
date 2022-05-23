@@ -18,12 +18,12 @@
   stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
-  when: container_run_as_user != "root"
+  when: '{{ ansible_user }} != "root"'
 
 - name: Enable lingering is needed
   command: "loginctl enable-linger {{ ansible_user }}"
   when:
-    - container_run_as_user != "root"
+    - '{{ ansible_user }} != "root"'
     - not user_lingering.stat.exists
 
   # https://stackoverflow.com/questions/66324225/podman-pod-disappears-after-a-few-days-but-process-is-still-running-and-listeni
