@@ -14,6 +14,24 @@
    packages:
    - podman
 
+  # https://stackoverflow.com/questions/66324225/podman-pod-disappears-after-a-few-days-but-process-is-still-running-and-listeni
+  #
+  # runRoot: /run/user/1000/containers
+- name: get podman runRoot dir
+  shell: 'podman info | grep runRoot'
+  register: podman_runRoot
+- name: copy the podmand.conf template to /etc/tmpfiles.d/
+  become: yes
+  ansible.builtin.copy:
+    src: /usr/lib/tmpfiles.d/podman.conf
+    dest: /etc/tmpfiles.d/podman.conf
+    remote_src: yes
+- name: add podman nonRoot dir to systemd tmp
+  become: yes
+  lineinfile:
+    path: /etc/tmpfiles.d/podman.conf
+    line: "x {{ podman_runRoot.stdout.split(':')[1] }}"
+
 - name: Pull the svt db2 image
   containers.podman.podman_image:
     name: "{{ svt_db2_image }}"
