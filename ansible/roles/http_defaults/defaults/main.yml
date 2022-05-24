@@ -1,5 +1,5 @@
 ---
-ihs_im_driver: 'f5102145.01'
+ihs_im_driver: "{{ twas_im_driver | default('f5102145.01', true) }}"
 twas_release: 'WAS90' # WAS855
 install_ihs_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
