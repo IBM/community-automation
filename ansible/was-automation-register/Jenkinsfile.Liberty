@@ -12,8 +12,8 @@ def paramsList = [
     string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
     string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-liberty-server'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
-    password(name: 'api_key', description: 'WebSphere Automation instance api_key'),
-    password(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore'),
+    string(name: 'api_key', description: 'WebSphere Automation instance api_key'),
+    string(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore'),
     choice(name: 'startServers', choices: ['false','rrue'], description: 'start servers?')
   ]
 jobProps.push(parameters(paramsList))

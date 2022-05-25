@@ -13,9 +13,9 @@ def paramsList = [
     choice(name: 'wa_target_scope', choices: ['Cell','Node','Cluster','Server'], description: 'Traditional WebSphere scope'),
     string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'path as defined in step 4 -> https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server#cf-t-add-was__wsascript'),
     string(name: 'wsadmin_username', defaultValue: 'changeMe', description: 'Traditional WebSphere wsadmin username'),
-    password(name: 'wsadmin_password', description: 'Traditional WebSphere wsadmin password'),
+    string(name: 'wsadmin_password', description: 'Traditional WebSphere wsadmin password'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
-    password(name: 'api_key', description: 'WebSphere Automation instance api_key'),
+    string(name: 'api_key', description: 'WebSphere Automation instance api_key'),
     string(name: 'sslRef', defaultValue: 'CellDefaultSSLSettings', description: 'Traditional WebSphere sslRef'),
     choice(name: 'startServers', choices: ['false','true'], description: 'start servers?')
   ]
