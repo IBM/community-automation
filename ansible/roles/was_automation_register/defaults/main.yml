@@ -3,26 +3,25 @@ api_key: 'thisIsAlwaysOverridden'
 wa_url: 'thisIsAlwaysOverridden'
 wa_cert: |
          -----BEGIN CERTIFICATE-----
-         MIIDnDCCAoSgAwIBAgIRAN5NgNcy1bDNgNGuADdmfs4wDQYJKoZIhvcNAQELBQAw
-         JzElMCMGA1UEAxMcSUJNIEF1dG9tYXRpb24gRm91bmRhdGlvbiBDQTAeFw0yMjA0
-         MjUxNTUxMjNaFw0yMjA3MjQxNTUxMjNaMA4xDDAKBgNVBAMTA2NwZDCCASIwDQYJ
+         MIIDYDCCAkigAwIBAgIRANYE8LObslftG7BUoz4zvC4wDQYJKoZIhvcNAQELBQAw
+         JzElMCMGA1UEAxMcSUJNIEF1dG9tYXRpb24gRm91bmRhdGlvbiBDQTAeFw0yMjA1
+         MjcxODUyMzhaFw0yMjA4MjUxODUyMzhaMA4xDDAKBgNVBAMTA2NwZDCCASIwDQYJ
          KoZIhvcNAQEBBQADggEPADCCAQoCggEBANyu9n4eZg+Ef7amYzonaENDyF5bgCkL
          wrw1QZtCC4vf8aothRzwyWOvWCo3HfHb2Nk+ITCOqH4JwlTs+3cVJyfavvMj87+h
          begdYyy2nl6JdqV6MUMuaGwBuB3+NwoO1mat9tg0MEj0E7xoiVSg0PtN1wECuZm3
          LYreh/nEdX6wWImC2q/jTtwSVR9cRcZ03BXWI3qZmbgHl/C/PwgtbrOM5dRpqaXk
          a1e9RDIqs48RuArHemHDryEiWBIVJ43uW91MxT2dwYwTfmiGNTKj3BZGkrd+RrIb
          6P9qCzJxbbhLo4S/js9K8mn1iqPZi+HqizKFnikX5T4DftO5ZlAi2hECAwEAAaOB
-         2zCB2DAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0T
-         AQH/BAIwADAfBgNVHSMEGDAWgBRgKetUoPJYtq9U0uvXdrgVwqOLszCBgQYDVR0R
-         BHoweIIDY3BkghhjcGQud2Vic3BoZXJlLWF1dG9tYXRpb26CHGNwZC53ZWJzcGhl
-         cmUtYXV0b21hdGlvbi5zdmOCOWNwZC13ZWJzcGhlcmUtYXV0b21hdGlvbi5hcHBz
-         LnBlcm9uaS1wZXJmLmNwLmZ5cmUuaWJtLmNvbTANBgkqhkiG9w0BAQsFAAOCAQEA
-         ZDViJyMsKnOzAPXHI+fitwkA1aly1NRGwwZQrvGGP63hmogm+fKcNQiMoyIjFCXb
-         BkeyhZmR6sSnYzK6YAfFSE+8eRHGIBZ0GNZL7fCa6gBmCxegAuX+fALZEtQb1yRd
-         WSMKE94raWarepJv526pCNWL7d07hAZLhb5ZH7yz1xsR6CSoYt4IcGzT8fUmHRS1
-         xy54ulQJATSePY5KAYFogaZ9jMFIjjODP7Izzm5v3q/MVUCei3FgSKquyuNa5QD3
-         62oNBHFnlRpLvj5WpT84TY48s7hkk3tL1RoEJfqTlGEfIXWq5HdF9FGwpdh53/FZ
-         HTOBNQ1aif9lguxSwwCyAg==
+         nzCBnDAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0T
+         AQH/BAIwADAfBgNVHSMEGDAWgBRgKetUoPJYtq9U0uvXdrgVwqOLszBGBgNVHREE
+         PzA9ggNjcGSCGGNwZC53ZWJzcGhlcmUtYXV0b21hdGlvboIcY3BkLndlYnNwaGVy
+         ZS1hdXRvbWF0aW9uLnN2YzANBgkqhkiG9w0BAQsFAAOCAQEAx5F8MOeSQHv0AegH
+         lEFFVygMuryK9yH9G8DLWZCQAysba/k5HtqYmpEFpEnfAPXrriMm3o96dSFzhOzx
+         lsxS78aU1QBRyG2IdiOVVNJ9ZsZL6xa92Xu5qp/5kMIpZ5Rp9J8Z3itZiFhozdKM
+         6b1gLDzDAb3vTzENxK33kjccXF09NgS6jqMsy2YYVsM9YfWiZ/PfeFg46OKS/YBZ
+         N11EIHGYMESs1NIP9J5JgeunxgKrV3UYeXahyw3SqXGmxFnmxVnoGch/OFSKWRkf
+         416ZDnB5YQPksujrvKOKFpp8GGidIZHOv9QmovkflkkBzDLxoBYJxM/ikT/r3lrJ
+         v7gTWQ==
          -----END CERTIFICATE-----
 wa_keystore_pass: 'letsHideSomePrivateStuff'
 wa_target_host: 'thisIsAlwaysOverridden'
