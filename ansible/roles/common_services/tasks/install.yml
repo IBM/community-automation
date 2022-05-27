@@ -31,14 +31,14 @@
   shell: "oc get csv -A --no-headers | grep operand-deployment-lifecycle-manager | grep Succeeded | wc -l"
   register: operand_count
   until: operand_count.stdout|int != 0
-  retries: 20
+  retries: 30
   delay: 30
 
 - name: Making sure CRD OperandRegistry is present
   shell: "oc get operandregistry -A --no-headers | grep common-service | wc -l"
   register: crdc_count
   until: crdc_count.stdout|int == 1
-  retries: 10
+  retries: 20
   delay: 30
 
 - name: Query available operands
@@ -73,7 +73,7 @@
     oc -n ibm-common-services get csv --no-headers | grep -v operand-deployment-lifecycle-manager | wc -l
   register: csvi_count
   until: csvi_count.stdout|int >= 1
-  retries: 15
+  retries: 20
   delay: 30
 
 - name: Waiting for all ClusterServiceVersion to complete
