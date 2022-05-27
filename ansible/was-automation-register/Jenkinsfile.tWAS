@@ -9,6 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
+    string(name: 'wa_env', defaultValue: 'changeMyTargetEnv', description: 'Used to identify the job log only'),
     string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
     choice(name: 'wa_target_scope', choices: ['Cell','Node','Cluster','Server'], description: 'Traditional WebSphere scope'),
     string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'path as defined in step 4 -> https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server#cf-t-add-was__wsascript'),
@@ -30,7 +31,7 @@ timestamps {
       //def scmVars = checkout scm
       checkout scm 
       stage('Stage 1') {
-        buildName "${params.wa_target_host}.${BUILD_ID}"
+        buildName "${params.wa_env}.${BUILD_ID}"
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
