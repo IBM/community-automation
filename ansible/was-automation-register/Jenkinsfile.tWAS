@@ -30,12 +30,12 @@ timestamps {
       //def scmVars = checkout scm
       checkout scm 
       stage('Stage 1') {
+        buildName "${params.wa_target_host}.${BUILD_ID}"
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
           ansible-playbook -i ${params.wa_target_host}, ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_scope=${params.wa_target_scope} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wsadmin_username=${params.wsadmin_username} -e wsadmin_password=${params.wsadmin_password} -e sslRef=${params.sslRef} -e startServers=${params.startServers} -e waProductType='tWAS' 
         """.stripIndent()
-        buildName "${params.wa_target_host}.${BUILD_ID}"
       }
    }
   }

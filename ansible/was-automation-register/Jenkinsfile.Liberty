@@ -27,6 +27,7 @@ timestamps {
       //def scmVars = checkout scm
       checkout scm
       stage('Stage 1') {
+        buildName "${params.wa_target_host}.${BUILD_ID}"
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
