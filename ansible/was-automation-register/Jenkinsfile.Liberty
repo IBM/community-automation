@@ -9,6 +9,7 @@ def jobProps = [
 ]
 
 def paramsList = [
+    string(name: 'wa_env', defaultValue: 'changeMyTargetEnv', description: 'Used to identify the job log only'),
     string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
     string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-liberty-server'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
@@ -27,7 +28,7 @@ timestamps {
       //def scmVars = checkout scm
       checkout scm
       stage('Stage 1') {
-        buildName "${params.wa_target_host}.${BUILD_ID}"
+        buildName "${params.wa_env}.${BUILD_ID}"
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
