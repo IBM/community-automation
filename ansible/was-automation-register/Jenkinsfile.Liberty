@@ -15,7 +15,7 @@ def paramsList = [
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
     string(name: 'api_key', description: 'WebSphere Automation instance api_key'),
     string(name: 'wa_keystore_pass', description: 'password for the new .p12 keystore'),
-    text(name: 'wa_cert', description: 'WebSphere Automation PEM Cert'),
+    text(name: 'wa_cert', description: 'WebSphere Automation PEM Cert\n does not work yet'),
     choice(name: 'startServers', choices: ['false','rrue'], description: 'start servers?')
   ]
 jobProps.push(parameters(paramsList))
@@ -33,7 +33,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
-          ansible-playbook -i ${params.wa_target_host}, ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_cert="${params.wa_cert}" -e wa_keystore_pass=${params.wa_keystore_pass} -e startServers=${params.startServers} -e waProductType='Liberty'
+          ansible-playbook -i ${params.wa_target_host}, ./ansible/was-automation-register/was-automation-register.yml -e wa_target_host=${params.wa_target_host} -e wa_target_path=${params.wa_target_path} -e wa_url=${params.wa_url} -e api_key=${params.api_key} -e wa_keystore_pass=${params.wa_keystore_pass} -e startServers=${params.startServers} -e waProductType='Liberty'
         """.stripIndent()
       }
    }
