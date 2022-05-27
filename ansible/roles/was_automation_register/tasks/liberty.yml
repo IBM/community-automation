@@ -130,3 +130,8 @@
       #    when: item.rc == 0
       #    loop: "{{ start_server_servers.results }}"
   when: startServers == 'true'
+
+- name: debug wa_cert
+  debug: 
+    msg: "{{ wa_cert }}"
+
