@@ -9,8 +9,8 @@
 - name: set wsadmin prop to not echo sensitive info
   replace:
    path: "{{ wa_target_path }}/properties/wsadmin.properties"
-   regexp: 'com.ibm.ws.scripting.echoparams=true'
-   replace: 'com.ibm.ws.scripting.echoparams=false'
+   regexp: 'com.ibm.ws.scripting.echoparams=false'
+   replace: 'com.ibm.ws.scripting.echoparams=true'
 
   # check the status of the dmgr 
   # [nest@nest-wa-twas855 ~]$ /opt/WAS/profiles/dmgr/bin/serverStatus.sh dmgr
