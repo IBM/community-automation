@@ -1,6 +1,5 @@
 #------------------------------------------------------------------------------------
 # configuretWasUsageMetering.py - configure tWAS server with usage metering feature  
-# https://www.ibm.com/docs/en/ws-automation?topic=monitoring-registering-websphere-application-server-traditional-servers
 #------------------------------------------------------------------------------------
 #
 #  This script configures a traditional WebSphere Application Server with the usage 
@@ -25,7 +24,7 @@
 #    If the environment is in WebSphere Application Server 9.0.x and 
 #       has the open shift CLI client command tool installed and connected to Open shift 
 #       container (oc login), the script can obtain url and apiKey automatically.  User only needs to specify 
-#       the "namespace" parameter such as namespace=websphere-automation and other required 
+#       the "namespace" parameter such as namespace=wasautomation and other required 
 #       (sslRef or trustStorePassword) and optional parameters. If namespace is not specified, default WebSphere
 #       Automation namespace will be used.
 #  
@@ -50,7 +49,7 @@
 #        or
 #   wsadmin -lang jython -f configuretWasUsageMetering.py url=<url> apiKey=<api_key> trustStorePassword=<trustStore_password>
 #        or
-#   wsadmin -lang jython -f configuretWasUsageMetering.py namespace=websphere-automation sslRef=<ssl_name>
+#   wsadmin -lang jython -f configuretWasUsageMetering.py namespace=<namespace> sslRef=<ssl_name>
 #
 #
 #  The syntax including optional parameters something like:  
@@ -187,7 +186,7 @@ def configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePa
        end = cert.find("] [version")
        alias = cert[start+6:end]
        if alias == certAlias.lower():
-           print "Deleting existing certificate ... " + alias
+           print "Deleting existing certificate: " + alias
            AdminTask.deleteSignerCertificate(['-keyStoreName', trustStoreName, '-certificateAlias', alias ])
    
    # retrieve new certificate from api-usagemetering-host and port
@@ -816,8 +815,9 @@ def getServerPaths(configNodedir):
                   if s1 != "dmgr" and s1 != "nodeagent":
                      path = os.path.join(ss, s1)
                      paths.append(path)
-    return paths   
-    
+    return paths  
+
+
 # obtain url value from openshift container
 def getURL(namespace): 
     url=""
@@ -843,54 +843,53 @@ def getURL(namespace):
        output = ""
        try: 
           command = "oc whoami"
-          output = subprocess.check_output(command, shell=True)
+          
+          # convert command string to arguments list to avoid subprocess os injection
+          commandList = stringToList(command)
+          
+          # check if user login to open shift container
+          output = subprocess.check_output(commandList, shell=False)
        except:
           print "Warning: user is not login to open shift container and please login to openshift or specify url parameter."
 
        # execute oc command to get url
        if len(output) > 0:  
-          if platform == "win":
-             if len(namespace) == 0:
-                # use default WebSphereAutomation namespace
-                namespace = "websphere-automation"
-                print "Using WebSphere Automation default namespace: " + namespace
-      
-             # set namespace environment varialbe
-             os.environ["namespace"] = namespace
-            
-             # invoke oc comamnd to get cpd route url
-             try: 
-                command = "oc get route cpd -n %namespace% -o jsonpath=https://{.spec.host}/websphereauto/meteringapi"
-                             
-             except subprocess.CalledProcessError:
-                print "Error: oc command failed and unable to obtain url from openshift."
-          # unix 
-          else:  
-             if len(namespace) == 0:
-                # use default WebSphereAutomation namespace
-                namespace = "websphere-automation"
-                print "Using WebSphere Automation default namespace: " + namespace
-       
-             # set namespace environment varialbe
-             os.environ["namespace"] = namespace
-             
-             # invoke oc comamnd to get cpd route url
-             try:
-                command = "oc get route cpd -n $namespace -o jsonpath=https://{.spec.host}/websphereauto/meteringapi"   
-             except subprocess.CalledProcessError:
-                print "Error: oc command failed and unable to obtain url from openshift."
+          if len(namespace) == 0:
+             # use default WebSphereAutomation namespace
+             namespace = "wasautomation"
+             print "Using WebSphere Automation default namespace: " + namespace
 
-          url = subprocess.check_output(command, shell=True)
+          # check if namespace exists
+          command = "oc get namespace " + namespace
+             
+          # convert command string to arguments list to avoid subprocess os injection
+          commandList = stringToList(command)
+          
+          # error is thrown if namespace does not exist
+          output = subprocess.check_output(commandList, shell=False)
+          
+          # invoke oc comamnd to get cpd route url
+          try: 
+             command = "oc get route cpd -n "+namespace+" -o jsonpath=https://{.spec.host}/websphereauto/meteringapi"
+          except subprocess.CalledProcessError:
+             print "Error: oc command failed and unable to obtain url from openshift."
+          
+          # convert command string to arguments list to avoid subprocess os injection
+          commandList = stringToList(command)
+          
+          # obtain url string 
+          url = subprocess.check_output(commandList, shell=False)
 
           if len(url) > 0:
              print "Obtained from open shift:"  
              print "  url: " + url
+    
     else:
          print "Unable to obtain url value in WebSphere Application Server v8.5.5"   
    
     return url
     
-       
+              
 # obtain apiKey value from openshift container
 def getApiKey(namespace):
     apiKey = ""
@@ -917,26 +916,50 @@ def getApiKey(namespace):
        output = ""
        try: 
           command = "oc whoami"
-          output = subprocess.check_output(command, shell=True)
+          
+          # convert command string to arguments list to avoid subprocess os injection
+          commandList = stringToList(command)
+          
+          output = subprocess.check_output(commandList, shell=False)
        except:
           print "Warning: user is not login to open shift container and please login to openshift or specify apiKey parameter."
           
        if len(output) > 0: 
+          if len(namespace) == 0:
+             # use default WebSphereAutomation namespace
+             namespace = "wasautomation"
+             print "Using WebSphere Automation default namespace: " + namespace
+
+          command = "oc get namespace " + namespace
+             
+          # convert command string to arguments list to avoid subprocess os injection
+          commandList = stringToList(command)
+          
+          # error is thrown if namespace does not exist
+          output = subprocess.check_output(commandList, shell=False)
+
           if platform == "win":
-             if len(namespace) == 0:
-                # use default WebSphereAutomation namespace
-                namespace = "websphere-automation"
-                print "Using WebSphere Automation default namespace: " + namespace
-
-             # set namespace environment varialbe
-             os.environ["namespace"] = namespace
-
              # invoke oc command to get apiKey
              try:
-                command = "oc get WebSphereSecure -n %namespace% -o jsonpath={.items[?(@.kind=='WebSphereSecure')].metadata.name}"
-                instance_name = subprocess.check_output(command, shell=True) 
-                command = "oc -n %namespace% get secret "+instance_name+"-metering-apis-encrypted-tokens -o jsonpath={.data."+instance_name+"-metering-apis-sa}"
-                output = subprocess.check_output(command, shell=True)
+                # oc command to obtain instance_name
+                command = "oc get WebSphereSecure -n "+namespace+" -o jsonpath={.items[?(@.kind=='WebSphereSecure')].metadata.name}"
+                
+                # convert command string to arguments list
+                commandList = stringToList(command)
+                
+                # obtain WebSphereSecure instance_name  
+                instance_name = subprocess.check_output(commandList, shell=False) 
+                
+                # oc command to obtain secret
+                command = "oc -n "+namespace+" get secret "+instance_name+"-metering-apis-encrypted-tokens -o jsonpath={.data."+instance_name+"-metering-apis-sa}"
+                
+                # convert command string to arguments list to avoid subprocess os injection
+                commandList = stringToList(command)
+                
+                # get encoded apiKey
+                output = subprocess.check_output(commandList, shell=False)
+                
+                # get decoded apiKey
                 apiKey = output.decode('base64', 'strict')
              
              except subprocess.CalledProcessError:
@@ -944,20 +967,33 @@ def getApiKey(namespace):
  
           # unix environment
           else:
-             if len(namespace) == 0:
-                # use default WebSphereAutomation namespace
-                namespace = "websphere-automation"
-                print "Using WebSphere Automation default namespace: " + namespace
-
-             # set namespace environment varialbe
-             os.environ["namespace"] = namespace
-
              # invoke oc command to get apiKey
              try: 
-                command = "oc get WebSphereSecure -n $namespace -o jsonpath='{.items[?(@.kind==\"WebSphereSecure\")].metadata.name}'"
-                instance_name = subprocess.check_output(command, shell=True) 
-                command = "oc -n $namespace get secret "+instance_name+"-metering-apis-encrypted-tokens -o jsonpath='{.data."+instance_name+"-metering-apis-sa}' | base64 -d"
-                apiKey = subprocess.check_output(command, shell=True)
+                # oc command to obtain instance_name
+                command = "oc get WebSphereSecure -n "+namespace+" -o jsonpath='{.items[?(@.kind==\"WebSphereSecure\")].metadata.name}'"
+                
+                # convert command string to arguments list to avoid subprocess os injection
+                commandList = stringToList(command)
+                
+                # obtain WebSphereSecure instance_name 
+                instance_name = subprocess.check_output(commandList, shell=False) 
+                
+                # trim head/end quotes
+                if instance_name.startswith("'") and instance_name.endswith("'"):
+                   instance_name = instance_name[1:len(instance_name)-1]
+                
+                # oc command to obtain secret
+                command = "oc -n "+namespace+" get secret "+instance_name+"-metering-apis-encrypted-tokens -o jsonpath='{.data."+instance_name+"-metering-apis-sa}'"
+                
+                # convert command string to arguments list to avoid subprocess os injection
+                commandList = stringToList(command)
+                
+                # get encoded apiKey
+                output = subprocess.check_output(commandList, shell=False)
+                
+                # get decoded apiKey
+                apiKey = output.decode('base64', 'strict')
+
              except subprocess.CalledProcessError:
                 print "oc command failed and unable to obtain apiKey from openshift."
             
@@ -968,7 +1004,7 @@ def getApiKey(namespace):
         print "Unable to obtain apiKey value in WebSphere Application Server v8.5.5"   
  
     return apiKey   
-    
+       
    
 # delete existing keystore file
 def delKeyStoreFile(fileName):
@@ -1028,6 +1064,11 @@ def _splitlist(s):
        raise "Invalid string: %s" % s
     return s[1:-1].split(' ')
 
+## Convert a string to a list
+def stringToList(s):
+    listRes = list(s.split(" "))
+    return listRes
+
       
 #-----------------------------------------------------------------
 # Main
@@ -1038,7 +1079,7 @@ if (len(sys.argv) == 0):
     print "requires parameters: sslRef or trustStorePassword (required), namespace (used to obtain url and apiKey from openshift), trustStoreName, certAlias, nodeName, serverName or clusterName, startServers (optional)" 
     print "e.g.: wsadmin -lang jython -f configuretWasUsageMetering url=https://cpdRoute.test.com:443 apikey=abcd sslRef=mySSL" 
     print "e.g.: wsadmin -lang jython -f configuretWasUsageMetering url=https://cpdRoute.test.com:443 apikey=abcd trustStorePassword=password"
-    print "e.g.: wsadmin -lang jython -f configuretWasUsageMetering namespace=websphere-automation sslRef=mySSL" 
+    print "e.g.: wsadmin -lang jython -f configuretWasUsageMetering namespace=wasautomation sslRef=mySSL" 
     print "e.g.: wsadmin -lang jython -f configuretWasUsageMetering url=https://cpdRoute.test.com:443 apikey=abcd trustStorePassword=password trustStoreName=meteringTrustStore certAlias=meteringAlias"
 else:     
     url = ""
@@ -1111,5 +1152,4 @@ else:
     configuretWasUsageMetering(url, apiKey, sslRef, trustStoreName, trustStorePassword, certAlias, nodeName, serverName, clusterName, startServers, namespace)
    
 #endIf
-
 
