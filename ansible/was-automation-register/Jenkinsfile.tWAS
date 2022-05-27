@@ -31,8 +31,8 @@ timestamps {
       checkout scm
       stage('Stage 1') {
         script {
-          currentBuild.displayName = ${params.wa_target_host}.${BUILD_NUMBER}
-          currentBuild.description = ""
+          currentBuild.displayName = ${params.wa_target_host}.${BUILD_ID}
+          currentBuild.description = "tWAS"
         }
         sh """
           set +x # hide sensitive info being echo'd to log
