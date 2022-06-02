@@ -5,8 +5,24 @@
    dest: ~/
    mode: '0755'
 
+- name: find owner of wsadmin.sh
+  ansible.builtin.stat:
+    path: "{{ wa_target_path }}/bin/wsadmin.sh"
+  register: wasowner
+
+- name: set become of file owners are non-root
+  set_fact: 
+   was_become: 'no'
+  when: wasowner.stat.pw_name != 'root'
+
+- name: set become of file owners are root
+  set_fact: 
+   was_become: 'yes'
+  when: wasowner.stat.pw_name == 'root'
+
   # https://www.ibm.com/support/pages/apar/PK72753
 - name: set wsadmin prop to not echo sensitive info
+  become: '{{ was_become }}'
   replace:
    path: "{{ wa_target_path }}/properties/wsadmin.properties"
    regexp: 'com.ibm.ws.scripting.echoparams=true'
@@ -22,6 +38,7 @@
   #           stopped.
 
 - name: check the dmgr status
+  become: '{{ was_become }}'
   no_log: true
   shell: "bin/serverStatus.sh dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
   args:
@@ -37,6 +54,7 @@
   - "{{ dmgr_status }}"
 
 - name: start the dmgr
+  become: '{{ was_become }}'
   shell: "bin/startManager.sh"
   args:
    chdir: "{{ wa_target_path }}"
@@ -60,6 +78,7 @@
   - trustStorePassword | length > 1
 
 - name: run wsadmin.sh
+  become: '{{ was_become }}'
   shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} {{ key1 }}={{ value1 }} startServers={{ startServers }}"
   args:
    chdir: "{{ wa_target_path }}"
