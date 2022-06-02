@@ -10,9 +10,9 @@ def jobProps = [
 
 def paramsList = [
     string(name: 'wa_env', defaultValue: 'changeMyTargetEnv', description: 'Used to identify the job log only'),
-    string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the target host'),
+    string(name: 'wa_target_host', defaultValue: 'changeMyTargetHost', description: 'FQDN of the dmgr host'),
     choice(name: 'wa_target_scope', choices: ['Cell','Node','Cluster','Server'], description: 'Traditional WebSphere scope'),
-    string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'path as defined in step 4 -> https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server#cf-t-add-was__wsascript'),
+    string(name: 'wa_target_path', defaultValue: 'changeMyTargetPath', description: 'dmgr profile root, example: /opt/WAS/profiles/dmgr'),
     string(name: 'wsadmin_username', defaultValue: 'changeMe', description: 'Traditional WebSphere wsadmin username'),
     string(name: 'wsadmin_password', description: 'Traditional WebSphere wsadmin password'),
     string(name: 'wa_url', defaultValue: 'changeMe', description: 'WebSphere Automation instance URL'),
