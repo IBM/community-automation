@@ -1,0 +1,5 @@
+---
+### https://www.ibm.com/support/pages/understanding-aix-virtual-rpm-package-rpmrte
+- name: updtvpkg
+  command: 'updtvpkg'
+  become: yes
