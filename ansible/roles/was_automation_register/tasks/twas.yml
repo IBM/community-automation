@@ -10,8 +10,8 @@
   become: yes
   replace:
    path: "{{ wa_target_path }}/properties/wsadmin.properties"
-   regexp: 'com.ibm.ws.scripting.echoparams=false'
-   replace: 'com.ibm.ws.scripting.echoparams=true'
+   regexp: 'com.ibm.ws.scripting.echoparams=true'
+   replace: 'com.ibm.ws.scripting.echoparams=false'
 
   # check the status of the dmgr 
   # [nest@nest-wa-twas855 ~]$ /opt/WAS/profiles/dmgr/bin/serverStatus.sh dmgr
@@ -24,6 +24,7 @@
 
 - name: check the dmgr status
   no_log: true
+  become: yes
   shell: "bin/serverStatus.sh dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
   args:
    chdir: "{{ wa_target_path }}"
@@ -38,6 +39,7 @@
   - "{{ dmgr_status }}"
 
 - name: start the dmgr
+  become: yes
   shell: "bin/startManager.sh"
   args:
    chdir: "{{ wa_target_path }}"
@@ -61,6 +63,7 @@
   - trustStorePassword | length > 1
 
 - name: run wsadmin.sh
+  become: yes
   shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} {{ key1 }}={{ value1 }} startServers={{ startServers }}"
   args:
    chdir: "{{ wa_target_path }}"
