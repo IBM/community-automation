@@ -9,7 +9,7 @@
 - name: archive the logs dir to fetch
   community.general.archive:
     path:
-    - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
     dest: logs.tar
     format: tar
 
