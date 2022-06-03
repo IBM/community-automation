@@ -1,0 +1,21 @@
+---
+
+- name: log directory
+  file:
+    path: logs
+    state: directory
+
+- name: get a list of files in the log directory
+  shell: "find . -maxdepth 1 -type f) | cut -d'/' -f2"
+  args:
+   chdir: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ serverName }}"
+  register: files_to_copy
+
+- name: fetch the twas logs 
+  ansible.builtin.fetch:
+    src: "{{ item }}"
+    dest: "logs/"
+  with_items: 
+  - "{{ files_to_copy.stdout_lines }}"
+
+
