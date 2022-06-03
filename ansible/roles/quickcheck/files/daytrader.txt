@@ -1,0 +1,121 @@
+# false to display warnings, true to only display errors and INCLUDES
+IGNORE WARNINGS = false
+
+# Input a time to exclude all entries up to, but not including that entry..
+# Times should come in the form that they do in the file.
+# ie:   Month/Day/Year Hour:Min:Sec:Millisec
+# eg:   7/30/13 16:48:08:378 EDT
+
+EXCLUDE_BEFORE:
+-365
+
+# List all key words you would like to search for here, each on a separate line
+# spaces are allowed, no quotes needed. Not case sensitive.
+INCLUDES:
+CWWKE0001I
+CWWKF0011I
+CWWKE0036I
+WSVR0001I
+WSVR0024I
+CWWKF0012I
+CWWKX8055
+ADMN1020I
+CWWKX8116I
+guard leak detected
+
+# List all key words you would like to ignore here, each on a separate line
+EXCLUDES:
+WIMSystemException
+TradeSLSBBean
+java.io.IOException:
+Creating Service
+LogService
+SSLHandshakeErrorTracker
+MalformedMessageException: Invalid CR found
+MalformedMessageException: Invalid LF found
+Client requested protocol SSLv3
+SRVE0255E: A WebGroup/Virtual Host to handle
+ConversationIdGenerator
+CWWIM4564I
+SSLC0008E
+CWWIM4520E
+com.ibm.ws.wim.adapter.ldap.LdapConnection getRangeAttributes
+DCSV1115W
+DCSV1117W
+DCSV8104W
+RemoteClockService
+RemoteTimeZoneService
+SRVE0133E
+User Not Logged in
+javax.faces.webapp.FacesServlet.service
+# SRVE0133E temp for defect 223433
+
+# Name of the directory all of the output files will be in
+OUTPUT FOLDER NAME:
+QuickCheckOutput
+
+# Name of the subdirectory that all of the txt files for each individual log will be in
+INDIVIDUAL TXT FOLDER NAME:
+IndividualTXT
+
+# Name of the subdirectory that all of the html files for each individual log will be in
+INDIVIDUAL HTML FOLDER NAME:
+IndividualHTML
+
+# Disable text file output
+DISABLE TEXT OUTPUT:
+true
+
+# Disable html full output
+DISABLE HTML FULL OUTPUT:
+true
+
+# Disable html summary  output
+DISABLE HTML SUMMARY OUTPUT:
+true
+
+# Disable html individual output
+DISABLE HTML INDIVIDUAL OUTPUT:
+true
+
+# Enable Exception Count Processing
+ENABLE EXCEPTION PROCESSING:
+true
+
+# Name of the text file with the full error report
+PLAIN TEXT FILE NAME:
+fullOutput.txt
+
+# Name of the html file with the full error report
+HTML FILE NAME:
+fullOutput.html
+
+# Name of the text file with the summary report
+PLAIN TEXT SUMMARY FILE NAME:
+summary.txt
+
+# Name of the html file with the summary report
+HTML SUMARY FILE NAME:
+summary.html
+
+# Process unique warnings/errors/ffdc and output to errorSummary.txt
+UNIQUE PROCESSING = true
+
+# Write unique processing to all other output files (will not work without UNIQUE PROCESSING set to true)
+WRITE TO OUTPUT = true
+
+# Display timestamp info; true to display in both full/individual summaries, false to display only in individual summaries (will not display without UNIQUE PROCESSING and WRITE TO OUTPUT set to true)
+FULL SUMMARY TIMESTAMP = true
+
+# Name of the text file with the error summary report
+PLAIN TEXT ERROR SUMMARY:
+errorSummary.txt
+
+# Name of the text file with the warning summary report
+PLAIN TEXT WARNING SUMMARY:
+warningSummary.txt
+
+# generate collapsed versions of log files
+SHRINK LOG FILES:
+false
+

@@ -1,0 +1,7 @@
+---
+
+- name: QuickCheck all logs
+  delegate_to: localhost
+  shell: 'java -jar files/QuickCheck6.jar files/daytrader.txt . '
+  args:
+    chdir: "logs/"
