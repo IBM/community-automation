@@ -1,4 +1,5 @@
 ---
+
 - name: install QuickCheck6.jar
   copy:
     src: files/QuickCheck6.jar
