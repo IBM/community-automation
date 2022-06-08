@@ -1,0 +1,15 @@
+---
+- name: install QuickCheck6.jar
+  copy:
+    src: files/QuickCheck6.jar
+    dest: ~/QuickCheck6.jar
+- name: install daytrader.txt
+  copy:
+    src: files/daytrader.txt
+    dest: ~/daytrader.txt
+
+- name: QuickCheck all logs
+  delegate_to: localhost
+  shell: 'java -jar ~/QuickCheck6.jar ~/daytrader.txt . '
+  args:
+    chdir: "logs/{{ env_name }}/"

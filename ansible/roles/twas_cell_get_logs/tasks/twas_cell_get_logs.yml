@@ -3,7 +3,13 @@
 - name: log directory
   delegate_to: localhost
   file:
-    path: logs
+    path: "logs/{{ env_name }}"
+    state: absent
+
+- name: log directory
+  delegate_to: localhost
+  file:
+    path: "logs/{{ env_name }}"
     state: directory
 
 - name: archive the logs dir to fetch
@@ -16,11 +22,11 @@
 - name: fetch the twas log archive
   ansible.builtin.fetch:
     src: logs.tar
-    dest: logs/
+    dest: "logs/{{ env_name }}"
 
     # unarchive fails to find handler
 - name: Extract the twas log archive
   delegate_to: localhost
   shell: tar xf logs.tar
   args:
-    chdir: "logs/{{ ansible_fqdn }}"
+    chdir: "logs/{{ env_name }}/{{ ansible_fqdn }}"
