@@ -10,7 +10,7 @@ profile_templatePath:
 
 cellName: 'ndcell'
 clusterName: 'Cluster'
-serverName: 'Server'
+appServerName: 'Server'
 
 le_package_extension:
   chrp: ''
