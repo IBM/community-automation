@@ -63,6 +63,18 @@
   with_items:
   - "/home/{{ ansible_user }}/dbdir"
 
+- name: kill rm any existing db2 container
+  containers.podman.podman_container:
+    log_level: info
+    name: svtdb
+    privileged: yes
+    image: "{{ svt_db2_image }}"
+    state: absent # started created absent stopped present
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
 - name: Run svtdb container
   containers.podman.podman_container:
