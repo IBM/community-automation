@@ -1,15 +1,15 @@
 ---
 
-- name: log directory
+- name: clear log directory
   delegate_to: localhost
   file:
-    path: "logs/{{ env_name }}"
+    path: "logs/{{ env_name }}/{{ ansible_fqdn }}"
     state: absent
 
-- name: log directory
+- name: create log directory
   delegate_to: localhost
   file:
-    path: "logs/{{ env_name }}"
+    path: "logs/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
 - name: archive the logs dir to fetch
