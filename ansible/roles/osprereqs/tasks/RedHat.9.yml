@@ -42,3 +42,4 @@
    - 'zip'
    - 'unzip'
    - 'python3'
+   - 'libxcrypt-compat'
