@@ -14,3 +14,12 @@
   shell: 'java -jar ~/QuickCheck6.jar ~/daytrader.txt . '
   args:
     chdir: "logs/{{ env_name }}/"
+  register: qcoutput
+
+- name: quickcheck output
+  debug:
+   msg: "{{ qcoutput.stdout_lines }}"
+
+- name: quickcheck dir location
+  debug:
+   msg: "{{ playbook_dir }}/logs/{{ env_name }}/QuickCheckOutput/"
