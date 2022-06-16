@@ -2,6 +2,7 @@
 twas_im_driver: 'cf212205.01'
 install_base: '/home/nest'
 twas_dir: 'was'
+app_dir: 'AppClient'
 shared_dir: 'IM-shared'
 gsa_user: 'gsauser'
 gsa_pass: 'gsapass'
