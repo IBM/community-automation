@@ -36,3 +36,7 @@
   file:
     path: "logs/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
     state: absent
+
+- name: log/error directory location
+  debug:
+   msg: "{{ playbook_dir }}/logs/{{ env_name }}/{{ ansible_fqdn }}"
