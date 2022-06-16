@@ -5,6 +5,15 @@
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
+- name: create jmeter.log
+  file:
+    path: '{{ item }}'
+    state: touch
+    mode: '0755'
+  with_items:
+  - jmeter.log
+  - jmeter.error
+
 - name: kill rm any existing jmeter container
   containers.podman.podman_container:
     log_level: info
@@ -30,6 +39,10 @@
     image: "{{ svt_jmeter_image }}"
     state: "{{ jmeter_state }}" # started created absent stopped present
     restart: yes
+    timezone: '{{ jmeter_tz }}'
+    volume:
+    - '/home/{{ ansible_user }}/jmeter.log:/jmeter/jmeter.log'
+    - '/home/{{ ansible_user }}/jmeter.error:/jmeter/jmeter.error'
     command: "-script {{ jmeter_script_id }} \
               -host {{ jmeter_ihs_host }} \
               -port {{ jmeter_ihs_port }} \
