@@ -1,33 +1,25 @@
 ### WebSphere Automation instance artifacts
-api_key: 'thisIsAlwaysOverridden'
-wa_url: 'thisIsAlwaysOverridden'
+startServers: 'false'
 wa_cert: |
          -----BEGIN CERTIFICATE-----
-         MIIDYDCCAkigAwIBAgIRANYE8LObslftG7BUoz4zvC4wDQYJKoZIhvcNAQELBQAw
-         JzElMCMGA1UEAxMcSUJNIEF1dG9tYXRpb24gRm91bmRhdGlvbiBDQTAeFw0yMjA1
-         MjcxODUyMzhaFw0yMjA4MjUxODUyMzhaMA4xDDAKBgNVBAMTA2NwZDCCASIwDQYJ
+         MIIDnDCCAoSgAwIBAgIRAN2vmn0IRmlL7ZpKpqDeitowDQYJKoZIhvcNAQELBQAw
+         JzElMCMGA1UEAxMcSUJNIEF1dG9tYXRpb24gRm91bmRhdGlvbiBDQTAeFw0yMjA2
+         MDExMjQ1MzZaFw0yMjA4MzAxMjQ1MzZaMA4xDDAKBgNVBAMTA2NwZDCCASIwDQYJ
          KoZIhvcNAQEBBQADggEPADCCAQoCggEBANyu9n4eZg+Ef7amYzonaENDyF5bgCkL
          wrw1QZtCC4vf8aothRzwyWOvWCo3HfHb2Nk+ITCOqH4JwlTs+3cVJyfavvMj87+h
          begdYyy2nl6JdqV6MUMuaGwBuB3+NwoO1mat9tg0MEj0E7xoiVSg0PtN1wECuZm3
          LYreh/nEdX6wWImC2q/jTtwSVR9cRcZ03BXWI3qZmbgHl/C/PwgtbrOM5dRpqaXk
          a1e9RDIqs48RuArHemHDryEiWBIVJ43uW91MxT2dwYwTfmiGNTKj3BZGkrd+RrIb
          6P9qCzJxbbhLo4S/js9K8mn1iqPZi+HqizKFnikX5T4DftO5ZlAi2hECAwEAAaOB
-         nzCBnDAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0T
-         AQH/BAIwADAfBgNVHSMEGDAWgBRgKetUoPJYtq9U0uvXdrgVwqOLszBGBgNVHREE
-         PzA9ggNjcGSCGGNwZC53ZWJzcGhlcmUtYXV0b21hdGlvboIcY3BkLndlYnNwaGVy
-         ZS1hdXRvbWF0aW9uLnN2YzANBgkqhkiG9w0BAQsFAAOCAQEAx5F8MOeSQHv0AegH
-         lEFFVygMuryK9yH9G8DLWZCQAysba/k5HtqYmpEFpEnfAPXrriMm3o96dSFzhOzx
-         lsxS78aU1QBRyG2IdiOVVNJ9ZsZL6xa92Xu5qp/5kMIpZ5Rp9J8Z3itZiFhozdKM
-         6b1gLDzDAb3vTzENxK33kjccXF09NgS6jqMsy2YYVsM9YfWiZ/PfeFg46OKS/YBZ
-         N11EIHGYMESs1NIP9J5JgeunxgKrV3UYeXahyw3SqXGmxFnmxVnoGch/OFSKWRkf
-         416ZDnB5YQPksujrvKOKFpp8GGidIZHOv9QmovkflkkBzDLxoBYJxM/ikT/r3lrJ
-         v7gTWQ==
+         2zCB2DAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDAYDVR0T
+         AQH/BAIwADAfBgNVHSMEGDAWgBRgKetUoPJYtq9U0uvXdrgVwqOLszCBgQYDVR0R
+         BHoweIIDY3BkghhjcGQud2Vic3BoZXJlLWF1dG9tYXRpb26CHGNwZC53ZWJzcGhl
+         cmUtYXV0b21hdGlvbi5zdmOCOWNwZC13ZWJzcGhlcmUtYXV0b21hdGlvbi5hcHBz
+         LnBlcm9uaS1wZXJmLmNwLmZ5cmUuaWJtLmNvbTANBgkqhkiG9w0BAQsFAAOCAQEA
+         EQN/M59pUGLwDhjSLMQn9RFm2mPZL29LcqFLt5hL6+/usV7VI8cQpA+mdZsieTEf
+         FZ91sE8K7Lni0aWtxmLGBR1b0ANaiucBc8avhDtM2ZewjGukyCqoswJfpGW07/Bk
+         GavuWWGSj0S3sNkrvaA9kS8wOyBUaE5grV0OLJj7xosaCRkgqoCY0pgwlJCIY8hj
+         1Jb9PJmDPC0vIh9LGsSE3qooVoFtMXaJ3DVx3srFGvnJ25+l9aH2x97shWqaXXpc
+         ytVymuUHuDIjEay4nlZDMvTuRn0EJRZ/I9R2F8BSuxF5wzXQq1xgBwTd3kf0fCmU
+         yR2GA3QL93VxvLrVCoCGTQ==
          -----END CERTIFICATE-----
-wa_keystore_pass: 'letsHideSomePrivateStuff'
-wa_target_host: 'thisIsAlwaysOverridden'
-wa_target_scope: 'thisIsAlwaysOverridden'
-wa_target_path: 'thisIsAlwaysOverridden'
-wsadmin_username: 'thisIsAlwaysOverridden'
-wsadmin_password: 'thisIsAlwaysOverridden'
-waProductType: 'thisIsAlwaysOverridden'
-startServers: 'false'

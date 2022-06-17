@@ -4,7 +4,7 @@
 
  - WebShpere Automation configured
 
-   - [WebSphere Automation pre-reqs](https://www.ibm.com/docs/en/ws-automation?topic=servers-adding-server-track-security-vulnerabilities#cf-t-addserver__prereq_add_server)
+   - [WebSphere Automation pre-reqs](https://www.ibm.com/docs/en/ws-automation?topic=automation-setting-up-security-monitoring)
  - [tWAS - runs the configuretWasUsageMetering.py script on a dmgr for all application servers in the cell](https://www.ibm.com/docs/en/ws-automation?topic=vulnerabilities-adding-websphere-application-server-server) 
  -  [Liberty](https://www.ibm.com/docs/en/SSH304G/cf-t-add-liberty.html)
 
