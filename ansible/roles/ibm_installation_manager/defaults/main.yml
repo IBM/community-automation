@@ -1,6 +1,6 @@
 ---
-im_archive_driver_version: '1916'
-im_archive_driver: '1.9.1006.20210614_1906'
+im_archive_driver_version: '1921'
+im_archive_driver: '1.9.2001.20211216_1817'
 im_archive: 'https://rtpgsa.ibm.com/gsa/rtpgsa/home/w/a/wasngi/web/public/NGI/IM/recommended/drivers/{{ im_archive_driver_version }}/ga'
 install_base: '/home/nest'
 # trick the template to install onto windoze via cygwin

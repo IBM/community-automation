@@ -10,19 +10,17 @@
 
   - name:  stop existing server process
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
+    register: op
 
-    #does not work due to cc out of scope
-    #    - name: set controller hostname
-    #    set_fact:
-    #      cc_hostname: "{{ ansible_hostname }}"
-    #    when: "'cc' in group_names"
+  - debug:
+     msg: '{{ op }}'
 
   - name:  join collective
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ admin_port }} --user={{ admin_user }} --password={{ admin_pass }} --keystorePassword={{ admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --hostname={{ ansible_fqdn }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
     args:
-      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+      chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: joinOutput
 
   - debug:
@@ -30,20 +28,31 @@
 
   - name: update to tlsv1.2
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/collectiveMember.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
       regexp: '^sslProtocol="TLSv1.2"'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2"'
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
   - name: include collectiveMember.xml in server.xml
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/collectiveMember.xml" />'
+
+  - name: Conditional role
+    include_role:
+      name: liberty_ibmi_grantauth
+
+    # must use nohup else the server stops after the controlling process exits
+  - name: Start Liberty Server
+    command:
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )

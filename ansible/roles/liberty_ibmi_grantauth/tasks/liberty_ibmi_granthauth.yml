@@ -1,0 +1,19 @@
+---
+- block:
+  - name:  OS400 iAdmin GRANTAUTH
+    shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/lib/native/os400/bin/iAdmin GRANTAUTH --rolename server --userprofilename {{ wlp_owner }} --userdir {{ wlp_usr_dir }} --outputdir {{ wlp_output }}"
+    register: op
+  - debug:
+     msg: "{{ op.stdout_lines }}"
+  # the GRANTAUTH does not fix all the perms :( when not using the default paths
+  #  - name:  OS400 perms qejbsvr
+  #    file: 
+  #     state: directory
+  #     path: "{{ item }}" 
+  #     owner: "{{ wlp_owner }}"
+  #     mode: 02775
+  #     recurse: yes
+  #    with_items:
+  #    - "{{ wlp_usr_dir }}"
+  #    - "{{ wlp_output }}"
+  when: ansible_system == 'OS400'

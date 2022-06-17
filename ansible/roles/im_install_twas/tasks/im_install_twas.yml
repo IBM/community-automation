@@ -83,3 +83,10 @@
     debug: 
      msg: "{{ twasVersionOutput.stdout_lines }}"
 
+  - name: AppClient version
+    shell: "{{install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+    register: appVersionOutput
+
+  - name: appVersionOutput
+    debug:
+     msg: "{{ appVersionOutput.stdout_lines }}"

@@ -20,16 +20,16 @@
 cellname="{{ cellName }}"
 webnode="{{ webNode }}"
 webservername="{{ webServerName }}"
-dmgr_hostname="{{ ansible_hostname }}"
+dmgr_hostname="{{ groups.dmgr[0] }}"
 os_type="{{ cic_selector_os[ansible_system] }}"
-webPort="{{ http_port }}"
+webPort="{{ ihs_http_port }}"
 webInstallRoot="{{ install_base }}/{{ http_dir }}"
 pluginInstallRoot="{{ install_base }}/{{ plugin_dir }}"
 configurationFile=""
 webAppMapping="ALL"
-adminPort="{{ admin_port }}"
-adminUserID="{{ admin_user }}"
-adminPasswd="{{ admin_pass }}"
+adminPort="{{ ihs_admin_port }}"
+adminUserID="{{ ihs_admin_user }}"
+adminPasswd="{{ ihs_admin_pass }}"
 
 execfile('wsadminlib.py')
 

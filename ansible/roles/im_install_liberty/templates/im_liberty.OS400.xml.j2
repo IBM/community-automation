@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<agent-input>
+  <variables>
+    <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
+  </variables>
+  <server>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/'/>
+  </server>
+  <profile id='WebSphere Liberty' installLocation='{{ install_base }}/{{ liberty_dir }}'>
+    <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
+    <data key='user.feature' value='#NULL'/>
+    <data key='user.addon' value='#NULL'/>
+    <data key='user.addAssets' value='#NULL'/>
+    <data key='user.removeAssets' value='#NULL'/>
+    <data key='user.useLibertyRepository' value='false'/>
+    <data key='user.accept.license' value='true'/>
+    <!--
+    <data key='user.internal.use.only.wlp.imembed.zip.repository' value='com.ibm.ws.liberty.embedded.core.assets_21.0.12.20211119_0300.zip'/>
+    <data key='user.internal.use.only.wlp.imembed.noncore.zip.repository' value='com.ibm.ws.liberty.embedded.noncore.assets_21.0.12.20211119_0300.zip'/>
+    -->
+    <data key='user.internal.use.only.wlp.install.all.assets' value='com.ibm.websphere.appserver.ndMemberBundle,com.ibm.websphere.appserver.ndControllerBundle'/>
+    <data key='user.internal.use.only.wlp.assetsLoaded' value='true'/>
+  </profile>
+  <install>
+    <!-- IBM WebSphere Application Server V8.5.5 Liberty Network Deployment Trial 21.0.0.11 -->
+    <offering profile='WebSphere Liberty' id='{{ im_liberty_package }}' features='liberty'/>
+  </install>
+  <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
+</agent-input>

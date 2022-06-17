@@ -2,6 +2,7 @@
 
 install_base: '/home/nest'
 twas_dir: 'was'
+app_dir: 'AppClient'
 
 profile_templatePath:
   managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
@@ -10,7 +11,7 @@ profile_templatePath:
 
 cellName: 'ndcell'
 clusterName: 'Cluster'
-serverName: 'Server'
+appServerName: 'Server'
 
 le_package_extension:
   chrp: ''

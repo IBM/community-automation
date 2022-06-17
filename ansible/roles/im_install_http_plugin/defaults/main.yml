@@ -1,0 +1,3 @@
+---
+# trick the template to install onto windoze via cygwin
+install_ihs_base_win: ''

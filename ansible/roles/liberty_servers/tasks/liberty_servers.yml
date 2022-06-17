@@ -10,17 +10,52 @@
 
   - name: does server exist?
     stat:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: iscc
 
   - name:  stop existing server process
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
+    register: op
 
-  - name:  remove current server
-    ignore_errors: true
-    shell: "rm -rf {{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}"
+  - debug:
+     msg: '{{ op }}'
+
+  - name: Remove current server 
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
+  
+  - name: OS400 Remove current server output
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_output }}/{{ wl_server }}"
+    when: ansible_system == 'OS400'
 
   - name:  create server
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ wl_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
+
+  - name: update http port
+    replace:
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
+      regexp: '9080'
+      replace: "{{ liberty_http_port }}"
+
+  - name: update https port
+    replace:
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
+      regexp: '9443'
+      replace: "{{ liberty_http_ports }}"
+
+  - name: Conditional role
+    include_role:
+      name: liberty_ibmi_grantauth

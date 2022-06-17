@@ -1,0 +1,2 @@
+---
+- include_tasks: jmeter_get_logs.yml

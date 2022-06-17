@@ -1,0 +1,11 @@
+---
+install_base: '/home/nest'
+liberty_dir: 'wlp'
+liberty_admin_user: 'admin'
+liberty_admin_pass: 'adminpwd'
+liberty_admin_port: '9080'
+liberty_admin_ports: '9443'
+liberty_http_port: '9080'
+liberty_http_ports: '9443'
+cc_server: 'cc'
+wl_server: 'server'

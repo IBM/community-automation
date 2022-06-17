@@ -1,7 +1,7 @@
 ---
-im_driver: 'f5102145.01'
+ihs_im_driver: "{{ twas_im_driver | default('f5102145.01', true) }}"
 twas_release: 'WAS90' # WAS855
-install_base: '/home/nest'
+install_ihs_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
 daily_or_test: 'test'
@@ -13,11 +13,11 @@ webServerName: 'webserver1'
 shared_dir: 'IM-shared'
 gsa_user: 'gsauser'
 gsa_pass: 'gsapass'
-http_port: '8180'
-https_port: '9444'
-admin_port: '8008'
-admin_user: 'ihsadmin'
-admin_pass: 'pihsadmin'
+ihs_http_port: '8180'
+ihs_https_port: '9444'
+ihs_admin_port: '8008'
+ihs_admin_user: 'ihsadmin'
+ihs_admin_pass: 'pihsadmin'
 le_package_extension:
   chrp: ''
   ppc64le: '.le'

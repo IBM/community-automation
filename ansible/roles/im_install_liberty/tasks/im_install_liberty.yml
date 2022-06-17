@@ -13,9 +13,15 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: copy im_liberty.xml.xml template
+  - name: copy im_liberty.xml template
+    when: ansible_system != 'OS400'
     template:
      src: im_liberty.xml.j2
+     dest: "im_liberty.xml"
+  - name: copy OS400 im_liberty.xml template
+    when: ansible_system == 'OS400'
+    template:
+     src: im_liberty.OS400.xml.j2
      dest: "im_liberty.xml"
 
   - name:  stop any running servers
@@ -71,6 +77,12 @@
   - name: packageOutput
     debug: 
      msg: "{{ packageOutput.stdout_lines }}"
+
+  - name: copy server.env template to override default wlp_user_dir and wlp_output_dir
+    when: ansible_system == 'OS400'
+    template:
+     src: server.env.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
 
 - name: Versions
   tags: version 

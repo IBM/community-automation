@@ -10,70 +10,102 @@
 
   - name: does controller exist?
     stat:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: iscc
 
   - name:  stop existing controller process
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
     when: iscc.stat.exists == True
+    register: op
+
+  - debug:
+     msg: '{{ op }}'
 
   - name: Remove current controller server
     file:
       path: "{{ item }}"
       state: absent
     with_items:
-    - "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+    - "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
+
+  - name: OS400 Remove current controller server output
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ wlp_output }}/{{ cc_server }}"
+    when: ansible_system == 'OS400'
 
   - name:  create server
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name:  create controller 
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{admin_pass }} --createConfigFile=controller.xml"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
     args:
-      chdir: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}"
+      chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
 
   - name: update admin user
     replace:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'userName=""'
-      replace: 'userName="{{ admin_user }}"'
+      replace: 'userName="{{ liberty_admin_user }}"'
   - name: update admin password
     replace:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'userPassword=""'
-      replace: 'userPassword="{{ admin_pass }}"'
+      replace: 'userPassword="{{ liberty_admin_pass }}"'
 
   - name: update to tlsv1.2
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/controller.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: '^sslProtocol="TLSv1.2"'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2"'
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.env"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
+  - name: update http port
+    replace:
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
+      regexp: '9080'
+      replace: "{{ liberty_admin_port }}"
+
+  - name: update https port
+    replace:
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
+      regexp: '9443'
+      replace: "{{ liberty_admin_ports }}"
+
   - name: include controller.xml in server.xml
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/controller.xml" />'
 
   - name: listen externally
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^host="*"'
       insertbefore: 'httpPort='
       line: '                  host="*"'
 
   - name: add controller features
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/server.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</featureManager>'
       line: "{{ item }}"
@@ -89,15 +121,27 @@
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ cc_server }}/jvm.options"
+     dest: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/jvm.options"
+
+  - name:  set IBM i perms
+    include_role:
+      name: liberty_ibmi_grantauth
 
     # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server
     failed_when: false
     command:
-      cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
+    register: op
+
+  - debug:
+     msg: '{{ op.stdout_lines }}'
+
   - name: check server status
     failed_when: false
     command:
-      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
+      cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
+    register: op
 
+  - debug:
+     msg: '{{ op.stdout_lines }}'

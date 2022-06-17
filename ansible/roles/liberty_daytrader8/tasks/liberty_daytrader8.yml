@@ -11,16 +11,16 @@
   - name: copy jvm.options template
     template:
      src: jvm.options.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/jvm.options"
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
   - name: copy server.xml template
     template:
      src: server.xml.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.xml"
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
 
   - name: copy application war
     copy:
       src: files/io.openliberty.sample.daytrader8.war
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/apps/io.openliberty.sample.daytrader8.war"
+      dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader8.war"
       mode: '0755'
 
   - name: db2jars dir
@@ -29,38 +29,61 @@
       state: directory
       recurse: yes
     with_items:
-    - "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars"
+    - "{{ wlp_usr_dir }}/shared/resources/db2jars"
 
   - name: copy db2jcc4.jar 
     copy:
       src: /tmp/db2jcc4.jar
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc4.jar"
+      dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc4.jar"
       mode: '0755'
   - name: copy db2jcc_license_cu.jar 
     copy:
       src: /tmp/db2jcc_license_cu.jar
-      dest: "{{install_base }}/{{ liberty_dir }}/usr/shared/resources/db2jars/db2jcc_license_cu.jar"
+      dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc_license_cu.jar"
       mode: '0755'
 
   - name: autoAcceptCertificates
     lineinfile:
-      path: "{{ install_base }}/{{ liberty_dir }}/usr/servers/{{ wl_server }}/server.env"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
-  - name: Stop Liberty Server
+  #### THIS IS ONLY TEMP SCHADER dirty fix
+  - name: THIS IS ONLY TEMP SCHADER dirty fix - switch to 64bit jdk
+    replace:
+      path: "{{install_base }}/{{ liberty_dir }}/etc/default.env"
+      regexp: '32bit'
+      replace: '64bit'
+    when: ansible_system == 'OS400'
+
+  - name: Conditional role
+    include_role:
+      name: liberty_ibmi_grantauth
+
+  - name: Stop Liberty Server 
     command:
-      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+      cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+  - debug:
+     msg: '{{ cmdOutput.stdout_lines }}'
+
      # must use nohup else the server stops after the controlling process exits
-  - name: Start Liberty Server
+  - name: Start Liberty Server 
     command:
-      cmd: "nohup {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
-  - name: check server status
+
+  - debug:
+     msg: '{{ cmdOutput.stdout_lines }}'
+
+  - name: check server status 
     command:
-      cmd: "{{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+      cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+  - debug:
+     msg: '{{ cmdOutput.stdout_lines }}'

@@ -77,6 +77,10 @@
    chdir: "{{ liberty_shared_config }}"
   register: genp12
 
+- name: debug wa_cert
+  debug: 
+    msg: "{{ wa_cert }}"
+
 - name: create input pem file
   template:
    src: wa.pem.j2 # current base64 encoded cert is in defaults/main.yml
@@ -130,3 +134,4 @@
       #    when: item.rc == 0
       #    loop: "{{ start_server_servers.results }}"
   when: startServers == 'true'
+
