@@ -1,3 +1,3 @@
 ---
-- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
+- include_tasks: "{{ ansible_distribution }}.yml"
 - include_tasks: instana_instance_on_prem.yml

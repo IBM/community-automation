@@ -1,4 +1,14 @@
 ---
+- name: install utility packages
+  become: yes
+  apt:
+   name: "{{ packages }}"
+   state: present
+   update_cache: yes
+  vars:
+   packages:
+   - 'jq'
+
 - name: Add Instana key
   apt_key:
     url: https://self-hosted.instana.io/signing_key.gpg
