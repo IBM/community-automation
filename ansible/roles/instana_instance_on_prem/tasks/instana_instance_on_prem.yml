@@ -1,22 +1,7 @@
 ---
 
 ### schader@us.ibm.com 
-### this script is not idempotent.  Re-runs will fail
-#
-#- name: copy fdisk.delete
-#  template:
-#   src: fdisk.delete.j2
-#   dest: fdisk.delete
-
-#- name: delete any /dev/vdb partitions
-#  command: 'fdisk /dev/vdb < fdisk.delete'
-#  register: fdisk_delete
-
-#- name: fdisk delete stdout_lines
-#  debug: 
-#    msg: "{{ fdisk_delete.stdout_lines }}"
-#
-
+### https://www.ibm.com/docs/en/instana-observability/current?topic=premises-installing-instana-backend-docker#prerequisites
 - name: check /dev/vdb1
   shell: 'fdisk -l /dev/vdb1'
   ignore_errors: yes
