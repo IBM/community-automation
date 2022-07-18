@@ -1,8 +1,3 @@
 ### WebSphere Automation instance artifacts
-instana_tenet: 'tenet'
-instana_unit: 'unit'
-agent_key: 'agent_key'
-download_key: 'download_key'
-sales_key: 'sales_key'
 InstanaAdminUserPassword: 'password'
 InstanaServiceUserPassword: 'password'

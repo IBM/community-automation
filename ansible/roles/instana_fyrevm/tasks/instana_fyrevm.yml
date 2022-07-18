@@ -7,8 +7,8 @@
    fyre_platform: x
    fyre_cpu: 16
    fyre_memory: 64
-   fyre_additional_disk: 4096
-   fyre_os: 'Ubuntu 20.04'
+   fyre_additional_disk: 2048
+   fyre_os: 'RedHat 8.6'
    fyre_site: "{{ site }}"
    fyre_comment: 'Instana Host'
    clusterName_prefix: instana

@@ -1,0 +1,20 @@
+---
+- name: Add Instana key
+  apt_key:
+    url: https://self-hosted.instana.io/signing_key.gpg
+    state: present
+
+- name: Add Instana repository
+  apt_repository:
+    repo: deb [arch=amd64] https://self-hosted.instana.io/apt generic main
+    state: present
+
+- name: Run the equivalent of "apt-get update" as a separate step
+  apt:
+    update_cache: yes
+
+- name: install pre-req packages
+  become: yes
+  apt:
+    name: "instana-console"
+    state: present
