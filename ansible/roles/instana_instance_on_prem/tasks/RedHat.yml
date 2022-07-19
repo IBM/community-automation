@@ -1,0 +1,21 @@
+---
+
+- name: install jq
+  become: yes
+  ansible.builtin.dnf:
+    state: latest
+    name: 
+    - jq
+    - postfix
+
+- name: configure the Instana repo
+  become: yes
+  template:
+   src: instana.rhel.repo.j2
+   dest: /etc/yum.repos.d/Instana-Product.repo 
+
+- name: install instana-console
+  become: yes
+  dnf:
+   name: "instana-console"
+   state: present

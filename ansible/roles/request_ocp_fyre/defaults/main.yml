@@ -9,7 +9,7 @@ fyre_ocp_inf_group: "ocpClusters"
 fyre_inf_node_name: "{{ clusterName | lower }}-inf" # Only used on old OCP (not OCP+)
 fyre_site: "svl"
 fyre_group_id: "0"
-fyre_ocptype: "ocp"
+fyre_ocptype: "ocpplus" 
 fyre_addAnsibleHost: true
 fyre_force_basic_auth: yes
 # this will read the value from the file, submitting just the filename does not work
