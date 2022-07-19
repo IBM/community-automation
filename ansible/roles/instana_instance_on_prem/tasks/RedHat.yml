@@ -3,8 +3,10 @@
 - name: install jq
   become: yes
   ansible.builtin.dnf:
-    name: jq
     state: latest
+    name: 
+    - jq
+    - postfix
 
 - name: configure the Instana repo
   become: yes

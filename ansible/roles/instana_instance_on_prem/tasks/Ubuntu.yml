@@ -8,6 +8,7 @@
   vars:
    packages:
    - 'jq'
+   - 'postfix'
 
 - name: Add Instana key
   apt_key:
