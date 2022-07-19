@@ -1,0 +1,46 @@
+---
+# https://docs.docker.com/engine/install/centos/
+- name: remove conflicting packages
+  become: yes
+  ignore_errors: yes
+  ansible.builtin.dnf:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - docker
+   - docker-engine
+   - docker.io
+   - containerd
+   - runc
+
+- name: install yum-utils
+  ansible.builtin.dnf:
+    name: yum-utils
+    state: latest
+
+- name: Upgrade all packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: add docker repo
+  shell: 'yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo'
+
+- name: Install the latest version of docker 
+  ansible.builtin.dnf:
+    state: present
+    update_cache: yes
+    validate_certs: no
+    name: 
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io 
+    - docker-compose-plugin
+
+- name: Enable docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: yes
