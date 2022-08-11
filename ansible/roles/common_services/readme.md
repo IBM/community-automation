@@ -20,7 +20,7 @@ Role Variables
 | cs_operator_name          | no       | ibm-common-service-operator                        | Name for operator subscription                            |
 | cs_operator_project_name  | no       | common-service                                     | Namespace to use for installing Common Services operators |
 | cs_operator_catalog_image | no       | icr.io/cpopen/ibm-common-service-catalog:latest    | `latest` for v3, `3.6.6` `3.14.0` are also valid          |
-| cs_subscription_channel   | no       | v3                                                 | stable-v1, v3                                             |
+| cs_subscription_channel   | no       | v3                                                 | stable-v1, v3, v3.20                                      |
 | cs_subscription_strategy  | no       | Automatic                                          | Approval stragergy for operator subscription              |
 | cs_operand_list           | no       | []                                                 | List of Operands to install, name or pattern. empty list default to everything |
 | cs_operand_to_disable     | no       | ["elastic"]                                        | List of Operands to disable, name or pattern              |
