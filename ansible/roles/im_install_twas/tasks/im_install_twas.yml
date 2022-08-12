@@ -39,16 +39,26 @@
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
-  - name: uninstall twas 
+  - name: uninstall twas output
     debug: 
      msg: "{{ uninstallOutput.stdout_lines }}"
 
-  - name: Remove previous twas dir
+  - name:  uninstall AppClient
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_appclient_package[twas_release] }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstall AppClient output
+    debug: 
+     msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Remove previous twas appclient dir
     file:
       path: "{{ item }}"
       state: absent
     with_items:
     - "{{ install_base }}/{{ twas_dir }}"
+    - "{{ install_base }}/{{ app_dir }}"
 
   - name:  generate secureStorageFile.store
     shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
