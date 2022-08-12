@@ -1,10 +1,10 @@
 ---
 ihs_im_driver: "{{ twas_im_driver | default('f5102145.01', true) }}"
+ihs_daily_or_test: 'test'
 twas_release: 'WAS90' # WAS855
 install_ihs_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
-daily_or_test: 'test'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'

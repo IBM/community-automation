@@ -1,5 +1,6 @@
 ---
 liberty_im_driver: 'cl211120211019-1900.52.linux'
+liberty_daily_or_test: 'test'
 install_base: '/home/nest'
 liberty_dir: 'wlp'
 shared_dir: 'IM-shared'
@@ -9,6 +10,5 @@ gsa_user: 'gsauser'
 gsa_pass: 'gsapass'
 ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
-daily_or_test: 'test'
 im_liberty_package: 'com.ibm.websphere.liberty.NDTRIAL.v85'
 im_java_package: 'com.ibm.java.jdk.v11'

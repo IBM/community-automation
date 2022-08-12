@@ -1,5 +1,6 @@
 ---
 twas_im_driver: 'cf212205.01'
+twas_daily_or_test: 'test'
 install_base: '/home/nest'
 twas_dir: 'was'
 app_dir: 'AppClient'
@@ -8,6 +9,5 @@ gsa_user: 'gsauser'
 gsa_pass: 'gsapass'
 ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
-daily_or_test: 'test'
 twas_release: 'WAS855' 
 #twas_release: 'WAS90' 

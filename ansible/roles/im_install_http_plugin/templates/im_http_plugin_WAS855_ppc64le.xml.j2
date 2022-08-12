@@ -4,7 +4,7 @@
    <variable name='sharedLocation' value='{{ install_ihs_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
-	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ ihs_daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
   </server>
   <profile id='IBM HTTP Server' installLocation='{{ install_ihs_base }}/{{ http_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
