@@ -1,0 +1,13 @@
+---
+- hosts: fyreApi
+  roles:
+  - role: edge_fyrevm
+
+- hosts: edge
+  vars:
+  - ansible_user: root
+  roles:
+  - role: edge_osprereqs
+  - role: timezone
+  - role: edge_podman
+  - role: edge_qa_automation

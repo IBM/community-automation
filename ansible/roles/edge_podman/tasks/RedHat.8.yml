@@ -1,0 +1,34 @@
+---
+# specific OS supports wildcards, if preceded with @ its a group
+# if the db is corrupt, this can fix it: rpm --rebuilddb
+- name: dnf update
+  ignore_errors: yes
+  become: yes
+  dnf:
+   name: '*'
+   state: latest
+
+- name: install packages
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - 'podman'
+   - 'netavark'
+
+- name: Setup netavark 1
+  copy:
+   src: /usr/share/containers/containers.conf
+   dest: /etc/containers
+   remote_src: yes
+
+- name: Setup netvark 2
+  lineinfile:
+    path: "/etc/containers/containers.conf"
+    regexp: 'network_backend = "cni"'
+    line: 'network_backend = "netavark"'
+    state: present
+    backup: yes
+

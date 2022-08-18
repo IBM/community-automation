@@ -35,6 +35,10 @@
   - debug:
       msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
 
+  - name: Debug OS
+    debug:
+      msg: "os - {{ fyre_os }}; platform - {{ fyre_platform }}"
+
   - name: Create Fyre stack
     uri:
       url: "{{fyre_buildurl}}"
@@ -52,6 +56,10 @@
     pause:
       minutes: 2
 
+  - name: Debug msg 1
+    debug:
+      msg: "{{ buildstatus.json }}"
+
   - name: get Fyre request status
     uri:
       url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
@@ -66,6 +74,10 @@
     delay: 5
     register: fyreStatus
     until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
+
+  - name: Debug msg 2
+    debug:
+      msg: "{{ fyreStatus.json }}"
 
   - name: check Fyre request status
     fail:

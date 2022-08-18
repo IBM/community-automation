@@ -1,0 +1,2 @@
+[fyreApi]
+localhost ansible_connection=local jmeterUser=nest fyreuser=myfyreuser fyreapikey=myfyreapikey vnc=True site=rtp

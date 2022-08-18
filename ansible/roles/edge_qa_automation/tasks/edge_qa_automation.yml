@@ -1,0 +1,16 @@
+---
+- name: Copy QA Automation to new agent
+  copy:
+   src: /tmp/qa-automation
+   dest:  /root/edge-automation
+   mode:  '0755'
+
+- name: Execute script to set SSH keys
+  command: sh /root/edge-automation/qa-automation/authorizedkeys/run.sh
+
+- name: Reboot RHEL machines for netavark to take effect
+  ansible.builtin.reboot:
+  when: 
+    ansible_distribution == "RedHat"
+
+
