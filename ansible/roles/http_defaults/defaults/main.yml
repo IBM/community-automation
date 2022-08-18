@@ -1,6 +1,6 @@
 ---
 ihs_im_driver: "{{ twas_im_driver | default('f5102145.01', true) }}"
-ihs_daily_or_test: 'test'
+ihs_daily_or_test: "{{ twas_daily_or_test | default('test', true) }}"
 twas_release: 'WAS90' # WAS855
 install_ihs_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
@@ -36,3 +36,10 @@ im_http_package:
   WAS90: 'com.ibm.websphere.IHS.v90'
   WAS855: 'com.ibm.websphere.IHS{{le_package_extension[ansible_architecture]}}.v85'
 im_http_java_package: 'com.ibm.java.jdk.v8'
+# cmvc defect to get this fixed : 803544
+im_twas855_plugin_java_package:
+  chrp: ''
+  ppc64le: 'com.ibm.jre.71_64bit'
+  x86_64: 'com.ibm.jre.6_64bit'
+  x86: ''
+  s390x: ''
