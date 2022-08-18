@@ -1,0 +1,8 @@
+server:
+  hosts:
+    fyreApi:
+      ansible_host: localhost
+      ansible_user: "{{ lookup('env', 'MY_SECRET_ANSIBLE_USER') }}"
+      ansible_ssh_pass: "{{ lookup('env', 'MY_SECRET_ANSIBLE_PASSWORD') }}"
+      ansible_connection: ssh
+      ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
