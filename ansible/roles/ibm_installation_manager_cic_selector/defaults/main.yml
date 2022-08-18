@@ -14,3 +14,10 @@ cic_selector_os:
   CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
   OS400: 'os400'
+# cmvc defect to get this fixed : 803544
+im_twas855_java_package:
+  chrp: ''
+  ppc64le: 'com.ibm.jre.71_64bit'
+  x86_64: 'com.ibm.jre.6_64bit'
+  x86: ''
+  s390x: ''
