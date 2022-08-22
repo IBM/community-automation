@@ -1,13 +1,16 @@
 ---
 
+- name: Setting VM facts
+  set_fact:
+    fyre_os: "{{ lookup('env', 'FYRE_OS') }}"
+    fyre_platform: "{{ lookup('env', 'FYRE_PLATFORM') }}"
+    fyre_cpu: "{{ lookup('env', 'FYRE_CPU') }}"
+    fyre_memory: "{{ lookup('env', 'FYRE_MEMORY') }}"
+    fyre_site: "{{ lookup('env', 'FYRE_SITE') }}"
+
 - name: Create FyreVM with appropriate spec
   include_role: 
    name: fyrevm_provision
   vars:
-   fyre_platform: x
-   fyre_cpu: 2
-   fyre_memory: 2  
-   fyre_os: 'Ubuntu 22.04'
-   fyre_site: "{{ site }}"
    clusterName_prefix: crc
    target_group: edge
