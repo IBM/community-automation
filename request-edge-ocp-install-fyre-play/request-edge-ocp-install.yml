@@ -1,0 +1,12 @@
+---
+- name: Install OCP+Beta Fyre cluster
+  hosts: fyreApi
+  roles:
+  - role: request_ocp_fyre
+
+- name: Install csi-cephfs onto OCP+Beta Fyre cluster
+  hosts: ocpClusters
+  gather_facts: false
+  roles:
+  - role: git_install_fyre
+  - role: csi_cephfs_fyre
