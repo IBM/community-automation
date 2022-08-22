@@ -79,6 +79,13 @@
     debug:
       msg: "{{ fyreStatus.json }}"
 
+  - name: Debug msg Template
+    debug:
+      msg: "{{ lookup('template', 'vm_request.json.j2') }}" 
+    when: 
+      - fyreStatus.json
+      - fyreStatus.json.request[0].get('status') == 'error'
+
   - name: check Fyre request status
     fail:
       msg: "Fyre reqeust for cluster {{ clusterName }} has failed\n(fyreStatus.json.request[0].get('error_details')"
