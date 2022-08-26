@@ -20,10 +20,10 @@ im_twas855_java_package:
   ppc64le: 'com.ibm.jre.71_64bit'
   x86_64: 'com.ibm.jre.6_64bit'
   x86: ''
-  s390x: ''
+  s390x: 'com.ibm.jre.71_64bit'
 im_twas855_twas_java_package:
   chrp: ''
   ppc64le: 'com.ibm.sdk.71_64bit'
   x86_64: 'com.ibm.sdk.6_64bit'
   x86: ''
-  s390x: ''
+  s390x: 'com.ibm.sdk.71_64bit'
