@@ -1,7 +1,16 @@
 ---
 
+# IBM zLinux in POK problems getting here -> https://oneticket.devit.ibm.com/tickets/138131
+# get file on script engine first
+
 - name: get wsadminlib.py 
+  delegate_to: localhost
   get_url:
    url: "https://raw.githubusercontent.com/wsadminlib/wsadminlib/master/bin/wsadminlib.py"
    dest: "~/wsadminlib.py"
    validate_certs: false
+
+- name: copy wsadminlib.py
+  copy:
+   src: "~/wsadminlib.py"
+   dest: "~/wsadminlib.py"
