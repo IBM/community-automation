@@ -12,8 +12,8 @@
   lineinfile:
    path: '/etc/ssh/sshd_config'
    state: present
-   regexp: 'X11Forwarding yes'
-   line: 'X11Forwarding no'
+   regexp: 'X11UseLocalhost yes'
+   line: 'X11UseLocalhost no'
   become: yes
 
 - name: restart sshd
