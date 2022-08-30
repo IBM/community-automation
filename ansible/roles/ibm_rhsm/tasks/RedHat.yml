@@ -10,6 +10,11 @@
 #   password: '{{ ftp3_password }}'
 #   validate_certs: no
 
+# if this fails, the ibm-rhsm.sh captured script could be out of date
+# Here is the actual source as of 2022-08-30
+# https://ftp3.linux.ibm.com/dl.php?file=/redhat/ibm-rhsm.sh
+# login and replace {{ load_secrets_dir }}/ibm-rhsm.sh
+#
 # captured static copy and encrypted it in the secrets
 - name: copy ibm-rhsm.sh
   copy:
