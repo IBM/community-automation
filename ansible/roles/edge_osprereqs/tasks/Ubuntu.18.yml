@@ -16,12 +16,14 @@
 
 - name: apt update
   become: yes
+  ignore_errors: yes
   apt:
    name: '*'
    state: latest
 
 - name: install packages
   become: yes
+  ignore_errors: yes
   apt:
    name: "{{ packages }}"
    state: present
