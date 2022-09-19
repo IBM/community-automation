@@ -3,7 +3,7 @@
 - name: stop node
   when: profile_type == 'managed'
   block:
-   - name: stop the dmgr
+   - name: stop the node
      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopNode.sh -username {{ twas_username }} -password {{ twas_password }}"
      register: stopNodeOutput
      failed_when: ( stopNodeOutput.rc not in [ 0, 255 ] )
