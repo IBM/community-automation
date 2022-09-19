@@ -1,0 +1,11 @@
+---
+
+- name: test ldap connectivity
+  shell: 'timeout 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
+  register: ldapOutput
+  failed_when: ( ldapOutput.rc not in [ 1 ] )
+
+- name: ping ldapOutput
+  debug:
+   msg: "{{ ldapOutput.stdout_lines }}"
+  failed_when: '"CONNECTED" not in ldapOutput.stdout'

@@ -1,0 +1,40 @@
+---
+
+### fails with complex passwords
+#- name: retrieve ftp3.linux.ibm.com/redhat/ibm-rhsm.sh
+#  become: yes
+#  get_url:
+#   url: "ftp://{{ ftp3_username }}:{{ ftp3_password }}@ftp3.linux.ibm.com/redhat/ibm-rhsm.sh"
+#   dest: ~/ibm-rhsm.sh
+#   username: '{{ ftp3_username }}'
+#   password: '{{ ftp3_password }}'
+#   validate_certs: no
+
+# if this fails, the ibm-rhsm.sh captured script could be out of date
+# Here is the actual source as of 2022-08-30
+# https://ftp3.linux.ibm.com/dl.php?file=/redhat/ibm-rhsm.sh
+# login and replace {{ load_secrets_dir }}/ibm-rhsm.sh
+#
+# captured static copy and encrypted it in the secrets
+- name: copy ibm-rhsm.sh
+  copy:
+   src: "{{ load_secrets_dir }}/ibm-rhsm.sh"
+   dest: "~/ibm-rhsm.sh"
+
+- name: change perms ibm-rhsm.sh
+  become: yes
+  ansible.builtin.file:
+    path: ~/ibm-rhsm.sh
+    mode: '0755'
+
+- name: register rhel host
+  become: yes
+  environment:
+   FTP3USER: "{{ ftp3_username }}"
+   FTP3PASS: "{{ ftp3_password }}"
+  shell: "~/ibm-rhsm.sh --register --force"
+  register: rhel_register
+
+- name: rhel_register output
+  debug:
+   msg: "{{ rhel_register.stdout_lines }}"

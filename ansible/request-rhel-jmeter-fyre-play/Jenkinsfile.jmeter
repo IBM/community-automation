@@ -15,6 +15,7 @@ def paramsList = [
     string(name: 'jmeterArchive', defaultValue: 'http://www.gtlib.gatech.edu/pub/apache/jmeter/binaries/apache-jmeter-5.4.3.tgz', description: 'url of source jmeter archive'),
     string(name: 'jmeterManagerPluginUrl', defaultValue: 'https://jmeter-plugins.org/get/'),
     booleanParam(name: 'forceReplace', defaultValue: false, description: 'force replace java and jmeter'),
+    booleanParam(name: 'enableVNC', defaultValue: false, description: 'configure VNC Server on jmeter host')
   ]
 jobProps.push(parameters(paramsList))
 
@@ -30,7 +31,7 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
-          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-jmeter-fyre-play/jmeter-play.yml -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} -e forceReplace=${params.forceReplace}
+          ansible-playbook -i ${params.stackName}, ./ansible/request-rhel-jmeter-fyre-play/jmeter-play.yml -e jmeterUser=${params.jmeterUser} -e noLog=false -e javaArchive=${params.javaArchive}  -e jmeterArchive=${params.jmeterArchive} -e jmeterManagerPluginUrl=${params.jmeterManagerPluginUrl} -e vnc=${params.enableVNC}  -e forceReplace=${params.forceReplace}
         """.stripIndent()
       }
    }

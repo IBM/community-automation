@@ -1,8 +1,17 @@
 ---
-
+---
+twas_im_driver: 'cf212205.01'
+twas_daily_or_test: 'test'
 install_base: '/home/nest'
 twas_dir: 'was'
 app_dir: 'AppClient'
+shared_dir: 'IM-shared'
+gsa_user: 'gsauser'
+gsa_pass: 'gsapass'
+ibm_user: 'external_ibmuser'
+ibm_pass: 'external_ibmpass'
+#twas_release: 'WAS855'
+twas_release: 'WAS90'
 
 profile_templatePath:
   managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
@@ -22,4 +31,7 @@ le_package_extension:
 im_twas_package:
   WAS90: 'com.ibm.websphere.ND.v90'
   WAS855: 'com.ibm.websphere.ND{{le_package_extension[ansible_architecture]}}.v85'
+im_appclient_package:
+  WAS90: 'com.ibm.websphere.APPCLIENT.v90'
+  WAS855: 'com.ibm.websphere.APPCLIENT{{le_package_extension[ansible_architecture]}}.v85'
 im_twas_java_package: 'com.ibm.sdk.v8'

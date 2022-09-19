@@ -4,7 +4,7 @@
    <variable name='sharedLocation' value='{{ install_ihs_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
-	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
+	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ ihs_daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
   </server>
   <profile id='IBM HTTP Server' installLocation='{{ install_ihs_base }}/{{ http_dir }}'>
     <data key='user.wasjava' value='java8'/>
@@ -24,7 +24,7 @@
   </profile>
   <install>
     <!-- Web Server Plug-ins for IBM WebSphere Application Server 8.5.5.x -->
-    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature,com.ibm.jre.6_64bit'/>
+    <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_package[twas_release] }}' features='core.feature,{{ im_twas855_java_package[ansible_architecture] }}'/>
   </install>
   <profile id='WebSphere Customization Toolbox' installLocation='{{ install_ihs_base }}/{{ wct_dir }}'>
     <data key='user.wasjava' value='java8'/>
