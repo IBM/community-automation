@@ -1,2 +1,2 @@
 ---
-- include_tasks: "vns.{{ ansible_distribution }}.yml"
+- include_tasks: "vnc.{{ ansible_distribution }}.yml"
