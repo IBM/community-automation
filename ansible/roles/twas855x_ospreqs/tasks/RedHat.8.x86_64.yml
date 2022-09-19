@@ -1,0 +1,16 @@
+---
+
+- name: install packages
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'glibc.i686'
+   - 'gtk2.i686'
+   - 'libXtst.i686'
+   - 'libXft.i686'
+   - 'libXtst.i686'
+   - 'libnsl.i686'

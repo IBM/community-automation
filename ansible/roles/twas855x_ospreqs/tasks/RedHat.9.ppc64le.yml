@@ -1,0 +1,16 @@
+---
+
+- name: install packages
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'glibc'
+   - 'gtk2'
+   - 'libXtst'
+   - 'libXft'
+   - 'libXtst'
+   - 'libnsl'

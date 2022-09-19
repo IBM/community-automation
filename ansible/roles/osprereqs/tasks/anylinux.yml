@@ -8,6 +8,14 @@
    line: 'X11Forwarding yes'
   become: yes
 
+- name: enable /etc/ssh/sshd_config X11UseLocalhost no
+  lineinfile:
+   path: '/etc/ssh/sshd_config'
+   state: present
+   regexp: 'X11UseLocalhost yes'
+   line: 'X11UseLocalhost no'
+  become: yes
+
 - name: restart sshd
   command: "systemctl restart sshd"
   become: yes

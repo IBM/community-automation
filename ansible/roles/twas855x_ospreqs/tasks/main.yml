@@ -1,2 +1,2 @@
 ---
-- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
+- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.{{ ansible_architecture }}.yml"

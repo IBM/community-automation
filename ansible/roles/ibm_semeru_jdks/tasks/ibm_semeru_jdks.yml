@@ -1,0 +1,29 @@
+---
+
+- name: /home/nest/jdk/IBMjdkX.OpenJ9 directories exist
+  delegate_to: localhost
+  file:
+    path: '{{ item }}'
+    state: directory
+    recurse: yes
+  with_items:
+  - "/home/nest/jdk/IBMjdk8.OpenJ9"
+  - "/home/nest/jdk/IBMjdk11.OpenJ9"
+  - "/home/nest/jdk/IBMjdk17.OpenJ9"
+  - "/home/nest/jdk/IBMjdk18.OpenJ9"
+
+- name: copy getSemeruJDK script to runtime location
+  delegate_to: localhost
+  copy:
+   src: "scripts/"
+   dest: /home/nest/jdk/
+   mode: '0755'
+
+- name: run the getSemeruJDK script
+  delegate_to: localhost
+  shell: "/home/nest/jdk/getSemeruJDK.py"
+  register: getSemeruJDKOutput
+
+- name: getSemeruJDKOutput
+  debug:
+   msg: "{{ getSemeruJDKOutput.stdout_lines }}"
