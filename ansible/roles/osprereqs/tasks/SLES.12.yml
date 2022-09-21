@@ -9,7 +9,6 @@
   vars:
    packages:
    - "adobe*"
-   - "containers*"
    - "java*"
    - "samba*"
    - "valgrind*"

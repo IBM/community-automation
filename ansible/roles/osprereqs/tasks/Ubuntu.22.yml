@@ -9,7 +9,6 @@
    autoremove: yes
   vars:
    packages:
-   - "containers*"
    - "java*"
    - "samba*"
    - "valgrind*"
