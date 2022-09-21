@@ -14,3 +14,4 @@
   roles:
   - role: jmeter_java
   - role: jmeter
+  - { role: vnc, when: vnc|bool }
