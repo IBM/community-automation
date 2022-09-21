@@ -1,14 +1,10 @@
 ---
 - name: get the install agent script
+  become: yes
   get_url:
    url: "{{ get_normal_linux_agent }}"
-   dest: /opt/setup_agent.sh
+   dest: ~/setup_agent.sh
    mode: 0755
-- name: temp - fix the zypper repo name
-  replace:
-   path: /opt/setup_agent.sh
-   regexp: 'zypper -n refresh instana'
-   replace: 'zypper -n refresh Instana'
 - name: install the linux agent
   become: yes
   command: "{{ install_normal_linux_agent }}"
