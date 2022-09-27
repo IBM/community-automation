@@ -11,7 +11,7 @@ def jobProps = [
 def paramsList = [
     string(name: 'stackName', defaultValue: 'changeMyFQDNName', description: 'FQDN of the target jmeter host'),
     string(name: 'jmeterUser', defaultValue: 'changeMyjmeterUser', description: 'name of non-root user ( Do not use jmeter )'),
-    string(name: 'javaArchive', defaultValue: 'https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.4.1+1_openj9-0.33.1/ibm-semeru-open-debugimage_x64_linux_17.0.4.1_1_openj9-0.33.1.tar.gz',description: 'url of source java archive'),
+    string(name: 'javaArchive', defaultValue: 'https://github.com/ibmruntimes/semeru17-binaries/releases/download/jdk-17.0.4.1+1_openj9-0.33.1/ibm-semeru-open-jdk_x64_linux_17.0.4.1_1_openj9-0.33.1.tar.gz',description: 'url of source java archive'),
     string(name: 'jmeterArchive', defaultValue: 'http://nest-reports1.fyre.ibm.com/binaries/jmeter/apache-jmeter-5.5.zip', description: 'url of source jmeter archive'),
     string(name: 'jmeterManagerPluginUrl', defaultValue: 'https://jmeter-plugins.org/get/'),
     booleanParam(name: 'forceReplace', defaultValue: false, description: 'force replace java and jmeter'),
