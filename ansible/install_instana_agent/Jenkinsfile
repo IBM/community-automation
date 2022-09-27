@@ -13,10 +13,11 @@ def paramsList = [
     string(name: 'instana_host_port', defaultValue: 'changeMyInstanaHost:port', description: 'Instana host:port'),
     string(name: 'agent_key', defaultValue: 'changeMyagentKey', description: 'Instana agent key'),
     choice(name: 'agent_os', choices: ['Unix', 'Windows'], description: 'Unix or Windows'),
+    string(name: 'instana_zone', defaultValue: 'changeMyZone', description: 'Instana agent zone'),
     string(name: 'instana_region', defaultValue: 'singlebox-onprem', description: 'Windows only: Instana region'),
     string(name: 'instana_unit', defaultValue: 'changeMyunit', description: 'Windows only: Instana unit'),
     string(name: 'instana_tenet', defaultValue: 'changeMytenet', description: 'Windows only: Instana tenet'),
-    string(name: 'custom_agent_url', defaultValue: 'changeMyCustomAgentUrl', description: 'Unix only: Url to custom agent packages for s390x/ppc64le/AIX'),
+    string(name: 'custom_agent_url', defaultValue: 'changeMyCustomAgentUrl', description: 'AIX only: Url to custom agent packages for AIX'),
   ]
 jobProps.push(parameters(paramsList))
 
@@ -37,12 +38,16 @@ timestamps {
 			-e instana_host=${params.instana_host} \
 			-e instana_port=${params.instana_port} \
 			-e agent_key=${params.agent_key} \
+			-e instana_mode='dynamic' \
+			-e instana_runtime=' -j ' \
+			-e instana_zone=${params.instana_zone} \
 			-e custom_agent_url=${params.custom_agent_url}
 	  else
 	          ansible-playbook -i ${params.osnames}, ./ansible/install_instana_agent/install_instana_agent.yml \
 			-e instana_host=${params.instana_host} \
 			-e instana_port=${params.instana_port} \
 			-e agent_key=${params.agent_key} \
+			-e instana_zone=${params.instana_zone} \
 			-e ansible_shell_type='cmd' \
 			-e instana_region=${params.instana_region} \
 			-e instana_unit=${params.instana_unit} \
