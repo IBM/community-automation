@@ -116,7 +116,6 @@
   ignore_errors: True
   when: "fyre_modifyKnownHosts|bool == true"
 
-# somewhat hard coded here
 - name: check the host for a active ssh
   command: 'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no root@{{ emberFQDN }} /usr/bin/true'
   retries: "{{ fyre_sshRetries }}"

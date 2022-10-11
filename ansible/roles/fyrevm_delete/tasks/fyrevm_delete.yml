@@ -27,7 +27,7 @@
   - name: get Fyre request status
     no_log: "{{ noLog }}"
     command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (deleteStatus.stdout|from_json).request_id }}'
-    retries: 999
+    retries: {{ fyre_requestRetries }}
     delay: 5
     args:
      warn: no
@@ -50,6 +50,7 @@
     command: "ssh-keygen -R {{ stackName }}-1.fyre.ibm.com" 
     ignore_errors: True
     delegate_to: localhost
+    when: "fyre_modifyKnownHosts|bool == true"
   
   - name: remove temp json
     file:
@@ -58,4 +59,3 @@
     delegate_to: localhost
 
   when: deleteStatus.stdout is not search('error')
-
