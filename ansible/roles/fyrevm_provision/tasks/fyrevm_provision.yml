@@ -10,7 +10,8 @@
   file:
     path: "{{ lookup('env','HOME')}}/.ssh/known_hosts"
     state: touch
-    mode: '0600'     
+    mode: '0600'
+  when: "fyre_modifyKnownHosts|bool == true"
 - name: Ensure SSH Key
   openssh_keypair:
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
@@ -62,7 +63,7 @@
       return_content: yes
       body_format: json
     no_log: "{{ noLog }}"
-    retries: 999
+    retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
     until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
@@ -103,19 +104,22 @@
     publicip: "{{ clusterStatus.json[clusterName][0].publicip }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
+  when: "fyre_modifyKnownHosts|bool == true"
 - name: remove new host from localhost known_hosts
   no_log: "{{ noLog }}"
   command: "ssh-keygen -R {{ ember }}"
   ignore_errors: True
+  when: "fyre_modifyKnownHosts|bool == true"
 - name: remove new host from localhost known_hosts fqdn
   no_log: "{{ noLog }}"
   command: "ssh-keygen -R {{ emberFQDN }}" 
   ignore_errors: True
+  when: "fyre_modifyKnownHosts|bool == true"
 
 # somewhat hard coded here
 - name: check the host for a active ssh
   command: 'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no root@{{ emberFQDN }} /usr/bin/true'
-  retries: 999
+  retries: "{{ fyre_sshRetries }}"
   delay: 5
   register: result
   until: result.rc == 0
@@ -123,6 +127,7 @@
 # somewhat hard coded here
 - name: add host to known_hosts
   shell: 'ssh-keyscan -H {{ emberFQDN }} >> ~/.ssh/known_hosts'
+  when: "fyre_modifyKnownHosts|bool == true"
 
 - add_host:
    name: "{{ emberFQDN }}"

@@ -1,11 +1,16 @@
 ### helpful for debug to set noLog to false via -e noLog=false
 noLog: False
 
-
 fyre_addAnsibleHost: true
+fyre_modifyKnownHosts: true
 fyre_emberSuffix: "1"
 clusterName: "{{ stackName|default(clusterName_prefix+'-'+ (999999|random)|string) }}"
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+# How many times to retry waiting for an ssh connection after provisioning
+fyre_sshRetries: 250
+# How many times to wait for a fyre request to complete
+fyre_requestRetries: 999
 
 #Default Specs
 fyre_platform: "x"
