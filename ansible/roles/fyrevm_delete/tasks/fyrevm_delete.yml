@@ -27,7 +27,7 @@
   - name: get Fyre request status
     no_log: "{{ noLog }}"
     command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (deleteStatus.stdout|from_json).request_id }}'
-    retries: {{ fyre_requestRetries }}
+    retries: "{{ fyre_requestRetries }}"
     delay: 5
     args:
      warn: no
