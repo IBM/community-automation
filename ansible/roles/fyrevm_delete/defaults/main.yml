@@ -1,1 +1,4 @@
 stackName: "{{ clusterName|default(omit) }}"
+
+fyre_modifyKnownHosts: true
+fyre_requestRetries: 999
