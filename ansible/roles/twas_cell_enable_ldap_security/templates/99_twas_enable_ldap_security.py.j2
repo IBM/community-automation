@@ -25,11 +25,19 @@ def enableGlobalSecurityWithLDAP():
     print "enable Global security ..."
     # [10/19/21 22:03:01:948 UTC] Global security > Standalone LDAP registry > Advanced Lightweight Directory Access Protocol (LDAP) user registry settings
     # attempted to setup CUSTOM user / group filter for bitnami openldap
-    # the wizard fails with no user filter
     #
-    #AdminTask.configureAdminLDAPUserRegistry('[-userFilter (&(cn=%v)(objectclass=person)(objectclass=inetOrgPerson)) -groupFilter (&(cn=%v)(|(objectclass=group)(objectclass=groupofnames)(objectclass=groupofuniquenames))) -userIdMap *:uid -groupIdMap *:cn -groupMemberIdMap ibm-allGroups:member;ibm-allGroups:uniqueMember;groupOfNames:member;groupOfUniqueNames:uniqueMember -certificateFilter  -certificateMapMode EXACT_DN -krbUserFilter (&(krbPrincipalName=%v)(objectclass=ePerson)) -customProperties ["com.ibm.websphere.security.ldap.recursiveSearch="] -verifyRegistry false ]') 
+    if ldapServerType == 'custom':
+        # new round of testing 2022-10-12
+        AdminTask.configureAdminLDAPUserRegistry('[-userFilter (&(uid=%v)(objectclass=person)) -groupFilter (&(cn=%v)(|(objectclass=groupOfNames)(objectclass=groupOfUniqueNames)(objectclass=groupOfURLs))) -userIdMap *:uid -groupIdMap *:cn -groupMemberIdMap ibm-allGroups:member;ibm-allGroups:uniqueMember;groupOfNames:member;groupOfUniqueNames:uniqueMember -certificateFilter  -certificateMapMode EXACT_DN -krbUserFilter (&(krbPrincipalName=%v)(objectclass=person)) -customProperties ["com.ibm.websphere.security.ldap.recursiveSearch="] -verifyRegistry false ]')
 
-    AdminTask.applyWizardSettings('[-secureApps true -secureLocalResources false -userRegistryType LDAPUserRegistry -ldapServerType '+ldapServerType+' -ldapHostName '+ldapServer+' -ldapPort '+ldapPort+' -ldapBaseDN '+ldapBaseDN+' -ldapBindDN '+ldapBindDN+' -ldapBindPassword '+ldapBindPassword+' -adminName '+ldapUser+' ]')
+        # [10/12/22 11:46:40:494 EDT] Global security > Standalone LDAP registry
+        AdminTask.validateLDAPConnection('[-type CUSTOM -hostname '+ldapServer+' -port '+ldapPort+' -baseDN '+ldapBaseDN+' -bindAuthMechanism simple -bindDN  -bindPassword  '+ldapBindPassword+' false ]')
+        
+        # [10/12/22 11:46:45:348 EDT] Global security > Standalone LDAP registry
+        AdminTask.configureAdminLDAPUserRegistry('[-ldapHost '+ldapServer+' -ldapPort '+ldapPort+' -ldapServerType CUSTOM -baseDN '+ldapBaseDN+' -bindAuthMechanism simple -bindDN  -bindPassword '+ldapBindPassword+' 120 -reuseConnection true -sslEnabled false -sslConfig  -autoGenerateServerId true -primaryAdminId '+ldapUser+' -ignoreCase true -customProperties  -verifyRegistry false ]')
+    else:
+        AdminTask.applyWizardSettings('[-secureApps true -secureLocalResources false -userRegistryType LDAPUserRegistry -ldapServerType '+ldapServerType+' -ldapHostName '+ldapServer+' -ldapPort '+ldapPort+' -ldapBaseDN '+ldapBaseDN+' -ldapBindDN '+ldapBindDN+' -ldapBindPassword '+ldapBindPassword+' -adminName '+ldapUser+' ]')
+    
     print "Saving..."
     AdminConfig.save()
     
