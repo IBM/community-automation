@@ -70,7 +70,7 @@
 
   - name: check Fyre request status
     fail:
-      msg: "Fyre reqeust for cluster {{ clusterName }} has failed\n(fyreStatus.json.request[0].get('error_details')"
+      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{ fyreStatus.json.request[0].get('error_details') | default('No reason given')}}"
     when: fyreStatus.json.request[0].get('status') == 'error'
   #END BLOCK
 
