@@ -1,0 +1,13 @@
+---
+- name: retrieve websphere liberty archive
+  get_url:
+    url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/{{ wlp_archive }}"
+    dest: wlp.zip
+    username: "{{ gsa_user }}"
+    password: "{{ gsa_pass }}"
+- name: retrieve websphere liberty license
+  get_url:
+    url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/wlp-nd-license.zip"
+    dest: wlp-nd-license.zip
+    username: "{{ gsa_user }}"
+    password: "{{ gsa_pass }}"
