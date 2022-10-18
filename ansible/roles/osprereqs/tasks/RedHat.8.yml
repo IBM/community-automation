@@ -41,3 +41,4 @@
    - 'zip'
    - 'unzip'
    - 'python3'
+   - 'jq'
