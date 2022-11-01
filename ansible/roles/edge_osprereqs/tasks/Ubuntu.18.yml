@@ -29,9 +29,10 @@
    state: present
   vars:
    packages:
-   - 'libxtst6'
-   - 'libgtk2.0-0'
-   - 'libxft2'
+   packages:
+           #   - 'libxtst6'
+           #   - 'libgtk2.0-0'
+           #   - 'libxft2'
    - 'zip'
    - 'unzip'
    - 'jq'
