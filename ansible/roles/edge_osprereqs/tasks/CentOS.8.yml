@@ -1,0 +1,46 @@
+---
+# specific OS supports wildcards, if preceded with @ its a group
+# if the db is corrupt, this can fix it: rpm --rebuilddb
+- name: remove extraneous packages
+  become: yes
+  ignore_errors: yes
+  dnf:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - "adobe*"
+   - "containers*"
+   - "java*"
+   - "samba*"
+   - "valgrind*"
+   - "tignervnc"
+   - '@workstation'
+   - 'tigervnc-server'
+   - 'xorg-x11-fonts-Type1'
+
+- name: dnf update
+  ignore_errors: yes
+  become: yes
+  dnf:
+   name: '*'
+   state: latest
+
+- name: install packages
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'xorg-x11-xauth'
+   - 'gtk2'
+   - 'libXtst'
+   - 'xorg-x11-fonts-Type1'
+   - 'libnsl'
+   - 'zip'
+   - 'unzip'
+   - 'wget'
+   - 'jq'
