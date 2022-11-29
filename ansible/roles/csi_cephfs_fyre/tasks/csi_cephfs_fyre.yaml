@@ -40,8 +40,6 @@
 
     - name: Install csi-cephfs
       shell: "{{ cephfs_bastion_setup_dir }}/csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }} {{ registry }} {{ registry_user }} '{{ registry_pwd }}'"
-      args:
-          warn: false
       register: cephinstall
 
     - name: Viewing csi-cephfs install log
@@ -50,8 +48,6 @@
 
     - name: Waiting for rook-ceph-mds-myfs pods to go to Running
       shell: "{{ cephfs_bastion_setup_dir }}/wait-for-csi-ceph.sh"
-      args:
-          warn: false
       register: waitceph
 
     - name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
