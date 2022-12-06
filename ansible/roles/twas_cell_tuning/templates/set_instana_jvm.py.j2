@@ -1,0 +1,176 @@
+#--------------------------------------------------------------------
+# WebSphere Tuning Script for genericJVMargs
+#--------------------------------------------------------------------
+#
+# To invoke the script, type:
+#   wsadmin -lang jython -f set_instana_jvm.py <scope> <id>
+#      scope      - 'cluster' or 'server'
+#      id         - name of target object within scope (ie. servername)
+#
+# Examples:
+#   wsadmin -lang jython -f set_instana_jvm.py server server1
+#
+#   wsadmin -lang jython -f set_instana_jvm.py cluster TradeCluster
+#
+#
+# manual validation that the server.xml files are updated
+# cd < dmgr / server profile root >
+# find . type f -name 'server.xml' | xargs grep instana-javaagent 2>/dev/null
+#
+# 2022-12-06 schader@us.ibm.com generic jvm args only
+#--------------------------------------------------------------------
+# wsadminlib.py is needed
+#https://github.com/wsadminlib/wsadminlib/blob/master/bin/wsadminlib.py
+wsadminlib = "wsadminlib.py"
+# any common variables in resources will override the defaults in this script
+resources = "resource_vars.py" 
+execfile(wsadminlib)
+enableDebugMessages()
+
+AdminConfig.setValidationLevel("NONE" )
+
+#from sys import registry
+import sys
+import string
+
+print ("Starting script...")
+print ("Reading config parameters...")
+
+#--------------------------------------------------------------------
+# COMMON CONFIG PARAMETERS
+# - Adjust these parameters based on the intended target system
+#--------------------------------------------------------------------
+
+# ORB properties (false)
+noLocalCopies = "true"
+saveMe="false"
+syncAll="false"
+
+genericArgs = ""
+#envJDKArgs = ["TR_Options","verbose,vlog=was_8552_jitedmethods.log"]
+envJDKArgs = []
+
+# OS Specific JVM options - ensure to put a space in front
+#IBMJDKoptions = "-Xverbosegclog:logs/${WAS_SERVER_NAME}/verbosegc.log,500,60000"
+
+#---------------------------------------------
+# Check/Print Usage
+#---------------------------------------------
+
+def printUsageAndExit (  ):
+        print ("-------------------------------")
+        print ("Usage: wsadmin -lang jython -f set_instana_jvm.py server <server_name>")
+        print ("or:")
+        print ("Usage: wsadmin -lang jython -f set_instana_jvm.py cluster <single_cluster_name>")
+        print ("-------------------------------")
+        sys.exit("invalid input pararmeters")
+#endDef 
+
+#---------------------------------------------
+# Parse command line arguments
+#---------------------------------------------
+
+print ("Parsing command line arguments...")
+
+clusterNamesList = []
+if (len(sys.argv) < 2):
+        printUsageAndExit( )
+else:
+        # any common variables in resources will override the defaults in this script
+        execfile(resources)
+
+        scope = sys.argv[0]
+        print ("Scope:   "+scope)
+        if (scope == "cluster"):
+                clusterNamesList.append(sys.argv[1])
+               	print ("Cluster: "+clusterNamesList[0])
+                if ( len(sys.argv) == 3 ):
+                        clusterNamesList.append(sys.argv[2])
+                        print ("Cluster: "+clusterNamesList[1])
+        elif (scope == "server"):
+                servername = sys.argv[1]
+                print ("Server:  "+servername)
+        else:
+                print ("Error: Invalid Argument ("+scope+")")
+                printUsageAndExit( )
+        #endElse 
+#endElse 
+#---------------------------------------------
+# Obtain server list
+#---------------------------------------------
+
+print ("")
+print ("Obtaining server list...")
+
+serverList = []
+if (scope == "cluster"):
+        for clusterName in clusterNamesList:
+                serverIDList = getServerIDsForClusters([clusterName])
+                for (serverId, nodeName, serverName) in serverIDList:
+                        serverList.append(serverId)
+        	#endFor 
+        #endFor 
+else:
+        server = AdminConfig.getid("/Server:"+servername+"/" )
+        serverList.append(server)
+#endElse 
+
+#---------------------------------------------
+# Print config properties
+#---------------------------------------------
+
+print ("")
+print ("WebSphere configuration")
+print ("-----------------------")
+
+print ("Servers:")
+for server in serverList:
+        print ("   " + getNameFromId(server))
+#endFor 
+print ("")
+
+print ("   Generic JVM Arguments:  ")
+print ("      "+genericArgs)
+
+print ("")
+
+#---------------------------------------------
+# Modify server parameters
+#---------------------------------------------
+
+for server in serverList:
+        servername = getNameFromId(server )
+        print ("")
+        print ("Server: "+servername+" ================================================================================================")
+        print ("")
+
+        # Accessing JVM config
+        print ("Accessing JVM configuration...")
+        jvm = AdminConfig.list("JavaVirtualMachine", server )
+        print ("Generic Arguments (old/new):  "+AdminConfig.showAttribute(jvm, "genericJvmArguments")+"/"+genericArgs)
+        attrs = [["genericJvmArguments", genericArgs]]
+        print ("Updating JVM...")
+        print (" ")
+        AdminConfig.modify(jvm, attrs )
+
+#endFor 
+
+print ("")
+
+if (saveMe == "true"):
+    print ("Saving config...")
+    AdminConfig.save()
+    print ("Saving config.....completed")
+else:
+    ## do not save testing
+    print ("DO NOT Save - testing syntax ...")
+#endif
+
+if (syncAll == "true"):
+    print ("syncall.....started")
+    syncall()
+    print ("syncall.....completed")
+#endif
+
+print ("Script completed...")
+
