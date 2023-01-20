@@ -20,7 +20,7 @@
 cellname="{{ cellName }}"
 webnode="{{ webNode }}"
 webservername="{{ webServerName }}"
-dmgr_hostname="{{ groups.dmgr[0] }}"
+ihs_hostname="{{ groups.ihs[0] }}"
 os_type="{{ cic_selector_os[ansible_system] }}"
 webPort="{{ ihs_http_port }}"
 webInstallRoot="{{ install_base }}/{{ http_dir }}"
@@ -48,7 +48,7 @@ if nodelist != '':
 
 # [1/21/22 15:49:25:578 EST] Nodes > New...
 print "--- create the unmanaged node ---"
-AdminTask.createUnmanagedNode('[-nodeName '+ webnode +' -hostName '+ dmgr_hostname +' -nodeOperatingSystem '+ os_type +']')
+AdminTask.createUnmanagedNode('[-nodeName '+ webnode +' -hostName '+ ihs_hostname +' -nodeOperatingSystem '+ os_type +']')
 
 print "--- create the webserver ---"
 createWebserver(webservername, webnode, webPort, webInstallRoot, pluginInstallRoot, configurationFile, webAppMapping, adminPort, adminUserID, adminPasswd)
