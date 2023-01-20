@@ -1,0 +1,18 @@
+---
+- name: rollback tWAS
+  tags: rollback 
+  block:
+  - name: check if imcl installed as a prereq
+    stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name:  rollback twas
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ twas_rollback_version }}"
+    register: rollbackOutput
+    failed_when: ( rollbackOutput.rc not in [ 0, 1 ] )
+    
+  - name: rollback twas output
+    debug: 
+     msg: "{{ rollbackOutput.stdout_lines }}"
