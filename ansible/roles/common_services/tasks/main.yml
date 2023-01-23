@@ -35,10 +35,8 @@
   debug:
     msg: "{{ ocp_projects.stdout.find('ibm-common-services') }}"
 
-- include: "uninstall.yml"
-  static: no
+- include_tasks: "uninstall.yml"
   when: cs_action == "uninstall"
 
-- include: "install.yml"
-  static: no
+- include_tasks: "install.yml"
   when: cs_action == "install"
