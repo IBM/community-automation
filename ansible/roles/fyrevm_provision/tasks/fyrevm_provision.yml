@@ -66,7 +66,7 @@
     retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
-    until: (fyreStatus.content | toJson).json.request[0].get('status') == 'error' or (fyreStatus.content | toJson).request[0].get('status') == 'completed'
+    until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
 
   - name: check Fyre request status
     fail:
