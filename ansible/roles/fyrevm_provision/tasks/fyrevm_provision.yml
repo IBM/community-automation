@@ -24,6 +24,7 @@
     method: "GET"
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
+    force_basic_auth: True
     validate_certs: False
   register: clusterStatus
   changed_when: false
@@ -42,6 +43,7 @@
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
+      force_basic_auth: True
       validate_certs: False
       return_content: yes
       body_format: "json"
@@ -59,6 +61,7 @@
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
+      force_basic_auth: True
       validate_certs: False
       return_content: yes
       body_format: json
@@ -81,6 +84,7 @@
     method: GET
     user:  "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
+    force_bsaic_auth: True
     validate_certs: False
     return_content: yes
     body_format: json
