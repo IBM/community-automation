@@ -84,7 +84,7 @@
     method: GET
     user:  "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
-    force_bsaic_auth: True
+    force_basic_auth: True
     validate_certs: False
     return_content: yes
     body_format: json
