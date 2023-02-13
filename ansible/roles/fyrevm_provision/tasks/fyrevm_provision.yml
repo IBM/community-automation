@@ -89,15 +89,17 @@
       return_content: yes
       body_format: json
     no_log: "{{ noLog }}"
+    register: fyreStatus
     retries: "{{ fyre_requestRetries }}"
     delay: 5
-    register: fyreStatus
-    until: (fyreStatus.content|from_json).get('status') == 'error' or (fyreStatus.content|from_json).get('status') == 'completed'
+    until: (fyreStatus.content|from_json).request[0].get('status') == 'error' or (fyreStatus.content|from_json).request[0].get('status') == 'completed'
+  - debug:
+      msg: "{{fyreStatus.content|from_json}}"
 
   - name: check Fyre request status
     fail:
-      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }}.get('error_details') | default('No reason given')}}"
-    when: "{{fyreStatus.content|from_json }}.get('status') == 'error'"
+      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{fyreStatus.content}}|from_json).request[0].get('error_details') | default('No reason given')}}"
+    when: (fyreStatus.content|from_json).request[0].get('status') == 'error'
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
@@ -113,21 +115,23 @@
     body_format: json
   changed_when: false
   register: clusterStatus
-  until: (clusterStatus.status == 200) and (clusterStatus.content|from_json).get('status')  == 'deployed' or (clusterStatus.content|from_json).get('status') == 'error'
+  until: (clusterStatus.status == 200) and (clusterStatus.content|from_json)[clusterName][0].status == 'deployed' or (clusterStatus.content|from_json)[clusterName][0].status == 'error'
   retries: 600
   delay: 20
+- debug:
+    msg: "{{clusterStatus.content|from_json}}"
 
 - name: check for error status after loop check
   fail:
    msg:
    - "{{clusterStatus.content|from_json }}"
   when:
-  - (clusterStatus.content|from_json).get('status') == 'error' 
+  - (clusterStatus.content|from_json)[clusterName][0].status == 'error'
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{clusterStatus.content|from_json }}.get('publicip')}}"
+    publicip: "{{clusterStatus.content|from_json }}.{{clusterName}}.'publicip'}}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
   when: "fyre_modifyKnownHosts|bool == true"
