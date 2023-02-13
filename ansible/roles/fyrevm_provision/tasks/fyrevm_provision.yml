@@ -26,12 +26,25 @@
     password: "{{ fyreapikey }}"
     force_basic_auth: True
     validate_certs: False
+    return_content: True
   register: clusterStatus
   changed_when: false
   failed_when: false
 
+- debug:
+    msg: "{{ clusterStatus }}"
+
+    # "content": "{\"status\" : \"error\", \"details\" : \"You are not authorized to perform operations on this entity (or entity does not exist)\"}\n",
+    # "content_length": "123",
+    # "content_type": "text/html; charset=UTF-8",
+
+- set_fact:
+    fyre_status_json: "{{ clusterStatus.content | from_json }}"
+- debug:
+    msg: "{{ fyre_status_json }}"
+
 - name: Create Fyre VM
-  when: clusterStatus.json.status is defined # Status is only defined if cluster does not exist
+  when: fyre_status_json.get('status') != 'deployed' 
   block:
   #START BLOCK
   - debug:
@@ -55,9 +68,19 @@
     pause:
       minutes: 2
 
+  - debug:
+      msg: "{{ buildstatus }}"
+
+        # "content": "{\"status\" : \"submitted\", \"request_id\" : \"12137932\", \"details\" :\"https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests&request_id=12137932\"}\n",
+        # "content_length": "157",
+        # "content_type": "text/html; charset=UTF-8",
+
+  - set_fact:
+      fyre_status_json: "{{ buildstatus.content | from_json }}"
+
   - name: get Fyre request status
     uri:
-      url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
+      url: "{{ fyre_requeststatusurl }}{{ fyre_status_json.get('request_id') }}"
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
@@ -69,12 +92,12 @@
     retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
-    until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
+    until: (fyreStatus.content|from_json).get('status') == 'error' or (fyreStatus.content|from_json).get('status') == 'completed'
 
   - name: check Fyre request status
     fail:
-      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{ fyreStatus.json.request[0].get('error_details') | default('No reason given')}}"
-    when: fyreStatus.json.request[0].get('status') == 'error'
+      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }}.get('error_details') | default('No reason given')}}"
+    when: "{{fyreStatus.content|from_json }}.get('status') == 'error'"
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
@@ -90,22 +113,21 @@
     body_format: json
   changed_when: false
   register: clusterStatus
-  until: (clusterStatus.status == 200) and clusterStatus.json is defined and (clusterStatus.json[clusterName][0].status  == "deployed" or clusterStatus.json[clusterName][0].status == "error")
+  until: (clusterStatus.status == 200) and (clusterStatus.content|from_json).get('status')  == 'deployed' or (clusterStatus.content|from_json).get('status') == 'error'
   retries: 600
   delay: 20
 
 - name: check for error status after loop check
   fail:
    msg:
-   - "{{clusterStatus.json[clusterName][0]}}"
+   - "{{clusterStatus.content|from_json }}"
   when:
-  - clusterStatus.json is defined
-  - (clusterStatus.json[clusterName][0].status) == 'error'  
+  - (clusterStatus.content|from_json).get('status') == 'error' 
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{ clusterStatus.json[clusterName][0].publicip }}"
+    publicip: "{{clusterStatus.content|from_json }}.get('publicip')}}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
   when: "fyre_modifyKnownHosts|bool == true"
