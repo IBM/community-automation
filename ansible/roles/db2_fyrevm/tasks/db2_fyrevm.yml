@@ -6,7 +6,7 @@
    fyre_platform: x
    fyre_cpu: 2
    fyre_memory: 4 
-   fyre_os: 'Redhat 8.4'
+   fyre_os: 'Redhat 9.0'
    fyre_site: "{{ site }}"
    fyre_comment: 'RH Jmeter'
    clusterName_prefix: db2
