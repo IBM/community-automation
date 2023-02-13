@@ -12,6 +12,7 @@
    - "java*"
    - "samba*"
    - "valgrind*"
+   - "git*"
    - "tignervnc"
 
 - name: apt update

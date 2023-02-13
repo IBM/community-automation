@@ -14,6 +14,7 @@
    - "java*"
    - "samba*"
    - "valgrind*"
+   - "git*"
    - "tignervnc"
    - '@workstation'
    - 'tigervnc-server'
@@ -41,3 +42,4 @@
    - 'zip'
    - 'unzip'
    - 'python3'
+   - 'jq'

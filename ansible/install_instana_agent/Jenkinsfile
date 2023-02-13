@@ -10,7 +10,8 @@ def jobProps = [
 
 def paramsList = [
     string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
-    string(name: 'instana_host_port', defaultValue: 'changeMyInstanaHost:port', description: 'Instana host:port'),
+    string(name: 'instana_host', defaultValue: 'changeMyInstanaHost', description: 'Instana host'),
+    string(name: 'instana_port', defaultValue: 'changeMyInstanaport', description: 'Instana port'),
     string(name: 'agent_key', defaultValue: 'changeMyagentKey', description: 'Instana agent key'),
     choice(name: 'agent_os', choices: ['Unix', 'Windows'], description: 'Unix or Windows'),
     string(name: 'instana_zone', defaultValue: 'changeMyZone', description: 'Instana agent zone'),
