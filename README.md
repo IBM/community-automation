@@ -1,4 +1,4 @@
-# Redhat Openshift Community Automation
+# Redhat Openshift Container (OCP) Community Automation
 
 ## Introduction
 
