@@ -66,6 +66,7 @@
     force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: error_status
+  until: error_status.status == 200
   retries: 12
   delay: 5
 
