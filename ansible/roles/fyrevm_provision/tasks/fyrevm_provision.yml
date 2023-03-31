@@ -39,41 +39,26 @@
   debug:
     msg: "{{ clusterStatus.content|from_json }}"
     verbosity: 3
-- name: clusterStatus.content|to_json
-  debug:
-    msg: "{{ clusterStatus.content|to_json }}"
-    verbosity: 3
 - name: from_json flatten to_paths
   debug:
     msg: "{{ lookup('ansible.utils.to_paths', clusterStatus.content|from_json) }}"
-    verbosity: 3
-- name: to_json flatten to_paths
-  debug:
-    msg: "{{ lookup('ansible.utils.to_paths', clusterStatus.content|to_json) }}"
     verbosity: 3
 - name: from_json status
   debug:
     msg: "{{ clusterStatus.content|from_json|json_query('*[0].status') }}"
     verbosity: 3
-- name: to_json status
-  debug:
-    msg: "{{ clusterStatus.content|to_json|json_query('*[0].status') }}"
-    verbosity: 3
 - set_fact:
-    fyre_status: "{{ clusterStatus.content|from_json|json_query('*[0].status') }}"
+    fyre_status_list: "{{ clusterStatus.content|from_json|json_query('*[0].status') }}"
+- set_fact:
+    fyre_status: "{{ fyre_status_list[0] }}"
 - name: status fact
   debug:
-    msg: "{{ fyre_status[0] }}"
-    verbosity: 3
-- set_fact:
-    fyre_status_to_json: (lookup('ansible.utils.to_paths', clusterStatus.content|to_json)[0].status)
-- name: status fact to_json flatten
-  debug:
-    msg: "{{ fyre_status_to_json }}"
+    msg: "{{ fyre_status }}"
     verbosity: 3
 
 - name: Create Fyre VM
-  when: fyre_status[0] not in 'deployed'
+  #when: fyre_status not in 'deployed'
+  when: fyre_status not in 'deployed'
   block:
   #START BLOCK
   - name: cluster not found
