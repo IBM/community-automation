@@ -31,34 +31,8 @@
   changed_when: false
   failed_when: false
 
-- name: clusterStatus.content
-  debug:
-    msg: "{{ clusterStatus.content }}"
-    verbosity: 3
-- name: clusterStatus.content|from_json
-  debug:
-    msg: "{{ clusterStatus.content|from_json }}"
-    verbosity: 3
-- name: from_json flatten to_paths
-  debug:
-    msg: "{{ lookup('ansible.utils.to_paths', clusterStatus.content|from_json) }}"
-    verbosity: 3
-- name: from_json status
-  debug:
-    msg: "{{ clusterStatus.content|from_json|json_query('*[0].status') }}"
-    verbosity: 3
-- set_fact:
-    fyre_status_list: "{{ clusterStatus.content|from_json|json_query('*[0].status') }}"
-- set_fact:
-    fyre_status: "{{ fyre_status_list[0] }}"
-- name: status fact
-  debug:
-    msg: "{{ fyre_status }}"
-    verbosity: 3
-
 - name: Create Fyre VM
-  #when: fyre_status not in 'deployed'
-  when: fyre_status not in 'deployed'
+  when: clusterStatus.content is not search('deployed')
   block:
   #START BLOCK
   - name: cluster not found
@@ -83,46 +57,26 @@
     pause:
       minutes: 2
 
-  - name: buildstatus.content
-    debug:
-      msg: "{{ buildstatus.content }}"
-  - name: buildstatus.content|to_json
-    debug:
-      msg: "{{ buildstatus.content|to_json }}"
-  - name: buildstatus.content|from_json
-    debug:
-      msg: "{{ buildstatus.content|from_json }}"
-  - name: to_paths from_json
-    debug:
-      msg: "{{ lookup('ansible.utils.to_paths', buildstatus.content|from_json) }}"
-  - name: to_paths to_json
-    debug:
-      msg: "{{ lookup('ansible.utils.to_paths', buildstatus.content|to_json) }}"
-  - name: status
-    debug:
-      msg: "{{ buildstatus.content|from_json|json_query('*[0].request_id') }}"
-
   - name: get Fyre request status
+    no_log: "{{ noLog }}"
     uri:
-      url: "{{ fyre_requeststatusurl }}{{ buildstatus.content|from_json|json_query('*[0].request_id') }}"
+      url: "{{fyre_clusterstatusurl}}"
       method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
       validate_certs: False
       return_content: yes
-      body_format: json
-    no_log: "{{ noLog }}"
     retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
-    until: (fyreStatus.content|from_json|json_query('*[0].status')) == 'error' or 
-           (fyreStatus.content|from_json|json_query('*[0].status')) == 'completed'
+    until: fyreStatus.content is search('error') or
+           fyreStatus.content is search('deployed')
 
   - name: check Fyre request status
     fail:
       msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }} | default('No reason given')}}"
-    when: (fyreStatus.content|from_json|json_query('*[0].status')) == 'error'
+    when: fyreStatus.content is search('error')
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
@@ -135,12 +89,11 @@
     force_basic_auth: True
     validate_certs: False
     return_content: yes
-      #body_format: json
   changed_when: false
   register: clusterStatus
   until: (clusterStatus.status == 200) and 
-     (clusterStatus.content|from_json|json_query('*[0].status[0]')) == 'deployed' or 
-     (clusterStatus.content|from_json|json_query('*[0].status[0]')) == 'error'
+     clusterStatus.content is search('deployed') or
+     clusterStatus.content is search('error') 
   retries: 600
   delay: 20
 
@@ -149,12 +102,18 @@
    msg:
    - "{{clusterStatus.content|from_json }}"
   when:
-  - (clusterStatus.content|from_json|json_query('*[0].status')) == 'error'
+  - clusterStatus.content is search('error')
+
+- name: clusterStatus.content
+  debug:
+    msg: "{{ clusterStatus.content|from_json }}"
+    verbosity: 3
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publicip: "{{clusterStatus.content|from_json }}.get('publicip')}}"
+    publiciplist: "{{ clusterStatus.content|from_json|json_query('*[0].publicip') }}"
+    publicip: "{{ publiciplist[0] }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
   when: "fyre_modifyKnownHosts|bool == true"
@@ -180,6 +139,18 @@
 - name: add host to known_hosts
   shell: 'ssh-keyscan -H {{ emberFQDN }} >> ~/.ssh/known_hosts'
   when: "fyre_modifyKnownHosts|bool == true"
+
+- name: add_host info
+  debug:
+    msg: 
+    - "{{ emberFQDN }}"
+    - "{{ target_group }}"
+    - "{{ target_user|default('root') }}"
+    - "{{ clusterName }}"
+    - "{{ clusterName }}"
+    - "{{ fyre_addAnsibleHost }}"
+    - "{{ extra_props| default(omit) }}"
+    verbosity: 3
 
 - add_host:
    name: "{{ emberFQDN }}"
