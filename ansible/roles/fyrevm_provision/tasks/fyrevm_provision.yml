@@ -21,7 +21,7 @@
   no_log: "{{ noLog }}"
   uri:
     url: "{{fyre_clusterstatusurl}}"
-    method: "GET"
+    method: GET
     user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
     force_basic_auth: True
@@ -31,8 +31,17 @@
   changed_when: false
   failed_when: false
 
+- name: check Fyre request status to see if already being built
+  fail:
+    msg: "Fyre request for cluster {{ clusterName }} has failed:\n{{clusterStatus.content|from_json }} | default('No reason given')}}"
+  when: clusterStatus.content|lower is search('building') or
+        clusterStatus.content|lower is search('new') or
+        clusterStatus.content|lower is search('pending delete') or
+        clusterStatus.content|lower is search('deleting') or
+        clusterStatus.content|lower is search('pendingvalidation')
+
 - name: Create Fyre VM
-  when: clusterStatus.content is not search('deployed')
+  when: clusterStatus.content|lower is not search('deployed')
   block:
   #START BLOCK
   - name: cluster not found
@@ -42,7 +51,7 @@
   - name: Create Fyre stack
     uri:
       url: "{{fyre_buildurl}}"
-      method: "POST"
+      method: POST
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
@@ -61,7 +70,7 @@
     no_log: "{{ noLog }}"
     uri:
       url: "{{fyre_clusterstatusurl}}"
-      method: "POST"
+      method: GET
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
@@ -70,13 +79,13 @@
     retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
-    until: fyreStatus.content is search('error') or
-           fyreStatus.content is search('deployed')
+    until: fyreStatus.content|lower is search('error') or
+           fyreStatus.content|lower is search('deployed')
 
   - name: check Fyre request status
     fail:
-      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }} | default('No reason given')}}"
-    when: fyreStatus.content is search('error')
+      msg: "Fyre request for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }} | default('No reason given')}}"
+    when: fyreStatus.content|lower is search('error')
   #END BLOCK
 
 - name: check that fyre cluster have a deployed status
@@ -92,8 +101,8 @@
   changed_when: false
   register: clusterStatus
   until: (clusterStatus.status == 200) and 
-     clusterStatus.content is search('deployed') or
-     clusterStatus.content is search('error') 
+     clusterStatus.content|lower is search('deployed') or
+     clusterStatus.content|lower is search('error') 
   retries: 600
   delay: 20
 
@@ -102,7 +111,7 @@
    msg:
    - "{{clusterStatus.content|from_json }}"
   when:
-  - clusterStatus.content is search('error')
+  - clusterStatus.content|lower is search('error')
 
 - name: clusterStatus.content
   debug:
