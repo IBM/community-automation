@@ -1,6 +1,5 @@
 ---
 
-
 - name: create ssh dir
   file:
     path: "{{ lookup('env','HOME')}}/.ssh"
@@ -17,36 +16,60 @@
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
     regenerate: never
 
-- name: Check VM Existance
-  no_log: "{{ noLog }}"
+- name: Set a default for when there is no cluster
+  set_fact:
+    no_cluster:
+      name: "{{ clusterName }}"
+      status: 'absent'
+
+- name: Check to see if a cluster exists with the name we are requesting
   uri:
-    url: "{{fyre_clusterstatusurl}}"
+    url: "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters&cluster_name={{ clusterName }}"
     method: GET
-    user: "{{ fyreuser }}"
+    user:  "{{ fyreuser }}"
+    validate_certs: false
     password: "{{ fyreapikey }}"
-    force_basic_auth: True
-    validate_certs: False
-    return_content: True
-  register: clusterStatus
+    force_basic_auth: true
+    return_content: true
   changed_when: false
-  failed_when: false
+  register: cluster_status_response
+  delay: 15
+  retries: 20
+  until: >
+    (cluster_status_response.status != -1) and
+    ((cluster_status_response.content | from_json)['clusters'] | 
+      default([no_cluster]) | 
+      selectattr('name','==',clusterName) | 
+      map(attribute='status') | 
+      first) not in ['building', 'new', 'pending delete', 'deleting', 'pendingValidation']
 
-- name: check Fyre request status to see if already being built
-  fail:
-    msg: "Fyre request for cluster {{ clusterName }} has failed:\n{{clusterStatus.content|from_json }} | default('No reason given')}}"
-  when: clusterStatus.content|lower is search('building') or
-        clusterStatus.content|lower is search('new') or
-        clusterStatus.content|lower is search('pending delete') or
-        clusterStatus.content|lower is search('deleting') or
-        clusterStatus.content|lower is search('pendingvalidation')
+- name: Set cluster_status_json fact
+  set_fact:
+    cluster_status_json: "{{ item }}"
+  loop: "{{ (cluster_status_response.content | from_json)['clusters'] | default([]) }}"
+  when: item.name == clusterName
 
-- name: Create Fyre VM
-  when: clusterStatus.content|lower is not search('deployed')
+- name: Set fact for check that cluster already exists
+  set_fact:
+    cluster_exists: "{{ cluster_status_json is defined }}"
+    cluster_status: "{{ cluster_status_json['status'] | default('unknown') }}"
+
+- name: Check for error
+  assert:
+    that: cluster_status != 'error'
+  when: cluster_exists
+
+- name: Print a message about the state of the cluster
+  debug:
+    msg: "{{ 'Cluster ' + clusterName + ((' exists (' + cluster_status + ').') if cluster_exists else ' does not exist.') }}"
+
+- name: Assert that cluster is not being deleted
+  assert:
+    that: cluster_status != 'deleting'
+  when: cluster_exists
+
+- when: not cluster_exists
   block:
-  #START BLOCK
-  - name: cluster not found
-    debug:
-      msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
 
   - name: Create Fyre stack
     uri:
@@ -66,62 +89,116 @@
     pause:
       minutes: 2
 
-  - name: get Fyre request status
-    no_log: "{{ noLog }}"
+  - name: Set fact for response
+    set_fact:
+      response_json: "{{ buildstatus.content | from_json }}"
+
+  - name: Set fact for request_id
+    set_fact:
+      request_id: "{{ response_json['request_id'] }}"
+
+  - name: Check for errors
+    fail: msg="cluster build request failed"
+    when: response_json['status'] not in ['submitted', 'success']
+
+- when: cluster_exists and cluster_status == 'building'
+  block:
+
+  - name: Look up our request id
     uri:
-      url: "{{fyre_clusterstatusurl}}"
+      url: "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests"
       method: GET
-      user: "{{ fyreuser }}"
+      user:  "{{ fyreuser }}"
+      validate_certs: false
       password: "{{ fyreapikey }}"
-      force_basic_auth: True
-      validate_certs: False
-      return_content: yes
-    retries: "{{ fyre_requestRetries }}"
-    delay: 5
-    register: fyreStatus
-    until: fyreStatus.content|lower is search('error') or
-           fyreStatus.content|lower is search('deployed')
+      force_basic_auth: true
+      return_content: true
+    changed_when: false
+    register: request_status_response
 
-  - name: check Fyre request status
-    fail:
-      msg: "Fyre request for cluster {{ clusterName }} has failed:\n{{fyreStatus.content|from_json }} | default('No reason given')}}"
-    when: fyreStatus.content|lower is search('error')
-  #END BLOCK
+  - name: Set request_id fact
+    set_fact:
+      request_id: "{{ item.id }}"
+    loop: "{{ (request_status_response.content | from_json)['request'] }}"
+    when: item.cluster_name == clusterName
 
-- name: check that fyre cluster have a deployed status
-  # no_log: "{{ noLog }}"
+
+- when: (request_id | default(-1)) != -1
+  block:
+
+    - name: Wait until cluster is finished building
+      uri:
+        url: "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showrequests&request_id={{ request_id | string }}"
+        method: GET
+        user:  "{{ fyreuser }}"
+        validate_certs: false
+        password: "{{ fyreapikey }}"
+        force_basic_auth: true
+        return_content: true
+      changed_when: false
+      register: request_status_response
+      delay: 20
+      retries: 600
+      until: (request_status_response.status == 200) and request_status_response.content is defined and not (request_status_response.content | from_json)['request'][0].status is match('.*building.*')
+
+    - name: Check for errors
+      fail: msg="cluster build request error"
+      when: (request_status_response.content | from_json)['request'] | map(attribute='status') | unique | difference(['completed','deployed']) | length > 0
+
+    - name: Fetch the cluster status
+      uri:
+        url: "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusters"
+        method: GET
+        user:  "{{ fyreuser }}"
+        validate_certs: false
+        password: "{{ fyreapikey }}"
+        force_basic_auth: true
+        return_content: true
+      changed_when: false
+      register: cluster_status_response
+      until: cluster_status_response.status != -1
+
+    - name: Set cluster_status_json fact
+      set_fact:
+        cluster_status_json: "{{ item }}"
+      loop: "{{ (cluster_status_response.content | from_yaml)['clusters'] }}"
+      when: item.name == cluster_name
+
+    - name: Set cluster_status fact
+      set_fact:
+        cluster_status: "{{ cluster_status_json['status'] | default('error') }}"
+
+    - name: Check for error
+      assert:
+        that: cluster_status != 'error'
+
+- name: Fetch the cluster details
   uri:
-    url: "{{fyre_clusterstatusurl}}"
+    url: "https://api.fyre.ibm.com/rest/v1/?operation=query&request=showclusterdetails&cluster_name={{ clusterName }}"
     method: GET
     user:  "{{ fyreuser }}"
+    validate_certs: false
     password: "{{ fyreapikey }}"
-    force_basic_auth: True
-    validate_certs: False
-    return_content: yes
+    force_basic_auth: true
+    return_content: true
   changed_when: false
-  register: clusterStatus
-  until: (clusterStatus.status == 200) and 
-     clusterStatus.content|lower is search('deployed') or
-     clusterStatus.content|lower is search('error') 
-  retries: 600
-  delay: 20
+  register: cluster_details_response
+  until: cluster_details_response.status != -1
 
-- name: check for error status after loop check
-  fail:
-   msg:
-   - "{{clusterStatus.content|from_json }}"
-  when:
-  - clusterStatus.content|lower is search('error')
+- name: Set fact for cluster_details_json
+  set_fact:
+    cluster_details_json: "{{ (cluster_details_response.content | from_json)[clusterName] }}"
 
-- name: clusterStatus.content
+
+- name: cluster_details_response.content
   debug:
-    msg: "{{ clusterStatus.content|from_json }}"
+    msg: "{{ cluster_details_response.content|from_json }}"
     verbosity: 3
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publiciplist: "{{ clusterStatus.content|from_json|json_query('*[0].publicip') }}"
+    publiciplist: "{{ cluster_details_response.content|from_json|json_query('*[0].publicip') }}"
     publicip: "{{ publiciplist[0] }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
