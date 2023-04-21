@@ -41,7 +41,7 @@
       default([no_cluster]) | 
       selectattr('name','==',clusterName) | 
       map(attribute='status') | 
-      first) not in ['building', 'new', 'pending delete', 'deleting', 'pendingValidation']
+      first) not in ['pending delete', 'deleting', 'pendingValidation']
 
 - name: Set cluster_status_json fact
   set_fact:
@@ -162,7 +162,7 @@
       set_fact:
         cluster_status_json: "{{ item }}"
       loop: "{{ (cluster_status_response.content | from_yaml)['clusters'] }}"
-      when: item.name == cluster_name
+      when: item.name == clusterName
 
     - name: Set cluster_status fact
       set_fact:
