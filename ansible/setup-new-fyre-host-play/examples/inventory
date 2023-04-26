@@ -1,7 +1,0 @@
-[all]
-rhel1.fyre.ibm.com
-sles1.fyre.ibm.com
-ub1.fyre.ibm.com
-
-[all:vars]
-ansible_user=root
