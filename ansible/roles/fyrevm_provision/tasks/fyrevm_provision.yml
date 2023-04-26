@@ -58,13 +58,12 @@
   - name: get Fyre request status
     uri:
       url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
-      method: "POST"
+      method: "GET"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
       validate_certs: False
       return_content: yes
-      body_format: json
     no_log: "{{ noLog }}"
     retries: "{{ fyre_requestRetries }}"
     delay: 5
