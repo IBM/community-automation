@@ -28,6 +28,3 @@ fyre_apiurl: https://api.fyre.ibm.com/rest/v1/
 hostnameDomain: '.fyre.ibm.com'
 ember: "{{ clusterName }}-{{ fyre_emberSuffix }}"
 emberFQDN: "{{ ember }}{{ hostnameDomain }}"
-
-
-
