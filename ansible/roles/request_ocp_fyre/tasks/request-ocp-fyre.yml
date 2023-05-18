@@ -88,7 +88,6 @@
     validate_certs: False
     password: "{{ fyreapikey }}"
     return_content: yes
-    body_format: json
     force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: cluster_status_response
@@ -114,7 +113,6 @@
     validate_certs: False
     password: "{{ fyreapikey }}"
     return_content: yes
-    body_format: json
     force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: cluster_details_response
@@ -126,12 +124,11 @@
   no_log: True
   uri:
     url: "{{fyre_opshowclusterurl}}"
-    method: POST
+    method: GET
     user:  "{{ fyreuser }}"
     validate_certs: False
     password: "{{ fyreapikey }}"
     return_content: yes
-    body_format: json
     force_basic_auth: "{{ fyre_force_basic_auth }}"
   changed_when: false
   register: all_user_clusters_response

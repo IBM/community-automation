@@ -86,7 +86,6 @@
     force_basic_auth: True
     validate_certs: False
     return_content: yes
-    body_format: json
   changed_when: false
   register: clusterStatus
   until: (clusterStatus.status == 200) and clusterStatus.json is defined and (clusterStatus.json[clusterName][0].status  == "deployed" or clusterStatus.json[clusterName][0].status == "error")
