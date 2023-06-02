@@ -106,67 +106,19 @@
 
   - name: Look up our request id
     uri:
-      url: "{{ fyre_apiurl }}?operation=query&request=showrequests"
-      method: GET
-      user:  "{{ fyreuser }}"
-      validate_certs: false
+      url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
+      method: "POST"
+      user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
-      force_basic_auth: true
-      return_content: true
-    changed_when: false
-    register: request_status_response
-
-  - name: Set request_id fact
-    set_fact:
-      request_id: "{{ item.id }}"
-    loop: "{{ (request_status_response.content | from_json)['request'] }}"
-    when: item.cluster_name == clusterName
-
-
-- when: (request_id | default(-1)) != -1
-  block:
-
-    - name: Wait until cluster is finished building
-      uri:
-        url: "{{ fyre_apiurl }}?operation=query&request=showrequests&request_id={{ request_id | string }}"
-        method: GET
-        user:  "{{ fyreuser }}"
-        validate_certs: false
-        password: "{{ fyreapikey }}"
-        force_basic_auth: true
-        return_content: true
-      changed_when: false
-      register: request_status_response
-      delay: 20
-      retries: 600
-      until: (request_status_response.status == 200) and request_status_response.content is defined and not (request_status_response.content | from_json)['request'][0].status is match('.*building.*')
-
-    - name: Check for errors
-      fail: msg="cluster build request error"
-      when: (request_status_response.content | from_json)['request'] | map(attribute='status') | unique | difference(['completed','deployed']) | length > 0
-
-    - name: Fetch the cluster status
-      uri:
-        url: "{{ fyre_apiurl }}?operation=query&request=showclusters"
-        method: GET
-        user:  "{{ fyreuser }}"
-        validate_certs: false
-        password: "{{ fyreapikey }}"
-        force_basic_auth: true
-        return_content: true
-      changed_when: false
-      register: cluster_status_response
-      until: cluster_status_response.status != -1
-
-    - name: Set cluster_status_json fact
-      set_fact:
-        cluster_status_json: "{{ item }}"
-      loop: "{{ (cluster_status_response.content | from_yaml)['clusters'] }}"
-      when: item.name == clusterName
-
-    - name: Set cluster_status fact
-      set_fact:
-        cluster_status: "{{ cluster_status_json['status'] | default('error') }}"
+      force_basic_auth: True
+      validate_certs: False
+      return_content: yes
+      body_format: json
+    no_log: "{{ noLog }}"
+    retries: "{{ fyre_requestRetries }}"
+    delay: 5
+    register: fyreStatus
+    until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
 
     - name: Check for error
       assert:
@@ -179,8 +131,10 @@
     user:  "{{ fyreuser }}"
     validate_certs: false
     password: "{{ fyreapikey }}"
-    force_basic_auth: true
-    return_content: true
+    force_basic_auth: True
+    validate_certs: False
+    return_content: yes
+    body_format: json
   changed_when: false
   register: cluster_details_response
   until: cluster_details_response.status != -1
