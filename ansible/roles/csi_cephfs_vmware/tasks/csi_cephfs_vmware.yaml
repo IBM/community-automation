@@ -23,8 +23,6 @@
   shell: "rm -rf rook; csi-ceph.sh {{ rook_cephfs_release }}  {{ device_name }} {{ default_sc }}"
   environment:
      KUBECONFIG: "{{ kubeconfig_location }}/config"
-  args:
-      warn: false
   register: cephinstall
 
 - name: Viewing csi-cephfs install log
@@ -35,8 +33,6 @@
   shell: "wait-for-csi-ceph.sh"
   environment:
      KUBECONFIG: "{{ kubeconfig_location }}/config"
-  args:
-      warn: false
   register: waitceph
 
 - name: Viewing Waiting for rook-ceph-mds-myfs pods to go to Running Log
