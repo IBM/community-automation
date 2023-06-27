@@ -69,7 +69,7 @@
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: '^sslProtocol="TLSv1.2"'
       insertafter: '<ssl id="defaultSSLConfig"'
-      line: '     sslProtocol="TLSv1.2"'
+      line: '     sslProtocol="TLSv1.2,TLSv1.3"'
 
   - name: autoAcceptCertificates
     lineinfile:
