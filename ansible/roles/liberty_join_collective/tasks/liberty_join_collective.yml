@@ -26,12 +26,36 @@
   - debug:
      msg: "{{ joinOutput.stdout_lines }}"
 
+    # cheat and create a getJVMpath utility by making a copy of bin/productInfo, stripping off the end commands:
+  - name: copy getJVMpath utility
+    copy:
+     src: getJVMpath.py
+     dest: "~/getJVMpath"
+     mode: 0755
+
+  - name: run the getJVMpath script
+    shell: "~/getJVMpath"
+    register: getJVMpathOutput
+    failed_when: ( getJVMpathOutput.rc not in [ 0, 255 ] )
+  - name: getJVMpathOutput
+    debug:
+     msg: "{{ getJVMpathOutput.stdout_lines[0] }}"
+
+  - name:  collective updateHost with config access
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective updateHost {{ ansible_fqdn }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --useCollectiveSSHKey=true  --hostWritePath={{ wlp_usr_dir }} --autoAcceptCertificates --hostJAVAHome={{ getJVMpathOutput.stdout_lines[0] }}"
+    args:
+      chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
+    register: updateHostOutput
+
+  - debug:
+     msg: "{{ updateHostOutput.stdout_lines }}"
+
   - name: update to tlsv1.2
     lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
-      regexp: '^sslProtocol="TLSv1.2"'
+      regexp: '^sslProtocol="TLSv1.2,TLSv1.3"'
       insertafter: '<ssl id="defaultSSLConfig"'
-      line: '     sslProtocol="TLSv1.2"'
+      line: '     sslProtocol="TLSv1.2,TLSv1.3"'
 
   - name: autoAcceptCertificates
     lineinfile:
