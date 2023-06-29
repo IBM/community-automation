@@ -109,4 +109,8 @@
 	<jmsActivationSpec id="daytrader10/DTStreamer3MDB">
 		<properties.wasJms destinationRef="TradeStreamerTopic" destinationType="jakarta.jms.Topic"/>
 	</jmsActivationSpec>
+
+        <remoteFileAccess>
+            <writeDir>${server.config.dir}</writeDir>
+        </remoteFileAccess>
 </server>
