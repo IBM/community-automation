@@ -29,7 +29,7 @@
     # cheat and create a getJVMpath utility by making a copy of bin/productInfo, stripping off the end commands:
   - name: copy getJVMpath utility
     copy:
-     src: getJVMpath.py
+     src: getJVMpath
      dest: "~/getJVMpath"
      mode: 0755
 
