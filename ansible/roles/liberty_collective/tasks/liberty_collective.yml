@@ -96,6 +96,13 @@
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/controller.xml" />'
 
+  - name: configure remoteFileAccess for controller
+    lineinfile:
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
+      regexp: '^remoteFileAccess'
+      insertbefore: '</server>'
+      line: '    <remoteFileAccess><writeDir>${server.config.dir}</writeDir></remoteFileAccess>'
+
   - name: listen externally
     lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
