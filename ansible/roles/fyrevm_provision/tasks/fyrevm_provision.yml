@@ -1,5 +1,6 @@
 ---
 
+
 - name: create ssh dir
   file:
     path: "{{ lookup('env','HOME')}}/.ssh"
@@ -16,65 +17,30 @@
     path: "{{ lookup('env','HOME')}}/.ssh/id_rsa"
     regenerate: never
 
-- name: Set a default for when there is no cluster
-  set_fact:
-    no_cluster:
-      name: "{{ clusterName }}"
-      status: 'absent'
-
-- name: Check to see if a cluster exists with the name we are requesting
+- name: Check VM Existance
+  no_log: "{{ noLog }}"
   uri:
-    url: "{{ fyre_apiurl }}?operation=query&request=showclusters&cluster_name={{ clusterName }}"
-    method: GET
-    user:  "{{ fyreuser }}"
-    validate_certs: false
+    url: "{{fyre_clusterstatusurl}}"
+    method: "GET"
+    user: "{{ fyreuser }}"
     password: "{{ fyreapikey }}"
-    force_basic_auth: true
-    return_content: true
+    force_basic_auth: True
+    validate_certs: False
+  register: clusterStatus
   changed_when: false
-  register: cluster_status_response
-  delay: 15
-  retries: 20
-  until: >
-    (cluster_status_response.status != -1) and
-    ((cluster_status_response.content | from_json)['clusters'] | 
-      default([no_cluster]) | 
-      selectattr('name','==',clusterName) | 
-      map(attribute='status') | 
-      first) not in ['pending delete', 'deleting', 'pendingValidation']
+  failed_when: false
 
-- name: Set cluster_status_json fact
-  set_fact:
-    cluster_status_json: "{{ item }}"
-  loop: "{{ (cluster_status_response.content | from_json)['clusters'] | default([]) }}"
-  when: item.name == clusterName
-
-- name: Set fact for check that cluster already exists
-  set_fact:
-    cluster_exists: "{{ cluster_status_json is defined }}"
-    cluster_status: "{{ cluster_status_json['status'] | default('unknown') }}"
-
-- name: Check for error
-  assert:
-    that: cluster_status != 'error'
-  when: cluster_exists
-
-- name: Print a message about the state of the cluster
-  debug:
-    msg: "{{ 'Cluster ' + clusterName + ((' exists (' + cluster_status + ').') if cluster_exists else ' does not exist.') }}"
-
-- name: Assert that cluster is not being deleted
-  assert:
-    that: cluster_status != 'deleting'
-  when: cluster_exists
-
-- when: not cluster_exists
+- name: Create Fyre VM
+  when: clusterStatus.json.status is defined # Status is only defined if cluster does not exist
   block:
+  #START BLOCK
+  - debug:
+      msg: "Cluster was not found so creating new cluster called '{{ clusterName }}'"
 
   - name: Create Fyre stack
     uri:
-      url: "{{ fyre_apiurl }}?operation=build"
-      method: POST
+      url: "{{fyre_buildurl}}"
+      method: "POST"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
@@ -89,71 +55,55 @@
     pause:
       minutes: 2
 
-  - name: Set fact for response
-    set_fact:
-      response_json: "{{ buildstatus.content | from_json }}"
-
-  - name: Set fact for request_id
-    set_fact:
-      request_id: "{{ response_json['request_id'] }}"
-
-  - name: Check for errors
-    fail: msg="cluster build request failed"
-    when: response_json['status'] not in ['submitted', 'success']
-
-- when: cluster_exists and cluster_status == 'building'
-  block:
-
-  - name: Look up our request id
+  - name: get Fyre request status
     uri:
       url: "{{ fyre_requeststatusurl }}{{ (buildstatus.json).request_id }}"
-      method: "POST"
+      method: "GET"
       user: "{{ fyreuser }}"
       password: "{{ fyreapikey }}"
       force_basic_auth: True
       validate_certs: False
       return_content: yes
-      body_format: json
     no_log: "{{ noLog }}"
     retries: "{{ fyre_requestRetries }}"
     delay: 5
     register: fyreStatus
     until: fyreStatus.json.request[0].get('status') == 'error' or fyreStatus.json.request[0].get('status') == 'completed'
 
-    - name: Check for error
-      assert:
-        that: cluster_status != 'error'
+  - name: check Fyre request status
+    fail:
+      msg: "Fyre reqeust for cluster {{ clusterName }} has failed:\n{{ fyreStatus.json.request[0].get('error_details') | default('No reason given')}}"
+    when: fyreStatus.json.request[0].get('status') == 'error'
+  #END BLOCK
 
-- name: Fetch the cluster details
+- name: check that fyre cluster have a deployed status
+  # no_log: "{{ noLog }}"
   uri:
-    url: "{{ fyre_apiurl }}?operation=query&request=showclusterdetails&cluster_name={{ clusterName }}"
+    url: "{{fyre_clusterstatusurl}}"
     method: GET
     user:  "{{ fyreuser }}"
-    validate_certs: false
     password: "{{ fyreapikey }}"
     force_basic_auth: True
     validate_certs: False
     return_content: yes
-    body_format: json
   changed_when: false
-  register: cluster_details_response
-  until: cluster_details_response.status != -1
+  register: clusterStatus
+  until: (clusterStatus.status == 200) and clusterStatus.json is defined and (clusterStatus.json[clusterName][0].status  == "deployed" or clusterStatus.json[clusterName][0].status == "error")
+  retries: 600
+  delay: 20
 
-- name: Set fact for cluster_details_json
-  set_fact:
-    cluster_details_json: "{{ (cluster_details_response.content | from_json)[clusterName] }}"
-
-
-- name: cluster_details_response.content
-  debug:
-    msg: "{{ cluster_details_response.content|from_json }}"
-    verbosity: 3
+- name: check for error status after loop check
+  fail:
+   msg:
+   - "{{clusterStatus.json[clusterName][0]}}"
+  when:
+  - clusterStatus.json is defined
+  - (clusterStatus.json[clusterName][0].status) == 'error'  
 
 - name: remove new host from localhost known_hosts ip
   no_log: "{{ noLog }}"
   vars: 
-    publiciplist: "{{ cluster_details_response.content|from_json|json_query('*[0].publicip') }}"
-    publicip: "{{ publiciplist[0] }}"
+    publicip: "{{ clusterStatus.json[clusterName][0].publicip }}"
   command: "ssh-keygen -R {{ publicip }}"
   ignore_errors: True
   when: "fyre_modifyKnownHosts|bool == true"
@@ -180,24 +130,13 @@
   shell: 'ssh-keyscan -H {{ emberFQDN }} >> ~/.ssh/known_hosts'
   when: "fyre_modifyKnownHosts|bool == true"
 
-- name: add_host info
-  debug:
-    msg: 
-    - "{{ emberFQDN }}"
-    - "{{ target_group }}"
-    - "{{ target_user|default('root') }}"
-    - "{{ clusterName }}"
-    - "{{ clusterName }}"
-    - "{{ fyre_addAnsibleHost }}"
-    verbosity: 3
-
 - add_host:
    name: "{{ emberFQDN }}"
    groups: "{{ target_group }}"
    ansible_user: "{{ target_user|default('root') }}"
    clusterName: "{{ clusterName }}"
    stackName: "{{ clusterName }}"
-   args: "{{ extra_props| default(omit) }}"
+  args: "{{ extra_props| default(omit) }}"
   changed_when: false
   when: "fyre_addAnsibleHost|bool == true"
 
@@ -210,7 +149,7 @@
     clusterName: "{{ clusterName }}"
     stackName: "{{ clusterName }}"
     ansible_user: "{{ target_user|default(omit) }}"
+  args: "{{ extra_props| default(omit) }}"
   no_log: True
   changed_when: false
   when: "fyre_addAnsibleHost|bool == false"
-
