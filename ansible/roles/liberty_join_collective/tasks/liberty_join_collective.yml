@@ -42,7 +42,7 @@
      msg: "{{ getJVMpathOutput.stdout_lines[0] }}"
 
   - name:  collective updateHost with config access
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective updateHost {{ ansible_fqdn }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --useCollectiveSSHKey=true  --hostWritePath={{ wlp_usr_dir }} --autoAcceptCertificates --hostJAVAHome={{ getJVMpathOutput.stdout_lines[0] }}"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective updateHost {{ ansible_fqdn }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --useCollectiveSSHKey=true  --hostWritePath={{ wlp_usr_dir }} --autoAcceptCertificates --hostJAVAHome={{ getJVMpathOutput.stdout_lines[0] }}"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: updateHostOutput
