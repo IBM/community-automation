@@ -13,6 +13,7 @@
   - name: Download OCP CLI
     unarchive:
       src: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}.tar.gz"
+      remote_src: true
       dest: "/usr/local/bin"
       mode: 0755
       validate_certs: false
