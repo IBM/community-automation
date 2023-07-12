@@ -1,7 +1,7 @@
 ---
 
 - name: check for oc client
-  command: oc version
+  command: oc version  --client
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
   register: oc_installed
