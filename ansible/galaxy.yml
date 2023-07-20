@@ -26,3 +26,6 @@ license:
 #    - demo
 #    - collection
 repository: "https://github.com/IBM/community-automation/tree/master/ansible"
+build_ignore: 
+    - "*/roles" #Avoid cloning the roles symlinks
+    - "*-play"
