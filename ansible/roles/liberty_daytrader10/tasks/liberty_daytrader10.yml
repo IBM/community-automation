@@ -19,7 +19,7 @@
 
   - name: copy application war
     copy:
-      src: files/io.openliberty.sample.daytrader10.war
+      src: "{{ appLoc }}" # files/io.openliberty.sample.daytrader10.war
       dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader10.war"
       mode: '0755'
 
