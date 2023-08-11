@@ -76,8 +76,8 @@
         <properties databaseName="{{ db_name }}" driverType="4" portNumber="{{ db_port }}" serverName="{{ db_host }}"/>
     </dataSource>
 <!--
-    <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions" writeContents="ALL_SESSION_ATTRIBUTES" writeFrequency="END_OF_SERVLET_SERVICE"/> 
-    <httpSession cloneId="{{ ansible_hostname }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="30s"/>
+    <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions"/> 
+    <httpSession cloneId="{{ ansible_hostname }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
 -->
 
 	<messagingEngine id="defaultME">
