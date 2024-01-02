@@ -8,9 +8,14 @@ clusterName: "{{ stackName|default(clusterName_prefix+'-'+ (999999|random)|strin
 ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
 
 # How many times to retry waiting for an ssh connection after provisioning
-fyre_sshRetries: 250
+# The check is performed every 5 seconds, so the default is 30 minutes
+fyre_sshRetries: 360
 # How many times to wait for a fyre request to complete
-fyre_requestRetries: 999
+# The check is performed every 5 seconds, so the default is 1 hour
+fyre_requestRetries: 720
+# How many times to check for deployed status after provisioning a cluster
+# The check is performed every 20 seconds, so the default equates to 2 hours
+fyre_deployCheckRetries: 360
 
 #Default Specs
 fyre_platform: "x"
