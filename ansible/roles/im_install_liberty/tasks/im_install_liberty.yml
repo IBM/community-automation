@@ -41,7 +41,7 @@
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
   - name:  uninstall liberty and java
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
