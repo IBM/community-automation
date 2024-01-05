@@ -83,12 +83,18 @@
     template:
      src: server.env.os400.j2
      dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
-
-  - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
+ 
+  - name: java17+ on distributed
     when: ansible_system != 'OS400'
-    template:
-     src: server.env.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
+    block:
+    - name: create ~/wlp/etc directory
+      file:
+       path: "{{install_base }}/{{ liberty_dir }}/etc"
+       state: directory
+    - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
+      template:
+       src: server.env.j2
+       dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
 
 - name: Versions
   tags: version 

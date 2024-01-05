@@ -3,8 +3,8 @@
   set_fact:
    wlp_cmd: " "
    wlp_nohup: "nohup "
-   wlp_usr_dir: "{{ install_base }}/{{ liberty_dir }}/usr"
-   wlp_output: "{{ install_base }}/{{ liberty_dir }}/usr/servers"
+   wlp_usr_dir: "{{ install_base }}/usr"
+   wlp_output: "{{ install_base }}/usr/servers"
   when: ansible_system != 'OS400'
 - name: set OS400 wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
   set_fact: 
