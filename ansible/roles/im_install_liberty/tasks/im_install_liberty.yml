@@ -81,6 +81,12 @@
   - name: copy server.env template to override default wlp_user_dir and wlp_output_dir
     when: ansible_system == 'OS400'
     template:
+     src: server.env.os400.j2
+     dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
+
+  - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
+    when: ansible_system != 'OS400'
+    template:
      src: server.env.j2
      dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
 
