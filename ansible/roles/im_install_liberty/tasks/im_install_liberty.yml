@@ -89,8 +89,14 @@
     block:
     - name: create ~/wlp/etc directory
       file:
-       path: "{{install_base }}/{{ liberty_dir }}/etc"
+       path: '{{ item }}'
        state: directory
+      with_items:
+      - "{{install_base }}/{{ liberty_dir }}/etc"
+      - "{{ wlp_usr_dir }}/shared/apps"
+      - "{{ wlp_usr_dir }}/shared/config"
+      - "{{ wlp_usr_dir }}/shared/resources"
+
     - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
       template:
        src: server.env.j2
