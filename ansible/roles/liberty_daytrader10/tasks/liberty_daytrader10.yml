@@ -1,6 +1,6 @@
 ---
-- name: DayTrader8
-  tags: daytrader8 
+- name: DayTrader10
+  tags: daytrader10 
   block:
   - name: check if liberty is installed
     stat:
@@ -19,8 +19,8 @@
 
   - name: copy application war
     copy:
-      src: "{{ appLoc }}" # files/io.openliberty.sample.daytrader8.war
-      dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader8.war"
+      src: "{{ appLoc }}" # files/io.openliberty.sample.daytrader10.war
+      dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader10.war"
       mode: '0755'
 
   - name: db2jars dir

@@ -1,26 +1,9 @@
 <server>
     <featureManager>
-        <feature>ejb-3.2</feature>
-        <feature>servlet-4.0</feature>
-        <feature>jsf-2.3</feature>
-        <feature>jpa-2.2</feature>
-        <feature>mdb-3.2</feature>
-        <feature>wasJmsServer-1.0</feature>
-        <feature>wasJmsClient-2.0</feature>
-        <feature>cdi-2.0</feature>
-        <feature>websocket-1.1</feature>
-        <feature>concurrent-1.0</feature>
-        <feature>jsonp-1.1</feature>
-        <feature>jsonb-1.0</feature>
-        <feature>beanValidation-2.0</feature>
-        <feature>jaxrs-2.1</feature>
-        <feature>ssl-1.0</feature>
-	<feature>sessionDatabase-1.0</feature>
-        <feature>appSecurity-2.0</feature>
-        <feature>scalingMember-1.0</feature>
-        <feature>requestTiming-1.0</feature>
+        <feature>jakartaee-10.0</feature>
+        <feature>mpHealth-4.0</feature>
+        <feature>clusterMember-1.0</feature>
         <feature>monitor-1.0</feature>
-        <feature>mpHealth-3.1</feature>
     </featureManager>
         
 	<!-- allow reuse of 'busy' ports for fast server recycling on linux (where ports remain blocked for up to 2 mins after server stops) ${tradelite.http.port} set in bootstrap.properties --> 
@@ -34,7 +17,7 @@
 	<include optional="true" location="${shared.config.dir}/hostSingleton.xml" />
 	<clusterMember name="{{ cluster_name }}"/>
    <applicationManager startTimeout="1m"/>
-	<webApplication id="daytrader8" location="io.openliberty.sample.daytrader8.war" name="daytrader8" context-root="daytrader8">
+	<webApplication id="daytrader10" location="io.openliberty.sample.daytrader10.war" name="daytrader10" context-root="daytrader10">
         <application-bnd>
                 <security-role name="grp1">
                         <user name="user1" />
@@ -83,7 +66,7 @@
     <authData id="TradeDataSourceAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
     <authData id="TradeAdminAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
 
-    <dataSource jndiName="jdbc/TradeDataSource" jdbcDriverRef="DB2JCC" id="DefaultDataSource" connectionManagerRef="conMgr1" statementCacheSize="60" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.ConnectionPoolDataSource">
+    <dataSource jndiName="jdbc/TradeDataSource" jdbcDriverRef="DB2JCC" id="DefaultDataSource" connectionManagerRef="conMgr1" statementCacheSize="60" isolationLevel="TRANSACTION_READ_COMMITTED" type="jakarta.sql.ConnectionPoolDataSource">
         <properties serverName="{{ db_host }}" portNumber="{{ db_port }}" databaseName="{{db_name }}" driverType="4" user="{{ db_user }}" password="{{ db_pass }}"/>
     </dataSource>
 
@@ -120,13 +103,14 @@
 		<properties.wasJms deliveryMode="NonPersistent" topicSpace="TradeTopicSpace"/>
 	</jmsTopic>
 
-	<jmsActivationSpec id="daytrader8-1.0-SNAPSHOT/DTBroker3MDB">
+	<jmsActivationSpec id="daytrader10/DTBroker3MDB">
 		<properties.wasJms destinationRef="TradeBrokerQueue"/>
 	</jmsActivationSpec>
 
-	<jmsActivationSpec id="daytrader8-1.0-SNAPSHOT/DTStreamer3MDB">
-		<properties.wasJms destinationRef="TradeStreamerTopic" destinationType="javax.jms.Topic"/>
+	<jmsActivationSpec id="daytrader10/DTStreamer3MDB">
+		<properties.wasJms destinationRef="TradeStreamerTopic" destinationType="jakarta.jms.Topic"/>
 	</jmsActivationSpec>
+
         <remoteFileAccess>
             <writeDir>${server.config.dir}</writeDir>
         </remoteFileAccess>
