@@ -37,8 +37,6 @@
 
 - name: Begin ocp logging operator install
   shell: bash -lc "{{ logging_bastion_setup_dir }}/ocp4-logging-operator.sh"
-  args:
-      warn: false
   register: operator
 
 - name: Viewing ocp logging operator install log
@@ -47,8 +45,6 @@
 
 - name: Begin ocp logging operand install
   shell: bash -lc "{{ logging_bastion_setup_dir }}/ocp4-logging-operand.sh"
-  args:
-      warn: false
   register: operand
 
 - name: Viewing ocp logging operand install log
