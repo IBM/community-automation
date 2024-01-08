@@ -18,8 +18,6 @@
 
 - name: Transfer fyre ocp cluster
   shell: "{{ transfer_bastion_setup_dir }}/ocp_transfer.sh"
-  args:
-      warn: false
   register: transfercluster
 
 - name: Viewing ocs install log

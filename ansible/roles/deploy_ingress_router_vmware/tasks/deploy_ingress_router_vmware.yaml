@@ -19,8 +19,6 @@
   shell: "oc patch -n openshift-ingress-operator ingresscontroller/default --patch '{{ router_json.stdout }}' --type=merge"
   environment:
      KUBECONFIG: "{{ kubeconfig_location }}/config"
-  args:
-      warn: false
   register: ingress_routes
 
 - name: Viewing ingress router worker node setup

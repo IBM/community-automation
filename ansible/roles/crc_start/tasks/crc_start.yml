@@ -63,8 +63,6 @@
   register: crcstatus
   retries: 100
   delay: 10
-  args:
-    warn: no
   until:
     - crcstatus.rc == 0 and crcstatus.stdout_lines[1].find('Running') >= 1
 
