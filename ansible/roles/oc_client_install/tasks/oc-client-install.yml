@@ -23,9 +23,6 @@
     shell: |
       tar xf "openshift-client.tar.gz" oc kubectl
       chmod 0755 oc kubectl
-    args:
-      # Suppress the warning about using 'tar'
-      warn: false
 
   - name: Copy oc command to local bin
     copy:
