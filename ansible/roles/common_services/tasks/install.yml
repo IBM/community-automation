@@ -42,7 +42,7 @@
   delay: 30
 
 - name: Query available operands
-  shell: oc -n ibm-common-services get operandregistry common-service -o jsonpath='{.spec.operators[*].name}'
+  shell: oc -n {{ cs_operator_project_name }} get operandregistry common-service -o jsonpath='{.spec.operators[*].name}'
   register: oc_operands
 
 - name: Display available operands
@@ -62,43 +62,43 @@
 
 - name: Deploy generated OperandRequest
   shell: |
-    oc project ibm-common-services
-    oc -n ibm-common-services apply -f operandrequest.yml
+    oc project {{ cs_operator_project_name }}
+    oc -n {{ cs_operator_project_name }} apply -f operandrequest.yml
   args:
     chdir: "{{ cs_setup_dir }}"
 
 - name: Waiting for ClusterServiceVersion to initialize
   shell: |
     sleep 30
-    oc -n ibm-common-services get csv --no-headers | grep -v operand-deployment-lifecycle-manager | wc -l
+    oc -n {{ cs_operator_project_name }} get csv --no-headers | grep -v operand-deployment-lifecycle-manager | wc -l
   register: csvi_count
   until: csvi_count.stdout|int >= 1
   retries: 20
   delay: 30
 
 - name: Waiting for all ClusterServiceVersion to complete
-  shell: "sleep 30; oc -n ibm-common-services get csv --no-headers | grep -v Succeeded | wc -l"
+  shell: "sleep 30; oc -n {{ cs_operator_project_name }} get csv --no-headers | grep -v Succeeded | wc -l"
   register: csvc_count
   until: csvc_count.stdout|int == 0
   retries: 45
   delay: 30
 
 - name: Make sure Mongodb is present
-  shell: "sleep 30; oc -n ibm-common-services get statefulset --no-headers | grep -i mongodb | wc -l"
+  shell: "sleep 30; oc -n {{ cs_operator_project_name }} get statefulset --no-headers | grep -i mongodb | wc -l"
   register: mongo_count
   until: mongo_count.stdout|int != 0
   retries: 10
   delay: 30
 
 - name: Make sure all Statefulsets are healthy
-  shell: "sleep 30; oc -n ibm-common-services get statefulset --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
+  shell: "sleep 30; oc -n {{ cs_operator_project_name }} get statefulset --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
   register: statefulset_unhealthy
   until: statefulset_unhealthy.stdout|int == 0
   retries: 30
   delay: 30
 
 - name: Make sure all jobs are completed
-  shell: "sleep 30; oc -n ibm-common-services get job --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
+  shell: "sleep 30; oc -n {{ cs_operator_project_name }} get job --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
   register: job_notcompleted
   until: job_notcompleted.stdout|int == 0
   retries: 15
@@ -111,8 +111,8 @@
 
 - name: Query console admin password
   shell: |
-    oc -n ibm-common-services get route cp-console -o jsonpath='{.spec.host}'; echo
-    oc -n ibm-common-services get secret platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 -d
+    oc -n {{ cs_operator_project_name }} get route cp-console -o jsonpath='{.spec.host}'; echo
+    oc -n {{ cs_operator_project_name }} get secret platform-auth-idp-credentials -o jsonpath='{.data.admin_password}' | base64 -d
   register: cs_admin_password
 
 - name: Display console admin password
