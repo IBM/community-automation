@@ -11,3 +11,9 @@
     dest: '{{ playbook_dir }}/wlp-nd-license.jar'
     username: "{{ gsa_user }}"
     password: "{{ gsa_pass }}"
+- name: retrieve websphere liberty license zos
+  get_url:
+    url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/wlp-zos-license.jar"
+    dest: '{{ playbook_dir }}/wlp-zos-license.jar'
+    username: "{{ gsa_user }}"
+    password: "{{ gsa_pass }}"
