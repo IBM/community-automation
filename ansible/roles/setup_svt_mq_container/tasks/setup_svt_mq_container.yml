@@ -1,0 +1,105 @@
+---
+
+- name: check for RedHat distribution
+  fail:
+    msg: Target OS is not RedHat
+  when: ansible_distribution != "RedHat"
+
+- name: Install RHEL pre-reqs
+  become: yes
+  dnf:
+   name: "{{ packages }}"
+   state: latest
+  vars:
+   packages:
+   - podman
+
+- name: Check if user is lingering
+  stat:
+    path: "/var/lib/systemd/linger/{{ ansible_user }}"
+  register: user_lingering
+  when: ansible_user != 'root'
+
+- name: Enable lingering is needed
+  command: "loginctl enable-linger {{ ansible_user }}"
+  when:
+    - ansible_user != 'root'
+    - not user_lingering.stat.exists
+
+  # https://stackoverflow.com/questions/66324225/podman-pod-disappears-after-a-few-days-but-process-is-still-running-and-listeni
+  #
+  # runRoot: /run/user/1000/containers
+  #- name: get podman runRoot dir
+  #  shell: 'podman info | grep runRoot'
+  #  register: podman_runRoot
+- name: copy the podmand.conf template to /etc/tmpfiles.d/
+  become: yes
+  ansible.builtin.copy:
+    src: /usr/lib/tmpfiles.d/podman.conf
+    dest: /etc/tmpfiles.d/podman.conf
+    remote_src: yes
+- name: add podman nonRoot dir to systemd tmp
+  become: yes
+  lineinfile:
+    path: /etc/tmpfiles.d/podman.conf
+    line: "x /run/user/{{ ansible_user_uid }}"
+
+- name: Pull the svt mq image
+  containers.podman.podman_image:
+    name: "{{ svt_mq_image }}"
+    username: "{{ hyc_user }}"
+    password: "{{ hyc_token }}"
+    force: yes
+    state: present
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
+- name: kill rm any existing mq container
+  containers.podman.podman_container:
+    log_level: info
+    name: svtdb
+    privileged: yes
+    image: "{{ svt_mq_image }}"
+    state: absent # started created absent stopped present
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
+- name: purge existing mqdata volume
+  containers.podman.podman_container:
+    state: absent
+    name: mqdata
+
+- name: create mqdata volume
+  containers.podman.podman_container:
+    state: present
+    name: mqdata
+
+
+# https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
+- name: Run mqdb container
+  containers.podman.podman_container:
+    log_level: info
+    name: mqdb
+    privileged: no
+    image: "{{ svt_mq_image }}"
+    state: started
+    restart: yes
+    ports:
+     - "1414:1414"
+     - "9443:9443"
+    volume:
+     - "mqdata:/mnt/mqm"
+    cmd_args:
+     - "-e LICENSE=accept"
+     - "-e MQ_QMGR_QNAME=QM1"
+     - "-e MQ_APP_PASSWORD={{ mq_pass }}"
+     - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
+  register: svtop
+
+- debug:
+   msg: '{{ svtop }}'
+
