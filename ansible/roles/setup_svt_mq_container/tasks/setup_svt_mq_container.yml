@@ -89,8 +89,8 @@
     state: started
     restart: yes
     ports:
-     - "1414:1414"
-     - "9443:9443"
+     - "{{ mq_port }}:1414"
+     - "{{ mq_admin_port }}:9443"
     volume:
      - "mqdata:/mnt/mqm"
     cmd_args:
