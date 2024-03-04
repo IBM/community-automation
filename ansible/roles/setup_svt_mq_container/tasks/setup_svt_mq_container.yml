@@ -69,21 +69,21 @@
    msg: '{{ svtop }}'
 
 - name: purge existing mqdata volume
-  containers.podman.podman_container:
+  containers.podman.podman_volume:
     state: absent
     name: mqdata
 
 - name: create mqdata volume
-  containers.podman.podman_container:
+  containers.podman.podman_volume:
     state: present
     name: mqdata
 
 
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
-- name: Run mqdb container
+- name: Run mq container
   containers.podman.podman_container:
     log_level: info
-    name: mqdb
+    name: mq
     privileged: no
     image: "{{ svt_mq_image }}"
     state: started
