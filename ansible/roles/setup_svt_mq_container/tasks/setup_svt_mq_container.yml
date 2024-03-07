@@ -95,7 +95,7 @@
      - "mqdata:/mnt/mqm"
     cmd_args:
      - "-e LICENSE=accept"
-     - "-e MQ_QMGR_QNAME=QM1"
+     - "-e MQ_QMGR_NAME=QM1"
      - "-e MQ_APP_PASSWORD={{ mq_pass }}"
      - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
   register: svtop
