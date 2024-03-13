@@ -23,7 +23,7 @@ ENDF
          if echo $operand | egrep -q "$OPERANDS_TO_DISABLE"; then
             echo "    # - name: $operand"
          elif [ "X$OPERANDS_TO_ENABLE" != "X" ]; then
-            if echo $operand | egrep -q "$OPERANDS_TO_ENABLE"; then
+            if echo $operand | egrep -E "(^|\s)$OPERANDS_TO_ENABLE($|\s)"; then
                echo "    - name: $operand"
             fi
          else
