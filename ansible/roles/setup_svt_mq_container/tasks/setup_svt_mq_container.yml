@@ -72,7 +72,6 @@
   containers.podman.podman_volume:
     state: absent
     name: mqdata
-  ignore_errors: yes
 
 - name: create mqdata volume
   containers.podman.podman_volume:
