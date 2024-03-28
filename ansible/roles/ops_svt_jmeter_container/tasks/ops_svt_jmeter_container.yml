@@ -34,7 +34,7 @@
     log_level: info
     name: jmeter
     hostname: jmeter_container
-    privileged: yes
+    privileged: no
     userns: keep-id
     image: "{{ svt_jmeter_image }}"
     state: "{{ jmeter_state }}" # started created absent stopped present
