@@ -3,16 +3,14 @@ pipeline {
     agent { label 'rtp' }
 
     parameters {
-    string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames'),
-    string(name: 'regionTimeZone', defaultValue: 'America/New_York', description: 'set the timezone->https://en.wikipedia.org/wiki/List_of_tz_database_time_zones'),
-    string(name: 'authorized_keys_url', defaultValue: '"{{ lookup(\'file\', \'/mnt/data/.load_secrets_dir/nest_infrastructure.keys\') }}"', description: 'URL location of a file containg id_rsa.pub keys'),
-    string(name: 'load_secrets_dir', defaultValue: '/mnt/data/.load_secrets_dir', description: 'location secrets'),
-    string(name: 'passwordfile', defaultValue: '/mnt/data/.load_secrets_dir/.password', description: 'location secrets'),
-
+    string(name: 'osnames', defaultValue: 'changeMyhostname', description: 'comma delimitted list of IPs or hostnames')
+    string(name: 'regionTimeZone', defaultValue: 'America/New_York', description: 'set the timezone->https://en.wikipedia.org/wiki/List_of_tz_database_time_zones')
+    string(name: 'authorized_keys_url', defaultValue: '"{{ lookup(\'file\', \'/mnt/data/.load_secrets_dir/nest_infrastructure.keys\') }}"', description: 'URL location of a file containg id_rsa.pub keys')
+    string(name: 'load_secrets_dir', defaultValue: '/mnt/data/.load_secrets_dir', description: 'location secrets')
+    string(name: 'passwordfile', defaultValue: '/mnt/data/.load_secrets_dir/.password', description: 'location secrets')
     }
     environment {
-        sampleEnvCred = credentials('schader_github_token_ibm_com')
-        sampleEnvVar = 'foo'
+        ANSIBLE_FORCE_COLOR=true
     }
 
     stages {
@@ -25,11 +23,10 @@ pipeline {
                 }
             }
             steps {
-                sh """
+                sh '''
                 set +x # hide sensitive info being echo'd to log
-	            export ANSIBLE_FORCE_COLOR=true
                 cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i $osnames, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e regionTimeZone=$regionTimeZone -e authorized_keys_url=$authorized_keys_url -e load_secrets_dir=$load_secrets_dir --vault-password-file=$passwordfile
-                """
+                '''
            }
         }
     }
