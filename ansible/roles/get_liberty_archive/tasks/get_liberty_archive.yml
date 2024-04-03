@@ -2,13 +2,13 @@
 - name: retrieve websphere liberty felement.xml to get the Relase
   get_url:
     url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/felement.xml"
-    dest: '{{ playbook_dir }}/felment.xml'
+    dest: '{{ targetDir }}/felment.xml'
     username: "{{ gsa_user }}"
     password: "{{ gsa_pass }}"
 
 - name: get the Liberty Release
   community.general.xml:
-    path: '{{ playbook_dir }}/felment.xml'
+    path: '{{ targetDir }}/felment.xml'
     xpath: /felement
     content: attribute
   register: xmlresp
@@ -30,19 +30,19 @@
 - name: retrieve websphere liberty archive
   get_url:
     url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/{{ updated_wlp_archive }}"
-    dest: '{{ playbook_dir }}/{{ updated_wlp_archive }}'
+    dest: '{{ targetDir }}/{{ updated_wlp_archive }}'
     username: "{{ gsa_user }}"
     password: "{{ gsa_pass }}"
 
 - name: Create a symbolic link to wlp-embeddable-full-RELEASE.zip wlp-embeddable-full.zip
   ansible.builtin.file:
-    src: '{{ playbook_dir }}/{{ updated_wlp_archive }}'
-    dest: '{{ playbook_dir }}/wlp-embeddable-full.zip'
+    src: '{{ targetDir }}/{{ updated_wlp_archive }}'
+    dest: '{{ targetDir }}/wlp-embeddable-full.zip'
     state: link
 
 - name: retrieve websphere liberty license
   get_url:
     url: "https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/wlp-nd-license.jar"
-    dest: '{{ playbook_dir }}/wlp-nd-license.jar'
+    dest: '{{ targetDir }}/wlp-nd-license.jar'
     username: "{{ gsa_user }}"
     password: "{{ gsa_pass }}"

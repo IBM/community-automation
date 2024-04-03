@@ -1,2 +1,3 @@
 ---
 liberty_daily_or_test: 'daily'
+targetDir: '.'
