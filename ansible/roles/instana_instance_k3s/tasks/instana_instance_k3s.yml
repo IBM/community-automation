@@ -91,60 +91,57 @@
       backup: yes
 #END BLOCK
 
-# - name: copy settings.hcl
-#   template:
-#     src: settings.hcl.j2
-#     dest: /root/settings.hcl
+
+## https://www.ibm.com/docs/en/instana-observability/current?topic=edition-installing#installing-the-sitedatakeywordself_se_short-in-an-online-environment
+## --core-tls-crt
+## --core-tls-key
 
 
-# - name: instana init -f settings.hcl -y
-#   shell: 'instana init -f settings.hcl -y'
-#   register: instanaOutput
+- name: remove stanctl agent delete -q
+  shell: "stanctl agent delete -q"
+  register: instanaOutput
     
-# - name: instana init output
-#   debug: 
-#     msg: "{{ instanaOutput.stdout_lines }}"
+- name: instana remove output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
 
-# - name: instana license download
-#   shell: 'instana license download'
-#   register: licenseOutput
+- name: remove stanctl cluster delete -q
+  shell: "stanctl cluster delete -q"
+  register: instanaOutput
+    
+- name: instana remove output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: stanctl up with arguments
+  shell: "stanctl up --install-type demo --core-base-domain {{ ansible_facts['fqdn'] }} --download-key {{ download_key }} --sales-key {{ sales_key }} --unit-tenant-name {{ instana_tenet }} --unit-unit-name {{ instana_unit }} --unit-initial-admin-password {{ instana_admin_pwd }}"
+  register: instanaOutput
+    
+- name: instana init output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: instana local agent monitoring
+  shell: 'stanctl license info'
+  register: licenseOutput
   
-# - name: instana license output
-#   debug: 
-#     msg: "{{ licenseOutput.stdout_lines }}"
+- name: instana license output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
 
-# - name: instana license import
-#   shell: 'instana license import'
-#   register: licenseOutput
-    
-# - name: instana license import output
-#   debug: 
-#     msg: "{{ licenseOutput.stdout_lines }}"
-
-# - name: instana license verify
-#   shell: 'instana license verify'
-#   register: licenseOutput
-    
-# - name: instana license verify output
-#   debug: 
-#     msg: "{{ licenseOutput.stdout_lines }}"
-
-# - name: instana admin credentials
-#   shell: '(grep "E-Mail" instanaCreds >/dev/null 2>&1 || (instana configure admin >instanaCreds)); cat instanaCreds'
-#   register: instanaAdmin
-#   changed_when: false
-
-# - name: instana version
-#   shell: 'instana version'
-#   register: instanaVersion
-#   changed_when: false
+- name: instana license info
+  shell: 'stanctl license info'
+  register: licenseOutput
   
-# - name: instana version output
-#   debug: 
-#     msg: "{{ instanaVersion.stdout_lines }}"
+- name: instana license output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
 
-# - name: Store instana information for subsequent roles
-#   set_fact: 
-#     instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: (.*)','\\1') | first }}"
-#     instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: (.*)','\\1') | first }}"
-#     instana_version: "{{ instanaVersion.stdout }}"
+- name: instana version
+  shell: 'stanctl --version'
+  register: instanaVersion
+  changed_when: false
+  
+- name: instana version output
+  debug: 
+    msg: "{{ instanaVersion.stdout_lines }}"
