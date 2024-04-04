@@ -29,7 +29,6 @@
     state: latest
     name: 
     - jq
-    - postfix
     - stanctl
     - container-selinux 
 
@@ -44,47 +43,6 @@
 - name: set transparent_hugepage
   become: true
   shell: 'grubby --args="transparent_hugepage=never" --update-kernel ALL'
-
-- name: fix the postfix main.cf 01
-  become: true
-  lineinfile:
-   path: /etc/postfix/main.cf
-   state: present
-   regexp: "#mynetworks_style = class"
-   line: "mynetworks_style = class"
-   backup: no
-
-- name: fix the postfix main.cf 02
-  become: true
-  lineinfile:
-   path: /etc/postfix/main.cf
-   state: present
-   regexp: "^smtpd_relay_restrictions"
-   line: "smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination"
-   backup: no
-
-- name: fix the postfix main.cf 03
-  become: true
-  lineinfile:
-   path: /etc/postfix/main.cf
-   state: present
-   regexp: "^smtpd_recipient_restrictions"
-   line: "smtpd_recipient_restrictions = permit_mynetworks, permit_sasl_authenticated, reject_unauth_destination"
-   backup: no
-- name: fix the postfix main.cf 04
-  become: true
-  lineinfile:
-   path: /etc/postfix/main.cf
-   state: present
-   regexp: "^smtpd_sender_restrictions"
-   line: "smtpd_sender_restrictions = reject_unknown_sender_domain"
-   backup: no
-
-- name: Reload service postfix
-  ansible.builtin.systemd_service:
-    name: postfix.service
-    state: reloaded
-    enabled: true
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:

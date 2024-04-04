@@ -12,6 +12,7 @@ def paramsList = [
     string(name: 'stackName', defaultValue: 'changeMyStackName', description: 'name of fyre stack'),
     string(name: 'fyreuser', description: 'username for accessing fyre api'),
     password(name: 'fyreapikey', description: 'fyre api key'),
+    password(name: 'instanaAdminPassword', description: 'Instana admin password'),
     string(name: 'site', defaultValue: 'rtp', description: 'default site: [ svl|rtp|hur|tor|cdl|isl ]'),
     string(name: 'agent_key', description: 'Instana agent_key'),
     string(name: 'download_key', description: 'Instana download_key'),
@@ -26,14 +27,14 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( 'kube_pod_slave' ) {
+    node ( 'rtp' ) {
 
       //def scmVars = checkout scm
       checkout scm
       stage('Stage 1') {
         sh """
           set +x # hide sensitive info being echo'd to log
-          cp ./ansible/request-instana-host-fyre-play/examples/inventory ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play-k3s.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e noLog=false -e stackName=${params.stackName} -e site=${params.site} -e download_key=${params.download_key} -e agent_key=${params.agent_key} -e sales_key=${params.sales_key} -e instana_tenet=${params.tenet} -e instana_unit=${params.unit}
+          cp ./ansible/request-instana-host-fyre-play/examples/inventory.yaml ./ansible/request-instana-host-fyre-play/; ansible-playbook -i ./ansible/request-instana-host-fyre-play/inventory.yaml ./ansible/request-instana-host-fyre-play/request-instana-host-fyre-play-k3s.yml -e fyreuser=${params.fyreuser} -e fyreapikey=${params.fyreapikey} -e noLog=false -e stackName=${params.stackName} -e site=${params.site} -e download_key=${params.download_key} -e agent_key=${params.agent_key} -e sales_key=${params.sales_key} -e instana_tenet=${params.tenet} -e instana_unit=${params.unit} -e instanaAdminPassword=${instanaAdminPassword}
         """.stripIndent()
       }
    }
