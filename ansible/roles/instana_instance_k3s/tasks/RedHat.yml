@@ -1,5 +1,10 @@
 ---
 
+- name: remove Instana repository
+  ansible.builtin.yum_repository:
+    name: instana-product]
+    state: absent
+
 - name: Add Instana repository
   ansible.builtin.yum_repository:
     name: instana-product]
