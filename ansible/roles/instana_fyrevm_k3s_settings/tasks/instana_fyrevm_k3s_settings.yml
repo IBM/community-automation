@@ -1,0 +1,24 @@
+---
+# https://www.ibm.com/docs/en/instana-observability/current?topic=edition-preparing#kernel-parameters
+
+- ansible.posix.sysctl:
+    name: vm.swappiness
+    value: '0'
+    state: present
+    reload: true
+
+- ansible.posix.sysctl:
+    name: max_user_instances
+    value: '8192'
+    state: present
+    reload: true
+
+- name: check transparent_hugepage
+  shell: "cat /sys/kernel/mm/transparent_hugepage/enabled"
+  register: transparent_hugepage
+
+- name: transparent_hugepage should be -> always madvise [never]
+  debug: 
+    msg: "{{ transparent_hugepage.stdout_lines }}"
+
+

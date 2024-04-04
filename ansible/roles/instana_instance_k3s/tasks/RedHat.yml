@@ -1,0 +1,36 @@
+---
+
+- name: Add Instana repository
+  ansible.builtin.yum_repository:
+    name: instana-product]
+    description: instana-product
+    baseurl: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/rel-rpm-public-virtual/"
+    gpgkey: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/api/security/keypair/public/repositories/rel-rpm-public-virtual"
+    gpgcheck: false
+    repo_gpgcheck: true
+    enabled: true
+
+- name: Upgrade all packages
+  become: true
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: install jq
+  become: true
+  ansible.builtin.dnf:
+    state: latest
+    name: 
+    - jq
+    - postfix
+    - stanctl
+
+- name: show the stanctl version
+  command: 'stanctl --version'
+  register: stanctlOutput
+
+- name: stanctl stdout_lines
+  debug: 
+    msg: "{{ stanctlOutput.stdout }}"
+
+

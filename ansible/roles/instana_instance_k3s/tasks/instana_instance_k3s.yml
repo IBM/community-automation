@@ -1,0 +1,150 @@
+---
+
+### schader@us.ibm.com 
+### https://www.ibm.com/docs/en/instana-observability/current?topic=premises-installing-instana-backend-docker#prerequisites
+- name: check /dev/vdb1
+  shell: 'fdisk -l /dev/vdb1'
+  ignore_errors: true
+  register: vdb1
+
+- name: setup vdb1
+  when: vdb1.rc != 0
+  block:
+  #START BLOCK
+  ### umount for re-run testing
+  - name: umount /dev/vdb1
+    mount: 
+      path: /mnt
+      src: /dev/vdb1
+      state: unmounted
+    ignore_errors: true
+
+  - name: copy fdisk.create
+    template:
+      src: fdisk.create.j2
+      dest: fdisk.create
+
+  - name: create the /dev/vdb partition
+    shell: 'fdisk /dev/vdb < fdisk.create'
+    register: fdisk_create
+    
+  - name: fdisk create stdout_lines
+    debug: 
+      msg: "{{ fdisk_create.stdout_lines }}"
+
+  - name: mkfs.xfs -f /dev/vdb1
+    command: 'mkfs.xfs -f /dev/vdb1'
+    register: mkfsOutput
+    
+  - name: mkfs create stdout_lines
+    debug: 
+      msg: "{{ mkfsOutput.stdout_lines }}"
+
+  - name: /mnt directory
+    file:
+      path: /mnt
+      state: directory
+
+  - name: mount /dev/vdb1
+    mount: 
+      path: /mnt
+      src: /dev/vdb1
+      state: mounted
+      fstype: xfs
+    register: mountOutput
+    
+  - name: mount output
+    debug: 
+      msg: "{{ mountOutput }}"
+
+  - name: prereq directories
+    file:
+      path: '{{ item }}'
+      state: directory
+      recurse: yes
+    with_items:
+    - '/mnt/instana/stanctl/data'
+    - '/mnt/instana/stanctl/metrics'
+    - '/mnt/instana/stanctl/analytics'
+    - '/mnt/instana/stanctl/objects'
+
+  - name: get the blkid /dev/vdb1
+    command: 'blkid -s UUID -o value /dev/vdb1'
+    register: blkidOutput
+    
+  - name: blkidOutput stdout_lines
+    debug: 
+      msg: "{{ blkidOutput.stdout }}"
+
+  - name: remove ( only needed for re-runs on existing host ) /mnt in /etc/fstab
+    lineinfile:
+      path: '/etc/fstab'
+      regexp: '^/mnt'
+      state: absent
+      backup: yes
+
+  - name: add new /mnt in /etc/fstab
+    lineinfile:
+      path: '/etc/fstab'
+      regexp: '^/mnt'
+      line: 'UUID="{{ blkidOutput.stdout }}" /mnt xfs defaults 1 1'
+      backup: yes
+#END BLOCK
+
+# - name: copy settings.hcl
+#   template:
+#     src: settings.hcl.j2
+#     dest: /root/settings.hcl
+
+
+# - name: instana init -f settings.hcl -y
+#   shell: 'instana init -f settings.hcl -y'
+#   register: instanaOutput
+    
+# - name: instana init output
+#   debug: 
+#     msg: "{{ instanaOutput.stdout_lines }}"
+
+# - name: instana license download
+#   shell: 'instana license download'
+#   register: licenseOutput
+  
+# - name: instana license output
+#   debug: 
+#     msg: "{{ licenseOutput.stdout_lines }}"
+
+# - name: instana license import
+#   shell: 'instana license import'
+#   register: licenseOutput
+    
+# - name: instana license import output
+#   debug: 
+#     msg: "{{ licenseOutput.stdout_lines }}"
+
+# - name: instana license verify
+#   shell: 'instana license verify'
+#   register: licenseOutput
+    
+# - name: instana license verify output
+#   debug: 
+#     msg: "{{ licenseOutput.stdout_lines }}"
+
+# - name: instana admin credentials
+#   shell: '(grep "E-Mail" instanaCreds >/dev/null 2>&1 || (instana configure admin >instanaCreds)); cat instanaCreds'
+#   register: instanaAdmin
+#   changed_when: false
+
+# - name: instana version
+#   shell: 'instana version'
+#   register: instanaVersion
+#   changed_when: false
+  
+# - name: instana version output
+#   debug: 
+#     msg: "{{ instanaVersion.stdout_lines }}"
+
+# - name: Store instana information for subsequent roles
+#   set_fact: 
+#     instana_email: "{{ instanaAdmin.stdout |  regex_search('E-Mail: (.*)','\\1') | first }}"
+#     instana_password: "{{ instanaAdmin.stdout |  regex_search('Password: (.*)','\\1') | first }}"
+#     instana_version: "{{ instanaVersion.stdout }}"

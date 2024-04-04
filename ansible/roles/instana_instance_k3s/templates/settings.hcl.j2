@@ -1,0 +1,113 @@
+type                    = "single"
+profile                 = "normal"
+tenant                  = "{{ instana_tenet }}"
+unit                    = "{{ instana_unit }}"
+agent_key               = "{{ agent_key }}"
+download_key            = "{{ download_key }}"
+sales_key               = "{{ sales_key }}"
+host_name               = "{{ ansible_facts['fqdn'] }}"
+token_secret            = "YfpqMFZ33Ekn"
+clickhouse_bind_address = ""
+
+cert {
+  crt = ""
+  key = ""
+}
+
+retention {
+  metric_roll_up_5     = "86400"
+  metric_roll_up_60    = "259200"
+  metric_roll_up_300   = "432000"
+  metric_roll_up_3600  = "604800"
+}
+
+dir {
+  metrics = "/mnt/metrics"
+  traces  = "/mnt/traces"
+  data    = "/mnt/data"
+  logs    = "/var/log/instana"
+}
+
+proxy {
+  host     = ""
+  port     = 0
+  user     = ""
+  password = ""
+}
+
+artifact_repository {
+  repository_url = "https://artifact-public.instana.io/artifactory/shared/"
+  user           = "_"
+  password       = "{{ download_key }}"
+}
+
+email {
+
+  smtp {
+    from      = ""
+    host      = ""
+    port      = 0
+    user      = ""
+    password  = ""
+    use_ssl   = false
+    start_tls = false
+  }
+
+  ses {
+    from            = ""
+    aws_access_key  = ""
+    aws_access_id   = ""
+    aws_return_path = ""
+    aws_region      = ""
+  }
+}
+
+docker_repository {
+  base_url = "containers.instana.io"
+  username = "_"
+  password = "{{ download_key }}"
+}
+
+geo_db {
+  download_url = "https://packages.instana.io/geodb/geolite2-city.tar.gz"
+  file_name    = "GeoLite2-City.mmdb"
+  user         = ""
+  password     = "{{ download_key }}"
+}
+
+feature "useInstanaSaasEumTrackingUrlEnabled" {
+  enabled = true
+}
+feature "contextGuideEnabled" {
+  enabled = true
+}
+feature "skipOnboardingDialog" {
+  enabled = true
+}
+feature "fullTermsConfigEnabled" {
+  enabled = true
+}
+feature "pcfEnabled" {
+  enabled = true
+}
+feature "showUserSettingInternalTagsInUA" {
+  enabled = true
+}
+feature "authenticationOidcEnabled" {
+  enabled = true
+}
+feature "loggingEnabled" {
+  enabled = false
+}
+feature "loggingEnabledOnTrace" {
+  enabled = false
+}
+feature "infraExploreDataEnabled" {
+  enabled = false
+}
+feature "infraMetricsWidgetEnabled" {
+  enabled = false
+}
+feature "internalMonitoringUnit" {
+  enabled = true
+}
