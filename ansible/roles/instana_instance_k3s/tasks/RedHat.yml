@@ -16,7 +16,7 @@
     name: "*"
     state: latest
 
-- name: install jq
+- name: install required OS packages
   become: true
   ansible.builtin.dnf:
     state: latest
@@ -33,5 +33,12 @@
 - name: stanctl stdout_lines
   debug: 
     msg: "{{ stanctlOutput.stdout }}"
+
+- name: set transparent_hugepage
+  become: true
+  shell: 'grubby --args="transparent_hugepage=never" --update-kernel ALL"'
+
+- name: Unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
 
 

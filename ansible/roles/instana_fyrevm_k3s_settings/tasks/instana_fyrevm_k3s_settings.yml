@@ -20,5 +20,3 @@
 - name: transparent_hugepage should be -> always madvise [never]
   debug: 
     msg: "{{ transparent_hugepage.stdout_lines }}"
-
-
