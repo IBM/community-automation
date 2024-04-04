@@ -1,0 +1,17 @@
+all:
+ hosts:   
+ vars:
+  download_key: yourDownloadKey 
+  agent_key: yourAgentKey 
+  sales_key: yourSaleKey 
+  instana_tenet: nest 
+  instana_unit: was      
+ children:
+  fyreApi:
+   hosts:
+    localhost:
+   vars:
+    ansible_connection: local 
+    fyreuser: you 
+    fyreapikey: yourFyreApiKey 
+    site: rtp

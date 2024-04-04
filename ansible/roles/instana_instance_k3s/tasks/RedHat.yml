@@ -24,6 +24,7 @@
     - jq
     - postfix
     - stanctl
+    - container-selinux 
 
 - name: show the stanctl version
   command: 'stanctl --version'
