@@ -36,7 +36,7 @@
 
 - name: set transparent_hugepage
   become: true
-  shell: 'grubby --args="transparent_hugepage=never" --update-kernel ALL"'
+  shell: 'grubby --args="transparent_hugepage=never" --update-kernel ALL'
 
 - name: Unconditionally reboot the machine with all defaults
   ansible.builtin.reboot:
