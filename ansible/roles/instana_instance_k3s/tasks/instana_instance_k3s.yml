@@ -96,7 +96,6 @@
 ## --core-tls-crt
 ## --core-tls-key
 
-
 - name: remove stanctl agent delete -q
   shell: "stanctl agent delete -q"
   register: instanaOutput
@@ -118,6 +117,14 @@
   register: instanaOutput
     
 - name: instana init output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: stanctl agent apply
+  shell: "stanctl agent apply"
+  register: instanaOutput
+    
+- name: stanctl agent apply output
   debug: 
     msg: "{{ instanaOutput.stdout_lines }}"
 
