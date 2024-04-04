@@ -8,7 +8,7 @@
     reload: true
 
 - ansible.posix.sysctl:
-    name: max_user_instances
+    name: fs.inotify.max_user_instances
     value: '8192'
     state: present
     reload: true
