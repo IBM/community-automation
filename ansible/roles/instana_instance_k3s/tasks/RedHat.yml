@@ -1,13 +1,15 @@
 ---
 
 - name: remove Instana repository
+  become: true
   ansible.builtin.yum_repository:
-    name: instana-product]
+    name: instana-product
     state: absent
 
 - name: Add Instana repository
+  become: true
   ansible.builtin.yum_repository:
-    name: instana-product]
+    name: instana-product
     description: instana-product
     baseurl: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/rel-rpm-public-virtual/"
     gpgkey: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/api/security/keypair/public/repositories/rel-rpm-public-virtual"
