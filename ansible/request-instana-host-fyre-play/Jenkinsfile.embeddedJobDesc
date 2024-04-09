@@ -1,0 +1,55 @@
+#! groovy
+def jobDesc = '\
+Change My Description \n\
+24.0.0.3 WASX:shipped:cl240320240311-1901.42.linux ( 1.0.87.cl240320240311-1901 ) \n\
+24.0.0.2 WASX:shipped:cl240220240212-1928.18.linux (1.0.86.cl240220240212-1928) \n\
+24.0.0.1 WASX:shipped:cl240120240115-2042.37.linux  (1.0.85.cl240120240115-2042) \n\
+'
+
+pipeline {
+    agent { label 'rtp' }
+
+    parameters {
+        choice(name: 'AGENTS', choices: ['1','2','3'], description: 'Run job on agent X')
+        text(name: "sampleText", description: "Some sample text", defaultValue: 'some text')
+        booleanParam(name: 'sampleBoolean', defaultValue: false)
+        string(name: "sampleString", description: "ex: -vvvv")
+    }
+    environment {
+        sampleEnvCred = credentials('schader_github_token_ibm_com')
+        sampleEnvVar = 'foo'
+    }
+
+    stages {
+        stage('Set Job Description') {
+            steps {
+                script {
+                    if(currentBuild.rawBuild.project.description != jobDesc) {
+                        currentBuild.rawBuild.project.description = jobDesc
+                    }
+                    else {
+                        echo 'Name change not required'
+                    }
+                }
+            }
+        }
+        stage('Checkout') {
+            when { 
+                allOf {
+                    //branch 'main' 
+                    triggeredBy cause: "UserIdCause"
+                }
+            }
+            steps {
+                // checkout if the repo is different 
+                git branch: 'main', credentialsId: 'schader_github_ibm_com', url: 'https://github.ibm.com/was-svt/nest-ops.git'
+            }
+        }
+        stage('Build') {
+            agent { label 'rtp' }
+            steps {
+                echo "Building on ${env.NODE_NAME}"
+            }
+        }
+    }
+}
