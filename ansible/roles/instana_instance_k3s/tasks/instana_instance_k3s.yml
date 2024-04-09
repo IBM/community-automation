@@ -112,6 +112,11 @@
   debug: 
     msg: "{{ instanaOutput.stdout_lines }}"
 
+- name: copy settings.hcl
+  template:
+    src: env.j2
+    dest: /root/.env
+
 - name: stanctl up with arguments
   shell: "stanctl up --install-type demo --core-base-domain {{ ansible_facts['fqdn'] }} --download-key {{ download_key }} --sales-key {{ sales_key }} --unit-tenant-name {{ instana_tenet }} --unit-unit-name {{ instana_unit }} --unit-initial-admin-password {{ instana_admin_pwd }}"
   register: instanaOutput

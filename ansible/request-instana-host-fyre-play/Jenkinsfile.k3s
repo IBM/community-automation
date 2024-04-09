@@ -20,6 +20,10 @@ def paramsList = [
     string(name: 'tenet', description: 'Instana tenet'),
     string(name: 'unit', description: 'Instana unit'),
 
+    STANCTL_CORE_SMTP_FROM='{{ STANCTL_CORE_SMTP_FROM }}'
+STANCTL_CORE_SMTP_HOST='{{ STANCTL_CORE_SMTP_HOST}}'
+STANCTL_CORE_SMTP_PORT='{{ STANCTL_CORE_SMTP_PORT }}
+
   ]
 jobProps.push(parameters(paramsList))
 
