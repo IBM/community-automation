@@ -1,4 +1,4 @@
 ### WebSphere Automation instance artifacts
 InstanaAdminUserPassword: 'password'
 InstanaServiceUserPassword: 'password'
-STANCTL_CORE_SMTP_PORT: 25
+STANCTL_CORE_SMTP_PORT: '25'
