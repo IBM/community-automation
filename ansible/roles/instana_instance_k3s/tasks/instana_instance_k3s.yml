@@ -120,7 +120,7 @@
     dest: /root/.env
 
 - name: stanctl up with arguments
-  shell: "stanctl up --install-type demo --core-base-domain {{ ansible_facts['fqdn'] }} --download-key {{ download_key }} --sales-key {{ sales_key }} --unit-tenant-name {{ instana_tenet }} --unit-unit-name {{ instana_unit }} --unit-initial-admin-password {{ instanaAdminPassword }}"
+  shell: "stanctl up --install-type demo --core-base-domain {{ ansible_facts['fqdn'] }} --download-key {{ download_key }} --sales-key {{ sales_key }} --unit-tenant-name {{ instana_tenet }} --unit-unit-name {{ instana_unit }} --unit-initial-admin-password {{ instanaAdminPassword }} --timeout 60m"
   register: instanaOutput
     
 - name: instana init output
