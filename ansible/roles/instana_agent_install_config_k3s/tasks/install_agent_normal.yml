@@ -5,6 +5,8 @@
    url: "{{ get_normal_linux_agent }}"
    dest: ~/setup_agent.sh
    mode: 0755
+  force: yes
+  validate_certs: no
 - name: install the linux agent
   become: true
   command: "{{ install_normal_linux_agent }}"
