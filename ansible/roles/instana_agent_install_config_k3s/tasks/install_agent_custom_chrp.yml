@@ -1,0 +1,7 @@
+---
+- name: install custom AIX Instana archive
+  unarchive:
+    src: "{{ custom_agent_url }}/instana-agent-{{ ansible_architecture }}.zip"
+    dest: /opt
+    remote_src: yes
+  become: true

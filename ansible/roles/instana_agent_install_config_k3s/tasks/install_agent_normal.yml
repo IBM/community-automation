@@ -1,0 +1,13 @@
+---
+- name: get the install agent script
+  become: true
+  get_url:
+   url: "{{ get_normal_linux_agent }}"
+   dest: ~/setup_agent.sh
+   mode: 0755
+- name: install the linux agent
+  become: true
+  command: "{{ install_normal_linux_agent }}"
+  register: isInstana
+- debug:
+   msg: "{{ isInstana.stdout_lines }}"

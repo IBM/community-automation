@@ -1,0 +1,7 @@
+---
+- name: Creates instana crontab manual reboot start
+  ansible.builtin.cron:
+    name: "start custom instana agent at reboot"
+    special_time: reboot
+    job: "{{ instana_dir_custom }}/bin/start >/dev/null 2>&1"
+  become: yes

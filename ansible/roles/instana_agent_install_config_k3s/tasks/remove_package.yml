@@ -1,0 +1,10 @@
+---
+- name: Remove the instana package
+  become: true
+  ansible.builtin.package:
+   name: 
+    - "instana-agent-dynamic"
+    - "instana-agent-dynamic-j9"
+    - "instana-agent-static"
+    - "instana-agent-static-j9"
+   state: absent
