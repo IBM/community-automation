@@ -98,6 +98,7 @@
 
 - name: remove stanctl agent delete -q
   shell: "stanctl agent delete -q"
+  ignore_errors: true
   register: instanaOutput
     
 - name: instana remove output
@@ -106,13 +107,14 @@
 
 - name: remove stanctl cluster delete -q
   shell: "stanctl cluster delete -q"
+  ignore_errors: true
   register: instanaOutput
     
 - name: instana remove output
   debug: 
     msg: "{{ instanaOutput.stdout_lines }}"
 
-- name: copy settings.hcl
+- name: copy env file
   template:
     src: env.j2
     dest: /root/.env
