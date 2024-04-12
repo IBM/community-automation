@@ -58,7 +58,7 @@
     <connectionManager id="conMgr1" agedTimeout="-1" connectionTimeout="0" maxIdleTime="-1" maxPoolSize="600" minPoolSize="100" purgePolicy="FailingConnectionOnly" reapTime="-1"/> 
 
     <applicationMonitor dropinsEnabled="true" updateTrigger="mbean"/>
-    <config updateTrigger="enabled"/>
+    <config updateTrigger="mbean"/>
 
     <jdbcDriver id="DB2JCC" libraryRef="DB2JCCLib"/>
     <library id="DB2JCCLib" filesetRef="DB2JCCFileset"/>
