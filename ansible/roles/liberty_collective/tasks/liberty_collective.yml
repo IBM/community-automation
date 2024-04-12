@@ -117,13 +117,14 @@
       insertbefore: '</featureManager>'
       line: "{{ item }}"
     with_items: 
-    - '        <feature>restConnector-1.0</feature>'
+    - '        <feature>restConnector-2.0</feature>'
     - '        <feature>localConnector-1.0</feature>'
     - '        <feature>adminCenter-1.0</feature>'
     - '        <feature>ssl-1.0</feature>'
     - '        <feature>dynamicRouting-1.0</feature>'
     - '        <feature>scalingController-1.0</feature>'
-    - '        <feature>monitor-1.0</feature>'
+    - '        <feature>mpMetrics-5.1</feature>'
+    - '        <feature>mpHealth-4.0</feature>'
 
   - name: copy jvm.options template
     template:
