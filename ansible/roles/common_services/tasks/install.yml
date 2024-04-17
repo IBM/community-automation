@@ -21,7 +21,9 @@
     oc apply -f catalog-source.yaml
     oc new-project {{ cs_operator_project_name }}
     sleep 5
-    oc -n {{ cs_operator_project_name }} apply -f cs-group.yaml
+    if [[ $(oc get og -n {{ cs_operator_project_name }} --no-headers | wc -l) -eq 0 ]]; then
+      oc -n {{ cs_operator_project_name }} apply -f cs-group.yaml
+    fi
     oc -n {{ cs_operator_project_name }} apply -f cs-sub.yaml
   args:
     chdir: "{{ cs_setup_dir }}"
