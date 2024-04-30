@@ -9,9 +9,10 @@
   #      become: yes
 
 - name: Ensure group exists
-  become: yes
+  become: true
   group:
     name: "{{ user_username }}"
+    gid: "{{ group_id }}"
     state: present
 
 # AIX /usr/bin/bash
@@ -24,8 +25,8 @@
   - ansible_architecture == 'chrp'
 
 - name: Ensure User is Present
-  user: name={{ user_username }} group={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell={{ user_shell }} state=present
-  become: yes
+  user: name={{ user_username }} uid={{ user_id }} group={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell={{ user_shell }} state=present
+  become: true
 
 - name: remove temp pass hash file
   file:
