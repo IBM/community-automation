@@ -11,4 +11,4 @@ gsa_pass: 'gsapass'
 ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
 im_liberty_package: 'com.ibm.websphere.liberty.ND.v85'
-im_java_short_version: '17' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8
+im_java_short_version: '21' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8
