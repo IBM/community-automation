@@ -117,6 +117,7 @@
       insertbefore: '</featureManager>'
       line: "{{ item }}"
     with_items: 
+    - '        <feature>pages-3.1</feature>'
     - '        <feature>restConnector-2.0</feature>'
     - '        <feature>localConnector-1.0</feature>'
     - '        <feature>adminCenter-1.0</feature>'
