@@ -113,7 +113,7 @@
   # There's version confilict with jsp and mpHealth
   - name: Remove jsp2.3 from feautres
     lineinfile:
-      line: '    <feature>jsp-2.3</feature>'
+      line: '        <feature>jsp-2.3</feature>'
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       state: absent
       
