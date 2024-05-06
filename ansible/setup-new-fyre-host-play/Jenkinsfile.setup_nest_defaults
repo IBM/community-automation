@@ -23,12 +23,14 @@ pipeline {
                 }
             }
             steps {
-                sh """
-                set +x # hide sensitive info being echo'd to log
-                ANSIBLE_FORCE_COLOR=true
-                cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i $osnames, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e regionTimeZone=$regionTimeZone -e authorized_keys_url=$authorized_keys_url -e load_secrets_dir=$load_secrets_dir --vault-password-file=$passwordfile
-                """
-           }
+                ansiColor('xterm') {
+                    sh """
+                    set +x # hide sensitive info being echo'd to log
+                    ANSIBLE_FORCE_COLOR=true
+                    cp ./ansible/setup-new-fyre-host-play/examples/inventory ./ansible/setup-new-fyre-host-play/; ansible-playbook -i $osnames, ./ansible/setup-new-fyre-host-play/setup-new-fyre-host-play.yml -e regionTimeZone=$regionTimeZone -e authorized_keys_url=$authorized_keys_url -e load_secrets_dir=$load_secrets_dir --vault-password-file=$passwordfile
+                    """
+                }
+            }
         }
     }
 }
