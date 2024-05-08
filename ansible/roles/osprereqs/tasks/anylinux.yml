@@ -19,3 +19,9 @@
 - name: restart sshd
   command: "systemctl restart sshd"
   become: yes
+  when: ansible_facts[‘distribution’] = "RedHat"
+
+- name: restart ssh
+  command: "systemctl restart ssh"
+  become: yes
+  when: ansible_facts[‘distribution’] = "Ubuntu"
