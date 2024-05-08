@@ -12,7 +12,13 @@
     path: "{{ configsDir }}/configs/{{ env_name }}"
     state: directory
 
-- name: archive the liberty logs dir to fetch
+- name: Create temporary config directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: config
+  register: tmpDir
+
+- name: archive the liberty config files to fetch
   community.general.archive:
     path:
     - "{{ wlp_usr_dir }}/shared/"
@@ -21,13 +27,19 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
-    dest: "configs.tar"
+    dest: "{{ tmpDir.path }}/configs.tar"
     format: tar
 
 - name: fetch the liberty config archive
   ansible.builtin.fetch:
-    src: configs.tar
+    src: "{{ tmpDir.path }}/configs.tar"
     dest: "{{ configsDir }}/configs/{{ env_name }}"
+
+- name: Remove temp dir
+  ansible.builtin.file:
+    path: "{{ tmpDir.path }}"
+    state: absent
+  when: tmpDir.path is defined
 
     # unarchive fails to find handler
 - name: Extract the liberty log archive

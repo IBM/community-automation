@@ -12,17 +12,29 @@
     path: "{{ logsDir }}/logs/{{ env_name }}"
     state: directory
 
+- name: Create temporary logs directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: logs
+  register: tmpDir
+
 - name: archive the liberty logs dir to fetch
   community.general.archive:
     path:
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
-    dest: logs.tar
+    dest: "{{ tmpDir.path }}/logs.tar"
     format: tar
 
 - name: fetch the liberty log archive
   ansible.builtin.fetch:
-    src: logs.tar
+    src: "{{ tmpDir.path }}/logs.tar"
     dest: "{{ logsDir }}/logs/{{ env_name }}"
+
+- name: Remove temp dir
+  ansible.builtin.file:
+    path: "{{ tmpDir.path }}"
+    state: absent
+  when: tmpDir.path is defined
 
     # unarchive fails to find handler
 - name: Extract the liberty log archive
