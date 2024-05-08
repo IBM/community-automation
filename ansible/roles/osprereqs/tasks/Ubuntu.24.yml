@@ -1,0 +1,35 @@
+---
+# specific OS supports wildcards
+- name: remove extraneous packages
+  become: yes
+  ignore_errors: yes
+  apt:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - "java*"
+   - "samba*"
+   - "valgrind*"
+   - "git*"
+   - "tignervnc"
+
+- name: apt update
+  become: yes
+  apt:
+   name: '*'
+   state: latest
+
+- name: install packages
+  become: yes
+  apt:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+           #   - 'libxtst6'
+           #   - 'libgtk2.0-0'
+           #   - 'libxft2'
+   - 'zip'
+   - 'unzip'
