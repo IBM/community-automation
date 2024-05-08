@@ -21,7 +21,7 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
-    dest: "configs/.tar"
+    dest: "configs.tar"
     format: tar
 
 - name: fetch the liberty config archive
