@@ -1,0 +1,47 @@
+---
+
+- name: log directory
+  delegate_to: localhost
+  file:
+    path: "configs/{{ env_name }}"
+    state: absent
+
+- name: log directory
+  delegate_to: localhost
+  file:
+    path: "configs/{{ env_name }}"
+    state: directory
+
+- name: archive the liberty logs dir to fetch
+  community.general.archive:
+    path:
+    - "{{ wlp_usr_dir }}/shared/"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/*.xml"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
+    dest: "configs/.tar"
+    format: tar
+
+- name: fetch the liberty config archive
+  ansible.builtin.fetch:
+    src: configs.tar
+    dest: "configs/{{ env_name }}"
+
+    # unarchive fails to find handler
+- name: Extract the liberty log archive
+  delegate_to: localhost
+  shell: tar xf configs.tar
+  args:
+    chdir: "logs/{{ env_name }}/{{ ansible_fqdn }}"
+
+- name: remove configs.tar
+  delegate_to: localhost
+  file:
+    path: "configs/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
+    state: absent
+
+- name: log/error directory location
+  debug:
+   msg: "{{ playbook_dir }}/configs/{{ env_name }}/{{ ansible_fqdn }}"
