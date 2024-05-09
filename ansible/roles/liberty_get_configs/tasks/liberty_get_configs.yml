@@ -1,22 +1,16 @@
 ---
 
-- name: local config directory cleanup
+- name: log directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/configs/{{ env_name }}"
+    path: "{{ configsDir }}/{{ env_name }}"
     state: absent
 
-- name: local config directory Create
+- name: log directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/configs/{{ env_name }}"
+    path: "{{ configsDir }}/{{ env_name }}"
     state: directory
-
-- name: Create temporary config directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: config
-  register: tmpDir
 
 - name: archive the liberty config files to fetch
   community.general.archive:
@@ -27,33 +21,27 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
-    dest: "{{ tmpDir.path }}/configs.tar"
+    dest: configs.tar
     format: tar
 
 - name: fetch the liberty config archive
   ansible.builtin.fetch:
-    src: "{{ tmpDir.path }}/configs.tar"
-    dest: "{{ configsDir }}/configs/{{ env_name }}"
-
-- name: Remove temp dir
-  ansible.builtin.file:
-    path: "{{ tmpDir.path }}"
-    state: absent
-  when: tmpDir.path is defined
+    src: configs.tar
+    dest: "{{ configsDir }}/{{ env_name }}/"
 
     # unarchive fails to find handler
-- name: Extract the liberty config archive
+- name: Extract the liberty log archive
   delegate_to: localhost
   shell: tar xf configs.tar
   args:
-    chdir: "{{ configsDir }}/configs/{{ env_name }}/{{ ansible_fqdn }}"
+    chdir: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
 - name: remove configs.tar
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/configs/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
+    path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
     state: absent
 
 - name: log/error directory location
   debug:
-   msg: "{{ configsDir }}/configs/{{ env_name }}/{{ ansible_fqdn }}"
+   msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
