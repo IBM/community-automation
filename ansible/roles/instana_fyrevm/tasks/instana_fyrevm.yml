@@ -8,7 +8,7 @@
    fyre_cpu: 16
    fyre_memory: 64
    fyre_additional_disk: 2048
-   fyre_os: 'RedHat 9.2'
+   fyre_os: 'RedHat 9.4'
    fyre_site: "{{ site }}"
    fyre_comment: 'Instana Host'
    clusterName_prefix: instana

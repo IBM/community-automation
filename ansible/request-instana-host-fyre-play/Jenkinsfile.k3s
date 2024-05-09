@@ -46,9 +46,9 @@ pipeline {
             steps {
                 sh """
                 set +x # hide sensitive info being echo'd to log
-                cd ansible/request-instana-host-fyre-play
-                cp examples/inventory.yaml
-                ansible-playbook -i inventory.yaml request-instana-host-fyre-play-k3s.yml \
+                cd ansible
+                ansible-playbook -i request-instana-host-fyre-play/examples/inventory.yaml \
+                    request-instana-host-fyre-play/request-instana-host-fyre-play-k3s.yml \
                     -e fyreuser=$fyreuser \
                     -e fyreapikey=$fyreapikey \
                     -e noLog=false \
