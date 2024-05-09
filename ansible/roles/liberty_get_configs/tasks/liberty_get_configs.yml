@@ -29,6 +29,11 @@
     src: configs.tar
     dest: "{{ configsDir }}/{{ env_name }}/"
 
+- name: Remove temp configs.tar
+  ansible.builtin.file:
+    path: configs.tar
+    state: absent
+
     # unarchive fails to find handler
 - name: Extract the liberty log archive
   delegate_to: localhost
