@@ -3,52 +3,45 @@
 - name: log directory
   delegate_to: localhost
   file:
-    path: "{{ logsDir }}/logs/{{ env_name }}"
+    path: "{{ logsDir }}/{{ env_name }}"
     state: absent
 
 - name: log directory
   delegate_to: localhost
   file:
-    path: "{{ logsDir }}/logs/{{ env_name }}"
+    path: "{{ logsDir }}/{{ env_name }}"
     state: directory
-
-- name: Create temporary logs directory
-  ansible.builtin.tempfile:
-    state: directory
-    suffix: logs
-  register: tmpDir
 
 - name: archive the liberty logs dir to fetch
   community.general.archive:
     path:
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
-    dest: "{{ tmpDir.path }}/logs.tar"
+    dest: logs.tar
     format: tar
 
 - name: fetch the liberty log archive
   ansible.builtin.fetch:
-    src: "{{ tmpDir.path }}/logs.tar"
-    dest: "{{ logsDir }}/logs/{{ env_name }}"
+    src: logs.tar
+    dest: "{{ logsDir }}/{{ env_name }}"
 
-- name: Remove temp dir
+- name: Remove temp logs.tar
   ansible.builtin.file:
-    path: "{{ tmpDir.path }}"
+    path: logs.tar
     state: absent
-  when: tmpDir.path is defined
 
     # unarchive fails to find handler
 - name: Extract the liberty log archive
   delegate_to: localhost
   shell: tar xf logs.tar
   args:
-    chdir: "{{ logsDir }}/logs/{{ env_name }}/{{ ansible_fqdn }}"
+    chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
 - name: remove logs.tar
   delegate_to: localhost
   file:
-    path: "{{ logsDir }}/logs/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
+    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
     state: absent
 
 - name: log/error directory location
   debug:
-   msg: "{{ logsDir }}/logs/{{ env_name }}/{{ ansible_fqdn }}"
+   msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
