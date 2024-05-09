@@ -2,4 +2,4 @@
 
 - hosts: all
   roles:
-  - role: was_automation_register
+  - role: ibm_community_automation.ibm_community_automation.was_automation_register

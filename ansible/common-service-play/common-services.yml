@@ -2,4 +2,4 @@
 - name: Install common services
   hosts: bastion
   roles:
-  - common_services
+  - ibm_community_automation.ibm_community_automation.common_services

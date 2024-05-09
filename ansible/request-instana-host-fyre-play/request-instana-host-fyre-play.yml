@@ -1,13 +1,13 @@
 ---
 - hosts: fyreApi
   roles:
-  - role: instana_fyrevm
+  - role: ibm_community_automation.ibm_community_automation.instana_fyrevm
 
 - hosts: instana
   vars:
   - ansible_user: root
   roles:
-  - role: fix_fyre_hosts_file
-  - role: timezone
-  - role: docker_ce_install
-  - role: instana_instance_on_prem
+  - role: ibm_community_automation.ibm_community_automation.fix_fyre_hosts_file
+  - role: ibm_community_automation.ibm_community_automation.timezone
+  - role: ibm_community_automation.ibm_community_automation.docker_ce_install
+  - role: ibm_community_automation.ibm_community_automation.instana_instance_on_prem

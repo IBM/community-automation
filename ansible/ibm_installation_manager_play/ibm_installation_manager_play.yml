@@ -2,5 +2,5 @@
 
 - hosts: all
   roles:
-  - role: ibm_installation_manager
+  - role: ibm_community_automation.ibm_community_automation.ibm_installation_manager
 

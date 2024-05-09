@@ -4,4 +4,4 @@
   gather_facts: true
   become: yes
   roles:
-  - role: fix_fyre_hosts_file
+  - role: ibm_community_automation.ibm_community_automation.fix_fyre_hosts_file

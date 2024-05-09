@@ -1,7 +1,7 @@
 ---
 - hosts: fyreApi
   roles:
-  - role: db2_fyrevm
+  - role: ibm_community_automation.ibm_community_automation.db2_fyrevm
 
 - hosts: db2
   vars:
@@ -11,6 +11,6 @@
 
 - hosts: db2
   roles:
-  - role: db2_fyre
-  - { role: vnc, when: vnc|bool }
+  - role: ibm_community_automation.ibm_community_automation.db2_fyre
+  - { role: ibm_community_automation.ibm_community_automation.vnc, when: vnc|bool }
 

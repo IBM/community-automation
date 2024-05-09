@@ -5,4 +5,4 @@
   vars:
   - ansible_user: root
   roles:
-  - role: osprereqs
+  - role: ibm_community_automation.ibm_community_automation.osprereqs

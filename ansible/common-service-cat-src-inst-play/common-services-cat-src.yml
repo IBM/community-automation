@@ -2,4 +2,4 @@
 - name: Install common services catalog source install
   hosts: bastion
   roles:
-  - common_services_cat_src_inst
+  - ibm_community_automation.ibm_community_automation.common_services_cat_src_inst
