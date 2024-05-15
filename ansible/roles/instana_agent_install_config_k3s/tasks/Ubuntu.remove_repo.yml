@@ -1,5 +1,6 @@
 ---
 - name: Remove instana-agent repository 
+  become: true
   ansible.builtin.apt_repository:
     repo: deb https://packages.instana.io/agent/deb generic main
     state: absent

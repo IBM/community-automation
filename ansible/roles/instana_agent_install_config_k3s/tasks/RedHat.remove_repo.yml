@@ -1,5 +1,6 @@
 ---
 - name: Remove instana-agent repository (and clean up left-over metadata)
+  become: true
   ansible.builtin.yum_repository:
     name: instana-agent
     state: absent
