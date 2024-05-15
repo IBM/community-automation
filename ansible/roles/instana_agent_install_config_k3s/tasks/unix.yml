@@ -6,6 +6,7 @@
 - include_tasks: stop.yml
 - include_tasks: remove_package.yml
 - include_tasks: remove_directory.yml
+- include_tasks: "{{ ansible_distribution }}.remove_repo.yml"
 - include_tasks: install_agent_normal.yml
   when:
   - ansible_architecture == 'x86_64' or ansible_architecture == 's390x' or ansible_architecture == 'ppc64le' 

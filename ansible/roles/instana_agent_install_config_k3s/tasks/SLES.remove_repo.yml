@@ -1,0 +1,5 @@
+---
+- name: Remove instana-agent repository
+  aommunity.general.zypper_repository:
+    name: instana-agent
+    state: absent
