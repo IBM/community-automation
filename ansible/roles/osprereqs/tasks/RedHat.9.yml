@@ -60,7 +60,6 @@
    - ' gtk2.i686'
    - 'libXtst.i686'
    - 'libXft.i686'
-   - 'libXtst.i686'
    - 'libnsl.i686'
 
  
