@@ -1,9 +1,9 @@
 ---
 # specific OS supports wildcards, if preceded with @ its a group
 # if the db is corrupt, this can fix it: rpm --rebuilddb
-- name: remove extraneous packages
-  become: yes
-  ignore_errors: yes
+- name: Remove extraneous packages
+  become: true
+  ignore_errors: true
   dnf:
    name: "{{ packages }}"
    state: absent
@@ -21,13 +21,13 @@
    - 'xorg-x11-fonts-Type1'
 
 - name: dnf update
-  become: yes
+  become: true
   dnf:
    name: '*'
    state: latest
 
-- name: install packages
-  become: yes
+- name: Install packages
+  become: true
   dnf:
    name: "{{ packages }}"
    state: present
@@ -44,3 +44,23 @@
    - 'python3'
    - 'jq'
    - 'libxcrypt-compat'
+
+- name: Install packages tWAS 855x 32 bit packages
+  when: 
+    - twas855x|bool 
+    - ansible_architecture == 'x86_64'
+  become: true
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'glibc.i686' 
+   - ' gtk2.i686'
+   - 'libXtst.i686'
+   - 'libXft.i686'
+   - 'libXtst.i686'
+   - 'libnsl.i686'
+
+ 
