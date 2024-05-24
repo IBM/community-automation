@@ -24,7 +24,7 @@
 
 - name: check if previous WCT installed
   stat:
-    path: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh "
+    path: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh"
   register: iswct
 
 - name: Uninstall WCT
