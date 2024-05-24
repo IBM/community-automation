@@ -2,7 +2,7 @@
 im_archive_driver_version: '1926'
 im_archive_driver: '1.9.2006.20230925_1323'
 im_archive: 'https://rtpgsa.ibm.com/gsa/rtpgsa/home/w/a/wasngi/web/public/NGI/IM/recommended/drivers/{{ im_archive_driver_version }}/ga'
-install_base: "{{ install_base | default('/home/nest', true) }}"
+install_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
 shared_dir: 'IM-shared'

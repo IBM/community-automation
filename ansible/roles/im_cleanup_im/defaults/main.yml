@@ -1,5 +1,5 @@
 ---
 shared_dir: 'IM-shared'
-install_base: "{{ install_base | default('/home/nest', true) }}"
+install_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
