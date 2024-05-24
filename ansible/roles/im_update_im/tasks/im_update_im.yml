@@ -7,4 +7,4 @@
 - name: Update output
   debug: 
    msg: "{{ updateOutput.stdout_lines }}"
-   failed_when: ( updateOutput.rc not in [ 0, 1 ] )
+  failed_when: ( updateOutput.rc not in [ 0, 1 ] )
