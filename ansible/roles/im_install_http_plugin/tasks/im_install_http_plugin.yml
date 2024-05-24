@@ -148,7 +148,7 @@
   - name: HTTPServerVersionOutput
     debug: 
      msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
-    failed_when: '{{ ihs_im_driver }} not in HTTPServerVersionOutput.stdout'
+    failed_when: ihs_im_drive not in HTTPServerVersionOutput.stdout
 
   - name: Plugin version
     shell: "{{install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh" 
@@ -157,7 +157,7 @@
   - name: PluginVersionOutput
     debug: 
      msg: "{{ PluginVersionOutput.stdout_lines }}"
-    failed_when: '{{ ihs_im_driver }} not in PluginVersionOutput.stdout'
+    failed_when: ihs_im_driver not in PluginVersionOutput.stdout
 
   - name: WCT version
     shell: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh" 
@@ -166,5 +166,5 @@
   - name: WCTVersionOutput
     debug: 
      msg: "{{ WCTVersionOutput.stdout_lines }}"
-    failed_when: '{{ ihs_im_driver }} not in WCTVersionOutput.stdout'
+    failed_when: ihs_im_driver not in WCTVersionOutput.stdout
 
