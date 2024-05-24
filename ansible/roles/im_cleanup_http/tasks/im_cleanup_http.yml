@@ -9,6 +9,12 @@
   with_items:
   - "{{ install_ihs_base }}/{{ http_dir }}"
 
+- name:  pkill httpd  ( linux )
+  ignore_errors: true
+  shell: "pkill httpd"
+  register: killOutput
+  failed_when: ( killOutput.rc not in [ 0, 1 ] )
+
 - name: check if previous ihs installed
   stat:
    path: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl"
