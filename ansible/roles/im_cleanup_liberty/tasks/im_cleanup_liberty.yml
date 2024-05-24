@@ -42,10 +42,10 @@
     debug: 
      msg: "{{ uninstallOutput.stdout_lines }}"
 
-  - name: Remove previous liberty dir
-    file:
-      path: "{{ item }}"
-      state: absent
-    with_items:
-    - "{{ install_base }}/{{ liberty_dir }}"
-    - "{{ wlp_usr_dir }}"
+- name: Remove previous liberty dir
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - "{{ install_base }}/{{ liberty_dir }}"
+  - "{{ wlp_usr_dir }}"
