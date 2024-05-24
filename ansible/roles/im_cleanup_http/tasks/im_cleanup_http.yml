@@ -60,3 +60,7 @@
     - "{{ install_ihs_base }}/{{ http_dir }}"
     - "{{ install_ihs_base }}/{{ plugin_dir }}"
     - "{{ install_ihs_base }}/{{ wct_dir }}"
+    - "{{ install_ihs_base }}/im_http_plugin.xml"
+    - "{{ install_ihs_base }}/wct_definition.xml"
+    - "{{ install_ihs_base }}/https_conf"
+ 
