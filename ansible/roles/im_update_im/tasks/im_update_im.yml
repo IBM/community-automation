@@ -1,0 +1,10 @@
+---
+
+- name:  Update IM to the latest level
+  shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories 'https://public.dhe.ibm.com/software/rationalsdp/v7/im/updates/'"
+  register: updateOutput
+  
+- name: Update output
+  debug: 
+   msg: "{{ updateOutput.stdout_lines }}"
+   failed_when: ( updateOutput.rc not in [ 0, 1 ] )
