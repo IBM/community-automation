@@ -63,4 +63,6 @@
   - "{{ install_ihs_base }}/im_http_plugin.xml"
   - "{{ install_ihs_base }}/wct_definition.xml"
   - "{{ install_ihs_base }}/https_conf"
+  - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this
+ 
  

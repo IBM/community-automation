@@ -40,7 +40,7 @@
     debug: 
      msg: "{{ installOutput.stdout_lines }}"
 
-  #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-toolhttps://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
+  #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
   - name: copy wct_definition.xml template
     template:
      src: wct_definition.xml.j2
