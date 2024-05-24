@@ -1,2 +1,4 @@
 ---
 shared_dir: 'IM-shared'
+# trick the template to install onto windoze via cygwin
+install_base_win: ''

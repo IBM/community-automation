@@ -1,5 +1,15 @@
 ---
 
+- name:  uninstall IM 
+  ignore_errors: true
+  shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+  register: uninstallOutput
+  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  
+- name: uninstallAll output
+  debug: 
+   msg: "{{ uninstallOutput.stdout_lines }}"
+
 # windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
 # ansible_user: Administrator
 - name:  uninstall Windoze ibm installation manager
@@ -22,17 +32,14 @@
   debug: 
    msg: "{{ uninstallOutput.stdout_lines }}"
 
-- name: Remove previous http dir
+- name: Remove IM directories
   file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_ihs_base }}/{{ shared_dir }}"
-  - "{{ install_ihs_base }}/im_install"
-  - "{{ install_ihs_base }}/IM"
-  - "{{ install_ihs_base }}/javasharedresources"
-  - "{{ install_ihs_base }}/im_http_plugin.xml"
-  - "{{ install_ihs_base }}/wct_definition.xml"
-  - "{{ install_ihs_base }}/https_conf"
+  - "{{ install_base_win}}{{ install_base }}/{{ shared_dir }}"
+  - "{{ install_base_win}}{{ install_base }}/im_install"
+  - "{{ install_base_win}}{{ install_base }}/IM"
+  - "{{ install_base_win}}{{ install_base }}/javasharedresources"
   - "~/var/"
   - "~/etc/"
