@@ -17,7 +17,7 @@
 
 - name: check if previous ihs installed
   stat:
-   path: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl"
+   path: "{{install_ihs_base }}/{{ http_dir }}bin/versionInfo.sh "
   register: isihs
 
 - name: Uninstall IHS/WCT/Plugin
@@ -31,32 +31,57 @@
     ignore_errors: true
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
 
-  - name:  uninstall wct
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
-    register: uninstallWCTOutput
-    failed_when: ( uninstallWCTOutput.rc not in [ 0, 1 ] )
-    
-  - name: uninstallWCTOutput
-    debug: 
-      msg: "{{ uninstallWCTOutput.stdout_lines }}"
+  - name: check if previous WCT installed
+    stat:
+    path: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh "
+    register: iswct
 
-  - name:  uninstall plugin
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
-    register: uninstallPLGOutput
-    failed_when: ( uninstallPLGOutput.rc not in [ 0, 1 ] )
-    
-  - name: uninstallPLGOutput
-    debug: 
-      msg: "{{ uninstallPLGOutput.stdout_lines }}"
+  - name: Uninstall WCT
+    when: iswct.stat.exists == True
+    block:
+    - name:  uninstall wct
+      shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
+      register: uninstallWCTOutput
+      
+    - name: uninstallWCTOutput
+      debug: 
+        msg: "{{ uninstallWCTOutput.stdout_lines }}"
+      failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
 
-  - name:  uninstall http
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
-    register: uninstallIHSOutput
-    failed_when: ( uninstallIHSOutput.rc not in [ 0, 1 ] )
-    
-  - name: uninstallIHSOutput
-    debug: 
-      msg: "{{ uninstallIHSOutput.stdout_lines }}"
+  - name: check if previous Plugin installed
+    stat:
+    path: "{{install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh "
+    register: isplg
+
+  - name: Uninstall plugin
+    when: isplg.stat.exists == True
+    block:
+    - name:  uninstall plugin
+      shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
+      register: uninstallPLGOutput
+      
+    - name: uninstallPLGOutput
+      debug: 
+        msg: "{{ uninstallPLGOutput.stdout_lines }}"
+      failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
+
+  - name: check if previous IHS installed
+    stat:
+    path: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh "
+    register: isihs
+
+  - name: Uninstall IHS
+    when: isihs.stat.exists == True
+    block:
+    - name:  uninstall http
+      shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
+      register: uninstallIHSOutput
+      failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+      
+    - name: uninstallIHSOutput
+      debug: 
+        msg: "{{ uninstallIHSOutput.stdout_lines }}"
+      failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
 
 - name: Remove previous http/plugin/wct/ dir 
   file:
