@@ -1,0 +1,41 @@
+---
+
+# windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
+# ansible_user: Administrator
+- name:  uninstall Windoze ibm installation manager
+  ignore_errors: true
+  shell: "~/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc"
+  register: uninstallOutput
+  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  when: 
+  - ansible_system == 'Windows' or 'CYG' in ansible_system
+
+- name:  uninstall *nix ibm installation manager
+  ignore_errors: true
+  shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
+  register: uninstallOutput
+  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  when: 
+  - ansible_system != 'Windows' and 'CYG' not in ansible_system
+  
+- name: uninstallAll output
+  debug: 
+   msg: "{{ uninstallOutput.stdout_lines }}"
+
+- name: Remove previous http dir
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+  - "{{ install_ihs_base }}/{{ shared_dir }}"
+  - "{{ install_ihs_base }}/{{ http_dir }}"
+  - "{{ install_ihs_base }}/{{ plugin_dir }}"
+  - "{{ install_ihs_base }}/{{ wct_dir }}"
+  - "{{ install_ihs_base }}/im_install"
+  - "{{ install_ihs_base }}/IM"
+  - "{{ install_ihs_base }}/javasharedresources"
+  - "{{ install_ihs_base }}/im_http_plugin.xml"
+  - "{{ install_ihs_base }}/wct_definition.xml"
+  - "{{ install_ihs_base }}/https_conf"
+  - "~/var/"
+  - "~/etc/"

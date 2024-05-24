@@ -14,59 +14,38 @@
    path: "{{install_base }}/{{ liberty_dir }}/bin/server"
   register: islib
 
-- name:  stop any running servers
-  ignore_errors: true
-  shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-  register: stopOutput
-  failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-  with_items:
-  - "{{ wl_server }}"
-  - "{{ cc_server }}"
+- name: Uninstall Liberty
   when: islib.stat.exists == True
+  block: 
+  - name:  stop any running servers
+    ignore_errors: true
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+    register: stopOutput
+    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+    with_items:
+    - "{{ wl_server }}"
+    - "{{ cc_server }}"
 
-- name:  uninstall liberty 
-  ignore_errors: true
-  shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
+   # blindly try fuser ( linux )
+  - name:  blindly try fuser ( linux )
+    ignore_errors: true
+    shell: "fuser -k {{install_base }}/{{ liberty_dir }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
-# windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
-# ansible_user: Administrator
-- name:  uninstall Windoze ibm installation manager
-  ignore_errors: true
-  shell: "~/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system == 'Windows' or 'CYG' in ansible_system
+  - name:  uninstall liberty and java
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    
+  - name: uninstall liberty and java output
+    debug: 
+     msg: "{{ uninstallOutput.stdout_lines }}"
 
-- name:  uninstall *nix ibm installation manager
-  ignore_errors: true
-  shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system != 'Windows' and 'CYG' not in ansible_system
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
-
-- name: Remove previous liberty dir
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-  - "{{ install_base }}/{{ liberty_dir }}"
-  - "{{ wlp_usr_dir }}"
-  - "{{ install_base }}/{{ shared_dir }}"
-  - "{{ install_base }}/im_install"
-  - "{{ install_base }}/IM"
-  - "{{ install_base }}/javasharedresources"
-  - "{{ install_base }}/im_liberty.xml"
-  - "~/var/"
-  - "~/etc/"
+  - name: Remove previous liberty dir
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ wlp_usr_dir }}"
