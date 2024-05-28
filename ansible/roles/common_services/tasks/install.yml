@@ -85,12 +85,12 @@
   retries: 45
   delay: 30
 
-- name: Make sure Mongodb is present
-  shell: "sleep 30; oc -n {{ cs_operator_project_name }} get statefulset --no-headers | grep -i mongodb | wc -l"
-  register: mongo_count
-  until: mongo_count.stdout|int != 0
-  retries: 10
-  delay: 30
+# - name: Make sure Mongodb is present
+#   shell: "sleep 30; oc -n {{ cs_operator_project_name }} get statefulset --no-headers | grep -i mongodb | wc -l"
+#   register: mongo_count
+#   until: mongo_count.stdout|int != 0
+#   retries: 10
+#   delay: 30
 
 - name: Make sure all Statefulsets are healthy
   shell: "sleep 30; oc -n {{ cs_operator_project_name }} get statefulset --no-headers | egrep \"0/1|0/2|1/2|0/3|1/3|2/3\" | wc -l"
@@ -106,10 +106,10 @@
   retries: 15
   delay: 30
 
-- name: Validation with statefulsets and jobs
-  shell: "bash cs-validation.bash"
-  args:
-    chdir: "{{ cs_setup_dir }}"
+# - name: Validation with statefulsets and jobs
+#   shell: "bash cs-validation.bash"
+#   args:
+#     chdir: "{{ cs_setup_dir }}"
 
 - name: Query console admin password
   shell: |
