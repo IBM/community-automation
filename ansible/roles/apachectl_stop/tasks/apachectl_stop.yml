@@ -1,0 +1,14 @@
+---
+- name: Stop the apache http server
+  tags: apache_stop 
+  block:
+  - name: check if ihs is installed
+    stat:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl"
+    register: ishttp
+    failed_when: ishttp.stat.exists == False
+
+  - name: HTTPServer stop 
+    failed_when: false
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+    register: ihsOutput

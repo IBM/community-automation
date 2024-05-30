@@ -1,0 +1,18 @@
+---
+- name: Start the apache http server
+  tags: apache_start
+  block:
+  - name: check if ihs is installed
+    stat:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl"
+    register: ishttp
+    failed_when: ishttp.stat.exists == False
+
+  - name: HTTPServer start to  load new / updated config
+    failed_when: false
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+    register: ihsOutput
+
+  - name: HTTPServer start Output
+    debug: 
+     msg: "{{ ihsOutput.stdout_lines }}"
