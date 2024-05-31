@@ -21,6 +21,8 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
     dest: configs.tar
     format: tar
     exclusion_patterns:
