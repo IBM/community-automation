@@ -23,6 +23,8 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
     dest: configs.tar
     format: tar
+    exclusion_patterns:
+    - *.jar
 
 - name: fetch the liberty config archive
   ansible.builtin.fetch:
