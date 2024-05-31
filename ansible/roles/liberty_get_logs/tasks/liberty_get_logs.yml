@@ -1,12 +1,12 @@
 ---
 
-- name: log directory
+- name: Remove local log directory
   delegate_to: localhost
   file:
     path: "{{ logsDir }}/{{ env_name }}"
     state: absent
 
-- name: log directory
+- name: Create local log directory
   delegate_to: localhost
   file:
     path: "{{ logsDir }}/{{ env_name }}"
@@ -14,6 +14,7 @@
 
 - name: archive the liberty logs dir to fetch
   community.general.archive:
+    ignore_errors: true # many times the files rotate during archive causing an error
     path:
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
     dest: logs.tar

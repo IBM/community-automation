@@ -1,12 +1,12 @@
 ---
 
-- name: log directory
+- name: Remove local config directory
   delegate_to: localhost
   file:
     path: "{{ configsDir }}/{{ env_name }}"
     state: absent
 
-- name: log directory
+- name: Create local config directory
   delegate_to: localhost
   file:
     path: "{{ configsDir }}/{{ env_name }}"
@@ -43,7 +43,7 @@
     state: absent
 
     # unarchive fails to find handler
-- name: Extract the liberty log archive
+- name: Extract the liberty config archive
   delegate_to: localhost
   shell: tar xf configs.tar
   args:
