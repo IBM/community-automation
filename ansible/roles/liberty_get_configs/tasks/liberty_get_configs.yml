@@ -27,6 +27,10 @@
     format: tar
     exclusion_patterns:
     - '*.jar'
+    - '*.zip'
+    - '*.tar'
+    - '*.tgz'
+    - '*.gz'
 
 - name: fetch the liberty config archive
   ansible.builtin.fetch:
