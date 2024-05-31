@@ -24,7 +24,7 @@
     dest: configs.tar
     format: tar
     exclusion_patterns:
-    - *.jar
+    - '*.jar'
 
 - name: fetch the liberty config archive
   ansible.builtin.fetch:
