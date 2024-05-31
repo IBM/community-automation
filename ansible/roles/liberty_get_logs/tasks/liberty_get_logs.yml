@@ -14,7 +14,6 @@
 
 - name: archive the liberty logs dir to fetch
   community.general.archive:
-    ignore_errors: true # many times the files rotate during archive causing an error
     path:
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
     dest: logs.tar
