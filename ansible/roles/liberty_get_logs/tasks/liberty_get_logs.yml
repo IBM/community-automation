@@ -18,6 +18,12 @@
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
     dest: logs.tar
     format: tar
+    exclude_path:
+    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
+    exclusion_patterns:
+    - '*.zip'
+    - '*.tar'
+    - '*.gz'
 
 - name: fetch the liberty log archive
   ansible.builtin.fetch:

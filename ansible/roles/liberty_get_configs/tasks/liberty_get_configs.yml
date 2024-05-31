@@ -55,6 +55,6 @@
     path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
     state: absent
 
-- name: log/error directory location
+- name: Server config directory location
   debug:
    msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
