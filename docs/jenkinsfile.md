@@ -31,7 +31,7 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( 'kube_pod_slave' ) {
+    node {
 
       checkout scm
 
