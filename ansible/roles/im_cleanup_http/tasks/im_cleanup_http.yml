@@ -27,29 +27,41 @@
     path: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh"
   register: iswct
 
-- name: Uninstall WCT
+- name: Uninstall WCT WAS90
   when: iswct.stat.exists == True
   block:
-  - name:  uninstall wct
+  - name:  uninstall wct WAS90
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
     register: uninstallWCTOutput
-    
+    when: twas_release == 'WAS90'
+
+  - name:  uninstall wct WAS855
+    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
+    register: uninstallWCTOutput
+    when: twas_release == 'WAS855'
+
   - name: uninstallWCTOutput
     debug: 
       msg: "{{ uninstallWCTOutput.stdout_lines }}"
     failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
 
-- name: check if previous Plugin installed
+- name: check if previous Plugin installed 
   stat:
     path: "{{install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh"
   register: isplg
 
-- name: Uninstall plugin
+- name: Uninstall plugin 
   when: isplg.stat.exists == True
   block:
-  - name:  uninstall plugin
+  - name:  uninstall plugin WAS90
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
     register: uninstallPLGOutput
+    when: twas_release == 'WAS90'
+
+  - name:  uninstall plugin WAS855
+    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
+    register: uninstallPLGOutput
+    when: twas_release == 'WAS855'
     
   - name: uninstallPLGOutput
     debug: 
@@ -61,13 +73,20 @@
     path: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh"
   register: isihs
 
-- name: Uninstall IHS
+- name: Uninstall IHS WAS90
   when: isihs.stat.exists == True
   block:
-  - name:  uninstall http
+  - name:  uninstall http WAS90
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
     register: uninstallIHSOutput
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS90'
+
+  - name:  uninstall http WAS855
+    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
+    register: uninstallIHSOutput
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
     
   - name: uninstallIHSOutput
     debug: 
@@ -85,6 +104,6 @@
   - "{{ install_ihs_base }}/im_http_plugin.xml"
   - "{{ install_ihs_base }}/wct_definition.xml"
   - "{{ install_ihs_base }}/https_conf"
-  - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this
+  # - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this
  
  
