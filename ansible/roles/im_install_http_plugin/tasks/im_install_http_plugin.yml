@@ -58,6 +58,15 @@
     - ansible_architecture == 's390x'
     - twas_release == 'WAS855'
 
+  - name:  Check for any old WCT IHS/Plugin configs
+    shell: "{{install_ihs_base }}/WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
+    register: isPluginConfigured
+
+  - name:  Check for any old WCT IHS/Plugin configs
+    shell: "{{install_ihs_base }}/WCT/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
+    register: isPluginConfigured
+    when: isPluginConfigured.rc == '0'
+
   - name:  configure plugin
     shell: "{{install_ihs_base }}/WCT/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
     register: configurepluginOutput
