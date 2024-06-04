@@ -72,7 +72,7 @@ EXAMPLE:
 
 **NOTE:** This only need to be run once.
 
-From the repo home folder "community-autommation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
+From the repo home folder "community-automation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
 
 ```
 # cd community-automation
