@@ -35,15 +35,22 @@
     register: uninstallWCTOutput
     when: twas_release == 'WAS90'
 
+  - name: uninstallWCTOutput WAS90
+    debug: 
+      msg: "{{ uninstallWCTOutput.stdout_lines }}"
+    failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS890'
+
   - name:  uninstall wct WAS855
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
     register: uninstallWCTOutput
     when: twas_release == 'WAS855'
 
-  - name: uninstallWCTOutput
+  - name: uninstallWCTOutput WAS855
     debug: 
       msg: "{{ uninstallWCTOutput.stdout_lines }}"
     failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
 
 - name: check if previous Plugin installed 
   stat:
@@ -58,15 +65,22 @@
     register: uninstallPLGOutput
     when: twas_release == 'WAS90'
 
+  - name: uninstallPLGOutput WAS90
+    debug: 
+      msg: "{{ uninstallPLGOutput.stdout_lines }}"
+    failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS890'
+
   - name:  uninstall plugin WAS855
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
     register: uninstallPLGOutput
     when: twas_release == 'WAS855'
     
-  - name: uninstallPLGOutput
+  - name: uninstallPLGOutput WAS855
     debug: 
       msg: "{{ uninstallPLGOutput.stdout_lines }}"
     failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
 
 - name: check if previous IHS installed
   stat:
@@ -82,16 +96,23 @@
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS90'
 
+  - name: uninstallIHSOutput WAS90
+    debug: 
+      msg: "{{ uninstallIHSOutput.stdout_lines }}"
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS890'
+
   - name:  uninstall http WAS855
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
     register: uninstallIHSOutput
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS855'
     
-  - name: uninstallIHSOutput
+  - name: uninstallIHSOutput WAS855
     debug: 
       msg: "{{ uninstallIHSOutput.stdout_lines }}"
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
 
 - name: Remove previous http/plugin/wct/ dir 
   file:
