@@ -39,7 +39,7 @@
     debug: 
       msg: "{{ uninstallWCTOutput.stdout_lines }}"
     failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
-    when: twas_release == 'WAS890'
+    when: twas_release == 'WAS90'
 
   - name:  uninstall wct WAS855
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
@@ -100,7 +100,7 @@
     debug: 
       msg: "{{ uninstallIHSOutput.stdout_lines }}"
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
-    when: twas_release == 'WAS890'
+    when: twas_release == 'WAS90'
 
   - name:  uninstall http WAS855
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
