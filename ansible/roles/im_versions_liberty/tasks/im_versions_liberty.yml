@@ -33,6 +33,6 @@
 
     - name: libertyVersionOutput
       debug: 
-      msg: "{{ libertyVersionOutput.stdout_lines }}"
+        msg: "{{ libertyVersionOutput.stdout_lines }}"
       when: islib.stat.exists == True
 
