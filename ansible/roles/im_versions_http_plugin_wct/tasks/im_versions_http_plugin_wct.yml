@@ -14,7 +14,7 @@
 
   - name: Is IHS running output
     debug: 
-     msg: "{{ isIHSup.stdout_lines }}"
+     msg: "{{ isIHSup }}"
 
   - name: HTTPServer version
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh" 

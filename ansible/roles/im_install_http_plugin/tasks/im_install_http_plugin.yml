@@ -157,7 +157,7 @@
 
   - name: Is IHS running output
     debug: 
-     msg: "{{ isIHSup.stdout_lines }}"
+     msg: "{{ isIHSup }}"
 
 - name: Versions
   tags: version 
