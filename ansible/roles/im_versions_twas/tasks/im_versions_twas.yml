@@ -1,0 +1,36 @@
+---
+
+- name: tWAS Versions
+  tags: tWAS version 
+  block:
+
+  - name:  listInstalledPackages
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    register: packageOutput
+  
+  - name: packageOutput
+    debug: 
+     msg: "{{ packageOutput.stdout_lines }}"
+
+  - name: tWAS version
+    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+    register: twasVersionOutput
+
+  - name: twasVersionOutput
+    debug: 
+     msg: "{{ twasVersionOutput.stdout_lines }}"
+
+  - name: check if AppClient installed
+    stat:
+      path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+    register: isapp
+
+  - name: AppClient version
+    block:
+    - name: AppClient version
+      shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+      register: appVersionOutput
+    - name: appVersionOutput
+      debug:
+      msg: "{{ appVersionOutput.stdout_lines }}"
+    when: isapp.stat.exists == True
