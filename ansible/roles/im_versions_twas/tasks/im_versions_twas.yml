@@ -25,12 +25,12 @@
       path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
     register: isapp
 
-  - name: AppClient version
+  - name: AppClient versions
     block:
     - name: AppClient version
       shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
       register: appVersionOutput
-    - name: appVersionOutput
+    - name: tWAS Application Client versionsInfo output
       debug:
       msg: "{{ appVersionOutput.stdout_lines }}"
     when: isapp.stat.exists == True
