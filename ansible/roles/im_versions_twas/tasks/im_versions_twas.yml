@@ -10,7 +10,7 @@
   
   - name: packageOutput
     debug: 
-     msg: "{{ packageOutput.stdout_lines }}"
+      msg: "{{ packageOutput.stdout_lines }}"
 
   - name: tWAS version
     shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
@@ -18,7 +18,7 @@
 
   - name: twasVersionOutput
     debug: 
-     msg: "{{ twasVersionOutput.stdout_lines }}"
+      msg: "{{ twasVersionOutput.stdout_lines }}"
 
   - name: check if AppClient installed
     stat:
@@ -32,5 +32,5 @@
       register: appVersionOutput
     - name: tWAS Application Client versionsInfo output
       debug:
-      msg: "{{ appVersionOutput.stdout_lines }}"
+        msg: "{{ appVersionOutput.stdout_lines }}"
     when: isapp.stat.exists == True
