@@ -5,6 +5,7 @@
   tags: version 
   block:
   - name: Is IHS running?
+    ignore_errors: true
     uri:
       url: "https://localhost:{{ ihs_https_port }}"
       return_content: no
