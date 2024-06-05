@@ -149,10 +149,16 @@
      msg: "{{ startadminctlOutput.stdout_lines }}"
   
   - name: Check server-status
-    uri:
+    ansible.builtin.uri:
       url: "https://localhost:{{ ihs_https_port }}"
       return_content: no
       validate_certs: false
+    register: isIHSup
+
+  - name: Is IHS running status_code
+    debug: 
+     msg: "{{ isIHSup.status_code }}"
+
 - name: Versions
   tags: version 
   block:

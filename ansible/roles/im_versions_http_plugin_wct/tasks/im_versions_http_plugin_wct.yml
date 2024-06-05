@@ -6,15 +6,15 @@
   block:
   - name: Is IHS running?
     ignore_errors: true
-    uri:
+    ansible.builtin.uri:
       url: "https://localhost:{{ ihs_https_port }}"
       return_content: no
       validate_certs: false
     register: isIHSup
 
-  - name: Is IHS running rc
+  - name: Is IHS running status_code
     debug: 
-     msg: "{{ isIHSup.rc }}"
+     msg: "{{ isIHSup.status_code }}"
 
   - name: HTTPServer version
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh" 
