@@ -3,9 +3,7 @@
 - name: tWAS Versions
   tags: tWAS version 
   block:
-
-
-
+  
   - name:  listInstalledPackages
     shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
     register: packageOutput

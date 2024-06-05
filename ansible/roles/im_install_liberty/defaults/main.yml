@@ -1,11 +1,7 @@
 ---
 liberty_im_driver: 'cl211120211019-1900.52.linux'
 liberty_daily_or_test: 'test'
-install_base: '/home/nest'
-liberty_dir: 'wlp'
 shared_dir: 'IM-shared'
-wl_server: 'server'
-cc_server: 'cc'
 gsa_user: 'gsauser'
 gsa_pass: 'gsapass'
 ibm_user: 'external_ibmuser'
