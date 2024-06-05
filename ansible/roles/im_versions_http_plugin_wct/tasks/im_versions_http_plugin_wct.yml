@@ -12,9 +12,9 @@
       validate_certs: false
     register: isIHSup
 
-  - name: Is IHS running status_code
+  - name: Is IHS running output
     debug: 
-     msg: "{{ isIHSup.status_code }}"
+     msg: "{{ isIHSup.stdout_lines }}"
 
   - name: HTTPServer version
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh" 
