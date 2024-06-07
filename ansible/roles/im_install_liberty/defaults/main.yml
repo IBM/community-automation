@@ -1,5 +1,5 @@
 ---
-liberty_im_driver: 'cl211120211019-1900.52.linux'
+liberty_im_driver: 'cl240620240603-2001.31.linux'
 liberty_daily_or_test: 'test'
 shared_dir: 'IM-shared'
 gsa_user: 'gsauser'

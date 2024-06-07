@@ -1,5 +1,5 @@
 ---
-ihs_im_driver: "{{ twas_im_driver | default('f5192409.01', true) }}"
+ihs_im_driver: "{{ twas_im_driver | default('f5202422.01', true) }}"
 ihs_daily_or_test: "{{ twas_daily_or_test | default('test', true) }}"
 twas_release: 'WAS90' # WAS855
 install_ihs_base: "{{ install_base | default('/home/nest', true) }}"
