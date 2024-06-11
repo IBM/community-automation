@@ -57,7 +57,7 @@
   vars:
    packages:
    - 'glibc.i686' 
-   - ' gtk2.i686'
+   - 'gtk2.i686'
    - 'libXtst.i686'
    - 'libXft.i686'
    - 'libnsl.i686'

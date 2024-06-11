@@ -28,7 +28,8 @@
 		<tcpOptions soReuseAddr="true"/> 
 		<httpOptions maxKeepAliveRequests="-1"/>
 	</httpEndpoint>
-
+        <httpDispatcher enableWelcomePage="false" />
+        
 	<include location="${server.config.dir}/collectiveMember.xml" />
 	<include optional="true" location="${server.config.dir}/hostAuth.xml" />
 	<include optional="true" location="${shared.config.dir}/hostSingleton.xml" />
