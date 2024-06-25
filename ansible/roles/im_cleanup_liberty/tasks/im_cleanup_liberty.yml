@@ -37,6 +37,15 @@
     shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    when: im_force_liberty == false
+
+  # add this when / if the user changes the jdk versions
+  - name:  uninstallAll when im_force_liberty true
+    ignore_errors: true
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    when: im_force_liberty == true
     
   - name: uninstall liberty and java output
     debug: 
