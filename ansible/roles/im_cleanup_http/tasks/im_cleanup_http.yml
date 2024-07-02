@@ -21,6 +21,8 @@
   shell: "pkill httpd"
   register: killOutput
   failed_when: ( killOutput.rc not in [ 0, 1 ] )
+  when:
+  - ansible_architecture != 'chrp'
 
 - name: check if previous WCT installed
   stat:
