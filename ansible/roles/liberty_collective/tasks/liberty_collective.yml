@@ -89,6 +89,13 @@
       regexp: '9443'
       replace: "{{ liberty_admin_ports }}"
 
+  - name: Disable the enableWelcomePage
+    lineinfile:
+    path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
+    regexp: 'httpDispatcher'
+    insertbefore: '<httpEndpoint'
+    line: '     <httpDispatcher enableWelcomePage="false" />'
+
   - name: include controller.xml in server.xml
     lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"

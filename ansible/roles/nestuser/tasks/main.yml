@@ -1,16 +1,8 @@
 ---
 
-- name: Generate User Password file
-  script: scripts/password_hasher.py {{ user_password }} > {{ user_passfile }}
-  delegate_to: localhost
-
-  #    - name: Ensure User is Absent
-  #      user: name={{ user_username }} state=absent
-  #      become: yes
-
 - name: Ensure group exists
   become: true
-  group:
+  ansible.builtin.group:
     name: "{{ user_username }}"
     gid: "{{ group_id }}"
     state: present
@@ -18,83 +10,90 @@
 # AIX /usr/bin/bash
 # linux /bin/bash
 
-- name: set /bin/ksh aix shell
-  set_fact:
-   user_shell: '/bin/ksh'
+- name: Set /bin/ksh aix shell
+  ansible.builtin.set_fact:
+  user_shell: '/bin/ksh'
   when:
   - ansible_architecture == 'chrp'
 
 - name: Ensure User is Present
-  user: name={{ user_username }} uid={{ user_id }} group={{ user_username }} password={{ lookup('file', user_passfile) }} generate_ssh_key=yes shell={{ user_shell }} state=present
   become: true
+  ansible.builtin.user:
+    name: '{{ user_username }}'
+    uid: '{{ user_id }}'
+    group: '{{ user_username }}'
+    password: "{{ user_password | password_hash('sha512') }}"
+    generate_ssh_key: true
+    shell: '{{ user_shell }}'
+    state: present
 
-- name: remove temp pass hash file
-  file:
-   path: "{{ user_passfile }}"
-   state: absent
+- name: Remove temp pass hash file
+  ansible.builtin.file:
+    path: "{{ user_passfile }}"
+    state: absent
 
-- name: authorized_key
-  authorized_key:
-   user: "{{ user_username }}"
-   state: present
-   manage_dir: yes
-   key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+- name: Authorized_key
+  ansible.builtin.authorized_key:
+    user: "{{ user_username }}"
+    state: present
+    manage_dir: true
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
 - name: is sudo installed?
-  stat:
+  ansible.builtin.stat:
     path: "/etc/sudoers"
   register: issudoers
 
 - name: nest sudoers
-  lineinfile:
+  ansible.builtin.lineinfile:
    path: /etc/sudoers
    state: present
    regexp: "^{{ user_username }}"
    line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
    validate: 'visudo -cf %s'
-   backup: yes
-  become: yes
+   backup: true
+  become: true
   when: issudoers.stat.exists == True
   
 - block:
   - name: nest hard ulimit nofile
-    lineinfile:
+    ansible.builtin.lineinfile:
      path: /etc/security/limits.conf
      state: present
      regexp: "{{ user_username }} hard"
      line: "{{ user_username }} hard nofile 20000"
-     backup: yes
-    become: yes
+     backup: true
+    become: true
   
   - name: nest soft ulimit nofile
-    lineinfile:
+    ansible.builtin.lineinfile:
      path: /etc/security/limits.conf
      state: present
      regexp: "{{ user_username }} soft"
      line: "{{ user_username }} soft nofile 20000"
-     backup: yes
-    become: yes
+     backup: true
+    become: true
   when:
   - ansible_system == 'Linux'
 
 - name: nest ulimit nofile
-  lineinfile:
+  ansible.builtin.lineinfile:
    path: /etc/security/limits
    state: present
    regexp: 'nofiles = 2000'
    line: 'nofiles = 20000'
-   backup: yes
-  become: yes
+   backup: true
+  become: true
   when:
   - ansible_architecture == 'chrp'
  
 - name: opt directory owner
-  file:
+  ansible.builtin.file:
    path: '{{ item }}'
    state: directory
-   recurse: no
+   recurse: false
    owner: "{{ user_username }}"
    group: "{{ user_username }}"
   with_items:
    - '/opt'
-  become: yes
+  become: true
