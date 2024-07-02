@@ -1,0 +1,12 @@
+---
+
+- name: install packages
+  become: yes
+  apt:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - 'libxtst6'
+   - 'libgtk2.0-0'
+   - 'libxft2'
