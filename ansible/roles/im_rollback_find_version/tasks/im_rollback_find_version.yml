@@ -14,7 +14,7 @@
 
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0 ] )
-    change_when: false
+    changed_when: false
 
   - name: Find Rollback WebSphere Product Version output
     ansible.builtin.debug: 
