@@ -22,7 +22,7 @@
 
 - name: Set fact rollback version
   ansible.builtin.set_fact:
-    rollback_version: "{{ password_output.stdout }}"
+    rollback_version: "{{ rollbackOutput.stdout }}"
 
       # grep {{ im_package_id }} |
       # awk -F ' : ' '{print $2}'|
