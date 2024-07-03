@@ -1,0 +1,27 @@
+---
+- name: Find Rollback WebSphere Product Version
+  tags: rollback
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: Find Rollback WebSphere Product Version
+    ansible.builtin.shell: > 
+      "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | 
+      grep {{ im_package_id }} |
+      awk -F ' : ' '{print $2}'|
+      awk -F ',' '{print \""{{ im_package_id }}"\"" $1}'"
+    register: rollbackOutput
+    failed_when: ( rollbackOutput.rc not in [ 0 ] )
+    change_when: false
+
+  - name: Find Rollback WebSphere Product Version output
+    ansible.builtin.debug: 
+      msg: "{{ rollbackOutput.stdout_lines }}"
+
+- name: Set fact rollback version
+  ansible.builtin.set_fact:
+    rollback_version: "{{ password_output.stdout }}"
