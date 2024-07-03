@@ -5,3 +5,11 @@
   vars:
     was_product_dir: "{{ install_base }}/{{ twas_dir }}"
     im_package_id: "{{ im_twas_package[twas_release] }}"
+
+- name: Rollback tWAS 
+  ansible.builtin.include_role:
+   name: im_rollback_was_product
+  vars:
+    was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+    im_package_id: "{{ im_twas_package[twas_release] }}"
+  when: rollback_version is defined
