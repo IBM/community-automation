@@ -11,7 +11,6 @@
   - name: Find Rollback WebSphere Product Version
     ansible.builtin.shell: 
       "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | grep {{ im_package_id }}|awk -F ' : ' '{print $2}'"
-
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0 ] )
     changed_when: false
@@ -20,11 +19,13 @@
     ansible.builtin.debug: 
       msg: "{{ rollbackOutput.stdout_lines }}"
 
-# if there is no rollback version don't set the rollback_version it will be not defined
-- name: Set fact rollback version
-  ansible.builtin.set_fact:
-    rollback_version: "{{ rollbackOutput.stdout }}"
+  # if there is no rollback version don't set the rollback_version it will be not defined
+  - name: Set fact rollback version
+    ansible.builtin.set_fact:
+      rollback_version: "{{ im_package_id }}_{{ rollbackOutput.stdout }}"
+    when: rollbackOutput.stdout | length > 0
 
-      # grep {{ im_package_id }} |
-      # awk -F ' : ' '{print $2}'|
-      # awk -F ',' '{print \""{{ im_package_id }}"\"" $1}'"
+  - name: Print rollback version if its valid
+    ansible.builtin.debug: 
+      msg: "{{ rollback_version }}"
+    when: rollback_version is defined
