@@ -4,52 +4,16 @@
 ### "ansible_architecture": "x86_64",
 ### "ansible_architecture": "chrp", --- AIX
 
-- name: Update tWAS
-  tags: update 
+- name: Upgrade
+  tags: upgrade
   block:
-  - name: check if imcl installed as a prereq
-    stat:
-      path: "{{ install_base }}/IM/eclipse/tools/imcl"
-    register: isimcl
-    failed_when: isimcl.stat.exists == False
+  - name: Copy im_was_upgrade.xml template
+    ansible.builtin.template:
+      src: "im_upgrade_twas_{{ twas_release }}.xml.j2"
+      dest: "im_was_upgrade.xml"
 
-  - name: copy im_twas.xml template
-    template:
-     src: "im_twas_{{ twas_release }}.xml.j2"
-     dest: "im_twas.xml"
-
-  - name:  generate secureStorageFile.store
-    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
-
-    #  this command is hanging on the pok zlinux boxes for some crazy networking reason
-    #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager
-    #  which works on rtp hosts
-    #  - name:  generate external ibm secureStorageFile.store
-    #    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
-
-  - name:  update twas
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
-    register: updateOutput
-
-  - name: updateOutput
-    debug: 
-     msg: "{{ updateOutput.stdout_lines }}"
-
-  - name:  listInstalledPackages
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
-    register: packageOutput
-  
-  - name: packageOutput
-    debug: 
-     msg: "{{ packageOutput.stdout_lines }}"
-
-- name: Versions
-  tags: version 
-  block:
-  - name: tWAS version
-    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
-    register: twasVersionOutput
-
-  - name: twasVersionOutput
-    debug: 
-     msg: "{{ twasVersionOutput.stdout_lines }}"
+  - name: Upgrade tWAS product
+    ansible.builtin.include_role:
+      name: im_update_was_product
+    vars:
+      was_product_dir: "{{ install_base }}/{{ twas_dir }}"
