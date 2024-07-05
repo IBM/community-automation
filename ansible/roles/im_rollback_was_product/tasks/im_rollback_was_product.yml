@@ -1,6 +1,6 @@
 ---
 - name: Rollback WebSphere Product
-  tags: rollback 
+  tags: rollback
   block:
   - name: Check if imcl installed as a prereq
     ansible.builtin.stat:
