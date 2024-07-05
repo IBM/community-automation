@@ -7,7 +7,7 @@
       src: "im_upgrade_twas_{{ twas_release }}.xml.j2"
       dest: "im_was_upgrade.xml"
 
-  - name: Upgrade tWAS product
+  - name: Upgrade tWAS / JDK product
     ansible.builtin.include_role:
       name: im_upgrade_was_product
     vars:
