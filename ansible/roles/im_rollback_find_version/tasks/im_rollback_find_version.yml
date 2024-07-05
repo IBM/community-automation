@@ -8,9 +8,17 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
+  # examples of output
+  # com.ibm.cic.agent_1.9.2009.20240621_1105 : 
+  # com.ibm.java.jdk.v8_8.0.8025.20240408_0724 : 8.0.8020.20240116_0839,8.0.8015.20231031_0036
+  # com.ibm.websphere.ND.v90_9.0.5020.20240605_1405 : 9.0.5019.20240304_1205,9.0.5018.20231113_1345
+  # com.ibm.java.jdk.v8_8.0.8020.20240116_0839 : 8.0.8015.20231031_0036
+  # com.ibm.websphere.APPCLIENT.v90_9.0.5018.20231113_1345 : 
+  # if there is more than 1 rollback, pick the most recent 
+  
   - name: Find Rollback WebSphere Product Version
     ansible.builtin.shell: 
-      "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | grep {{ im_package_id }}|awk -F ' : ' '{print $2}'"
+      "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -rollbackVersions -installationDirectory {{ was_product_dir }} | grep {{ im_package_id }}|awk -F ' : ' '{print $2}'|awk -F ',' '{print $1}"
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0 ] )
     changed_when: false
@@ -18,7 +26,7 @@
   - name: Find Rollback WebSphere Product Version output
     ansible.builtin.debug: 
       msg: "{{ rollbackOutput.stdout_lines }}"
-
+ 
   # if there is no rollback version don't set the rollback_version it will be not defined
   - name: Set fact rollback version
     ansible.builtin.set_fact:
