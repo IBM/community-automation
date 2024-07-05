@@ -1,3 +1,0 @@
----
-- name: Im_update_was_product
-  ansible.builtin.include_tasks: im_update_was_product.yml
