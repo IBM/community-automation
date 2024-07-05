@@ -1,10 +1,5 @@
 ---
-### "ansible_architecture": "s390x",
-### "ansible_architecture": "ppc64le",
-### "ansible_architecture": "x86_64",
-### "ansible_architecture": "chrp", --- AIX
-
-- name: Upgrade
+- name: Upgrade WebSphere tWAS
   tags: upgrade
   block:
   - name: Copy im_was_upgrade.xml template
@@ -14,6 +9,6 @@
 
   - name: Upgrade tWAS product
     ansible.builtin.include_role:
-      name: im_update_was_product
+      name: im_upgrade_was_product
     vars:
       was_product_dir: "{{ install_base }}/{{ twas_dir }}"
