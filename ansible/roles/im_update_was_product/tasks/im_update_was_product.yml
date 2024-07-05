@@ -1,0 +1,44 @@
+---
+### "ansible_architecture": "s390x",
+### "ansible_architecture": "ppc64le",
+### "ansible_architecture": "x86_64",
+### "ansible_architecture": "chrp", --- AIX
+
+- name: Upgrade
+  tags: upgrade
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name:  Generate secureStorageFile.store
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  Upgrade WAS product
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_was_upgrade.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: upgradeOutput
+
+  - name: UpgradeOutput
+    ansible.builtin.debug: 
+      msg: "{{ upgradeOutput.stdout_lines }}"
+
+  - name:  ListInstalledPackages
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    register: packageOutput
+  
+  - name: packageOutput
+    ansible.builtin.debug: 
+      msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Versions
+  tags: version
+  block:
+  - name: WAS version
+    ansible.builtin.shell: "{{install_base }}/{{ was_product_dir }}/bin/versionInfo.sh"
+    register: wasVersionOutput
+
+  - name: WasVersionOutput
+    ansible.builtin.debug: 
+      msg: "{{ wasVersionOutput.stdout_lines }}"
