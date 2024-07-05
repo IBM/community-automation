@@ -15,16 +15,6 @@
 	<offering profile='WebSphere Application Server - ND_1' features='core.feature,thinclient,ejbdeploy,embeddablecontainer' id='{{ im_twas_package[twas_release] }}' />
 	<offering profile='WebSphere Application Server - ND_1' id='com.ibm.java.jdk.v8' features='com.ibm.sdk.8'/>
 </install>
-<profile id='Application Client for IBM WebSphere Application Server V9.0' installLocation='{{ install_base }}/{{ app_dir }}'>
-    <data key='user.appclient.serverHostname' value='localhost'/>
-    <data key='user.appclient.serverPort' value='2809'/>
-</profile>
-<install>
-    <!-- Application Client for IBM WebSphere Application Server 9.0.5.12 -->
-    <offering profile='Application Client for IBM WebSphere Application Server V9.0' id='com.ibm.websphere.APPCLIENT.v90' features='javaee.thinclient.core.feature,embeddablecontainer'/>
-    <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.6 -->
-    <offering profile='Application Client for IBM WebSphere Application Server V9.0' id='com.ibm.java.jdk.v8' features='com.ibm.sdk.8'/>
-</install>
 <preference value='false' name='offering.service.repositories.areUsed'/>
 <preference name='disableOSPrereqChecking' value='false'/>
 <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
