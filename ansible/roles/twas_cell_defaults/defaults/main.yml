@@ -33,4 +33,4 @@ im_twas_package:
 im_appclient_package:
   WAS90: 'com.ibm.websphere.APPCLIENT.v90'
   WAS855: 'com.ibm.websphere.APPCLIENT{{le_package_extension[ansible_architecture]}}.v85'
-im_twas_java_package: 'com.ibm.sdk.v8'
+im_twas_java_package: 'com.ibm.java.jdk.v8'
