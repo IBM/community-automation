@@ -12,9 +12,9 @@
 
 - name: Set /bin/ksh aix shell
   ansible.builtin.set_fact:
-  user_shell: '/bin/ksh'
+    user_shell: '/bin/ksh'
   when:
-  - ansible_architecture == 'chrp'
+    - ansible_architecture == 'chrp'
 
 - name: Ensure User is Present
   become: true
@@ -39,61 +39,62 @@
     manage_dir: true
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
 
-- name: is sudo installed?
+- name: Is sudo installed?
   ansible.builtin.stat:
     path: "/etc/sudoers"
   register: issudoers
 
-- name: nest sudoers
+- name: Nest sudoers
   ansible.builtin.lineinfile:
-   path: /etc/sudoers
-   state: present
-   regexp: "^{{ user_username }}"
-   line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
-   validate: 'visudo -cf %s'
-   backup: true
+    path: /etc/sudoers
+    state: present
+    regexp: "^{{ user_username }}"
+    line: "{{ user_username }} ALL=(ALL) NOPASSWD: ALL"
+    validate: 'visudo -cf %s'
+    backup: true
   become: true
-  when: issudoers.stat.exists == True
-  
-- block:
-  - name: nest hard ulimit nofile
-    ansible.builtin.lineinfile:
-     path: /etc/security/limits.conf
-     state: present
-     regexp: "{{ user_username }} hard"
-     line: "{{ user_username }} hard nofile 20000"
-     backup: true
-    become: true
-  
-  - name: nest soft ulimit nofile
-    ansible.builtin.lineinfile:
-     path: /etc/security/limits.conf
-     state: present
-     regexp: "{{ user_username }} soft"
-     line: "{{ user_username }} soft nofile 20000"
-     backup: true
-    become: true
-  when:
-  - ansible_system == 'Linux'
+  when: issudoers.stat.exists
 
-- name: nest ulimit nofile
+- block:
+  - name: Nest hard ulimit nofile
+    ansible.builtin.lineinfile:
+      path: /etc/security/limits.conf
+      state: present
+      regexp: "{{ user_username }} hard"
+      line: "{{ user_username }} hard nofile 20000"
+      backup: true
+    become: true
+
+  - name: Nest soft ulimit nofile
+    ansible.builtin.lineinfile:
+      path: /etc/security/limits.conf
+      state: present
+      regexp: "{{ user_username }} soft"
+      line: "{{ user_username }} soft nofile 20000"
+      backup: true
+    become: true
+  when:
+    - ansible_system == 'Linux'
+
+- name: Nest ulimit nofile
   ansible.builtin.lineinfile:
-   path: /etc/security/limits
-   state: present
-   regexp: 'nofiles = 2000'
-   line: 'nofiles = 20000'
-   backup: true
+    path: /etc/security/limits
+    state: present
+    regexp: 'nofiles = 2000'
+    line: 'nofiles = 20000'
+    backup: true
   become: true
   when:
-  - ansible_architecture == 'chrp'
- 
-- name: opt directory owner
+    - ansible_architecture == 'chrp'
+
+- name: Opt directory owner
   ansible.builtin.file:
-   path: '{{ item }}'
-   state: directory
-   recurse: false
-   owner: "{{ user_username }}"
-   group: "{{ user_username }}"
+    path: '{{ item }}'
+    state: directory
+    recurse: false
+    owner: "{{ user_username }}"
+    group: "{{ user_username }}"
+    mode: '0755'
   with_items:
-   - '/opt'
+    - '/opt'
   become: true
