@@ -27,11 +27,6 @@
     shell: '{{ user_shell }}'
     state: present
 
-- name: Remove temp pass hash file
-  ansible.builtin.file:
-    path: "{{ user_passfile }}"
-    state: absent
-
 - name: Authorized_key
   ansible.builtin.authorized_key:
     user: "{{ user_username }}"
