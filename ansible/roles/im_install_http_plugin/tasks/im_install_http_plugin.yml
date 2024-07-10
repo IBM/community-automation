@@ -45,8 +45,8 @@
   - block:
     - name: copy https_conf template
       template:
-      src: https_conf_{{ twas_release }}.j2
-      dest: "https_conf"
+        src: https_conf_{{ twas_release }}.j2
+        dest: "https_conf"
 
     #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
     - name: copy wct_definition.xml template
