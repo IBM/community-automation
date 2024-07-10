@@ -21,8 +21,8 @@
 
   - name: copy ihs_plugin.xml template
     template:
-     src: "im_http_plugin_{{ twas_release }}.xml.j2"
-     dest: "im_http_plugin.xml"
+      src: "im_http_plugin_{{ twas_release }}.xml.j2"
+      dest: "im_http_plugin.xml"
 
   - name:  generate secureStorageFile.store
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
@@ -33,7 +33,7 @@
 
   - name: installOutput
     debug: 
-     msg: "{{ installOutput.stdout_lines }}"
+      msg: "{{ installOutput.stdout_lines }}"
 
   # pure hack to get zLinux s390x WCT 32bit java to use 64bit java
   - name: tWAS855 zLinux s390x WCT super hack
@@ -66,7 +66,7 @@
 
     - name: WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations output
       debug: 
-      msg: "{{ isPluginConfigured.stdout_lines }}"
+        msg: "{{ isPluginConfigured.stdout_lines }}"
 
     - name:  Remove the old WCT IHS/Plugin configs
       shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
@@ -81,7 +81,7 @@
 
     - name: configurepluginOutput
       debug: 
-      msg: "{{ configurepluginOutput.stdout_lines }}"
+          msg: "{{ configurepluginOutput.stdout_lines }}"
 
     - name: Insert/Update https config
       blockinfile:
@@ -132,7 +132,7 @@
     
     - name: packageOutput
       debug: 
-      msg: "{{ packageOutput.stdout_lines }}"
+        msg: "{{ packageOutput.stdout_lines }}"
 
     - name:  start httpd
       shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
@@ -140,7 +140,7 @@
     
     - name: starthttpdOutput
       debug: 
-      msg: "{{ starthttpdOutput.stdout_lines }}"
+        msg: "{{ starthttpdOutput.stdout_lines }}"
 
     - name:  start adminctl
       shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
@@ -148,7 +148,7 @@
     
     - name: startadminctlOutput
       debug: 
-      msg: "{{ startadminctlOutput.stdout_lines }}"
+        msg: "{{ startadminctlOutput.stdout_lines }}"
     
     - name: Check server-status
       ansible.builtin.uri:
@@ -159,7 +159,7 @@
 
     - name: Is IHS running output
       debug: 
-      msg: "{{ isIHSup }}"
+        msg: "{{ isIHSup }}"
     when: 
       - ihs_upgrade_only is not defined
 
@@ -172,7 +172,7 @@
 
   - name: HTTPServerVersionOutput
     debug: 
-     msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
+      msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
     failed_when: ihs_im_driver not in HTTPServerVersionOutput.stdout
 
   - name: Plugin version
@@ -181,7 +181,7 @@
 
   - name: PluginVersionOutput
     debug: 
-     msg: "{{ PluginVersionOutput.stdout_lines }}"
+      msg: "{{ PluginVersionOutput.stdout_lines }}"
     failed_when: ihs_im_driver not in PluginVersionOutput.stdout
 
   - name: WCT version
@@ -190,6 +190,6 @@
 
   - name: WCTVersionOutput
     debug: 
-     msg: "{{ WCTVersionOutput.stdout_lines }}"
+      msg: "{{ WCTVersionOutput.stdout_lines }}"
     failed_when: ihs_im_driver not in WCTVersionOutput.stdout
 
