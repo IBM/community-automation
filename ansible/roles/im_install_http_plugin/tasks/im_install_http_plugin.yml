@@ -81,7 +81,7 @@
 
     - name: configurepluginOutput
       debug: 
-          msg: "{{ configurepluginOutput.stdout_lines }}"
+        msg: "{{ configurepluginOutput.stdout_lines }}"
 
     - name: Insert/Update https config
       blockinfile:
@@ -122,15 +122,15 @@
         chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"
       register: createihsseververkdbOutput
     
-    - name: createihsseververkdbOutput
+    - name: checkreateihsseververkdbOutput
       debug: 
-      msg: "{{ createihsseververkdbOutput.stdout_lines }}"
+        msg: "{{ createihsseververkdbOutput.stdout_lines }}"
     
-    - name:  listInstalledPackages
+    - name:  ListInstalledPackages
       shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
       register: packageOutput
     
-    - name: packageOutput
+    - name: PackageOutput
       debug: 
         msg: "{{ packageOutput.stdout_lines }}"
 
