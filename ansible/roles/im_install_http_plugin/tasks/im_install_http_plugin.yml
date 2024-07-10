@@ -51,13 +51,14 @@
     #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
     - name: copy wct_definition.xml template
       template:
-      src: wct_definition.xml.j2
-      dest: "wct_definition.xml"
+        src: wct_definition.xml.j2
+        dest: "wct_definition.xml"
+
     - name: copy ihsserverkey.sh template
       template:
-      src: ihsserverkey.sh.j2
-      dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
-      mode: 0755
+        src: ihsserverkey.sh.j2
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+        mode: 0755
 
     - name:  Check for any old WCT IHS/Plugin configs
       shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
