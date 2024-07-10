@@ -24,11 +24,6 @@
      src: "im_http_plugin_{{ twas_release }}.xml.j2"
      dest: "im_http_plugin.xml"
 
-  - name: copy https_conf template
-    template:
-     src: https_conf_{{ twas_release }}.j2
-     dest: "https_conf"
-
   - name:  generate secureStorageFile.store
     shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
 
@@ -40,17 +35,6 @@
     debug: 
      msg: "{{ installOutput.stdout_lines }}"
 
-  #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
-  - name: copy wct_definition.xml template
-    template:
-     src: wct_definition.xml.j2
-     dest: "wct_definition.xml"
-  - name: copy ihsserverkey.sh template
-    template:
-     src: ihsserverkey.sh.j2
-     dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
-     mode: 0755
-
   # pure hack to get zLinux s390x WCT 32bit java to use 64bit java
   - name: tWAS855 zLinux s390x WCT super hack
     shell: "rm -rf {{install_ihs_base }}/{{ wct_dir }}/java/jre ; ln -s {{ install_ihs_base }}/{{ plugin_dir }}/java/jre {{install_ihs_base }}/WCT/java/jre"
@@ -58,79 +42,98 @@
     - ansible_architecture == 's390x'
     - twas_release == 'WAS855'
 
-  - name:  Check for any old WCT IHS/Plugin configs
-    shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
-    register: isPluginConfigured
+  - block:
+    - name: copy https_conf template
+      template:
+      src: https_conf_{{ twas_release }}.j2
+      dest: "https_conf"
 
-  - name: WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations output
-    debug: 
-     msg: "{{ isPluginConfigured.stdout_lines }}"
+    #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
+    - name: copy wct_definition.xml template
+      template:
+      src: wct_definition.xml.j2
+      dest: "wct_definition.xml"
+    - name: copy ihsserverkey.sh template
+      template:
+      src: ihsserverkey.sh.j2
+      dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+      mode: 0755
 
-  - name:  Remove the old WCT IHS/Plugin configs
-    shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
-    register: isPluginConfigured
+    - name:  Check for any old WCT IHS/Plugin configs
+      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
+      register: isPluginConfigured
+
+    - name: WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations output
+      debug: 
+      msg: "{{ isPluginConfigured.stdout_lines }}"
+
+    - name:  Remove the old WCT IHS/Plugin configs
+      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
+      register: isPluginConfigured
+      when: 
+        - isPluginConfigured.rc == 0
+        - isPluginConfigured.stdout is not search('No definition')
+
+    - name:  configure plugin
+      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+      register: configurepluginOutput
+
+    - name: configurepluginOutput
+      debug: 
+      msg: "{{ configurepluginOutput.stdout_lines }}"
+
+    - name: Insert/Update https config
+      blockinfile:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        block: |
+          LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
+          Listen {{ ihs_https_port }}
+          SSLCheckCertificateExpiration 30
+          <VirtualHost *:{{ ihs_https_port }}>
+          ServerName {{ ansible_hostname }}
+          SSLEnable
+          Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+          </VirtualHost>
+          KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+    - lineinfile: 
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        state: absent 
+        regexp: "Header always set Strict-Transport-Security"
+      when: twas_release == 'WAS855'
+
+    - name: update admin.config @@AdminPort@@
+      replace:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+        regexp: '@@AdminPort@@'
+        replace: "{{ ihs_admin_port }}"
+
+    - name: enable server-status
+      replace:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        regexp: '    Require all denied'
+        after: '    SetHandler server-status'
+        before: 'To allow access from a specific IP:'
+        replace: '#    Require all denied'
+    
+    - name:  configure plugin
+      shell: "{{install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+      args:
+        chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"
+      register: createihsseververkdbOutput
+    
+    - name: createihsseververkdbOutput
+      debug: 
+      msg: "{{ createihsseververkdbOutput.stdout_lines }}"
+    
+    - name:  listInstalledPackages
+      shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+      register: packageOutput
+    
+    - name: packageOutput
+      debug: 
+      msg: "{{ packageOutput.stdout_lines }}"
     when: 
-      - isPluginConfigured.rc == 0
-      - isPluginConfigured.stdout is not search('No definition')
-
-  - name:  configure plugin
-    shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
-    register: configurepluginOutput
-
-  - name: configurepluginOutput
-    debug: 
-     msg: "{{ configurepluginOutput.stdout_lines }}"
-
-  - name: Insert/Update https config
-    blockinfile:
-      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-      block: |
-        LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
-        Listen {{ ihs_https_port }}
-        SSLCheckCertificateExpiration 30
-        <VirtualHost *:{{ ihs_https_port }}>
-         ServerName {{ ansible_hostname }}
-         SSLEnable
-         Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-        </VirtualHost>
-        KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
-  - lineinfile: 
-      dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-      state: absent 
-      regexp: "Header always set Strict-Transport-Security"
-    when: twas_release == 'WAS855'
-
-  - name: update admin.config @@AdminPort@@
-    replace:
-      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-      regexp: '@@AdminPort@@'
-      replace: "{{ ihs_admin_port }}"
-
-  - name: enable server-status
-    replace:
-      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-      regexp: '    Require all denied'
-      after: '    SetHandler server-status'
-      before: 'To allow access from a specific IP:'
-      replace: '#    Require all denied'
-  
-  - name:  configure plugin
-    shell: "{{install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
-    args:
-      chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"
-    register: createihsseververkdbOutput
-  
-  - name: createihsseververkdbOutput
-    debug: 
-     msg: "{{ createihsseververkdbOutput.stdout_lines }}"
-  
-  - name:  listInstalledPackages
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
-    register: packageOutput
-  
-  - name: packageOutput
-    debug: 
-     msg: "{{ packageOutput.stdout_lines }}"
+      - ihs_upgrade_only is not defined
 
   - name:  start httpd
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
