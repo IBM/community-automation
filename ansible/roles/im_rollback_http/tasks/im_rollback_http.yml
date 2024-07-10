@@ -16,7 +16,7 @@
 
 - name: Find Plugin Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version {{ install_ihs_base }}/{{ plugin_dir }}
+   name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ plugin_dir }}"
     im_package_id: "{{ im_plugin_package[twas_release] }}"
