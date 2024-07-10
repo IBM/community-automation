@@ -132,35 +132,35 @@
     - name: packageOutput
       debug: 
       msg: "{{ packageOutput.stdout_lines }}"
+
+    - name:  start httpd
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+      register: starthttpdOutput
+    
+    - name: starthttpdOutput
+      debug: 
+      msg: "{{ starthttpdOutput.stdout_lines }}"
+
+    - name:  start adminctl
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
+      register: startadminctlOutput
+    
+    - name: startadminctlOutput
+      debug: 
+      msg: "{{ startadminctlOutput.stdout_lines }}"
+    
+    - name: Check server-status
+      ansible.builtin.uri:
+        url: "https://localhost:{{ ihs_https_port }}"
+        return_content: no
+        validate_certs: false
+      register: isIHSup
+
+    - name: Is IHS running output
+      debug: 
+      msg: "{{ isIHSup }}"
     when: 
       - ihs_upgrade_only is not defined
-
-  - name:  start httpd
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
-    register: starthttpdOutput
-  
-  - name: starthttpdOutput
-    debug: 
-     msg: "{{ starthttpdOutput.stdout_lines }}"
-
-  - name:  start adminctl
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
-    register: startadminctlOutput
-  
-  - name: startadminctlOutput
-    debug: 
-     msg: "{{ startadminctlOutput.stdout_lines }}"
-  
-  - name: Check server-status
-    ansible.builtin.uri:
-      url: "https://localhost:{{ ihs_https_port }}"
-      return_content: no
-      validate_certs: false
-    register: isIHSup
-
-  - name: Is IHS running output
-    debug: 
-     msg: "{{ isIHSup }}"
 
 - name: Versions
   tags: version 
