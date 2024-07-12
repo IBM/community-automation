@@ -1,0 +1,14 @@
+---
+- name: Upgrade WebSphere tWAS Appclient
+  tags: upgrade
+  block:
+  - name: Copy im_was_upgrade.xml template
+    ansible.builtin.template:
+      src: "im_upgrade_appclient_{{ twas_release }}.xml.j2"
+      dest: "im_was_upgrade.xml"
+
+  - name: Upgrade tWAS Appclient product
+    ansible.builtin.include_role:
+      name: im_upgrade_was_product
+    vars:
+      was_product_dir: "{{ install_base }}/{{ app_dir }}"
