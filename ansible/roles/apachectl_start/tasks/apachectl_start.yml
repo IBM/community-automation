@@ -2,7 +2,7 @@
 - name: Start the apache http server
   tags: apache_start
   block:
-  - name: check if ihs is installed
+  - name: check if apachectl is installed
     stat:
       path: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl"
     register: ishttp
@@ -13,6 +13,21 @@
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
     register: ihsOutput
 
-  - name: HTTPServer start Output
+  - name: HTTPServer apachectl start Output
+    debug: 
+     msg: "{{ ihsOutput.stdout_lines }}"
+
+  - name: check if adminctl is installed
+    stat:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl"
+    register: ishttp
+    failed_when: ishttp.stat.exists == False
+
+  - name: HTTPServer adminctl start to  load new / updated config
+    failed_when: false
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+    register: adminctl
+
+  - name: HTTPServer adminctl start Output
     debug: 
      msg: "{{ ihsOutput.stdout_lines }}"
