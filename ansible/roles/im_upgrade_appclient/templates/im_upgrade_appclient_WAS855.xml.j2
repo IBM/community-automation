@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-input clean='true'>
+  <variables>
+   <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
+  </variables>
+<server>
+ <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ twas_daily_or_test }}/{{ twas_im_driver }}.linux/linux/zipper/repository'/>
+</server>
+  <profile id='Application Client for IBM WebSphere Application Server V8.5' installLocation='{{ install_base }}/{{ app_dir }}'>
+    <data key='user.wasjava' value='java8'/>
+    <data key='user.appclient.serverHostname' value='localhost'/>
+    <data key='user.appclient.serverPort' value='2809'/>
+    <data key='user.internal.use.only.prev.wasjava' value='java8'/>
+  </profile>
+  <install>
+    <!-- Application Client for IBM WebSphere Application Server 8.5.5.22 -->
+    <offering profile='Application Client for IBM WebSphere Application Server V8.5' id='{{ im_appclient_package[twas_release] }}' features='javaee.thinclient.core.feature,javaruntime,developerkit,embeddablecontainer,samples,standalonethinclient.resourceadapter.runtime'/>
+  </install>
+<preference value='false' name='offering.service.repositories.areUsed'/>
+<preference name='disableOSPrereqChecking' value='false'/>
+<preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
+</agent-input>
