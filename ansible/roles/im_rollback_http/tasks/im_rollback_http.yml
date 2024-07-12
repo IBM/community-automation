@@ -1,14 +1,14 @@
 ---
 - name: Find HTTP Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ http_dir }}"
     im_package_id: "{{ im_http_package[twas_release] }}"
 
 - name: Rollback HTTP
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ http_dir }}"
     im_package_id: "{{ im_http_package[twas_release] }}"
@@ -16,14 +16,14 @@
 
 - name: Find HTTP Java Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ http_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
 
 - name: Rollback HTTP Java
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ http_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
@@ -31,14 +31,14 @@
 
 - name: Find Plugin Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ plugin_dir }}"
     im_package_id: "{{ im_plugin_package[twas_release] }}"
 
 - name: Rollback Plugin
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ plugin_dir }}"
     im_package_id: "{{ im_plugin_package[twas_release] }}"
@@ -46,14 +46,14 @@
 
 - name: Find Plugin Java Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ plugin_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
 
 - name: Rollback Plugin Java
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ plugin_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
@@ -61,14 +61,14 @@
 
 - name: Find WCT Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version 
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ wct_dir }}"
     im_package_id: "{{ im_wct_package[twas_release] }}"
 
 - name: Rollback WCT
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ wct_dir }}"
     im_package_id: "{{ im_wct_package[twas_release] }}"
@@ -76,14 +76,14 @@
 
 - name: Find WCT Java Rollback version
   ansible.builtin.include_role:
-   name: im_rollback_find_version
+    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ wct_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
 
 - name: Rollback WCT Java
   ansible.builtin.include_role:
-   name: im_rollback_was_product
+    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_ihs_base }}/{{ wct_dir }}"
     im_package_id: "{{ im_twas_java_package }}"
