@@ -1,7 +1,7 @@
 ---
 
 - name: default
-  when: profile_type == 'default'
+  when: profile_type == 'managed'
   block:
    - name: start the default
      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ appServerName }}" 

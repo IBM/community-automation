@@ -1,7 +1,7 @@
 ---
 
 - name: default
-  when: profile_type == 'default'
+  when: profile_type == 'managed'
   block:
    - name: stop the default server
      ignore_errors: true
