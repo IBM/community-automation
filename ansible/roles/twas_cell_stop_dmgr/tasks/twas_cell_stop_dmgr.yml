@@ -6,7 +6,7 @@
    - name: stop the dmgr
      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
      register: stopManagerOutput
-     failed_when: ( stopManagerOutput.rc not in [ 0, 255 ] )
+     failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
    - name: stopManagerOutput
      debug:
       msg: "{{ stopManagerOutput.stdout_lines }}"
