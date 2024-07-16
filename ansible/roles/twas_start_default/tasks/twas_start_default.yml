@@ -4,7 +4,7 @@
   when: profile_type == 'default'
   block:
    - name: start the default
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh server1" 
+     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ appServerName }}" 
      register: startDefaultOutput
      failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
    - name: startDefaultOutput
