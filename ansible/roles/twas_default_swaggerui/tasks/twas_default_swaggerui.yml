@@ -1,7 +1,7 @@
 ---
 
 - name: deploySwaggerUI.py
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -conntype NONE -username {{ twas_username }} -password {{ twas_password }} -f {{install_base }}/{{ twas_dir }}/bin/deploySwaggerUI.py install 'WebSphere:cell={{ cellName }},node={{ profile_name }},server=server1'"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -conntype NONE -username {{ twas_username }} -password {{ twas_password }} -f {{install_base }}/{{ twas_dir }}/bin/deploySwaggerUI.py install 'WebSphere:cell={{ cellName }},node={{ profile_name }},server={{ appServerName }}'"
   register: twasConfigOutput
   failed_when: ( twasConfigOutput.rc not in [ 0, 105, 130, 255 ] )
 - name: twasConfigOutput
