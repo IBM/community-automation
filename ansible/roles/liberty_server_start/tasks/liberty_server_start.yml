@@ -1,0 +1,28 @@
+---
+- name: Liberty Server Start
+  tags: startServers 
+  block:
+  - name: check if liberty is installed
+    stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+     # must use nohup else the server stops after the controlling process exits
+  - name: Start Liberty Server 
+    command:
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+  - debug:
+     msg: '{{ cmdOutput.stdout_lines }}'
+
+  - name: check server status 
+    command:
+      cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+  - debug:
+     msg: '{{ cmdOutput.stdout_lines }}'
