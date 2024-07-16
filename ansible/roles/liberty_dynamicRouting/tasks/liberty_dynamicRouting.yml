@@ -14,7 +14,7 @@
     # liberty_dynamicRouting/defaults/main.yml
   - name: generate the dynamic routing files
     failed_when: false
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/dynamicRouting setup --port={{ liberty_admin_ports }} --host={{ ansible_hostname }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --pluginINstallRoot={{ install_ihs_base }}/{{ plugin_dir }} --autoAcceptCertificates --webServernames=webserver1"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/dynamicRouting setup --port={{ liberty_admin_ports }} --host={{ ansible_hostname }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --pluginInstallRoot={{ install_ihs_base }}/{{ plugin_dir }} --autoAcceptCertificates --webServernames=webserver1"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: dynamicRoutingOutput
