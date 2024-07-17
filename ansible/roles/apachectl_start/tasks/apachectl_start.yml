@@ -25,9 +25,9 @@
 
   - name: HTTPServer adminctl start to  load new / updated config
     failed_when: false
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start"
     register: adminctl
 
   - name: HTTPServer adminctl start Output
     debug: 
-     msg: "{{ ihsOutput.stdout_lines }}"
+     msg: "{{ adminctl.stdout_lines }}"
