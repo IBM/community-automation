@@ -9,4 +9,4 @@
       failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
     - name: startDefaultOutput
       ansible.builtin.debug:
-      msg: "{{ startDefaultOutput.stdout_lines }}"
+        msg: "{{ startDefaultOutput.stdout_lines }}"
