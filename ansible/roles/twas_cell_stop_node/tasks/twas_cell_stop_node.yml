@@ -1,12 +1,12 @@
 ---
 
-- name: stop node
+- name: Stop node
   when: profile_type == 'managed'
   block:
    - name: stop the node
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopNode.sh -username {{ twas_username }} -password {{ twas_password }}"
+     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopNode.sh -username {{ twas_username }} -password {{ twas_password }}"
      register: stopNodeOutput
      failed_when: ( stopNodeOutput.rc not in [ 0, 246, 255 ] )
    - name: stopNodeOutput
-     debug:
+     ansible.builtin.debug:
       msg: "{{ stopNodeOutput.stdout_lines }}"
