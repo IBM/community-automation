@@ -2,116 +2,125 @@
 - name: Configure
   tags: configure 
   block:
-  - name: check if liberty is installed
-    stat:
+  - name: Check if liberty is installed
+    ansible.builtin.stat:
       path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
-  - name: does controller exist?
-    stat:
+  - name: Does controller exist?
+    ansible.builtin.stat:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: iscc
 
-  - name:  stop existing controller process
+  - name:  Stop existing controller process
     ignore_errors: true
-    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
+    ansible.builtin.shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
     when: iscc.stat.exists == True
     register: op
 
   - debug:
-     msg: '{{ op }}'
+     ansible.builtin.msg: '{{ op }}'
 
   - name: Remove current controller server
-    file:
+    ansible.builtin.file:
       path: "{{ item }}"
       state: absent
     with_items:
     - "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
 
   - name: OS400 Remove current controller server output
-    file:
+    ansible.builtin.file:
       path: "{{ item }}"
       state: absent
     with_items:
     - "{{ wlp_output }}/{{ cc_server }}"
     when: ansible_system == 'OS400'
 
-  - name:  create server
-    shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
+  - name: Check create server
+    ansible.builtin.shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+     ansible.builtin.msg: '{{ op.stdout_lines }}'
 
-  - name:  create controller 
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
+  - name: Replicate backup controller 
+    ansible.builtin.shell: 
+      "{{install_base }}/{{ liberty_dir }}/bin/collective replicate {{ cc_server }} \ 
+      --host={{ cc_primary_server }} \
+      --port={{ cc_primary_port }} \
+      --user={{ liberty_admin_user }} \
+      --password={{ liberty_admin_pass }} \
+      --keystorePassword={{ liberty_admin_pass }} \
+      --hostName={{ ansible_fqdn }} \
+      --autoAcceptCertificates=true \
+      --createConfigFile=controller.xml"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+     ansible.builtin.msg: '{{ op.stdout_lines }}'
 
-  - name: update admin user
-    replace:
+  - name: Update admin user
+    ansible.builtin.replace:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'userName=""'
       replace: 'userName="{{ liberty_admin_user }}"'
-  - name: update admin password
-    replace:
+  - name: Update admin password
+    ansible.builtin.replace:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'userPassword=""'
       replace: 'userPassword="{{ liberty_admin_pass }}"'
 
-  - name: update to tlsv1.2
-    lineinfile:
+  - name: Update to tlsv1.2
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: '^sslProtocol="TLSv1.2"'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2,TLSv1.3"'
 
-  - name: autoAcceptCertificates
-    lineinfile:
+  - name: addutoAcceptCertificates
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
-  - name: update http port
-    replace:
+  - name: usepdate http port
+    ansible.builtin.replace:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '9080'
       replace: "{{ liberty_admin_port }}"
 
-  - name: update https port
-    replace:
+  - name: Update https port
+    ansible.builtin.replace:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '9443'
       replace: "{{ liberty_admin_ports }}"
 
   - name: Disable the enableWelcomePage
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'httpDispatcher'
       insertbefore: '<httpEndpoint'
       line: '     <httpDispatcher enableWelcomePage="false" />'
 
-  - name: include controller.xml in server.xml
-    lineinfile:
+  - name: Include controller.xml in server.xml
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/controller.xml" />'
 
-  - name: configure remoteFileAccess for controller
-    lineinfile:
+  - name: Configure remoteFileAccess for controller
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^remoteFileAccess'
       insertbefore: '</server>'
       line: '    <remoteFileAccess><writeDir>${server.config.dir}</writeDir></remoteFileAccess>'
 
-  - name: listen externally
-    lineinfile:
+  - name: Listen externally
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^host="*"'
       insertbefore: 'httpPort='
@@ -119,13 +128,13 @@
 
   # There's version confilict with jsp and mpHealth
   - name: Remove jsp2.3 from feautres
-    lineinfile:
+    ansible.builtin.lineinfile:
       line: '        <feature>jsp-2.3</feature>'
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       state: absent
       
-  - name: add controller features
-    lineinfile:
+  - name: Add controller features
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</featureManager>'
@@ -141,31 +150,43 @@
     - '        <feature>mpMetrics-5.1</feature>'
     - '        <feature>mpHealth-4.0</feature>'
 
-  - name: copy jvm.options template
-    template:
+  - name: Copy jvm.options template
+    ansible.builtin.template:
      src: jvm.options.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/jvm.options"
 
-  - name:  set IBM i perms
-    include_role:
+  - name:  Set IBM i perms
+    ansible.builtin.include_role:
       name: liberty_ibmi_grantauth
 
     # must use nohup else the server stops after the controller process exits
   - name: Start Liberty Controller Server
     failed_when: false
-    command:
+    ansible.builtin.command:
       cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ cc_server }} --clean"
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
+      ansible.builtin.msg: '{{ op.stdout_lines }}'
 
-  - name: check server status
+  - name: Add replica backup controller 
+    ansible.builtin.shell: 
+      "{{install_base }}/{{ liberty_dir }}/bin/collective addReplica {{ ansible_fqdn }}:10010 \ 
+      --host={{ cc_primary_server }} \
+      --port={{ cc_primary_port }} \
+      --user={{ liberty_admin_user }} \
+      --password={{ liberty_admin_pass }} \
+      --autoAcceptCertificates=true"
+    args:
+      chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
+    register: op
+
+  - name: Check server status
     failed_when: false
-    command:
+    cansible.builtin.ommand:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
     register: op
 
   - debug:
-     msg: '{{ op.stdout_lines }}'
-  when: controller_role == 'primary'
+      ansible.builtin.msg: '{{ op.stdout_lines }}'
+  when: controller_role == 'backup'
