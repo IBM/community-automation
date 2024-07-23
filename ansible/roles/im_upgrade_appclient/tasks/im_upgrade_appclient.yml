@@ -12,7 +12,7 @@
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
   - name:  Upgrade WAS product
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl updateAll -installationDirectory {{ install_base }}/{{ app_dir }} -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store -repositories 'https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ twas_daily_or_test }}/{{ twas_im_driver }}.linux/linux/zipper/repository }}'"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl updateAll -installationDirectory {{ install_base }}/{{ app_dir }} -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store -repositories 'https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ twas_daily_or_test }}/{{ twas_im_driver }}.linux/linux/zipper/repository'"
     register: upgradeOutput
 
   - name: UpgradeOutput
