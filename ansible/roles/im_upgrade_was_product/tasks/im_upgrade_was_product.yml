@@ -40,8 +40,4 @@
   - name: WasVersionOutput
     ansible.builtin.debug: 
       msg: "{{ wasVersionOutput.stdout_lines }}"
-
-  - name: WasVersionOutput failed if version not found
-    debug: 
-      msg: "{{ wasVersionOutput.stdout_lines }}"
     failed_when: twas_im_driver not in wasVersionOutput.stdout
