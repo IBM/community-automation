@@ -1,14 +1,39 @@
 ---
-- name: Upgrade WebSphere tWAS Appclient
+- name: Upgrade Appclient using simple command
   tags: upgrade
   block:
-  - name: Copy im_was_upgrade.xml template
-    ansible.builtin.template:
-      src: "im_upgrade_appclient_{{ twas_release }}.xml.j2"
-      dest: "im_was_upgrade.xml"
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
 
-  - name: Upgrade tWAS Appclient product
-    ansible.builtin.include_role:
-      name: im_upgrade_was_product
-    vars:
-      was_product_dir: "{{ install_base }}/{{ app_dir }}"
+  - name:  Generate secureStorageFile.store
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  Upgrade WAS product
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl updateAll -installationDirectory {{ install_base }}/{{ app_dir }} -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store -repositories https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ twas_daily_or_test }}/{{ twas_im_driver }}.linux/linux/zipper/repository }}"
+    register: upgradeOutput
+
+  - name: UpgradeOutput
+    ansible.builtin.debug: 
+      msg: "{{ upgradeOutput.stdout_lines }}"
+
+  - name:  ListInstalledPackages
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    register: packageOutput
+  
+  - name: packageOutput
+    ansible.builtin.debug: 
+      msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Versions
+  tags: version
+  block:
+  - name: WAS version
+    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+    register: wasVersionOutput
+
+  - name: WasVersionOutput
+    ansible.builtin.debug: 
+      msg: "{{ wasVersionOutput.stdout_lines }}"
