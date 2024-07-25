@@ -1,11 +1,17 @@
 ---
-
-- name: default
+- name: Stop default server
   when: profile_type == 'managed'
   block:
-   - name: stop the default server
-     ignore_errors: true
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ appServerName }} -username {{ twas_username }} -password {{ twas_password }}" 
+   - name: Retrieve signers
+     shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+     register: retrieveSignersOutput
+     failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+   - name: retrieveSignersOutput
+     debug:
+      msg: "{{ retrieveSignersOutput.stdout_lines }}"
+
+   - name: Stop the default server
+     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ appServerName }} -username {{ twas_username }} -password {{ twas_password }}"
      register: stopDefaultOutput
      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
    - name: stopDefaultOutput
