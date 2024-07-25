@@ -3,6 +3,14 @@
 - name: Stop node
   when: profile_type == 'managed'
   block:
+   - name: retrieve signers
+     shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+     register: retrieveSignersOutput
+     failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+   - name: retrieveSignersOutput
+     debug:
+      msg: "{{ retrieveSignersOutput.stdout_lines }}"
+      
    - name: stop the node
      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopNode.sh -username {{ twas_username }} -password {{ twas_password }}"
      register: stopNodeOutput
