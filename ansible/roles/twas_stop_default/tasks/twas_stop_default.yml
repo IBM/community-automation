@@ -1,5 +1,5 @@
 ---
-- name: Stop default server
+- name: Stop node servers
   when: profile_type == 'managed'
   block:
    - name: Retrieve signers
@@ -21,4 +21,5 @@
      with_items: '{{ serverListOutput.stdout_lines }}'
    - name: stopDefaultOutput
      debug:
-      msg: "{{ stopDefaultOutput.stdout_lines }}"
+      msg: "{{ item.stdout_lines }}"
+     with_items: "{{ stopDefaultOutput.results }}"
