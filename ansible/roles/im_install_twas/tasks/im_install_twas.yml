@@ -89,7 +89,7 @@
   tags: version 
   block:
   - name: tWAS version
-    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+    shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh -ifixDetail"
     register: twasVersionOutput
 
   - name: twasVersionOutput
@@ -97,7 +97,7 @@
      msg: "{{ twasVersionOutput.stdout_lines }}"
 
   - name: AppClient version
-    shell: "{{install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+    shell: "{{install_base }}/{{ app_dir }}/bin/versionInfo.sh -ifixDetail"
     register: appVersionOutput
 
   - name: appVersionOutput

@@ -14,13 +14,13 @@
 
   - name: check if tWAS installed
     stat:
-      path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+      path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo.sh -ifixDetail"
     register: istwas
 
   - name: tWAS versions
     block:
     - name: tWAS version
-      shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh"
+      shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo.sh -ifixDetail"
       register: twasVersionOutput
 
     - name: twasVersionOutput
@@ -30,13 +30,13 @@
 
   - name: check if AppClient installed
     stat:
-      path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+      path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh -ifixDetail"
     register: isapp
 
   - name: AppClient versions
     block:
     - name: AppClient version
-      shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh"
+      shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh -ifixDetail"
       register: appVersionOutput
     - name: tWAS Application Client versionsInfo output
       debug:

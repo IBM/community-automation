@@ -26,7 +26,7 @@
 
 - name: check if previous WCT installed
   stat:
-    path: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh"
+    path: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh -ifixDetail"
   register: iswct
 
 - name: Uninstall WCT WAS90
@@ -56,7 +56,7 @@
 
 - name: check if previous Plugin installed 
   stat:
-    path: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh"
+    path: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh -ifixDetail"
   register: isplg
 
 - name: Uninstall plugin 
@@ -86,7 +86,7 @@
 
 - name: check if previous IHS installed
   stat:
-    path: "{{ install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh"
+    path: "{{ install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh -ifixDetail"
   register: isihs
 
 - name: Uninstall IHS WAS90
