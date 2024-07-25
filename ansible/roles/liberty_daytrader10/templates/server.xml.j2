@@ -68,7 +68,7 @@
     <authData id="TradeDataSourceAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
     <authData id="TradeAdminAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
 
-    <dataSource jndiName="jdbc/TradeDataSource" jdbcDriverRef="DB2JCC" id="DefaultDataSource" connectionManagerRef="conMgr1" statementCacheSize="60" isolationLevel="TRANSACTION_READ_COMMITTED" type="jakarta.sql.ConnectionPoolDataSource">
+    <dataSource jndiName="jdbc/TradeDataSource" jdbcDriverRef="DB2JCC" id="DefaultDataSource" connectionManagerRef="conMgr1" statementCacheSize="60" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.ConnectionPoolDataSource">
         <properties serverName="{{ db_host }}" portNumber="{{ db_port }}" databaseName="{{db_name }}" driverType="4" user="{{ db_user }}" password="{{ db_pass }}"/>
     </dataSource>
 
