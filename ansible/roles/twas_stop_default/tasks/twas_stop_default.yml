@@ -10,10 +10,15 @@
      debug:
       msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
-   - name: Stop the default server
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ appServerName }} -username {{ twas_username }} -password {{ twas_password }}"
+   - name: List the running servers minus the nodeagent
+     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
+     register: serverListOutput
+
+   - name: Stop the node servers
+     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
      register: stopDefaultOutput
      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
+     with_items: '{{ serverListOutput.stdout_lines }}'
    - name: stopDefaultOutput
      debug:
       msg: "{{ stopDefaultOutput.stdout_lines }}"
