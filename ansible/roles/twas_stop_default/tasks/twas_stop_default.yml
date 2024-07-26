@@ -3,7 +3,7 @@
   when: profile_type == 'managed'
   block:
    - name: Retrieve signers
-     shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
      register: retrieveSignersOutput
      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
    - name: retrieveSignersOutput
@@ -11,15 +11,15 @@
       msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
    - name: List the running servers minus the nodeagent
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
+     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
      register: serverListOutput
 
    - name: Stop the node servers
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
+     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
      register: stopDefaultOutput
      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
      with_items: '{{ serverListOutput.stdout_lines }}'
-   - name: stopDefaultOutput
-     debug:
-      msg: "{{ item.stdout_lines }}"
+   - name: stopDefaultOutput ( lot of output )
+     ansible.builtin.debug:
+      msg: "{{ item.item }}"
      with_items: "{{ stopDefaultOutput.results }}"
