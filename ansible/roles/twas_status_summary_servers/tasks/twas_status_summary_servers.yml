@@ -3,8 +3,9 @@
 - name: Summary of tWAS server status
   ansible.builtin.shell: 
     cmd: |
-      set -o pipefail # <-- adding this will prevent surprises
+      set -o pipefail
       {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
+    executable: /bin/bash
   register: twasstatus
 
 - name: Summary of tWAS server status output
