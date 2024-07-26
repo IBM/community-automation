@@ -1,12 +1,13 @@
 ---
-
 - name: Start tWAS Server
   when: profile_type == 'managed'
   block:
     - name: Start the default tWAS Server
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ appServerName }}"
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ item }}"
       register: startDefaultOutput
       failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
-    - name: startDefaultOutput
+      with_items: "{{ appServerName }}"
+    - name: startDefaultOutput ( lot of output )
       ansible.builtin.debug:
-        msg: "{{ startDefaultOutput.stdout_lines }}"
+        msg: "{{ item.item }}"
+      with_items: "{{ startDefaultOutput.results }}"
