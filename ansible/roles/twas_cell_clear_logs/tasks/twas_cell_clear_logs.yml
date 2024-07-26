@@ -1,6 +1,56 @@
 ---
+- name: Remove tWAS logs directory
+  when: 
+    - twas_dir is defined
+    - profile_name is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+      register: islog
+    - name: Remove tWAS logs directory
+      ansible.builtin.file:
+        path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+        state: absent
+      when: islog.stat.exists == True
 
-- name: remove logs directory
-  file:
-    path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
-    state: absent
+- name: Remove IHS logs directory
+  when: 
+    - http_dir is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{install_base }}/{{ http_dir }}/logs"
+      register: islog
+    - name: Remove IHS logs directory
+      ansible.builtin.file:
+        path: "{{install_base }}/{{ http_dir }}/logs"
+        state: absent
+      when: islog.stat.exists == True
+    - name: ReCreate IHS logs directory
+      ansible.builtin.file:
+        path: "{{install_base }}/{{ http_dir }}/logs"
+        state: present
+        mode: 0755
+      when: islog.stat.exists == True
+
+- name: Remove Plugin logs directory
+  when: 
+    - plugin_dir is defined
+    - webServerName is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+      register: islog
+    - name: Remove IHS logs directory
+      ansible.builtin.file:
+        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        state: absent
+      when: islog.stat.exists == True
+    - name: ReCreate Plugin logs directory
+      ansible.builtin.file:
+        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        state: present
+        mode: 0755
+      when: islog.stat.exists == True
