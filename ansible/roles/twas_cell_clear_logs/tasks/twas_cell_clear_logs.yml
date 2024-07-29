@@ -20,16 +20,16 @@
   block:
     - name: Does the log dir exist?
       ansible.builtin.stat:
-        path: "{{install_base }}/{{ http_dir }}/logs"
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
       register: islog
     - name: Remove IHS logs directory
       ansible.builtin.file:
-        path: "{{install_base }}/{{ http_dir }}/logs"
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
         state: absent
       when: islog.stat.exists == True
     - name: ReCreate IHS logs directory
       ansible.builtin.file:
-        path: "{{install_base }}/{{ http_dir }}/logs"
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
         state: present
         mode: 0755
       when: islog.stat.exists == True
@@ -41,16 +41,16 @@
   block:
     - name: Does the log dir exist?
       ansible.builtin.stat:
-        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
       register: islog
     - name: Remove IHS logs directory
       ansible.builtin.file:
-        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
         state: absent
       when: islog.stat.exists == True
     - name: ReCreate Plugin logs directory
       ansible.builtin.file:
-        path: "{{install_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
         state: present
         mode: 0755
       when: islog.stat.exists == True
