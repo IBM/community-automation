@@ -1,4 +1,5 @@
-- name: replace issue.net content
+- name: Replace issue.net content
+  become: true
   ansible.builtin.copy:
     content: '{{ issueContent }}'
     dest: /etc/issue.net
