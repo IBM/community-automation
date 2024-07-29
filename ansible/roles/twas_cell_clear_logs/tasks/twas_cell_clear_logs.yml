@@ -16,6 +16,7 @@
 
 - name: Remove IHS logs directory
   when: 
+    - install_ihs_base is defined
     - http_dir is defined
   block:
     - name: Does the log dir exist?
@@ -36,6 +37,7 @@
 
 - name: Remove Plugin logs directory
   when: 
+    - install_ihs_base is defined
     - plugin_dir is defined
     - webServerName is defined
   block:
