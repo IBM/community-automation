@@ -1,6 +1,6 @@
 ---
 - name: Start tWAS Server
-  when: profile_type == 'managed'
+  when: profile_type == 'managed' or profile_type == 'default'
   block:
     - name: Start the default tWAS Server
       ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ item }}"

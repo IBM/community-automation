@@ -1,7 +1,7 @@
 ---
 
 - name: Stop node
-  when: profile_type == 'managed'
+  when: profile_type == 'managed' or profile_type == 'default'
   block:
    - name: retrieve signers
      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
