@@ -43,8 +43,9 @@ if nodelist != '':
   for nodename in nodelist:
     print "--- checking  nodename: %s ---" % nodename
     if nodeIsUnmanaged( nodename ): 
-      print "--- Delete the unmanaged node ---"
-      AdminTask.removeUnmanagedNode('[-nodeName '+ webnode +']')
+      if webnode == nodename:
+         print "--- Delete the unmanaged node ---"
+         AdminTask.removeUnmanagedNode('[-nodeName '+ webnode +']')
 
 # [1/21/22 15:49:25:578 EST] Nodes > New...
 print "--- create the unmanaged node ---"
