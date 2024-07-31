@@ -3,3 +3,4 @@ dependencies:
   - role: twas_cell_defaults
   - role: http_defaults
   - role: twas_cell_common_daytrader
+  - role: load_secrets
