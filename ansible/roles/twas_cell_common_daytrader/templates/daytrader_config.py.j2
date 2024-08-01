@@ -202,8 +202,8 @@ def printUsageAndExit (  ):
 def createJDBC_DataSource( scope ):
 	provider = createJdbcProvider( scope, DefaultProviderType, DefaultPathName, DefaultNativePathName, implementationClassName, '', DefaultProviderType )
 
-	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
-	noTxDatasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	datasource = createDataSource_ext( 'cell', '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	noTxDatasource = createDataSource_ext( 'cell', '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
 	
 	# Create the JMS config objects
@@ -213,7 +213,7 @@ def createJDBC_DataSource( scope ):
 	print (" Scope: "+scope)
 	print ("------------------------------------------------")
 	#creates ME datasource
-	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	datasource = createDataSource_ext( 'cell', '', '', '', provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
 #endDef
 
 #---------------------------------------------------------------------
