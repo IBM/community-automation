@@ -3,9 +3,9 @@
   - set_fact:
      targetServerMapping: "cluster={{ clusterName }}"
   - name: copy daytrader_config.py.j2 template
-  template:
-    src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
-    dest: "daytrader_config.py"
+    template:
+      src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
+      dest: "daytrader_config.py"
   when: profile_type == 'managed'
 
 - block:
@@ -13,23 +13,23 @@
      targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
   - name: copy daytrader_config_base.py.j2 template
     template:
-    src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
-    dest: "daytrader_config.py"
-    when: profile_type == 'default'
+      src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
+      dest: "daytrader_config.py"
+  when: profile_type == 'default'
 
 - name: copy daytrader7.py.j2 template
   template:
-   src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
-   dest: "daytrader7.py"
+    src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
+    dest: "daytrader7.py"
 
 - name: copy daytrader_vars.py.j2 template
   template:
-   src: "../twas_cell_common_daytrader/templates/daytrader_vars.py.j2"
-   dest: "daytrader_vars.py"
+    src: "../twas_cell_common_daytrader/templates/daytrader_vars.py.j2"
+    dest: "daytrader_vars.py"
 - name: copy resource_scripts.py.j2 template
   template:
-   src: "../twas_cell_common_daytrader/templates/resource_scripts.py.j2"
-   dest: "resource_scripts.py"
+    src: "../twas_cell_common_daytrader/templates/resource_scripts.py.j2"
+    dest: "resource_scripts.py"
 - name: copy daytrader app
   copy:
    src: "{{ DefaultEarFile }}"
@@ -41,7 +41,7 @@
   failed_when: ( daytraderConfigOutput.rc not in [ 0, 255 ] )
 - name: daytraderConfigOutput
   debug:
-   msg: "{{ daytraderConfigOutput.stdout_lines }}"
+    msg: "{{ daytraderConfigOutput.stdout_lines }}"
 
 - name: run the daytrader7 application install jython script
   shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
@@ -49,5 +49,5 @@
   failed_when: ( daytrader7Output.rc not in [ 0, 255 ] )
 - name: daytrader7Output
   debug:
-   msg: "{{ daytrader7Output.stdout_lines }}"
+    msg: "{{ daytrader7Output.stdout_lines }}"
 
