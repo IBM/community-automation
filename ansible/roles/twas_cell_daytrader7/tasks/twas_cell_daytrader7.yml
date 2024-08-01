@@ -6,7 +6,7 @@
     template:
       src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
       dest: "daytrader_config.py"
-  when: profile_type == 'managed'
+  when: profile_type == 'dmgr'
 
 - block:
   - set_fact:
