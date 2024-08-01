@@ -30,7 +30,7 @@ enableDebugMessages()
 # generate and prop the webserver plugin
 print ("generatePluginCfg:start")
 wVersion = AdminTask.getNodeBaseProductVersion('[-nodeName {{ profile_name }} ]')
-AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process={{ appServerName }},platform=common,node={{ profile_name }},version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'generate', '[{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config ndcell {{ webNode }} {{ webServerName }}]')
+AdminControl.invoke('WebSphere:name=PluginCfgGenerator,process={{ appServerName }},platform=common,node={{ profile_name }},version='+wVersion+',type=PluginCfgGenerator,mbeanIdentifier=PluginCfgGenerator,cell=ndcell,spec=1.0', 'generate', '[{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config ndcell {{ webNode }} {{ webServerName }} false]')
 
 print ("generatePluginCfg:completed")
 
