@@ -1,19 +1,27 @@
 ---
+- block:
+  - set_fact:
+     targetServerMapping: "cluster={{ clusterName }}"
+  - name: copy daytrader_config.py.j2 template
+  template:
+    src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
+    dest: "daytrader_config.py"
+  when: profile_type == 'managed'
+
+- block:
+  - set_fact:
+     targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
+  - name: copy daytrader_config_base.py.j2 template
+    template:
+    src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
+    dest: "daytrader_config.py"
+    when: profile_type == 'default'
 
 - name: copy daytrader7.py.j2 template
   template:
    src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
    dest: "daytrader7.py"
-- name: copy daytrader_config.py.j2 template
-  template:
-   src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
-   dest: "daytrader_config.py"
-  when: profile_type == 'managed'
-- name: copy daytrader_config_base.py.j2 template
-  template:
-   src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
-   dest: "daytrader_config.py"
-  when: profile_type == 'default'
+
 - name: copy daytrader_vars.py.j2 template
   template:
    src: "../twas_cell_common_daytrader/templates/daytrader_vars.py.j2"
