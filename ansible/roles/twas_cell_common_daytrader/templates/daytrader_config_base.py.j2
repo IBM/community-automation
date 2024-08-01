@@ -74,6 +74,9 @@ DefaultPort =         "50000"
 DefaultUser =         "db2inst1"
 DefaultPasswd =       "yourpass"
 
+# Additional defaults for vendor specific Datasources
+DefaultDB2DriverType = "4"
+
 # Deploy options
 # Deploy types include:
 #   "DB2UDB_V82","DB2UDBOS390_V8","DB2UDBISERIES_V54","DERBY_V10","MSSQLSERVER_2005","ORACLE_V10G","INFORMIX_V100"
@@ -117,10 +120,12 @@ DefaultNoTxDatasourceName = "NoTxTradeDataSource"
 
 DefaultStmtCacheSize =  100
 DefaultXA = "false"
+DefaultClusterMEDatasourceName = "MEDataSource"
 
 # JMS (Messaging) Config Parameters
 # Global Security properties for JMS
 DefaultAdminAuthAliasName = "TradeAdminAuthData"
+datasourceHelperClassname="com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper"
 
 #reliability = "ASSURED_PERSISTENT"
 reliability = "EXPRESS_NONPERSISTENT"
@@ -189,6 +194,22 @@ def printUsageAndExit ():
 	sys.exit()
 #endDef 
 
+def createJDBC_DataSource( scope ):
+	provider = createJdbcProvider( scope, DefaultProviderType, DefaultPathName, DefaultNativePathName, implementationClassName, '', DefaultProviderType )
+
+	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	noTxDatasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
+	
+	# Create the JMS config objects
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JMS Resources")
+	print (" Scope: "+scope)
+	print ("------------------------------------------------")
+	#creates ME datasource
+	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+#endDef
 
 #---------------------------------------------------------------------
 #  Parse Command Line
@@ -243,28 +264,26 @@ if (operation == "all" or operation == "configure"):
 	print " Scope: "+scope
 	print "------------------------------------------------"
 
-	createJAASAuthData(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
+	createJAAS(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
 
-	provider = createJDBCProvider(DefaultProviderType, DefaultXA, scope, DefaultPathName, DefaultNativePathName )
-
-	datasource = createDatasource(DefaultDatasourceName, "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, provider)
-	noTxDatasource = createDatasource(DefaultNoTxDatasourceName, "jdbc/"+DefaultNoTxDatasourceName, 10, DefaultDatasourceAuthAliasName, provider)
-	addDatasourceProperty(noTxDatasource, "nonTransactionalDataSource", "true")
-
-	updateDB2orDerbyDatasource(datasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
-	updateDB2orDerbyDatasource(noTxDatasource, DefaultDatabaseName, DefaultHostname, DefaultPort, DefaultDB2DriverType)
-	
+	# add webserver port 
+	ensureHostAlias('default_host', '*', defaultWebServerHostPort )
+	ensureHostAlias('default_host', '*', defaultWebServerHostPortS )
 	#endIf
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JDBC/Datasource Resources")
+	print (" Scope: " + scope)
+	print ("------------------------------------------------")
 
-	productVersion=AdminTask.getNodeBaseProductVersion(['-nodeName', TargetNodeName])
-	if ( productVersion.find('9') == 0 ):
-		print "  Setting JPA level 2.0"
-		AdminTask.modifyJPASpecLevel(scope,'[-specLevel 2.0]')
+	createJAAS(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
+	# create a cell level datasource for timers
+	createJDBC_DataSource( scope )
 
-	print ""
-	print "------------------------------------------------"
-	print " JDBC Resource Configuration Completed!!!"
-	print "------------------------------------------------"
+	print ("")
+	print ("------------------------------------------------")
+	print (" JDBC Resource Configuration Completed!!!")
+	print ("------------------------------------------------")
 
 	# Create the JMS config objects
 
@@ -274,13 +293,13 @@ if (operation == "all" or operation == "configure"):
 	print " Scope: "+scope
 	print "------------------------------------------------"
 
-	createJAASAuthData(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
+	createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
 
-	sibus = createSIBus(getName(scope ), DefaultAdminAuthAliasName )
+	sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
 	fileStore = [DefaultMEFileStore, DefaultMEFileStoreLocation]
 	target = [TargetNodeName, TargetServerName]
 	dsParms = ["true", "dummy"]
-	addSIBusMember(sibus, fileStore, target, dsParms)
+	addSIBusMemberDT(sibus, fileStore, target, dsParms)
 
 	if (SecurityEnabled == "true"):
 		createSIBusSecurityRole(sibus, DefaultAdminUser )
