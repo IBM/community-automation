@@ -3,3 +3,8 @@
 DefaultAppName: 'DayTrader3.0.9-ee6-src'
 DefaultEarFile: '{{ DefaultAppName }}.ear'
 
+# dummy value when configuring on base servers
+DefaultClusterName: 'dummyCluster'
+# dummy values to help when configuring a cluster
+TargetNodeName: '{{ profile_name }}'
+TargetServerName: '{{ appServerName }}'
