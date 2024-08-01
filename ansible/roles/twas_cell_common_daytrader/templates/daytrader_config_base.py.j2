@@ -254,9 +254,10 @@ scope = ""
 if (operation == "all" or operation == "configure"):
 	# Create the JDBC/Datasource config objects
 	
-	if (scope == ""):
-		scope = AdminConfig.getid("/Node:"+TargetNodeName+"/Server:"+TargetServerName+"/")
-	#endIf
+	cell = getCellId()
+	#productVersion=AdminTask.getNodeBaseProductVersion(['-nodeName', 'dmgr'])
+	TargetCellName = getNameFromId(cell)
+	scope = cell
 
 	print ""
 	print "------------------------------------------------"
