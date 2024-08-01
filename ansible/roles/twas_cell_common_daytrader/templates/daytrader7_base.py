@@ -1,5 +1,6 @@
 import sys
 
+# this is the full script that needs to be broken down into 2
 #-----------------------------------------------------------------
 # WARNING: Jython/Python is extremely sensitive to indentation
 # errors. Please ensure that tabs are configured appropriately
@@ -90,7 +91,7 @@ DefaultMEFileStoreLocation = "default"
 #  Misc options
 #---------------------------------------------------------------------
 
-CmdOptions =      ["all", "configure", "cleanup", "install", "uninstall"]
+CmdOptions =      ["all", "configure", "cleanup"]
 DefaultOptions =  ["yes", "no"]
 BooleanOptions =  ["true", "false"]
 
@@ -175,7 +176,7 @@ DefaultEJBDeployType = "DB2UDB_V82"
 
 def printUsageAndExit ():
 	print ""
-	print "Usage: wsadmin -f daytrader_config_base.py [all|configure|cleanup] nodename servername username password db2DriverLocation"
+	print "Usage: wsadmin -f daytrader_config_base.py [all|configure|cleanup|install|uninstall] nodename servername username password db2DriverLocation"
 	print ""
 	print "   where:  all        -  configures JDBC and JMS resources and installs the app"
 	print "           configure  -  only configures the JDBC and JMS resource"
@@ -320,6 +321,107 @@ if (operation == "all" or operation == "configure"):
 #endIf 
 
 
+#---------------------------------------------------------------------
+# Daytrader install procedures
+#---------------------------------------------------------------------
+
+if (operation == "all" or operation == "install"):
+	print " "
+	print "------------------------------------------------"
+	print " Installing DayTrader"
+	print "------------------------------------------------"
+
+	target = [TargetNodeName, TargetServerName]
+
+	addHostAliasToDefaultHost( defaultWebServerHostPort )
+	addHostAliasToDefaultHost( defaultWebServerHostPortS )
+	# hard code in case the proxy fall on 81/82
+	addHostAliasToDefaultHost( "81" )
+	addHostAliasToDefaultHost( "82" )
+	# hard code - not sure what's wrong with the port check function
+	addHostAliasToDefaultHost( "9081" )
+	addHostAliasToDefaultHost( "9082" )
+
+	installApp(DefaultTradeAppName, DefaultEarFile, DefaultRunEJBDeploy, DefaultRunWSDeploy, "true", "false", DefaultEJBDeployType, target )
+	# if there is a webserver map it
+	# [7/23/14 10:56:50:931 EDT] WebServer
+	webServerList = AdminTask.listServers('[-serverType WEB_SERVER ]').split(lineSeparator)
+	for webServer in webServerList:
+		#example: webServer=webserver1(cells/server1/nodes/srs07.rtp.raleigh.ibm.com-node/servers/webserver1|server.xml)
+		TargetWebNodeName=webServer[webServer.find("nodes/"):len(webServer)]
+		TargetWebNodeName=TargetWebNodeName[len("nodes/"):TargetWebNodeName.rfind("/servers/")]
+		webServer = getName(webServer)
+
+		if ( DTVERSION == "DT70" ):     
+			# [10/12/16 10:40:12:922 EDT] Enterprise Applications > Enterprise Applications
+			AdminApp.edit(DefaultTradeAppName, '[  -nopreCompileJSPs -distributeApp -nouseMetaDataFromBinary -appname DayTrader7011 -createMBeansForResources -noreloadEnabled -nodeployws -validateinstall warn -noprocessEmbeddedConfig -filepermission .*\.dll=755#.*\.so=755#.*\.a=755#.*\.sl=755 -noallowDispatchRemoteInclude -noallowServiceRemoteInclude -asyncRequestDispatchType DISABLED -nouseAutoLink -noenableClientModule -clientMode isolated -novalidateSchema -MapMessageDestinationRefToEJB [[ "DayTrader Enterprise Bean Definitions" TradeSLSBBean daytrader-ee7-ejb.jar,META-INF/ejb-jar.xml com.ibm.websphere.samples.daytrader.ejb3.TradeSLSBBean/tradeBrokerQueue jms/TradeBrokerQueue ][ "DayTrader Enterprise Bean Definitions" TradeSLSBBean daytrader-ee7-ejb.jar,META-INF/ejb-jar.xml com.ibm.websphere.samples.daytrader.ejb3.TradeSLSBBean/tradeStreamerTopic jms/TradeStreamerTopic ][ "DayTrader Web" "" daytrader-ee7-web.war,WEB-INF/web.xml jms/StreamerTopic jms/TradeStreamerTopic ][ "DayTrader Web" "" daytrader-ee7-web.war,WEB-INF/web.xml jms/BrokerQueue jms/TradeBrokerQueue ]] -MapResEnvRefToRes [[ "DayTrader Web" "" daytrader-ee7-web.war,WEB-INF/web.xml com.ibm.websphere.samples.daytrader.web.prims.PingManagedExecutor/mes javax.enterprise.concurrent.ManagedExecutorService wm/default ][ "DayTrader Web" "" daytrader-ee7-web.war,WEB-INF/web.xml com.ibm.websphere.samples.daytrader.web.prims.PingManagedThread/managedThreadFactory javax.enterprise.concurrent.ManagedThreadFactory wm/default ][ "DayTrader Enterprise Bean Definitions" TradeSLSBBean daytrader-ee7-ejb.jar,META-INF/ejb-jar.xml com.ibm.websphere.samples.daytrader.ejb3.TradeSLSBBean/managedThreadFactory javax.enterprise.concurrent.ManagedThreadFactory wm/default ]]]' )
+
+			# [4/16/19 9:09:38:257 EDT] Enterprise Applications > DayTrader-ee7.0.11-editionPersistence01 > Security role to user/group mapping
+			AdminApp.edit(DefaultTradeAppName, '[  -MapRolesToUsers [[ grp1 AppDeploymentOption.No AppDeploymentOption.Yes "" "" AppDeploymentOption.No "" "" ][ grp2 AppDeploymentOption.No AppDeploymentOption.Yes "" "" AppDeploymentOption.No "" "" ][ grp3 AppDeploymentOption.No AppDeploymentOption.Yes "" "" AppDeploymentOption.No "" "" ][ grp4 AppDeploymentOption.No AppDeploymentOption.Yes "" "" AppDeploymentOption.No "" "" ][ grp5 AppDeploymentOption.No AppDeploymentOption.Yes "" "" AppDeploymentOption.No "" "" ]]]' )
+		else:
+			print " --Daytrader - -MapModulesToServers:"+webServer
+			parms = "[  -MapModulesToServers [[ \"DayTrader Web\" web.war,WEB-INF/web.xml WebSphere:cell="
+			parms += getName(getCellId())
+			parms +=  ",node="
+			parms += TargetNodeName
+			parms +=  ",server="
+			parms += TargetServerName
+			parms +=  "+WebSphere:cell="
+			parms += getName(getCellId())
+			parms +=  ",node="
+			parms += TargetWebNodeName
+			parms +=  ",server="
+			parms +=  webServer
+
+			if ( DTVERSION == "DT30" ):
+				parms += " ][ Rest.war Rest.war,WEB-INF/web.xml WebSphere:cell="
+				parms += getName(getCellId())
+				parms +=  ",node="
+				parms += TargetNodeName
+				parms +=  ",server="
+				parms += TargetServerName
+				parms +=  "+WebSphere:cell="
+				parms += getName(getCellId())
+				parms +=  ",node="
+				parms += TargetWebNodeName
+				parms +=  ",server="
+				parms +=  webServer
+			#endif
+			parms += " ]]]"
+			print "AdminApp.edit Manage Modules parms="+parms
+
+			AdminApp.edit(DefaultTradeAppName, parms )
+		#endif
+
+
+
+	print ""
+	print "------------------------------------------------"
+	print " DayTrader Installation Completed!!!"
+	print "------------------------------------------------"
+
+	print ""
+	print "Saving..."
+	AdminConfig.save( )
+#endIf
+
+if (operation == "uninstall"):
+	print " "
+	print "------------------------------------------------"
+	print " Uninstalling DayTrader"
+	print "------------------------------------------------"
+
+	uninstallApp(DefaultTradeAppName)
+
+	print ""
+	print "------------------------------------------------"
+	print " DayTrader Uninstall Completed!!!"
+	print "------------------------------------------------"
+
+	print ""
+	print "Saving..."
+	AdminConfig.save( )
+#endIf
 
 if (operation == "cleanup"):
 	print " "
@@ -357,7 +459,7 @@ if (operation == "cleanup"):
 	removeDatasource(DefaultNoTxDatasourceName)
 	removeJAASAuthData(DefaultDatasourceAuthAliasName)
 
-	print ("")
+	print ""
 	print "------------------------------------------------"
 	print " DayTrader Resource Cleanup Completed!!!"
 	print "------------------------------------------------"
@@ -366,8 +468,9 @@ if (operation == "cleanup"):
 	print "Saving..."
 	AdminConfig.save( )
 #endIf
-print ("")
-print ("Saving config...")
+
+print ""
+print "Saving config..."
 AdminConfig.save( )
 
 

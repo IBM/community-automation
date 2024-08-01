@@ -1,5 +1,4 @@
 import sys
-import os
 
 #-----------------------------------------------------------------
 # WARNING: Jython/Python is extremely sensitive to indentation
@@ -8,7 +7,7 @@ import os
 #-----------------------------------------------------------------
 
 #-----------------------------------------------------------------
-# daytrader3.py - DayTrader Cluster Install Script
+# daytrader_config.py - DayTrader Cluster Install Script
 #-----------------------------------------------------------------
 #
 #-----------------------------------------------------------------
@@ -20,12 +19,10 @@ import os
 # "silent install" option the only option
 #  
 # To invoke the script type:
-#   wsadmin -f daytrader3.py [all|configure|cleanup|install|uninstall]
+#   wsadmin -f daytrader3.py [all|configure|cleanup]
 #      where:   all        -  configures JDBC and JMS resources and installs the app
 #               configure  -  only configures the JDBC and JMS resource
 #               cleanup    -  removes the JDBC and JMS resources
-#               install    -  installs the DayTrader ear
-#               uninstall  -  uninstalls the DayTrader ear
 #
 # If no parameters are specified, "all" is assumed!
 #
@@ -67,8 +64,8 @@ DefaultClusterName = "Cluster"
 #   configurations, LDAP, Windows Active Directory or some other form of 
 #   centralized authentication mechanism must be used to validate the userid.
 SecurityEnabled = "true"
-DefaultAdminUser =   "user1"
-DefaultAdminPasswd = "security"
+DefaultAdminUser =   "persona1"
+DefaultAdminPasswd = "ppersona1"
 
 # JDBC provider options
 # JDBC provider types include:
@@ -101,13 +98,9 @@ DefaultMEDatabaseName = "TRADEDB"
 #  Misc options
 #---------------------------------------------------------------------
 
-CmdOptions =      ["all", "configure", "cleanup", "install", "uninstall"]
+CmdOptions =      ["all", "configure", "cleanup"]
 DefaultOptions =  ["yes", "no"]
 BooleanOptions =  ["true", "false"]
-ProviderOptions = ["DB2 Universal","DB2 iSeries (Toolbox)","DB2 iSeries (Native)","Derby"]
-DeployOptions =   ["DB2UDB_V82","DB2UDBOS390_V8","DB2UDBISERIES_V54","DERBY_V10"]
-
-
 
 #---------------------------------------------------------------------
 # Application specific config information
@@ -185,8 +178,8 @@ dtvars = "daytrader_vars.py"
 execfile(dtvars)
 
 # Deploy types include:
-DefaultPathName =       "${WAS_INSTALL_ROOT}/db2jars/db2jcc4.jar;${WAS_INSTALL_ROOT}/db2jars/db2jcc_license_cu.jar"
-DefaultEJBDeployType = "DB2UDB_V82"
+DefaultPathName = "${WAS_INSTALL_ROOT}/db2jars/db2jcc4.jar;${WAS_INSTALL_ROOT}/db2jars/db2jcc_license_cu.jar"
+DefaultEJBDeployType = "DB2UDB_V95"
 
 #---------------------------------------------------------------------
 #  Basic App Administration Procedures
