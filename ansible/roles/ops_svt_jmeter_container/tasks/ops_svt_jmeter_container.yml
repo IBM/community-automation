@@ -51,7 +51,7 @@
               -rampUpSecs {{ jmeter_rampUpSecs }} \
               -threads {{ jmeter_threads }} \
               -auth {{ jmeter_auth }} \
-              -appUrl {{ jmeter_appContext }} \
+              -appUrl {{ jmeter_appUrl }} \
               -report {{ jmeter_report }}"
   register: svtop
 
