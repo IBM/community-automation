@@ -1,11 +1,11 @@
 ---
 
 - set_fact:
-  targetappServerName: "{{ appServerName: }}"
+    targetappServerName: "{{ appServerName: }}"
   when: profile_type == 'default'
 
 - set_fact:
-  targetappServerName: dmgr
+    targetappServerName: dmgr
   when: profile_type == 'dmgr'
 
 - name: copy ihsplugin_gen_propagate.py.j2 template
