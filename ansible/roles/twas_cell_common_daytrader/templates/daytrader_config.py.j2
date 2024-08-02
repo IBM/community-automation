@@ -319,12 +319,12 @@ if (operation == "all" or operation == "configure"):
 		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
 
 		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
-	else:
+
 		print ("")
 		print ("------------------------------------------------")
 		print (" IBM WMQ Resource Configuration Completed!!!")
 		print ("------------------------------------------------")
-
+	else:
 		print ("")
 		print ("------------------------------------------------")
 		print (" JMS Resource Configuration started!!!")
