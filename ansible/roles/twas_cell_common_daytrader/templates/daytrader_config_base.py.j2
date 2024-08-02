@@ -26,7 +26,7 @@ import sys
 # If no parameters are specified, "all" is assumed!
 #
 
-print "daytrader_config_base.py"
+print ("daytrader_config_base.py")
 
 # Process the resource file containing all of the admin task definitions 
 resources = "resource_scripts.py"
@@ -160,8 +160,6 @@ WebstreamerMDB =    "StreamerMDB"
 DB2WinJccPath =         "c:/sqllib/java/db2jcc.jar;c:/sqllib/java/db2jcc_license_cu.jar;"
 DB2zSeriesNativePath =  "/usr/lpp/db2/db2810/jcc/lib"
 DB2CliPath =            "c:/sqllib/java/db2java.zip"
-OraclePath =            "c:/oracle/product/10.1.0/db_1/jdbc/lib/ojdbc14.jar"
-DerbyPath =             "$\{WAS_INSTALL_ROOT\}/derby/lib/derby.jar"
 DB2iSeriesNativePath =  "/QIBM/ProdData/Java400/ext/db2_classes.jar"
 DB2iSeriesToolboxPath = "/QIBM/ProdData/HTTP/Public/jt400/lib/jt400.jar"
 
@@ -179,18 +177,16 @@ DefaultEJBDeployType = "DB2UDB_V82"
 #---------------------------------------------------------------------
 
 def printUsageAndExit ():
-	print ""
-	print "Usage: wsadmin -f daytrader_config_base.py [all|configure|cleanup] nodename servername username password db2DriverLocation"
-	print ""
-	print "   where:  all        -  configures JDBC and JMS resources and installs the app"
-	print "           configure  -  only configures the JDBC and JMS resource"
-	print "           cleanup    -  removes the JDBC and JMS resources"
-	print "..."
-	print "...nodename:    Node to install to"
-	print "...servername:  Server to install to"
-	print "...username:    Security user name"
-	print "...password:    Security password"
-	print ""
+	print ("")
+	print ("Usage: wsadmin -f daytrader_config.py [all|configure|cleanup] ")
+	print ("")
+	print ("   where:  all        -  configures JDBC and JMS resources and installs the app")
+	print ("           configure  -  only configures the JDBC and JMS resource")
+	print ("           cleanup    -  removes the JDBC and JMS resources")
+	print ("")
+	print ("   If no parameters are specified, \"all\" is assumed!")
+	print ("")
+	sys.exit()
 	sys.exit()
 #endDef 
 
@@ -223,28 +219,6 @@ else:
 	printUsageAndExit( )
 #endElse 
 
-
-print ""
-print "------------------------------------------------"
-print " Daytrader Install/Configuration Script"
-print ""
-print " Operation:  		" + operation
-print " Silent:     		" + SilentInstall
-print " SecurityEnabled:	",SecurityEnabled
-print " DefaultAdminUser:	",DefaultAdminUser 
-print " DefaultAdminPasswd:	",DefaultAdminPasswd
-print " DefaultProviderType:	",DefaultProviderType
-print " DefaultNativePathName:	",DefaultNativePathName
-print " DefaultDatabaseName:	",DefaultDatabaseName
-print " DefaultHostname:	",DefaultHostname
-print " DefaultPort:		",DefaultPort
-print " DefaultPathName:	",DefaultPathName
-print " DefaultUser:		",DefaultUser
-print " DefaultPasswd:		",DefaultPasswd
-print " DefaultTradeAppName:	",DefaultTradeAppName
-print " DefaultEarFile:		",DefaultEarFile
-print "------------------------------------------------"
-
 #---------------------------------------------------------------------
 # Daytrader configuration procedures
 #---------------------------------------------------------------------
@@ -259,11 +233,11 @@ if (operation == "all" or operation == "configure"):
 	TargetCellName = getNameFromId(cell)
 	scope = cell
 
-	print ""
-	print "------------------------------------------------"
-	print " Configuring JDBC/Datasource Resources"
-	print " Scope: "+scope
-	print "------------------------------------------------"
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JDBC/Datasource Resources")
+	print (" Scope: " + scope)
+	print ("------------------------------------------------")
 
 	createJAAS(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
 
@@ -287,65 +261,93 @@ if (operation == "all" or operation == "configure"):
 	print ("------------------------------------------------")
 
 	# Create the JMS config objects
+	if ( enableWMQ == 'true' or enableWMQ == 'True' ):
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
 
-	print ""
-	print "------------------------------------------------"
-	print " Configuring JMS Resources"
-	print " Scope: "+scope
-	print "------------------------------------------------"
+		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
+		# I have not used those variables here as it make no sense, and makes the command harder to understand
+		#
+		createJAAS(DefaultAdminAuthAliasName, '{{ mq_user }}',  '{{ mq_pass }}' )
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias TradeAdminAuthData]')
 
-	createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
+		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
 
-	sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
-	fileStore = [DefaultMEFileStore, DefaultMEFileStoreLocation]
-	target = [TargetNodeName, TargetServerName]
-	dsParms = ["true", "dummy"]
-	addSIBusMemberDT(sibus, fileStore, target, dsParms)
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type TCF -name TradeStreamerTCF -jndiName jms/TradeStreamerTCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -componentAuthAlias TradeAdminAuthData]')
 
-	if (SecurityEnabled == "true"):
-		createSIBusSecurityRole(sibus, DefaultAdminUser )
-	#endIf 
+		AdminTask.createWMQTopic('ndcell(cells/ndcell|cell.xml)', '[-name TradeStreamerTopic -jndiName jms/TradeStreamerTopic -topicName TradeStreamerTopic -description -brokerDurSubQueue -brokerCCDurSubQueue -brokerPubQmgr -brokerPubQueue ]')
 
-	# Create the Trade Broker Queue and Trade TopicSpace Destinations
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
 
-	createSIBDestination(sibus, brokerSIBDest, "Queue", reliability, target )
-	createSIBDestination(sibus, topicSpace, "TopicSpace", reliability, [] )
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
 
-	createJMSConnectionFactory(sibus, brokerJMSQCF, "Queue", "jms/"+brokerJMSQCF, DefaultAdminAuthAliasName, scope )
-	createJMSConnectionFactory(sibus, streamerJMSTCF, "Topic", "jms/"+streamerJMSTCF, DefaultAdminAuthAliasName, scope )
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+	else:
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
 
-	createJMSConnectionFactory(sibus, WebbrokerJMSQCF, "Queue", "web/jms/"+WebbrokerJMSQCF, DefaultAdminAuthAliasName, scope )
-	createJMSConnectionFactory(sibus, WebstreamerJMSTCF, "Topic", "web/jms/"+WebstreamerJMSTCF, DefaultAdminAuthAliasName, scope )
+		createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
 
-	createJMSQueue(brokerQueue, "jms/"+brokerQueue, brokerSIBDest, deliveryMode, scope )
-	createJMSTopic(streamerTopic, "jms/"+streamerTopic, topicSpace, deliveryMode, scope )
+		sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
+		fileStore = [DefaultMEFileStore, DefaultMEFileStoreLocation]
+		target = [TargetNodeName, TargetServerName]
+		dsParms = ["true", "dummy"]
+		addSIBusMemberDT(sibus, fileStore, target, dsParms)
 
-	createJMSQueue(WebbrokerQueue, "web/jms/"+WebbrokerQueue, brokerSIBDest, deliveryMode, scope )
-	createJMSTopic(WebstreamerTopic, "web/jms/"+WebstreamerTopic, topicSpace, deliveryMode, scope )
+		if (SecurityEnabled == "true"):
+			createSIBusSecurityRole(sibus, DefaultAdminUser )
+		#endIf 
 
-	createMDBActivationSpec(brokerMDB, "eis/"+brokerMDB, sibus, "jms/"+brokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
-	createMDBActivationSpec(streamerMDB, "eis/"+streamerMDB, sibus, "jms/"+streamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+		# Create the Trade Broker Queue and Trade TopicSpace Destinations
 
-	createMDBActivationSpec(WebbrokerMDB, "eis/"+WebbrokerMDB, sibus, "web/jms/"+WebbrokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
-	createMDBActivationSpec(WebstreamerMDB, "eis/"+WebstreamerMDB, sibus, "web/jms/"+WebstreamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+		createSIBDestination(sibus, brokerSIBDest, "Queue", reliability, target )
+		createSIBDestination(sibus, topicSpace, "TopicSpace", reliability, [] )
 
-	print ""
-	print "------------------------------------------------"
-	print " JMS Resource Configuration Completed!!!"
-	print "------------------------------------------------"
+		createJMSConnectionFactory(sibus, brokerJMSQCF, "Queue", "jms/"+brokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, streamerJMSTCF, "Topic", "jms/"+streamerJMSTCF, DefaultAdminAuthAliasName, scope )
 
-	print ""
-	print "Saving..."
+		createJMSConnectionFactory(sibus, WebbrokerJMSQCF, "Queue", "web/jms/"+WebbrokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, WebstreamerJMSTCF, "Topic", "web/jms/"+WebstreamerJMSTCF, DefaultAdminAuthAliasName, scope )
+
+		createJMSQueue(brokerQueue, "jms/"+brokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(streamerTopic, "jms/"+streamerTopic, topicSpace, deliveryMode, scope )
+
+		createJMSQueue(WebbrokerQueue, "web/jms/"+WebbrokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(WebstreamerTopic, "web/jms/"+WebstreamerTopic, topicSpace, deliveryMode, scope )
+
+		createMDBActivationSpec(brokerMDB, "eis/"+brokerMDB, sibus, "jms/"+brokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(streamerMDB, "eis/"+streamerMDB, sibus, "jms/"+streamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+
+		createMDBActivationSpec(WebbrokerMDB, "eis/"+WebbrokerMDB, sibus, "web/jms/"+WebbrokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(WebstreamerMDB, "eis/"+WebstreamerMDB, sibus, "web/jms/"+WebstreamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+		#endIf
+
+	print ("")
+	print ("Saving...")
 	AdminConfig.save( )
 #endIf 
 
 
 
 if (operation == "cleanup"):
-	print " "
-	print "------------------------------------------------"
-	print " Uninstalling JMS Resources"
-	print "------------------------------------------------"
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Uninstalling JMS Resources")
+	print ("------------------------------------------------")
 
 	deleteMDBActicationSpec(brokerMDB)
 	deleteMDBActicationSpec(streamerMDB)
@@ -368,22 +370,22 @@ if (operation == "cleanup"):
 
 	removeJAASAuthData(DefaultAdminAuthAliasName)
 
-	print " "
-	print "------------------------------------------------"
-	print " Uninstalling JDBC Resources"
-	print "------------------------------------------------"
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Uninstalling JDBC Resources")
+	print ("------------------------------------------------")
 
 	removeDatasource(DefaultDatasourceName)
 	removeDatasource(DefaultNoTxDatasourceName)
 	removeJAASAuthData(DefaultDatasourceAuthAliasName)
 
 	print ("")
-	print "------------------------------------------------"
-	print " DayTrader Resource Cleanup Completed!!!"
-	print "------------------------------------------------"
+	print ("------------------------------------------------")
+	print (" DayTrader Resource Cleanup Completed!!!")
+	print ("------------------------------------------------")
 
-	print ""
-	print "Saving..."
+	print ("")
+	print ("Saving...")
 	AdminConfig.save( )
 #endIf
 print ("")
