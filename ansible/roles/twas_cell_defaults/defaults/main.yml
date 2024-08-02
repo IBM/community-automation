@@ -12,6 +12,8 @@ ibm_pass: 'external_ibmpass'
 #twas_release: 'WAS855'
 twas_release: 'WAS90'
 
+enable_wmq: false # if set to true, use real MQ versus internal SIB/JMS
+
 profile_templatePath:
   managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
   dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'

@@ -295,86 +295,123 @@ if (operation == "all" or operation == "configure"):
 	print ("------------------------------------------------")
 
 	
-	createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
-        
-	target = [DefaultClusterName]
-	print("---createSIBusDT---")
-	sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
-	dsParms = ["false","jdbc/"+DefaultClusterMEDatasourceName] 
-	print("---addSIBusMemberDT---")
-	addSIBusMemberDT(sibus, "false", target, dsParms)
-    
-	# Create additional MEs
-	parms = ["-bus",DefaultClusterName,"-cluster",DefaultClusterName]
-	meList = AdminTask.listSIBEngines(parms)
-	idx=len(meList.split("\n"))
-	meIndex=1
-	while (idx < len(ClusterMemberNames)):
-		target=[DefaultClusterName]
-		print("---createMessageEngine---")
-		createMessageEngine(sibus, "false",("jdbc/"+DefaultClusterMEDatasourceName),target)
-		idx=idx+1
-		meIndex=meIndex+1
-	#endFor
+	if (enableWMQ == "true" ):
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
 
-	baseName = "Policy for ME"
-	baseSchema = "IBMME"
+		createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
+			
+		target = [DefaultClusterName]
+		print("---createSIBusDT---")
+		sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
+		dsParms = ["false","jdbc/"+DefaultClusterMEDatasourceName] 
+		print("---addSIBusMemberDT---")
+		addSIBusMemberDT(sibus, "false", target, dsParms)
+		
+		# Create additional MEs
+		parms = ["-bus",DefaultClusterName,"-cluster",DefaultClusterName]
+		meList = AdminTask.listSIBEngines(parms)
+		idx=len(meList.split("\n"))
+		meIndex=1
+		while (idx < len(ClusterMemberNames)):
+			target=[DefaultClusterName]
+			print("---createMessageEngine---")
+			createMessageEngine(sibus, "false",("jdbc/"+DefaultClusterMEDatasourceName),target)
+			idx=idx+1
+			meIndex=meIndex+1
+		#endFor
 
-	idx=0
-	meList = AdminTask.listSIBEngines(parms)
-	for engine in meList.split("\n") :
-		engine = engine.rstrip()
-		name = baseName + str(idx)
-		schema = baseSchema + str(idx)
-		serverName = ClusterMemberNames[idx]
-		idx = idx + 1
+		baseName = "Policy for ME"
+		baseSchema = "IBMME"
 
-		# Modify the MEs to use the same datastore
-		print("---modifyMEDataStore---")
-		modifyMEDataStore(engine,DefaultDatasourceAuthAliasName,schema)
-	#end for
+		idx=0
+		meList = AdminTask.listSIBEngines(parms)
+		for engine in meList.split("\n") :
+			engine = engine.rstrip()
+			name = baseName + str(idx)
+			schema = baseSchema + str(idx)
+			serverName = ClusterMemberNames[idx]
+			idx = idx + 1
 
-    # [10/1/14 10:43:43:164 EDT] Buses > DTEJBCluster > Bus members > Messaging engines for DTEJBCluster
-	print("---modifySIBusMemberPolicy---")
-	AdminTask.modifySIBusMemberPolicy(['-bus', DefaultClusterName, '-cluster', DefaultClusterName, '-enableAssistance', 'true', '-policyName', 'SCALABILITY_HA' ])
-	# RTC 185101 schader@us.ibm.com 2015-08-25
-	print("---modifySIBus---")
-	AdminTask.modifySIBus(['-bus', DefaultClusterName, '-configurationReloadEnabled', 'true', '-discardOnDelete', 'false', '-bootstrapPolicy', 'MEMBERS_ONLY', '-highMessageThreshold', '50000', '-protocol',  '-description', DefaultClusterName ])
+			# Modify the MEs to use the same datastore
+			print("---modifyMEDataStore---")
+			modifyMEDataStore(engine,DefaultDatasourceAuthAliasName,schema)
+		#end for
+
+		# [10/1/14 10:43:43:164 EDT] Buses > DTEJBCluster > Bus members > Messaging engines for DTEJBCluster
+		print("---modifySIBusMemberPolicy---")
+		AdminTask.modifySIBusMemberPolicy(['-bus', DefaultClusterName, '-cluster', DefaultClusterName, '-enableAssistance', 'true', '-policyName', 'SCALABILITY_HA' ])
+		# RTC 185101 schader@us.ibm.com 2015-08-25
+		print("---modifySIBus---")
+		AdminTask.modifySIBus(['-bus', DefaultClusterName, '-configurationReloadEnabled', 'true', '-discardOnDelete', 'false', '-bootstrapPolicy', 'MEMBERS_ONLY', '-highMessageThreshold', '50000', '-protocol',  '-description', DefaultClusterName ])
 
 
-	target =[DefaultClusterName]
-	if (SecurityEnabled == "true"):
-		print("---createSIBusSecurityRole---")
-		createSIBusSecurityRole(sibus, DefaultAdminUser )
-	#endIf 
+		target =[DefaultClusterName]
+		if (SecurityEnabled == "true"):
+			print("---createSIBusSecurityRole---")
+			createSIBusSecurityRole(sibus, DefaultAdminUser )
+		#endIf 
 
-	# Create the Trade Broker Queue and Trade TopicSpace Destinations
+		# Create the Trade Broker Queue and Trade TopicSpace Destinations
 
-	createSIBDestination(sibus, brokerSIBDest, "Queue", reliability, target )
-	createSIBDestination(sibus, topicSpace, "TopicSpace", reliability, [] )
+		createSIBDestination(sibus, brokerSIBDest, "Queue", reliability, target )
+		createSIBDestination(sibus, topicSpace, "TopicSpace", reliability, [] )
 
-	createJMSConnectionFactory(sibus, brokerJMSQCF, "Queue", "jms/"+brokerJMSQCF, DefaultAdminAuthAliasName, scope )
-	createJMSConnectionFactory(sibus, streamerJMSTCF, "Topic", "jms/"+streamerJMSTCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, brokerJMSQCF, "Queue", "jms/"+brokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, streamerJMSTCF, "Topic", "jms/"+streamerJMSTCF, DefaultAdminAuthAliasName, scope )
 
-	createJMSConnectionFactory(sibus, WebbrokerJMSQCF, "Queue", "web/jms/"+WebbrokerJMSQCF, DefaultAdminAuthAliasName, scope )
-	createJMSConnectionFactory(sibus, WebstreamerJMSTCF, "Topic", "web/jms/"+WebstreamerJMSTCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, WebbrokerJMSQCF, "Queue", "web/jms/"+WebbrokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, WebstreamerJMSTCF, "Topic", "web/jms/"+WebstreamerJMSTCF, DefaultAdminAuthAliasName, scope )
 
-	createJMSQueue(brokerQueue, "jms/"+brokerQueue, brokerSIBDest, deliveryMode, scope )
-	createJMSTopic(streamerTopic, "jms/"+streamerTopic, topicSpace, deliveryMode, scope )
+		createJMSQueue(brokerQueue, "jms/"+brokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(streamerTopic, "jms/"+streamerTopic, topicSpace, deliveryMode, scope )
 
-	createJMSQueue(WebbrokerQueue, "web/jms/"+WebbrokerQueue, brokerSIBDest, deliveryMode, scope )
-	createJMSTopic(WebstreamerTopic, "web/jms/"+WebstreamerTopic, topicSpace, deliveryMode, scope )
+		createJMSQueue(WebbrokerQueue, "web/jms/"+WebbrokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(WebstreamerTopic, "web/jms/"+WebstreamerTopic, topicSpace, deliveryMode, scope )
 
-	createMDBActivationSpec(brokerMDB, "eis/"+brokerMDB, sibus, "jms/"+brokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
-	createMDBActivationSpec(streamerMDB, "eis/"+streamerMDB, sibus, "jms/"+streamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(brokerMDB, "eis/"+brokerMDB, sibus, "jms/"+brokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(streamerMDB, "eis/"+streamerMDB, sibus, "jms/"+streamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
 
-	createMDBActivationSpec(WebbrokerMDB, "eis/"+WebbrokerMDB, sibus, "web/jms/"+WebbrokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
-	createMDBActivationSpec(WebstreamerMDB, "eis/"+WebstreamerMDB, sibus, "web/jms/"+WebstreamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(WebbrokerMDB, "eis/"+WebbrokerMDB, sibus, "web/jms/"+WebbrokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(WebstreamerMDB, "eis/"+WebstreamerMDB, sibus, "web/jms/"+WebstreamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
 
-	print ("")
-	print ("------------------------------------------------")
-	print (" JMS Resource Configuration Completed!!!")
-	print ("------------------------------------------------")
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+	else:
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
+
+		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
+		# I have not used those variables here as it make no sense, and makes the command harder to understand
+		#
+		AdminTask.createAuthDataEntry('[-alias '+DefaultAdminAuthAliasName+' -user {{ mq_user }} -password {{ mq_pass }} -description ]')
+
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias '+DefaultAdminAuthAliasName+']')
+
+		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
+
+
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type TCF -name TradeStreamerTCF -jndiName jms/TradeStreamerTCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -componentAuthAlias '+DefaultAdminAuthAliasName+']')
+
+		AdminTask.createWMQTopic('ndcell(cells/ndcell|cell.xml)', '[-name TradeStreamerTopic -jndiName jms/TradeStreamerTopic -topicName TradeStreamerTopic -description -brokerDurSubQueue -brokerCCDurSubQueue -brokerPubQmgr -brokerPubQueue ]')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias '+DefaultAdminAuthAliasName+']')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias '+DefaultAdminAuthAliasName+']')
+
+
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
 
 	print ("")
 	print ("Saving...")
