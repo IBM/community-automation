@@ -305,8 +305,8 @@ if (operation == "all" or operation == "configure"):
 		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
 		# I have not used those variables here as it make no sense, and makes the command harder to understand
 		#
-		AdminTask.createAuthDataEntry('[-alias TradeAdminAuthData -user {{ mq_user }} -password {{ mq_pass }} -description ]')
-
+		#AdminTask.createAuthDataEntry('[-alias TradeAdminAuthData -user {{ mq_user }} -password {{ mq_pass }} -description ]')
+		createJAAS(DefaultAdminAuthAliasName, '{{ mq_user }}',  '{{ mq_pass }}' )
 		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias TradeAdminAuthData]')
 
 		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
