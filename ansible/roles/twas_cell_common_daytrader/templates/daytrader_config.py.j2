@@ -298,6 +298,35 @@ if (operation == "all" or operation == "configure"):
 	if (enableWMQ == "true" ):
 		print ("")
 		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
+
+		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
+		# I have not used those variables here as it make no sense, and makes the command harder to understand
+		#
+		AdminTask.createAuthDataEntry('[-alias TradeAdminAuthData -user {{ mq_user }} -password {{ mq_pass }} -description ]')
+
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
+
+
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type TCF -name TradeStreamerTCF -jndiName jms/TradeStreamerTCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -componentAuthAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQTopic('ndcell(cells/ndcell|cell.xml)', '[-name TradeStreamerTopic -jndiName jms/TradeStreamerTopic -topicName TradeStreamerTopic -description -brokerDurSubQueue -brokerCCDurSubQueue -brokerPubQmgr -brokerPubQueue ]')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
+	else:
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+
+		print ("")
+		print ("------------------------------------------------")
 		print (" JMS Resource Configuration started!!!")
 		print (" Scope: " + scope)
 		print ("------------------------------------------------")
@@ -382,36 +411,7 @@ if (operation == "all" or operation == "configure"):
 		print ("------------------------------------------------")
 		print (" JMS Resource Configuration Completed!!!")
 		print ("------------------------------------------------")
-	else:
-		print ("")
-		print ("------------------------------------------------")
-		print (" IBM WMQ Resource Configuration started!!!")
-		print (" Scope: " + scope)
-		print ("------------------------------------------------")
-
-		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
-		# I have not used those variables here as it make no sense, and makes the command harder to understand
-		#
-		AdminTask.createAuthDataEntry('[-alias '+DefaultAdminAuthAliasName+' -user {{ mq_user }} -password {{ mq_pass }} -description ]')
-
-		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias '+DefaultAdminAuthAliasName+']')
-
-		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
-
-
-		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type TCF -name TradeStreamerTCF -jndiName jms/TradeStreamerTCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -componentAuthAlias '+DefaultAdminAuthAliasName+']')
-
-		AdminTask.createWMQTopic('ndcell(cells/ndcell|cell.xml)', '[-name TradeStreamerTopic -jndiName jms/TradeStreamerTopic -topicName TradeStreamerTopic -description -brokerDurSubQueue -brokerCCDurSubQueue -brokerPubQmgr -brokerPubQueue ]')
-
-		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias '+DefaultAdminAuthAliasName+']')
-
-		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias '+DefaultAdminAuthAliasName+']')
-
-
-		print ("")
-		print ("------------------------------------------------")
-		print (" IBM WMQ Resource Configuration Completed!!!")
-		print ("------------------------------------------------")
+		#endIf
 
 	print ("")
 	print ("Saving...")
