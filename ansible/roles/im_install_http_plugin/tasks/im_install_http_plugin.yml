@@ -1,195 +1,185 @@
 ---
-### "ansible_architecture": "s390x",
-### "ansible_architecture": "ppc64le",
-### "ansible_architecture": "x86_64",
-### "ansible_architecture": "chrp", --- AIX
+- name: check if imcl installed as a prereq
+  ansible.builtin.stat:
+    path: "{{ install_ihs_base }}/IM/eclipse/tools/imcl"
+  register: isimcl
+  failed_when: isimcl.stat.exists == False
 
-- name: Install
-  tags: install 
-  block:
-  - name: check if imcl installed as a prereq
-    stat:
-     path: "{{ install_ihs_base }}/IM/eclipse/tools/imcl"
-    register: isimcl
-    failed_when: isimcl.stat.exists == False
-    
-  - set_fact:
-      install_ihs_base_win: 'c:\cygwin'
-    when:
-    - ansible_architecture == 'x86_64'
-    - ansible_system == 'Windows' or 'CYG' in ansible_system
+- name: Windoze?
+  set_fact:
+    install_ihs_base_win: 'c:\cygwin'
+  when:
+  - ansible_architecture == 'x86_64'
+  - ansible_system == 'Windows' or 'CYG' in ansible_system
 
-  - name: copy ihs_plugin.xml template
-    template:
-      src: "im_http_plugin_{{ twas_release }}.xml.j2"
-      dest: "im_http_plugin.xml"
+- name: copy ihs_plugin.xml template
+  ansible.builtin.template:
+    src: "im_http_plugin_{{ twas_release }}.xml.j2"
+    dest: "im_http_plugin.xml"
 
-  - name:  generate secureStorageFile.store
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
+- name:  generate secureStorageFile.store
+  ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
 
-  - name:  install http plugins wct
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
-    register: installOutput
+- name:  install http plugins wct
+  ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
+  register: installOutput
 
-  - name: installOutput
-    debug: 
-      msg: "{{ installOutput.stdout_lines }}"
+- name: installOutput
+  ansible.builtin.debug: 
+    msg: "{{ installOutput.stdout_lines }}"
 
-  # pure hack to get zLinux s390x WCT 32bit java to use 64bit java
-  - name: tWAS855 zLinux s390x WCT super hack
-    shell: "rm -rf {{install_ihs_base }}/{{ wct_dir }}/java/jre ; ln -s {{ install_ihs_base }}/{{ plugin_dir }}/java/jre {{install_ihs_base }}/WCT/java/jre"
-    when:
-    - ansible_architecture == 's390x'
-    - twas_release == 'WAS855'
+# pure hack to get zLinux s390x WCT 32bit java to use 64bit java
+- name: tWAS855 zLinux s390x WCT super hack
+  ansible.builtin.shell: "rm -rf {{ install_ihs_base }}/{{ wct_dir }}/java/jre ; ln -s {{ install_ihs_base }}/{{ plugin_dir }}/java/jre {{ install_ihs_base }}/WCT/java/jre"
+  when:
+  - ansible_architecture == 's390x'
+  - twas_release == 'WAS855'
 
-  - block:
-    - name: copy https_conf template
-      template:
-        src: https_conf_{{ twas_release }}.j2
-        dest: "https_conf"
+- name: copy https_conf template
+  ansible.builtin.template:
+    src: https_conf_{{ twas_release }}.j2
+    dest: "https_conf"
 
-    #https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
-    - name: copy wct_definition.xml template
-      template:
-        src: wct_definition.xml.j2
-        dest: "wct_definition.xml"
+#https://www.ibm.com/docs/en/was/9.0.5?topic=cwspi-configuring-web-server-plug-in-using-pct-tool
+- name: copy wct_definition.xml template
+  ansible.builtin.template:
+    src: wct_definition.xml.j2
+    dest: "wct_definition.xml"
 
-    - name: copy ihsserverkey.sh template
-      template:
-        src: ihsserverkey.sh.j2
-        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
-        mode: 0755
+- name: copy ihsserverkey.sh template
+  ansible.builtin.template:
+    src: ihsserverkey.sh.j2
+    dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+    mode: 0755
 
-    - name:  Check for any old WCT IHS/Plugin configs
-      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
-      register: isPluginConfigured
+- name:  Check for any old WCT IHS/Plugin configs
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -listDefinitionLocations"
+  register: isPluginConfigured
 
-    - name: WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations output
-      debug: 
-        msg: "{{ isPluginConfigured.stdout_lines }}"
+- name: WCT/WCT/wctcmd.sh -tool pct -listDefinitionLocations output
+  ansible.builtin.debug:
+    msg: "{{ isPluginConfigured.stdout_lines }}"
 
-    - name:  Remove the old WCT IHS/Plugin configs
-      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
-      register: isPluginConfigured
-      when: 
-        - isPluginConfigured.rc == 0
-        - isPluginConfigured.stdout is not search('No definition')
+- name:  Remove the old WCT IHS/Plugin configs
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -removeDefinitionLocation -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
+  register: isPluginConfigured
+  when: 
+    - isPluginConfigured.rc == 0
+    - isPluginConfigured.stdout is not search('No definition')
 
-    - name:  configure plugin
-      shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
-      register: configurepluginOutput
+- name:  configure plugin
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd.sh -tool pct -defLocPathname {{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+  register: configurepluginOutput
 
-    - name: configurepluginOutput
-      debug: 
-        msg: "{{ configurepluginOutput.stdout_lines }}"
+- name: configurepluginOutput
+  ansible.builtin.debug:
+    msg: "{{ configurepluginOutput.stdout_lines }}"
 
-    - name: Insert/Update https config
-      blockinfile:
-        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        block: |
-          LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
-          Listen {{ ihs_https_port }}
-          SSLCheckCertificateExpiration 30
-          <VirtualHost *:{{ ihs_https_port }}>
-          ServerName {{ ansible_hostname }}
-          SSLEnable
-          Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-          </VirtualHost>
-          KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
-    - lineinfile: 
-        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        state: absent 
-        regexp: "Header always set Strict-Transport-Security"
-      when: twas_release == 'WAS855'
+- name: Insert/Update https config
+  ansible.builtin.blockinfile:
+    path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+    block: |
+      LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
+      Listen {{ ihs_https_port }}
+      SSLCheckCertificateExpiration 30
+      <VirtualHost *:{{ ihs_https_port }}>
+      ServerName {{ ansible_hostname }}
+      SSLEnable
+      Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+      </VirtualHost>
+      KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+- name: IHS Header for 855x
+  ansible.builtin.lineinfile: 
+    dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+    state: absent
+    regexp: "Header always set Strict-Transport-Security"
+  when: twas_release == 'WAS855'
 
-    - name: update admin.config @@AdminPort@@
-      replace:
-        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        regexp: '@@AdminPort@@'
-        replace: "{{ ihs_admin_port }}"
+- name: update admin.config @@AdminPort@@
+  ansible.builtin.replace:
+    path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+    regexp: '@@AdminPort@@'
+    replace: "{{ ihs_admin_port }}"
 
-    - name: enable server-status
-      replace:
-        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        regexp: '    Require all denied'
-        after: '    SetHandler server-status'
-        before: 'To allow access from a specific IP:'
-        replace: '#    Require all denied'
-    
-    - name:  configure plugin
-      shell: "{{install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
-      args:
-        chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"
-      register: createihsseververkdbOutput
-    
-    - name: checkreateihsseververkdbOutput
-      debug: 
-        msg: "{{ createihsseververkdbOutput.stdout_lines }}"
-    
-    - name:  ListInstalledPackages
-      shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
-      register: packageOutput
-    
-    - name: PackageOutput
-      debug: 
-        msg: "{{ packageOutput.stdout_lines }}"
+- name: enable server-status
+  ansible.builtin.replace:
+    path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+    regexp: '    Require all denied'
+    after: '    SetHandler server-status'
+    before: 'To allow access from a specific IP:'
+    replace: '#    Require all denied'
 
-    - name:  start httpd
-      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
-      register: starthttpdOutput
-    
-    - name: starthttpdOutput
-      debug: 
-        msg: "{{ starthttpdOutput.stdout_lines }}"
+- name:  configure plugin
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.sh"
+  args:
+    chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"
+  register: createihsseververkdbOutput
 
-    - name:  start adminctl
-      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
-      register: startadminctlOutput
-    
-    - name: startadminctlOutput
-      debug: 
-        msg: "{{ startadminctlOutput.stdout_lines }}"
-    
-    - name: Check server-status
-      ansible.builtin.uri:
-        url: "https://localhost:{{ ihs_https_port }}"
-        return_content: no
-        validate_certs: false
-      register: isIHSup
+- name: checkreateihsseververkdbOutput
+  ansible.builtin.debug:
+    msg: "{{ createihsseververkdbOutput.stdout_lines }}"
 
-    - name: Is IHS running output
-      debug: 
-        msg: "{{ isIHSup }}"
-    when: 
-      - ihs_upgrade_only is not defined
+- name:  ListInstalledPackages
+  ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+  register: packageOutput
 
-- name: Versions
-  tags: version 
-  block:
-  - name: HTTPServer version
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh -ifixDetail" 
-    register: HTTPServerVersionOutput
+- name: PackageOutput
+  ansible.builtin.debug:
+    msg: "{{ packageOutput.stdout_lines }}"
 
-  - name: HTTPServerVersionOutput
-    debug: 
-      msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
-    failed_when: ihs_im_driver not in HTTPServerVersionOutput.stdout
+- name:  start httpd
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+  register: starthttpdOutput
 
-  - name: Plugin version
-    shell: "{{install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh -ifixDetail" 
-    register: PluginVersionOutput
+- name: starthttpdOutput
+  ansible.builtin.debug:
+    msg: "{{ starthttpdOutput.stdout_lines }}"
 
-  - name: PluginVersionOutput
-    debug: 
-      msg: "{{ PluginVersionOutput.stdout_lines }}"
-    failed_when: ihs_im_driver not in PluginVersionOutput.stdout
+- name:  start adminctl
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
+  register: startadminctlOutput
 
-  - name: WCT version
-    shell: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh -ifixDetail" 
-    register: WCTVersionOutput
+- name: startadminctlOutput
+  ansible.builtin.debug:
+    msg: "{{ startadminctlOutput.stdout_lines }}"
 
-  - name: WCTVersionOutput
-    debug: 
-      msg: "{{ WCTVersionOutput.stdout_lines }}"
-    failed_when: ihs_im_driver not in WCTVersionOutput.stdout
+- name: Check server-status
+  ansible.builtin.uri:
+    url: "https://localhost:{{ ihs_https_port }}"
+    return_content: no
+    validate_certs: false
+  register: isIHSup
 
+- name: Is IHS running output
+  ansible.builtin.debug: 
+    msg: "{{ isIHSup }}"
+when:
+  - ihs_upgrade_only is not defined
+
+
+- name: HTTPServer version
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh -ifixDetail"
+  register: HTTPServerVersionOutput
+
+- name: HTTPServerVersionOutput
+  ansible.builtin.debug: 
+    msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
+  failed_when: ihs_im_driver not in HTTPServerVersionOutput.stdout
+
+- name: Plugin version
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh -ifixDetail"
+  register: PluginVersionOutput
+
+- name: PluginVersionOutput
+  ansible.builtin.debug: 
+    msg: "{{ PluginVersionOutput.stdout_lines }}"
+  failed_when: ihs_im_driver not in PluginVersionOutput.stdout
+
+- name: WCT version
+  ansible.builtin.shell: "{{install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh -ifixDetail"
+  register: WCTVersionOutput
+
+- name: WCTVersionOutput
+  ansible.builtin.debug:
+    msg: "{{ WCTVersionOutput.stdout_lines }}"
+  failed_when: ihs_im_driver not in WCTVersionOutput.stdout
