@@ -11,3 +11,5 @@
       ansible.builtin.debug:
         msg: "{{ item.item }}"
       with_items: "{{ startDefaultOutput.results }}"
+      failed_when: 
+      - '"ADMN0022E" in item.stdout'

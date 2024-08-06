@@ -3,10 +3,12 @@
 - name: start node
   when: profile_type == 'managed'
   block:
-   - name: start the node
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode.sh"
-     register: startNodeOutput
-     failed_when: ( startNodeOutput.rc not in [ 0, 255 ] )
-   - name: startNodeOutput
-     debug:
-      msg: "{{ startNodeOutput.stdout_lines }}"
+    - name: start the node
+      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode.sh"
+      register: startNodeOutput
+      failed_when: ( startNodeOutput.rc not in [ 0, 255 ] )
+    - name: startNodeOutput
+      debug:
+        msg: "{{ startNodeOutput.stdout_lines }}"
+      failed_when: 
+        - '"ADMN0022E" in startNodeOutput.stdout'
