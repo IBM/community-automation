@@ -12,4 +12,4 @@
         msg: "{{ item.item }}"
       with_items: "{{ startDefaultOutput.results }}"
       failed_when: 
-      - '"ADM*E" in item.stdout'
+      - '"ADM*E:" in item.stdout'
