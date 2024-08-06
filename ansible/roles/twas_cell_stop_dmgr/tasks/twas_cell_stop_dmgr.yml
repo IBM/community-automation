@@ -19,4 +19,4 @@
       debug:
         msg: "{{ stopManagerOutput.stdout_lines }}"
       failed_when: 
-        - '"ADMN0022E" in stopManagerOutput.stdout'
+        - '"ADM*E" in stopManagerOutput.stdout'
