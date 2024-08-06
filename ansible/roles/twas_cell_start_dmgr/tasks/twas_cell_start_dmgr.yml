@@ -11,5 +11,5 @@
       ansible.builtin.debug:
         msg: "{{ startManagerOutput.stdout_lines }}"
       failed_when: 
-      - '"ADM*E:" in startManagerOutput.stdout'
+      - '" Error " in startManagerOutput.stdout'
 

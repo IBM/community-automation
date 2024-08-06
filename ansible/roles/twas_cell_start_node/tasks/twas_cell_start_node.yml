@@ -11,4 +11,4 @@
       debug:
         msg: "{{ startNodeOutput.stdout_lines }}"
       failed_when: 
-        - '"ADM*E:" in startNodeOutput.stdout'
+        - '" Error " in startNodeOutput.stdout'
