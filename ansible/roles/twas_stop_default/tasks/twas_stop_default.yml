@@ -2,24 +2,26 @@
 - name: Stop node servers
   when: profile_type == 'managed' or profile_type == 'default'
   block:
-   - name: Retrieve signers
-     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
-     register: retrieveSignersOutput
-     failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
-   - name: retrieveSignersOutput
-     debug:
-      msg: "{{ retrieveSignersOutput.stdout_lines }}"
+    - name: Retrieve signers
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      register: retrieveSignersOutput
+      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+    - name: retrieveSignersOutput
+      debug:
+        msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
-   - name: List the running servers minus the nodeagent
-     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
-     register: serverListOutput
+    - name: List the running servers minus the nodeagent
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
+      register: serverListOutput
 
-   - name: Stop the node servers
-     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
-     register: stopDefaultOutput
-     failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
-     with_items: '{{ serverListOutput.stdout_lines }}'
-   - name: stopDefaultOutput ( lot of output )
-     ansible.builtin.debug:
-      msg: "{{ item.item }}"
-     with_items: "{{ stopDefaultOutput.results }}"
+    - name: Stop the node servers
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer.sh {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
+      register: stopDefaultOutput
+      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
+      with_items: '{{ serverListOutput.stdout_lines }}'
+    - name: stopDefaultOutput ( lot of output )
+      ansible.builtin.debug:
+        msg: "{{ item.item }}"
+      with_items: "{{ stopDefaultOutput.results }}"
+      failed_when: 
+      - '" Error " in item.stdout'
