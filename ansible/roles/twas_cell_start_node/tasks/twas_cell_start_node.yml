@@ -1,14 +1,22 @@
 ---
 
-- name: start node
+- name: Start the stopped nodeagent
   when: profile_type == 'managed'
   block:
-    - name: start the node
-      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode.sh"
-      register: startNodeOutput
-      failed_when: ( startNodeOutput.rc not in [ 0, 255 ] )
-    - name: startNodeOutput
-      debug:
-        msg: "{{ startNodeOutput.stdout_lines }}"
-      failed_when: 
-        - '" Error " in startNodeOutput.stdout'
+    - name: Check the nodeagent status
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh nodeagent -username {{ twas_username }} -password {{ twas_password }}"
+      register: statusNodeOutput
+      failed_when: ( statusNodeOutput.rc not in [ 0, 246, 255 ] )
+
+    - name: Start the stopped nodeagent
+      when: '"STARTED" not in statusNodeOutput.stdout'
+      block:  
+      - name: start the node
+        shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode.sh"
+        register: startNodeOutput
+        failed_when: ( startNodeOutput.rc not in [ 0, 255 ] )
+      - name: startNodeOutput
+        debug:
+          msg: "{{ startNodeOutput.stdout_lines }}"
+        failed_when: 
+          - '" Error " in startNodeOutput.stdout'

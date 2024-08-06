@@ -1,22 +1,30 @@
 ---
 
-- name: dmgr
+- name: Stop the running dmgr
   when: profile_type == 'dmgr'
   block:
-    - name: retrieve signers
-      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
-      register: retrieveSignersOutput
-      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
-    - name: retrieveSignersOutput
-      debug:
-        msg: "{{ retrieveSignersOutput.stdout_lines }}"
+    - name: Check the dmgr status
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh dmgr -username {{ twas_username }} -password {{ twas_password }}"
+      register: statusDmgroutput
+      failed_when: ( statusDmgroutput.rc not in [ 0, 246, 255 ] )
 
-    - name: stop the dmgr
-      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
-      register: stopManagerOutput
-      failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
-    - name: stopManagerOutput
-      debug:
-        msg: "{{ stopManagerOutput.stdout_lines }}"
-      failed_when: 
-        - '" Error " in stopManagerOutput.stdout'
+    - name: Start the stopped dmgr
+      when: '"STARTED" not in statusDmgroutput.stdout'
+      block:  
+      - name: retrieve signers
+        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+        register: retrieveSignersOutput
+        failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+      - name: retrieveSignersOutput
+        debug:
+          msg: "{{ retrieveSignersOutput.stdout_lines }}"
+
+      - name: stop the dmgr
+        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
+        register: stopManagerOutput
+        failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
+      - name: stopManagerOutput
+        debug:
+          msg: "{{ stopManagerOutput.stdout_lines }}"
+        failed_when: 
+          - '" Error " in stopManagerOutput.stdout'
