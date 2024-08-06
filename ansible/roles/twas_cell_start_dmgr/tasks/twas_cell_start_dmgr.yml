@@ -3,10 +3,13 @@
 - name: dmgr
   when: profile_type == 'dmgr'
   block:
-   - name: start the dmgr
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager.sh"
-     register: startManagerOutput
-     failed_when: ( startManagerOutput.rc not in [ 0, 255 ] )
-   - name: startManagerOutput
-     debug:
-      msg: "{{ startManagerOutput.stdout_lines }}"
+    - name: start the dmgr
+      shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager.sh"
+      register: startManagerOutput
+      failed_when: ( startManagerOutput.rc not in [ 0, 255 ] )
+    - name: startManagerOutput check for errors
+      ansible.builtin.debug:
+        msg: "{{ startManagerOutput.stdout_lines }}"
+      failed_when: 
+      - '"ADMN0022E" in startManagerOutput.stdout'
+

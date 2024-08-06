@@ -9,7 +9,9 @@
   shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f twas_cell_start_cluster.py cluster {{ clusterName }}"
   register: startClusterOutput
   failed_when: ( startClusterOutput.rc not in [ 0, 255 ] )
-- name: startClusterOutput
-  debug:
-   msg: "{{ startClusterOutput.stdout_lines }}"
+- name: startClusterOutput check for errors
+  ansible.builtin.debug:
+    msg: "{{ startClusterOutput.stdout_lines }}"
+  failed_when: 
+  - '"ADMN0022E" in startClusterOutput.stdout'
 
