@@ -9,7 +9,7 @@
       failed_when: ( statusDmgroutput.rc not in [ 0, 246, 255 ] )
 
     - name: Start the stopped dmgr
-      when: '"STARTED" not in statusDmgroutput.stdout'
+      when: '"STARTED" in statusDmgroutput.stdout'
       block:  
       - name: retrieve signers
         shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
