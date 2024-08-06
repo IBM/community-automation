@@ -1,6 +1,6 @@
 ---
 
-- name: dmgr
+- name: Start the stopped dmgr
   when: profile_type == 'dmgr'
   block:
     - name: Check the dmgr status
@@ -11,11 +11,11 @@
     - name: Start the stopped dmgr
       when: '"STARTED" not in statusDmgroutput.stdout'
       block:  
-      - name: start the dmgr
+      - name: Start the dmgr
         shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager.sh"
         register: startManagerOutput
         failed_when: ( startManagerOutput.rc not in [ 0, 255 ] )
-      - name: startManagerOutput check for errors
+      - name: StartManagerOutput check for errors
         ansible.builtin.debug:
           msg: "{{ startManagerOutput.stdout_lines }}"
         failed_when: 

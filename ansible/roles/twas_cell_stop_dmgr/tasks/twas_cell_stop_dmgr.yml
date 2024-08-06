@@ -8,7 +8,7 @@
       register: statusDmgroutput
       failed_when: ( statusDmgroutput.rc not in [ 0, 246, 255 ] )
 
-    - name: Start the stopped dmgr
+    - name: Stop the started dmgr
       when: '"STARTED" in statusDmgroutput.stdout'
       block:  
       - name: retrieve signers
@@ -19,7 +19,7 @@
         debug:
           msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
-      - name: stop the dmgr
+      - name: Stop the dmgr
         shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
         register: stopManagerOutput
         failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
