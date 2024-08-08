@@ -12,7 +12,7 @@
    state: latest
   vars:
    packages:
-   - podman
+    - podman
 
 - name: Check if user is lingering
   ansible.builtin.stat:
@@ -32,14 +32,14 @@
   #- name: get podman runRoot dir
   #  shell: 'podman info | grep runRoot'
   #  register: podman_runRoot
-- name: copy the podmand.conf template to /etc/tmpfiles.d/
+- name: Copy the podmand.conf template to /etc/tmpfiles.d/
   become: true
   ansible.builtin.copy:
     src: /usr/lib/tmpfiles.d/podman.conf
     dest: /etc/tmpfiles.d/podman.conf
     remote_src: true
 - name: add podman nonRoot dir to systemd tmp
-  become: yes
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/tmpfiles.d/podman.conf
     line: "x /run/user/{{ ansible_user_uid }}"
@@ -49,7 +49,7 @@
     name: "{{ svt_mq_image }}"
     username: "{{ hyc_user }}"
     password: "{{ hyc_token }}"
-    force: yes
+    force: true
     state: present
   register: svtop
 
@@ -57,11 +57,11 @@
   ansible.builtin.debug:
     msg: '{{ svtop }}'
 
-- name: kill rm any existing mq container
+- name: Kill rm any existing mq container
   containers.podman.podman_container:
     log_level: info
-    name: svtdb
-    privileged: yes
+    name: '{{ svt_mq_container_name }}'
+    privileged: true
     image: "{{ svt_mq_image }}"
     state: absent # started created absent stopped present
   register: svtop
@@ -85,21 +85,21 @@
 - name: Run mq container
   containers.podman.podman_container:
     log_level: info
-    name: mq
+    name: '{{ svt_mq_container_name }}'
     privileged: false
     image: "{{ svt_mq_image }}"
     state: started
     restart: true
     ports:
-    - "{{ mq_port }}:1414"
-    - "{{ mq_admin_port }}:9443"
+      - "{{ mq_port }}:1414"
+      - "{{ mq_admin_port }}:9443"
     volume:
-     - "mqdata:/mnt/mqm"
+      - "mqdata:/mnt/mqm"
     cmd_args:
-    - "-e LICENSE=accept"
-    - "-e MQ_QMGR_NAME=QM1"
-    - "-e MQ_APP_PASSWORD={{ mq_pass }}"
-    - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
+      - "-e LICENSE=accept"
+      - "-e MQ_QMGR_NAME=QM1"
+      - "-e MQ_APP_PASSWORD={{ mq_pass }}"
+      - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
   register: svtop
 
 - name: Output svtop
