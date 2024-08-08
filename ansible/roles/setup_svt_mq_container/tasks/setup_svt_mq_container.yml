@@ -1,13 +1,13 @@
 ---
 
 - name: check for RedHat distribution
-  fail:
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
-  become: yes
-  dnf:
+  become: true
+  ansible.builtin.dnf:
    name: "{{ packages }}"
    state: latest
   vars:
@@ -15,13 +15,13 @@
    - podman
 
 - name: Check if user is lingering
-  stat:
+  ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
   when: ansible_user != 'root'
 
 - name: Enable lingering is needed
-  command: "loginctl enable-linger {{ ansible_user }}"
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
   when:
     - ansible_user != 'root'
     - not user_lingering.stat.exists
@@ -33,14 +33,14 @@
   #  shell: 'podman info | grep runRoot'
   #  register: podman_runRoot
 - name: copy the podmand.conf template to /etc/tmpfiles.d/
-  become: yes
+  become: true
   ansible.builtin.copy:
     src: /usr/lib/tmpfiles.d/podman.conf
     dest: /etc/tmpfiles.d/podman.conf
-    remote_src: yes
+    remote_src: true
 - name: add podman nonRoot dir to systemd tmp
   become: yes
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/tmpfiles.d/podman.conf
     line: "x /run/user/{{ ansible_user_uid }}"
 
@@ -53,8 +53,9 @@
     state: present
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+- name: Output svtop
+  ansible.builtin.debug:
+    msg: '{{ svtop }}'
 
 - name: kill rm any existing mq container
   containers.podman.podman_container:
@@ -65,15 +66,16 @@
     state: absent # started created absent stopped present
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+- name: Output svtop
+  ansible.builtin.debug:
+    msg: '{{ svtop }}'
 
-- name: purge existing mqdata volume
+- name: Purge existing mqdata volume
   containers.podman.podman_volume:
     state: absent
     name: mqdata
 
-- name: create mqdata volume
+- name: Create mqdata volume
   containers.podman.podman_volume:
     state: present
     name: mqdata
@@ -84,22 +86,22 @@
   containers.podman.podman_container:
     log_level: info
     name: mq
-    privileged: no
+    privileged: false
     image: "{{ svt_mq_image }}"
     state: started
-    restart: yes
+    restart: true
     ports:
-     - "{{ mq_port }}:1414"
-     - "{{ mq_admin_port }}:9443"
+    - "{{ mq_port }}:1414"
+    - "{{ mq_admin_port }}:9443"
     volume:
      - "mqdata:/mnt/mqm"
     cmd_args:
-     - "-e LICENSE=accept"
-     - "-e MQ_QMGR_NAME=QM1"
-     - "-e MQ_APP_PASSWORD={{ mq_pass }}"
-     - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
+    - "-e LICENSE=accept"
+    - "-e MQ_QMGR_NAME=QM1"
+    - "-e MQ_APP_PASSWORD={{ mq_pass }}"
+    - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
-
+- name: Output svtop
+  ansible.builtin.debug:
+    msg: '{{ svtop }}'

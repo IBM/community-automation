@@ -1,2 +1,3 @@
 ---
-- include_tasks: setup_svt_mq_container.yml
+- name: Setup the MQ container
+  include_tasks: setup_svt_mq_container.yml
