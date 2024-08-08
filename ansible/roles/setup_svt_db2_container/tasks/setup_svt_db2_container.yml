@@ -6,7 +6,7 @@
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
-  become: yes
+  become: true
   dnf:
    name: "{{ packages }}"
    state: latest
@@ -32,14 +32,14 @@
   #- name: get podman runRoot dir
   #  shell: 'podman info | grep runRoot'
   #  register: podman_runRoot
-- name: copy the podmand.conf template to /etc/tmpfiles.d/
-  become: yes
+- name: Copy the podmand.conf template to /etc/tmpfiles.d/
+  become: true
   ansible.builtin.copy:
     src: /usr/lib/tmpfiles.d/podman.conf
     dest: /etc/tmpfiles.d/podman.conf
     remote_src: yes
-- name: add podman nonRoot dir to systemd tmp
-  become: yes
+- name: Add podman nonRoot dir to systemd tmp
+  become: true
   lineinfile:
     path: /etc/tmpfiles.d/podman.conf
     line: "x /run/user/{{ ansible_user_uid }}"
@@ -66,7 +66,7 @@
 - name: kill rm any existing db2 container
   containers.podman.podman_container:
     log_level: info
-    name: svtdb
+    name: '{{ svt_db_container_name }}'
     privileged: yes
     image: "{{ svt_db2_image }}"
     state: absent # started created absent stopped present
@@ -79,11 +79,11 @@
 - name: Run svtdb container
   containers.podman.podman_container:
     log_level: info
-    name: svtdb
-    privileged: yes
+    name: '{{ svt_db_container_name }}'
+    privileged: true
     image: "{{ svt_db2_image }}"
     state: started
-    restart: yes
+    restart: true
     ports:
      - "50000:50000"
     volume:
