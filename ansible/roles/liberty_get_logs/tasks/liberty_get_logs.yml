@@ -2,28 +2,28 @@
 
 - name: Remove local log directory
   delegate_to: localhost
-  file:
+  ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: absent
 
 - name: Create local log directory
   delegate_to: localhost
-  file:
+  ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
 - name: archive the liberty logs dir to fetch
   community.general.archive:
     path:
-    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
     dest: logs.tar
     format: tar
     exclude_path:
-    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
+      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
     exclusion_patterns:
-    - '*.zip'
-    - '*.tar'
-    - '*.gz'
+      - '*.zip'
+      - '*.tar'
+      - '*.gz'
 
 - name: fetch the liberty log archive
   ansible.builtin.fetch:
@@ -38,16 +38,16 @@
     # unarchive fails to find handler
 - name: Extract the liberty log archive
   delegate_to: localhost
-  shell: tar xf logs.tar
+  ansible.builtin.shell: tar xf logs.tar
   args:
     chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
-- name: remove logs.tar
+- name: Remove logs.tar
   delegate_to: localhost
-  file:
+  ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
     state: absent
 
-- name: log/error directory location
-  debug:
+- name: Log/error directory location
+  ansible.builtin.debug:
    msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
