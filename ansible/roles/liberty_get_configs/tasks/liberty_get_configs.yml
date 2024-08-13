@@ -13,6 +13,8 @@
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
     dest: configs.tar
     format: tar
+    exclude_path:
+      - "{{ wlp_usr_dir }}/shared/stackGroups"
     exclusion_patterns:
       - '*.jar'
       - '*.zip'
