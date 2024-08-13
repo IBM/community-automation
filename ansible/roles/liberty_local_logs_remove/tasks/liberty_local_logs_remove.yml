@@ -1,13 +1,14 @@
 ---
 
-- name: Remove local config directory
+- name: Remove local logs directory
   delegate_to: localhost
   ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}"
     state: absent
 
-- name: Create local config directory
+- name: Create local logs directory
   delegate_to: localhost
   ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}"
     state: directory
+    mode: '0755'

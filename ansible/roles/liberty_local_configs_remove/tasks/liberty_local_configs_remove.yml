@@ -11,3 +11,4 @@
   file:
     path: "{{ configsDir }}/{{ env_name }}"
     state: directory
+    mode: '0755'
