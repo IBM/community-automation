@@ -12,16 +12,14 @@
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
     dest: configs.tar
-    format: tar
-    exclude_path:
-      - "{{ wlp_usr_dir }}/shared/stackGroups"
-      - "{{ wlp_usr_dir }}/shared/stackGroups/*"
     exclusion_patterns:
+      - 'stackGroups'
       - '*.jar'
       - '*.zip'
       - '*.tar'
       - '*.tgz'
       - '*.gz'
+    format: tar
 
 - name: Fetch the liberty config archive
   ansible.builtin.fetch:
