@@ -1,5 +1,5 @@
 ---
-- name: Set wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
+- name: Set wlp_cmd, wlp_nohup
   ansible.builtin.set_fact:
    wlp_cmd: " "
    wlp_nohup: "nohup "
