@@ -3,13 +3,13 @@
 - name: Remove local config directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/{{ env_name }}"
+    path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: absent
 
 - name: Create local config directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/{{ env_name }}"
+    path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
 - name: archive the liberty config files to fetch

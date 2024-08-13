@@ -1,18 +1,18 @@
 ---
 
-- name: Remove local log directory
+- name: Remove local dump directory
   delegate_to: localhost
-  file:
+  ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: absent
 
-- name: Create local log directory
+- name: Create local dump directory
   delegate_to: localhost
-  file:
+  ansible.builtin.file:
     path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
-- name: archive the liberty logs dir to fetch
+- name: archive the liberty dump tar to fetch
   community.general.archive:
     path:
     - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"

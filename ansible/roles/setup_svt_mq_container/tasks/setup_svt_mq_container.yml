@@ -1,6 +1,6 @@
 ---
 
-- name: check for RedHat distribution
+- name: Check for RedHat distribution
   ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"

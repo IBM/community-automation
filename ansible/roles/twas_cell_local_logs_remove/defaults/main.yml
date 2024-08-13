@@ -1,5 +1,2 @@
 ---
-
-history_days: '-3'
-env_name: mytWASEnv
 logsDir: "{{ playbook_dir }}" # location on the ansible controller

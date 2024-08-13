@@ -1,0 +1,3 @@
+---
+- name: Remove the local configs
+  include_tasks: liberty_local_configs_remove.yml
