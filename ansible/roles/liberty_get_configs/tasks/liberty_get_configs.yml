@@ -14,9 +14,7 @@
     dest: configs.tar
     exclude_path:
       - "{{ wlp_usr_dir }}/shared/stackGroups"
-      - "{{ wlp_usr_dir }}/shared/stackGroups/*"
     exclusion_patterns:
-      - 'stackGroups'
       - '*.jar'
       - '*.zip'
       - '*.tar'

@@ -7,9 +7,7 @@
     dest: logs.tar
     exclude_path:
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state/*"
     exclusion_patterns:
-      - 'state'
       - '*.zip'
       - '*.tar'
       - '*.gz'
