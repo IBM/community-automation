@@ -3,11 +3,6 @@
   ansible.builtin.set_fact:
    wlp_cmd: " "
    wlp_nohup: "nohup "
-   wlp_usr_dir: "{{ install_base }}/usr"
-  when: ansible_system != 'OS400'
-- name: Setting liberty facts
-  ansible.builtin.debug:
-    msg: 'setting wlp_usr_dir => {{ wlp_usr_dir }}'
   when: ansible_system != 'OS400'
 
 - name: Set OS400 wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
