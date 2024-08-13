@@ -3,7 +3,7 @@
 - name: Archive the liberty config files to fetch
   community.general.archive:
     path:
-      - "{{ wlp_usr_dir }}/shared/*"
+      - "{{ wlp_usr_dir }}/shared/*" # needs * to allow the exclude_path to work
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/*.xml"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"

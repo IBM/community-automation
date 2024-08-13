@@ -3,7 +3,7 @@
 - name: archive the liberty logs dir to fetch
   community.general.archive:
     path:
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*"
+      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
     dest: logs.tar
     exclude_path:
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
