@@ -1,0 +1,4 @@
+---
+
+env_name: myLibertyEnv
+logsDir: "{{ playbook_dir }}"  # location on the ansible controller
