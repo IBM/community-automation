@@ -3,7 +3,7 @@
 - name: Archive the liberty config files to fetch
   community.general.archive:
     path:
-      - "{{ wlp_usr_dir }}/shared/"
+      - "{{ wlp_usr_dir }}/shared/*"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/*.xml"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
@@ -12,6 +12,9 @@
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
       - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
     dest: configs.tar
+    exclude_path:
+      - "{{ wlp_usr_dir }}/shared/stackGroups"
+      - "{{ wlp_usr_dir }}/shared/stackGroups/*"
     exclusion_patterns:
       - 'stackGroups'
       - '*.jar'
@@ -31,7 +34,7 @@
     path: configs.tar
     state: absent
 
-    # unarchive fails to find handler
+# unarchive fails to find handler
 - name: Extract the liberty config archive
   delegate_to: localhost
   shell: tar xf configs.tar
