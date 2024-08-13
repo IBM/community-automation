@@ -1,53 +1,40 @@
 ---
 
-- name: Remove local dump directory
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
-    state: absent
-
-- name: Create local dump directory
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
-    state: directory
-
-- name: archive the liberty dump tar to fetch
+- name: Archive the liberty dump tar to fetch
   community.general.archive:
     path:
-    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
-    dest: logs.tar
+      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+    dest: dumps.tar
     format: tar
-    exclude_path:
-    - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
     exclusion_patterns:
-    - '*.zip'
-    - '*.tar'
-    - '*.gz'
+      - '*.zip'
+      - '*.tar'
+      - '*.gz'
 
-- name: fetch the liberty log archive
+- name: Fetch the liberty dump archive
   ansible.builtin.fetch:
-    src: logs.tar
+    src: dumps.tar
     dest: "{{ logsDir }}/{{ env_name }}"
 
-- name: Remove temp logs.tar
+- name: Remove temp dumps.tar
   ansible.builtin.file:
-    path: logs.tar
+    path: dumps.tar
     state: absent
 
     # unarchive fails to find handler
 - name: Extract the liberty log archive
   delegate_to: localhost
-  shell: tar xf logs.tar
+  shell: tar xf dumps.tar
   args:
     chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
-- name: remove logs.tar
+- name: Remove dumps.tar
   delegate_to: localhost
   file:
-    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
+    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.tar"
     state: absent
 
-- name: log/error directory location
+- name: Dumps directory location
   debug:
-   msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
