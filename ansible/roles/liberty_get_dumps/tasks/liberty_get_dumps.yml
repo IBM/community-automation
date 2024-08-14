@@ -1,16 +1,16 @@
 ---
 - name: Any Cores?
-  ansible.builtin.stat:
-    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+  ansible.builtin.command: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
   register: iscore
+  ignore_errors: true
 
 - name: Any Heapdumps?
-  ansible.builtin.stat:
-    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+  ansible.builtin.command: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
   register: isheap
+  ignore_errors: true
 
 - name: Dump archive logic
-  when: iscore.stat.exists == True or isheap.stat.exists == True 
+  when: iscore.rc == 0 or isheap.rc == 0 
   block: 
   - name: Archive the liberty dump tar to fetch
     ignore_errors: True
