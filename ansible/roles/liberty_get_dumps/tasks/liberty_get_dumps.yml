@@ -3,11 +3,13 @@
   ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
   register: iscore
   ignore_errors: true
+  no_log: true
 
 - name: Any Heapdumps?
   ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
   register: isheap
   ignore_errors: true
+  no_log: true
 
 - name: Dump archive logic
   when: iscore.rc == 0 or isheap.rc == 0 
