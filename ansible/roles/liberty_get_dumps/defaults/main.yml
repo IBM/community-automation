@@ -1,5 +1,3 @@
 ---
-
-history_days: '-3'
 env_name: myLibertyEnv
-logsDir: "{{ playbook_dir }}" # location on the ansible controller
+dumpsDir: "{{ playbook_dir }}" # location on the ansible controller
