@@ -1,0 +1,2 @@
+---
+dumpsDir: "{{ playbook_dir }}" # location on the ansible controller
