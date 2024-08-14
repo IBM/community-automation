@@ -9,4 +9,4 @@
   ansible.builtin.shell: |
     {{ binaryLogView }} {{ item }} > {{ output }}
     rm -rf {{ item }}
-  with_items: "{{ logdata }}"
+  with_items: "{{ logdata.stdout_lines }}"
