@@ -28,7 +28,7 @@
   - name: Fetch the liberty dump archive
     ansible.builtin.fetch:
       src: dumps.tar
-      dest: "{{ logsDir }}/{{ env_name }}"
+      dest: "{{ dumpsDir }}/{{ env_name }}"
 
   - name: Remove temp dumps.tar
     ansible.builtin.file:
@@ -40,14 +40,14 @@
     delegate_to: localhost
     shell: tar xf dumps.tar
     args:
-      chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      chdir: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
   - name: Remove dumps.tar
     delegate_to: localhost
     file:
-      path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.tar"
+      path: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.tar"
       state: absent
 
   - name: Dumps directory location
     debug:
-      msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"

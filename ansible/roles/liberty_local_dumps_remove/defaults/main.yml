@@ -1,0 +1,4 @@
+---
+
+env_name: myLibertyEnv
+dumpsDir: "{{ playbook_dir }}"  # location on the ansible controller
