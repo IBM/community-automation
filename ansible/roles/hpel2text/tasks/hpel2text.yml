@@ -7,6 +7,6 @@
 
 - name: Convert binary logs to text
   ansible.builtin.shell: |
-    {{ binaryLogView }} {{ item }} > {{ output }}
+    {{ binaryLogView }} {{ item }} > $(dirname {{ output }})
     rm -rf {{ item }}
   with_items: "{{ logdata.stdout_lines }}"
