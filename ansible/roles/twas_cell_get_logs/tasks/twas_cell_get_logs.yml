@@ -1,7 +1,7 @@
 ---
 
 - name: Any logs?
-  state:
+  ansible.builtin.stat:
     path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
   register: islogs
 
