@@ -1,50 +1,57 @@
 ---
+- name: Any configs?
+  ansible.builtin.stat:
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
+  register: isconfig
 
-- name: Archive the liberty config files to fetch
-  community.general.archive:
-    path:
-      - "{{ wlp_usr_dir }}/shared/*" # needs * to allow the exclude_path to work
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/*.xml"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
-    dest: configs.tar
-    exclude_path:
-      - "{{ wlp_usr_dir }}/shared/stackGroups"
-    exclusion_patterns:
-      - '*.jar'
-      - '*.zip'
-      - '*.tar'
-      - '*.tgz'
-      - '*.gz'
-    format: tar
+- name: Config archive logic
+  when: isconfig.stat.exists == True
+  block: 
+  - name: Archive the liberty config files to fetch
+    community.general.archive:
+      path:
+        - "{{ wlp_usr_dir }}/shared/*" # needs * to allow the exclude_path to work
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/*.xml"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
+      dest: configs.tar
+      exclude_path:
+        - "{{ wlp_usr_dir }}/shared/stackGroups"
+      exclusion_patterns:
+        - '*.jar'
+        - '*.zip'
+        - '*.tar'
+        - '*.tgz'
+        - '*.gz'
+      format: tar
 
-- name: Fetch the liberty config archive
-  ansible.builtin.fetch:
-    src: configs.tar
-    dest: "{{ configsDir }}/{{ env_name }}/"
+  - name: Fetch the liberty config archive
+    ansible.builtin.fetch:
+      src: configs.tar
+      dest: "{{ configsDir }}/{{ env_name }}/"
 
-- name: Remove temp configs.tar
-  ansible.builtin.file:
-    path: configs.tar
-    state: absent
+  - name: Remove temp configs.tar
+    ansible.builtin.file:
+      path: configs.tar
+      state: absent
 
-# unarchive fails to find handler
-- name: Extract the liberty config archive
-  delegate_to: localhost
-  shell: tar xf configs.tar
-  args:
-    chdir: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+  # unarchive fails to find handler
+  - name: Extract the liberty config archive
+    delegate_to: localhost
+    shell: tar xf configs.tar
+    args:
+      chdir: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
-- name: Remove configs.tar
-  delegate_to: localhost
-  file:
-    path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
-    state: absent
+  - name: Remove configs.tar
+    delegate_to: localhost
+    file:
+      path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
+      state: absent
 
-- name: Server config directory location
-  debug:
-   msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+  - name: Server config directory location
+    debug:
+    msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"

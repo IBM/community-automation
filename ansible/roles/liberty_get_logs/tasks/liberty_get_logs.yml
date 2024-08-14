@@ -1,41 +1,48 @@
 ---
+- name: Any logs?
+  ansible.builtin.stat:
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+  register: islogs
 
-- name: archive the liberty logs dir to fetch
-  community.general.archive:
-    path:
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
-    dest: logs.tar
-    exclude_path:
-      - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
-    exclusion_patterns:
-      - '*.zip'
-      - '*.tar'
-      - '*.gz'
-    format: tar
+- name: Log archive logic
+  when: islogs.stat.exists == True
+  block: 
+  - name: archive the liberty logs dir to fetch
+    community.general.archive:
+      path:
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
+      dest: logs.tar
+      exclude_path:
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
+      exclusion_patterns:
+        - '*.zip'
+        - '*.tar'
+        - '*.gz'
+      format: tar
 
-- name: fetch the liberty log archive
-  ansible.builtin.fetch:
-    src: logs.tar
-    dest: "{{ logsDir }}/{{ env_name }}"
+  - name: fetch the liberty log archive
+    ansible.builtin.fetch:
+      src: logs.tar
+      dest: "{{ logsDir }}/{{ env_name }}"
 
-- name: Remove temp logs.tar
-  ansible.builtin.file:
-    path: logs.tar
-    state: absent
+  - name: Remove temp logs.tar
+    ansible.builtin.file:
+      path: logs.tar
+      state: absent
 
-  # unarchive fails to find handler
-- name: Extract the liberty log archive
-  delegate_to: localhost
-  ansible.builtin.shell: tar xf logs.tar
-  args:
-    chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    # unarchive fails to find handler
+  - name: Extract the liberty log archive
+    delegate_to: localhost
+    ansible.builtin.shell: tar xf logs.tar
+    args:
+      chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
 
-- name: Remove logs.tar
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
-    state: absent
+  - name: Remove logs.tar
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
+      state: absent
 
-- name: Log/error directory location
-  ansible.builtin.debug:
-   msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+  - name: Log/error directory location
+    ansible.builtin.debug:
+    msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
