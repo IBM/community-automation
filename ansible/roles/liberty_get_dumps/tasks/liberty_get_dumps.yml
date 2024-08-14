@@ -1,11 +1,11 @@
 ---
 - name: Any Cores?
-  ansible.builtin.command: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
   register: iscore
   ignore_errors: true
 
 - name: Any Heapdumps?
-  ansible.builtin.command: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
   register: isheap
   ignore_errors: true
 
