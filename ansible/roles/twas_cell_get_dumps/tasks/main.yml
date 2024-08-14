@@ -1,0 +1,3 @@
+---
+- name: Get tWAS javacore and heapdumps
+- include_tasks: twas_cell_get_dumps.yml

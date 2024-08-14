@@ -10,10 +10,10 @@
    - name: install the workstation group
      command: "dnf -y groupinstall 'Server with GUI' --allowerasing"
      register: manualdnf
-     become: yes
+     become: true
 
    - name: install rhel packages
-     become: yes
+     become: true
      dnf:
       name: "{{ packages }}"
       state: present
@@ -44,7 +44,7 @@
       state: present
       regexp: ':1='
       line: ":1={{ ansible_user }}"
-     become: yes
+     become: true
    
    - name: add vnc geometry
      lineinfile:
@@ -52,7 +52,7 @@
       state: present
       regexp: 'geometry='
       line: "geometry=1852x1100"
-     become: yes
+     become: true
 
    - name: add vnc session
      lineinfile:
@@ -60,7 +60,7 @@
       state: present
       regexp: 'session='
       line: "session=gnome"
-     become: yes
+     become: true
 
    - name: vnc pass
      shell: "echo 'vncPassw0rd' | vncpasswd -f > ~/.vnc/passwd"
@@ -82,7 +82,7 @@
      args:
        warn: no
      register: uservncenable
-     become: yes
+     become: true
 
    - name: purge directories
      file:

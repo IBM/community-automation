@@ -1,12 +1,13 @@
 ---
+
 - name: Any Cores?
-  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+  ansible.builtin.shell: "ls {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
   register: iscore
   ignore_errors: true
   no_log: true
 
 - name: Any Heapdumps?
-  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+  ansible.builtin.shell: "ls {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
   register: isheap
   ignore_errors: true
   no_log: true
@@ -14,12 +15,12 @@
 - name: Dump archive logic
   when: iscore.rc == 0 or isheap.rc == 0 
   block: 
-  - name: Archive the liberty dump tar to fetch
+  - name: Archive the tWAS dump tar to fetch
     ignore_errors: True
     community.general.archive:
       path:
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+        - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
+        - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
       dest: dumps.tar
       format: tar
       exclusion_patterns:
@@ -27,7 +28,7 @@
         - '*.tar'
         - '*.gz'
 
-  - name: Fetch the liberty dump archive
+  - name: Fetch the tWAS dump archive
     ansible.builtin.fetch:
       src: dumps.tar
       dest: "{{ dumpsDir }}/{{ env_name }}"
@@ -38,7 +39,7 @@
       state: absent
 
     # unarchive fails to find handler
-  - name: Extract the liberty log archive
+  - name: Extract the tWAS log archive
     delegate_to: localhost
     shell: tar xf dumps.tar
     args:
