@@ -1,0 +1,12 @@
+---
+
+- name: Any binary logdata directories?
+  ansible.builtin.shell: "find {{ logsDir }} -name logdata"
+  register: logdata
+  changed_when: false
+
+- name: Convert binary logs to text
+  ansible.builtin.shell: |
+    {{ binaryLogView }} {{ item }} > {{ output }}
+    rm -rf {{ item }}
+  with_items: "{{ logdata }}"
