@@ -46,4 +46,4 @@
 
   - name: Log/error directory location
     ansible.builtin.debug:
-    msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"

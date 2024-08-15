@@ -43,8 +43,8 @@
   - name: Extract the liberty config archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
-      dest: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      src: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
+      dest: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
 
   - name: Remove configs.zip
@@ -55,4 +55,4 @@
 
   - name: Server config directory location
     debug:
-    msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
