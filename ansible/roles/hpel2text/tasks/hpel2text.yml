@@ -10,14 +10,3 @@
     {{ binaryLogView }} view {{ item }} > {{ item | dirname }}/{{ output }}
     rm -rf {{ item }}
   with_items: "{{ logdata.stdout_lines }}"
-
-- name: Any binary tracedata directories?
-  ansible.builtin.shell: "find {{ logsDir }} -name tracedata"
-  register: tracedata
-  changed_when: false
-
-- name: Remove tracedata directories ( local cleanup )
-  file:
-    path: "{{ item }}"
-    state: absent
-  with_items: "{{ tracedata.stdout_lines }}"
