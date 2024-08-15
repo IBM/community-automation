@@ -7,6 +7,6 @@
 
 - name: Convert binary logs to text
   ansible.builtin.shell: |
-    {{ binaryLogView }} view {{ item }} > {{ item | dirname }}/{{ output }}
+    {{ binaryLogView }} view {{ item }} > {{ item | dirname }}/{{ hpel_output }}
     rm -rf {{ item }}
   with_items: "{{ logdata.stdout_lines }}"
