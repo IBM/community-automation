@@ -7,8 +7,8 @@
 
 - name: Convert binary logs to text
   ansible.builtin.shell: |
-    {{ binaryLogView }} view {{ item }} > $(dirname {{ output }})
-    #rm -rf {{ item }}
+    {{ binaryLogView }} view {{ item }} > {{ item | dirname }}/{{ output }}
+    rm -rf {{ item }}
   with_items: "{{ logdata.stdout_lines }}"
 
 - name: Any binary tracedata directories?
