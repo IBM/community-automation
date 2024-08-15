@@ -39,10 +39,10 @@
       state: absent
 
     # unarchive fails to find handler
-  - name: Extract the tWAS log archive
+  - name: Extract the tWAS dump archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
       dest: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
 
