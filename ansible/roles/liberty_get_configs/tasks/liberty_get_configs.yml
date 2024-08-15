@@ -18,7 +18,7 @@
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/configDropins"
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/dropins"
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/apps"
-      dest: configs.tar
+      dest: configs.zip
       exclude_path:
         - "{{ wlp_usr_dir }}/shared/stackGroups"
       exclusion_patterns:
@@ -27,29 +27,30 @@
         - '*.tar'
         - '*.tgz'
         - '*.gz'
-      format: tar
+      format: zip
 
   - name: Fetch the liberty config archive
     ansible.builtin.fetch:
-      src: configs.tar
+      src: configs.zip
       dest: "{{ configsDir }}/{{ env_name }}/"
 
-  - name: Remove temp configs.tar
+  - name: Remove temp configs.zip
     ansible.builtin.file:
-      path: configs.tar
+      path: configs.zip
       state: absent
 
   # unarchive fails to find handler
   - name: Extract the liberty config archive
     delegate_to: localhost
-    shell: tar xf configs.tar
-    args:
-      chdir: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    ansible.builtin.unarchive:
+      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
+      dest: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      remote_src: false
 
-  - name: Remove configs.tar
+  - name: Remove configs.zip
     delegate_to: localhost
     file:
-      path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.tar"
+      path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
       state: absent
 
   - name: Server config directory location

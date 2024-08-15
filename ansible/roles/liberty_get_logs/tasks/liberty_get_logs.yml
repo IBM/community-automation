@@ -11,36 +11,36 @@
     community.general.archive:
       path:
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
-      dest: logs.tar
+      dest: logs.zip
       exclude_path:
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
       exclusion_patterns:
         - '*.zip'
         - '*.tar'
         - '*.gz'
-      format: tar
+      format: zip
 
   - name: fetch the liberty log archive
     ansible.builtin.fetch:
-      src: logs.tar
+      src: logs.zip
       dest: "{{ logsDir }}/{{ env_name }}"
 
-  - name: Remove temp logs.tar
+  - name: Remove temp logs.zip
     ansible.builtin.file:
-      path: logs.tar
+      path: logs.zip
       state: absent
 
-    # unarchive fails to find handler
   - name: Extract the liberty log archive
     delegate_to: localhost
-    ansible.builtin.shell: tar xf logs.tar
-    args:
-      chdir: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    ansible.builtin.unarchive:
+      src: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+      dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      remote_src: false
 
-  - name: Remove logs.tar
+  - name: Remove logs.zip
     delegate_to: localhost
     ansible.builtin.file:
-      path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
+      path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
       state: absent
 
   - name: Log/error directory location

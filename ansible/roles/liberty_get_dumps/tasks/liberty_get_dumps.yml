@@ -14,14 +14,14 @@
 - name: Dump archive logic
   when: iscore.rc == 0 or isheap.rc == 0 
   block: 
-  - name: Archive the liberty dump tar to fetch
+  - name: Archive the liberty dump zip to fetch
     ignore_errors: True
     community.general.archive:
       path:
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
-      dest: dumps.tar
-      format: tar
+      dest: dumps.zip
+      format: zip
       exclusion_patterns:
         - '*.zip'
         - '*.tar'
@@ -29,25 +29,25 @@
 
   - name: Fetch the liberty dump archive
     ansible.builtin.fetch:
-      src: dumps.tar
+      src: dumps.zip
       dest: "{{ dumpsDir }}/{{ env_name }}"
 
-  - name: Remove temp dumps.tar
+  - name: Remove temp dumps.zip
     ansible.builtin.file:
-      path: dumps.tar
+      path: dumps.zip
       state: absent
 
-    # unarchive fails to find handler
-  - name: Extract the liberty log archive
+  - name: Extract the liberty dump archive
     delegate_to: localhost
-    shell: tar xf dumps.tar
-    args:
-      chdir: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    ansible.builtin.unarchive:
+      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      dest: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      remote_src: false
 
-  - name: Remove dumps.tar
+  - name: Remove dumps.zip
     delegate_to: localhost
     file:
-      path: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.tar"
+      path: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
       state: absent
 
   - name: Dumps directory location
