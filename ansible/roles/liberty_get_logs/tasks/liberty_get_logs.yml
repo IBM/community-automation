@@ -14,6 +14,7 @@
       dest: logs.zip
       exclude_path:
         - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/tracedata"
       exclusion_patterns:
         - '*.zip'
         - '*.tar'
