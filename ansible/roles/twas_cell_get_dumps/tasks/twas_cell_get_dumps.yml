@@ -1,13 +1,13 @@
 ---
 
 - name: Any Cores?
-  ansible.builtin.shell: "ls {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
+  ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
   register: iscore
   ignore_errors: true
   no_log: true
 
 - name: Any Heapdumps?
-  ansible.builtin.shell: "ls {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
+  ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
   register: isheap
   ignore_errors: true
   no_log: true
@@ -19,14 +19,15 @@
     ignore_errors: True
     community.general.archive:
       path:
-        - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
-        - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
+        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
+        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
       dest: dumps.zip
       format: zip
       exclusion_patterns:
         - '*.zip'
         - '*.tar'
         - '*.gz'
+      mode: '0755'
 
   - name: Fetch the tWAS dump archive
     ansible.builtin.fetch:
@@ -48,10 +49,10 @@
 
   - name: Remove dumps.zip
     delegate_to: localhost
-    file:
+    ansible.builtin.file:
       path: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
       state: absent
 
   - name: Dumps directory location
-    debug:
+    ansible.builtin.debug:
       msg: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"

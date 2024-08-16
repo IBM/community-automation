@@ -1,0 +1,3 @@
+---
+- name: Retrieve jmeter container jmeter_get_logs.yml
+  include_tasks: jmeter_container_get_logs.yml

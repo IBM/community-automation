@@ -1,0 +1,22 @@
+---
+- name: Any heapdumps?
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'heapdump*"
+  register: isheap
+  changed_when: false
+
+- name: Remove tWAS heapdumps  
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items: '{{ isheap.stdout_lines }}'
+
+- name: Any javacores?
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'javacore*"
+  register: isjavacore
+  changed_when: false
+
+- name: Remove tWAS javacores  
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items: '{{ isjavacore.stdout_lines }}'
