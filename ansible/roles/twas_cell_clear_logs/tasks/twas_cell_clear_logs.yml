@@ -45,7 +45,7 @@
       ansible.builtin.stat:
         path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
       register: islog
-    - name: Remove IHS logs directory
+    - name: Remove Plugin logs directory
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
         state: absent
