@@ -12,7 +12,7 @@
       when: '"STARTED" in statusDmgroutput.stdout'
       block:  
       - name: retrieve signers
-        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh CellDefaultTrustStore ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
         register: retrieveSignersOutput
         failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
       - name: retrieveSignersOutput
