@@ -1,6 +1,6 @@
 ---
 - name: Any heapdumps?
-  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -name 'heapdump*"
+  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -name 'heapdump*'"
   register: isheap
   changed_when: false
 
@@ -11,7 +11,7 @@
   with_items: '{{ isheap.stdout_lines }}'
 
 - name: Any javacores?
-  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -name 'javacore*"
+  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -name 'javacore*'"
   register: isjavacore
   changed_when: false
 
