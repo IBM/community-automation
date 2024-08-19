@@ -31,7 +31,7 @@
     - name: ReCreate IHS logs directory
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
-        state: present
+        state: directory
         mode: 0755
       when: islog.stat.exists == True
 
@@ -53,6 +53,6 @@
     - name: ReCreate Plugin logs directory
       ansible.builtin.file:
         path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
-        state: present
+        state: directory
         mode: 0755
       when: islog.stat.exists == True
