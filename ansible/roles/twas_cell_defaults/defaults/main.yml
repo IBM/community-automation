@@ -11,6 +11,7 @@ ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
 #twas_release: 'WAS855'
 twas_release: 'WAS90'
+cell_trust: 'CellDefaultTrustStore'
 
 enable_wmq: false # if set to true, use real MQ versus internal SIB/JMS
 
