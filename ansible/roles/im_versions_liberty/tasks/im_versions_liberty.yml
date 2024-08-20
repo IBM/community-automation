@@ -22,16 +22,16 @@
     - name: Create version dir
       delegate_to: localhost
       file:
-        path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
 
     - name: Write IM listInstalledPackages to file
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ packageOutput.stdout_lines }}"
-        dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
       when: 
-        - logsDir is defined
+        - logs_dir is defined
         - env_name is defined
         - version_txt_file is defined
     when: isimcl.stat.exists == True

@@ -32,7 +32,7 @@
   - name: Fetch the liberty config archive
     ansible.builtin.fetch:
       src: configs.zip
-      dest: "{{ configsDir }}/{{ env_name }}/"
+      dest: "{{ configs_dir }}/{{ env_name }}/"
 
   - name: Remove temp configs.zip
     ansible.builtin.file:
@@ -43,16 +43,16 @@
   - name: Extract the liberty config archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
-      dest: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      src: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
+      dest: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
 
   - name: Remove configs.zip
     delegate_to: localhost
     file:
-      path: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
+      path: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/configs.zip"
       state: absent
 
   - name: Server config directory location
     debug:
-      msg: "{{ configsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ configs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"

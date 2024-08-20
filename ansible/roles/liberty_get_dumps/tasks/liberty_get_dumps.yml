@@ -30,7 +30,7 @@
   - name: Fetch the liberty dump archive
     ansible.builtin.fetch:
       src: dumps.zip
-      dest: "{{ dumpsDir }}/{{ env_name }}"
+      dest: "{{ dumps_dir }}/{{ env_name }}"
 
   - name: Remove temp dumps.zip
     ansible.builtin.file:
@@ -40,16 +40,16 @@
   - name: Extract the liberty dump archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
-      dest: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
 
   - name: Remove dumps.zip
     delegate_to: localhost
     file:
-      path: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
       state: absent
 
   - name: Dumps directory location
     debug:
-      msg: "{{ dumpsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
