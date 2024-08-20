@@ -3,3 +3,4 @@ shared_dir: 'IM-shared'
 install_base: '/home/nest'
 # trick the template to install onto windoze via cygwin
 install_base_win: ''
+im_upgrade_repo: 'https://public.dhe.ibm.com/software/rationalsdp/v7/im/updates/'
