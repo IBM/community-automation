@@ -1,9 +1,9 @@
 ---
 
 - name:  Upgrade IM to the latest level
-  ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories 'https://public.dhe.ibm.com/software/rationalsdp/v7/im/updates/'"
+  ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
   register: updateOutput
-  
+
 - name: Upgrade output
   ansible.builtin.debug:
    msg: "{{ updateOutput.stdout_lines }}"
