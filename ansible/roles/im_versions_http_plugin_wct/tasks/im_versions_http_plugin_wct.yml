@@ -24,6 +24,15 @@
     debug: 
       msg: "{{ packageOutput.stdout_lines }}"
 
+  - name: Write IM listInstalledPackages to file
+    ansible.builtin.copy:
+      content: "{{ packageOutput.stdout_lines }}"
+      dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+    when: 
+      - logsDir is defined
+      - env_name is defined
+      - version_txt_file is defined
+
   - name: HTTPServer version
     shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh -ifixDetail" 
     register: HTTPServerVersionOutput

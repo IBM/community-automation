@@ -12,6 +12,15 @@
     debug: 
       msg: "{{ packageOutput.stdout_lines }}"
 
+  - name: Write IM listInstalledPackages to file
+    ansible.builtin.copy:
+      content: "{{ packageOutput.stdout_lines }}"
+      dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+    when: 
+      - logsDir is defined
+      - env_name is defined
+      - version_txt_file is defined
+
   - name: check if tWAS installed
     stat:
       path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo.sh -ifixDetail"
