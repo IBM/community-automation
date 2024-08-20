@@ -28,7 +28,7 @@
     - name: Write IM listInstalledPackages to file
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ packageOutput.stdout_lines }}"
+        content: "{{ packageOutput.stdout }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
       when: 
         - logs_dir is defined
