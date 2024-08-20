@@ -3,12 +3,12 @@
 - name: Remove local config directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/{{ env_name }}"
+    path: "{{ configs_dir }}/{{ env_name }}"
     state: absent
 
 - name: Create local config directory
   delegate_to: localhost
   file:
-    path: "{{ configsDir }}/{{ env_name }}"
+    path: "{{ configs_dir }}/{{ env_name }}"
     state: directory
     mode: '0755'

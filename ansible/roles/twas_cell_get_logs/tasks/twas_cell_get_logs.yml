@@ -25,21 +25,21 @@
   - name: Fetch the twas log archive
     ansible.builtin.fetch:
       src: logs.zip
-      dest: "{{ logsDir }}/{{ env_name }}"
+      dest: "{{ logs_dir }}/{{ env_name }}"
 
   - name: Unarchive the twas logs
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
-      dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       remote_src: false
 
   - name: Remove logs.zip
     delegate_to: localhost
     ansible.builtin.file:
-      path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
       state: absent
 
   - name: Print local log/error directory location
     ansible.builtin.debug:
-      msg: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"

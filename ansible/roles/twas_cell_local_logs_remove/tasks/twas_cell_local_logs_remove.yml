@@ -3,12 +3,12 @@
 - name: Clear local logs directory
   delegate_to: localhost
   ansible.builtin.file:
-    path: "{{ logsDir }}/{{ env_name }}"
+    path: "{{ logs_dir }}/{{ env_name }}"
     state: absent
 
 - name: Create local logs directory
   delegate_to: localhost
   ansible.builtin.file:
-    path: "{{ logsDir }}/{{ env_name }}"
+    path: "{{ logs_dir }}/{{ env_name }}"
     state: directory
     mode: '0755'

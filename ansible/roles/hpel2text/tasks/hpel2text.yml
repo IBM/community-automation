@@ -1,7 +1,7 @@
 ---
 
 - name: Any binary logdata directories?
-  ansible.builtin.shell: "find {{ logsDir }}/{{ env_name }} -name logdata"
+  ansible.builtin.shell: "find {{ logs_dir }}/{{ env_name }} -name logdata"
   register: logdata
   changed_when: false
 
