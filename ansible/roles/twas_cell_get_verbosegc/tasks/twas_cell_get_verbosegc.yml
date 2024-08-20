@@ -42,4 +42,4 @@
 
   - name: Verbosegc directory location
     ansible.builtin.debug:
-      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
