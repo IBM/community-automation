@@ -4,7 +4,7 @@
   register: isverbosegc
 
 - name: Verbosegc archive logic
-  when: isverbosegc.rc == 0
+  when: isverbosegc.stdout != ""
   block: 
   - name: Archive the tWAS verbosegc files to fetch
     ignore_errors: True
