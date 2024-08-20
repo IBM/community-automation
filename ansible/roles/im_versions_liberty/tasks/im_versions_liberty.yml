@@ -19,6 +19,11 @@
       debug: 
         msg: "{{ packageOutput.stdout_lines }}"
 
+    - name: Create version dir
+      file:
+        path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+
     - name: Write IM listInstalledPackages to file
       ansible.builtin.copy:
         content: "{{ packageOutput.stdout_lines }}"
