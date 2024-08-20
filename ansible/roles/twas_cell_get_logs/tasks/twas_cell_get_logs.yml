@@ -14,7 +14,7 @@
       - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
       exclude_path:
       - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
-      - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/tracedata"
+      - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*/tracedata"
       exclusion_patterns:
       - '*.zip'
       - '*.tar'
