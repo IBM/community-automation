@@ -18,6 +18,15 @@
     - name: packageOutput
       debug: 
         msg: "{{ packageOutput.stdout_lines }}"
+
+    - name: Write IM listInstalledPackages to file
+      ansible.builtin.copy:
+        content: "{{ packageOutput.stdout_lines }}"
+        dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+      when: 
+        - logsDir is defined
+        - env_name is defined
+        - version_txt_file is defined
     when: isimcl.stat.exists == True
 
   - name: check if Liberty installed
