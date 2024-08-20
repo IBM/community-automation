@@ -12,6 +12,9 @@ ibm_pass: 'external_ibmpass'
 #twas_release: 'WAS855'
 twas_release: 'WAS90'
 cell_trust: 'CellDefaultTrustStore'
+verbosegc_file_template: 'verbosegc*'
+env_name: mytWASEnv
+logs_dir: "{{ playbook_dir }}" # location on the ansible controller
 
 enable_wmq: false # if set to true, use real MQ versus internal SIB/JMS
 

@@ -1,3 +1,1 @@
 ---
-env_name: mytWASEnv
-dumps_dir: "{{ playbook_dir }}" # location on the ansible controller
