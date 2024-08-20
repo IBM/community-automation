@@ -122,7 +122,7 @@
       msg: "{{ createihsseververkdbOutput.stdout_lines }}"
 
   - name:  ListInstalledPackages
-    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
 
   - name: PackageOutput

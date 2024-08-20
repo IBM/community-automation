@@ -5,7 +5,7 @@
   block:
   
   - name:  listInstalledPackages
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
   
   - name: packageOutput
