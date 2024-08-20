@@ -20,11 +20,13 @@
         msg: "{{ packageOutput.stdout_lines }}"
 
     - name: Create version dir
+      delegate_to: localhost
       file:
         path: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
 
     - name: Write IM listInstalledPackages to file
+      delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ packageOutput.stdout_lines }}"
         dest: "{{ logsDir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
