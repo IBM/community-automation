@@ -1,0 +1,4 @@
+---
+env_name: mytWASEnv
+logs_dir: "{{ playbook_dir }}" # location on the ansible controller
+verbosegc_file_template: 'verbosegc*'

@@ -1,0 +1,45 @@
+---
+- name: Any verbosegc files?
+  ansible.builtin.shell: "find {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/ -name {{ verbosegc_file_template }}"
+  register: isverbosegc
+
+- name: Verbosegc archive logic
+  when: isverbosegc.rc == 0
+  block: 
+  - name: Archive the tWAS verbosegc files to fetch
+    ignore_errors: True
+    community.general.archive:
+      path:
+        - "{{ item }}"
+      dest: verbosegc.zip
+      format: zip
+      mode: '0755'
+    with_items: '{{ isverbosegc.stdout_lines }}'
+
+  - name: Fetch the tWAS verbosegc archive
+    ansible.builtin.fetch:
+      src: verbosegc.zip
+      dest: "{{ logs_dir }}/{{ env_name }}"
+
+  - name: Remove temp verbosegc.zip
+    ansible.builtin.file:
+      path: verbosegc.zip
+      state: absent
+
+    # unarchive fails to find handler
+  - name: Extract the tWAS verbosegc archive
+    delegate_to: localhost
+    ansible.builtin.unarchive:
+      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/verbosegc.zip"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      remote_src: false
+
+  - name: Remove verbosegc.zip
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/verbosegc.zip"
+      state: absent
+
+  - name: Verbosegc directory location
+    ansible.builtin.debug:
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
