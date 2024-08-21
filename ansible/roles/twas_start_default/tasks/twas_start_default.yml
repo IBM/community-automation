@@ -2,6 +2,14 @@
 - name: Start tWAS Server
   when: profile_type == 'managed' or profile_type == 'default'
   block:
+    - name: retrieve signers
+      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      register: retrieveSignersOutput
+      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+    - name: retrieveSignersOutput
+      debug:
+        msg: "{{ retrieveSignersOutput.stdout_lines }}"
+        
     - name: List the stopped servers minus the nodeagent
       ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
       register: serverListOutput
