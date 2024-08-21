@@ -21,7 +21,9 @@
       with_items: '{{ serverListOutput.stdout_lines }}'
     - name: stopDefaultOutput ( lot of output )
       ansible.builtin.debug:
-        msg: "{{ item.item }}"
+        msg: "{{ item.rc }}"
       with_items: "{{ stopDefaultOutput.results }}"
+      loop_control:
+        label: "{{ stopDefaultOutput.resulet.stdout_lines }}"
       failed_when: 
       - '" Error " in item.stdout'
