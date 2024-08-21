@@ -1,7 +1,7 @@
 ---
 
-- name: check if previous ihs installed
-  stat:
+- name: Check if previous ihs installed
+  ansible.builtin.stat:
     path: "{{ install_ihs_base }}/{{ http_dir }}bin/apachectl"
   register: isihs
 
@@ -10,22 +10,22 @@
   block: 
   - name:  stop httpd
     ignore_errors: true
-    shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
 
-  - name:  stop adminctl
+  - name: Stop adminctl
     ignore_errors: true
-    shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
 
-- name:  pkill httpd  ( linux )
+- name: Force pkill httpd  ( linux )
   ignore_errors: true
-  shell: "pkill httpd"
+  ansible.builtin.shell: "pkill httpd"
   register: killOutput
   failed_when: ( killOutput.rc not in [ 0, 1 ] )
   when:
-  - ansible_architecture != 'chrp'
+    - ansible_architecture != 'chrp'
 
-- name: check if previous WCT installed
-  stat:
+- name: Check if previous WCT installed
+  ansible.builtin.stat:
     path: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo.sh"
   register: iswct
 
@@ -33,100 +33,98 @@
   when: iswct.stat.exists == True
   block:
   - name:  uninstall wct WAS90
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
     register: uninstallWCTOutput
     when: twas_release == 'WAS90'
 
-  - name: uninstallWCTOutput WAS90
-    debug: 
+  - name: UninstallWCTOutput WAS90
+    ansible.builtin.debug:
       msg: "{{ uninstallWCTOutput.stdout_lines }}"
     failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS90'
 
-  - name:  uninstall wct WAS855
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
+  - name:  Uninstall wct WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ wct_dir }}"
     register: uninstallWCTOutput
     when: twas_release == 'WAS855'
 
-  - name: uninstallWCTOutput WAS855
-    debug: 
+  - name: UninstallWCTOutput WAS855
+    ansible.builtin.debug:
       msg: "{{ uninstallWCTOutput.stdout_lines }}"
     failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS855'
 
-- name: check if previous Plugin installed 
-  stat:
+- name: Check if previous Plugin installed 
+  ansible.builtin.stat:
     path: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo.sh"
   register: isplg
 
-- name: Uninstall plugin 
+- name: Uninstall plugin
   when: isplg.stat.exists == True
   block:
   - name:  uninstall plugin WAS90
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
     register: uninstallPLGOutput
     when: twas_release == 'WAS90'
 
-  - name: uninstallPLGOutput WAS90
-    debug: 
+  - name: UninstallPLGOutput WAS90
+    ansible.builtin.debug:
       msg: "{{ uninstallPLGOutput.stdout_lines }}"
     failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS890'
 
-  - name:  uninstall plugin WAS855
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
+  - name:  Uninstall plugin WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ plugin_dir }}"
     register: uninstallPLGOutput
     when: twas_release == 'WAS855'
     
   - name: uninstallPLGOutput WAS855
-    debug: 
+    ansible.builtin.debug:
       msg: "{{ uninstallPLGOutput.stdout_lines }}"
     failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS855'
 
-- name: check if previous IHS installed
-  stat:
+- name: Check if previous IHS installed
+  ansible.builtin.stat:
     path: "{{ install_ihs_base }}/{{ http_dir }}/bin/versionInfo.sh"
   register: isihs
 
 - name: Uninstall IHS WAS90
   when: isihs.stat.exists == True
   block:
-  - name:  uninstall http WAS90
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
+  - name:  Uninstall http WAS90
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
     register: uninstallIHSOutput
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS90'
 
-  - name: uninstallIHSOutput WAS90
-    debug: 
+  - name: UninstallIHSOutput WAS90
+    ansible.builtin.debug:
       msg: "{{ uninstallIHSOutput.stdout_lines }}"
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS90'
 
-  - name:  uninstall http WAS855
-    shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
+  - name:  Uninstall http WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ install_ihs_base }}/{{ http_dir }}"
     register: uninstallIHSOutput
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS855'
     
-  - name: uninstallIHSOutput WAS855
-    debug: 
+  - name: UninstallIHSOutput WAS855
+    ansible.builtin.debug:
       msg: "{{ uninstallIHSOutput.stdout_lines }}"
     failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
     when: twas_release == 'WAS855'
 
-- name: Remove previous http/plugin/wct/ dir 
-  file:
+- name: Remove previous http/plugin/wct/ dir
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_ihs_base }}/{{ http_dir }}"
-  - "{{ install_ihs_base }}/{{ plugin_dir }}"
-  - "{{ install_ihs_base }}/{{ wct_dir }}"
-  - "{{ install_ihs_base }}/im_http_plugin.xml"
-  - "{{ install_ihs_base }}/wct_definition.xml"
-  - "{{ install_ihs_base }}/https_conf"
-  # - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this
- 
- 
+    - "{{ install_ihs_base }}/{{ http_dir }}"
+    - "{{ install_ihs_base }}/{{ plugin_dir }}"
+    - "{{ install_ihs_base }}/{{ wct_dir }}"
+    - "{{ install_ihs_base }}/im_http_plugin.xml"
+    - "{{ install_ihs_base }}/wct_definition.xml"
+    - "{{ install_ihs_base }}/https_conf"
+    # - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this
