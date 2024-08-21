@@ -3,18 +3,20 @@
   when: profile_type == 'managed' or profile_type == 'default'
   block:
     - name: List the stopped servers minus the nodeagent
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
       register: serverListOutput
 
     - name: Start the default tWAS Server
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ item }}"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ item }}"
       register: startDefaultOutput
       failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
 
     - name: startDefaultOutput ( lot of output )
       ansible.builtin.debug:
-        msg: "{{ item.item }}"
+        msg: "{{ item.rc }}"
       with_items: "{{ startDefaultOutput.results }}"
-      failed_when: 
-      - '" Error " in item.stdout'
+      loop_control:
+        label: "{{ startDefaultOutput.stdout_lines }}"
+      failed_when:
+        - '" Error " in item.stdout'
