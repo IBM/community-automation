@@ -19,9 +19,10 @@
       register: stopDefaultOutput
       failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
-    - name: stopDefaultOutput ( lot of output )
+
+    - name: stopDefaultOutput
       ansible.builtin.debug:
-        msg: "{{ item.rc }}"
+        msg: "rc={{ item.rc }}"
       with_items: "{{ stopDefaultOutput.results }}"
       loop_control:
         label: "{{ item.stdout }}"
