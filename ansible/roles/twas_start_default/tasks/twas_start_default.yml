@@ -20,9 +20,9 @@
       failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
 
-    - name: startDefaultOutput ( lot of output )
+    - name: startDefaultOutput
       ansible.builtin.debug:
-        msg: "{{ item.rc }}"
+        msg: "rc={{ item.rc }}"
       with_items: "{{ startDefaultOutput.results }}"
       loop_control:
         label: "{{ item.stdout }}"
