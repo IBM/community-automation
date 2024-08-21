@@ -24,6 +24,6 @@
         msg: "{{ item.rc }}"
       with_items: "{{ stopDefaultOutput.results }}"
       loop_control:
-        label: "{{ stopDefaultOutput.resulet.stdout_lines }}"
+        label: "{{ stopDefaultOutput.results.stdout_lines }}"
       failed_when: 
       - '" Error " in item.stdout'
