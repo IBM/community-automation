@@ -15,25 +15,25 @@
 - name: archive the logs dir to fetch
   community.general.archive:
     path:
-    - "/home/{{ ansible_user }}/jmeter.log"
-    - "/home/{{ ansible_user }}/jmeter.error"
-    dest: logs.tar
-    format: tar
+    - "/home/{{ ansible_user }}/jmeter.*"
+    dest: logs.zip
+    format: zip
+    mode: '0755'
 
 - name: fetch the jmeter log archive
   ansible.builtin.fetch:
-    src: logs.tar
-    dest: "logs/{{ env_name }}/jmeter"
+    src: logs.zip
+    dest: "{{ logs_dir }}/{{ env_name }}/jmeter"
 
-    # unarchive fails to find handler
 - name: Extract the jemeter log archive
   delegate_to: localhost
-  shell: tar xf logs.tar
-  args:
-    chdir: "logs/{{ env_name }}/jmeter/{{ ansible_fqdn }}"
+  ansible.builtin.unarchive:
+    src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    remote_src: false
 
-- name: remove logs.tar
+- name: remove logs.zip
   delegate_to: localhost
   file:
-    path: "logs/{{ env_name }}/jmeter/{{ ansible_fqdn }}/logs.tar"
+    path: "{{ logs_dir }}/{{ env_name }}/jmeter/{{ ansible_fqdn }}/logs.zip"
     state: absent
