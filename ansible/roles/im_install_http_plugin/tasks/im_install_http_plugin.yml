@@ -17,6 +17,11 @@
     src: "im_http_plugin_{{ twas_release }}.xml.j2"
     dest: "im_http_plugin.xml"
 
+- name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+  ansible.builtin.file:
+    path: "{{ install_ihs_base }}/IM/secureStorageFile.store"
+    state: absent
+
 - name:  generate secureStorageFile.store
   ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
 
