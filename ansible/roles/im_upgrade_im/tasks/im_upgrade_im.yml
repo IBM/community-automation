@@ -1,4 +1,7 @@
 ---
+- name: Upgrade IM repo
+  ansible.builtin.debug:
+   msg: "IM repo->{{ im_upgrade_repo }}"
 
 - name:  Upgrade IM to the latest level
   ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
