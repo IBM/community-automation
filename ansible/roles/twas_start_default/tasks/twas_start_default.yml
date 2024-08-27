@@ -1,6 +1,8 @@
 ---
 - name: Start tWAS Server
-  when: profile_type == 'managed' or profile_type == 'default'
+  when: 
+    - profile_type == 'managed' or profile_type == 'default'
+    - dynamic_cluster_only is not defined
   block:
     - name: retrieve signers
       shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
