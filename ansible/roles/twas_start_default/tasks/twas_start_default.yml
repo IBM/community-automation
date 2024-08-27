@@ -14,7 +14,7 @@
 
     # If the target servers are part of a dynamic cluster which starts automtcally, pause xx mins
     - pause:
-      minutes: "{{ dynamic_cluster_pause }}"
+        minutes: "{{ dynamic_cluster_pause }}"
       when: dynamic_cluster_pause is defined
 
     - name: List the stopped servers minus the nodeagent
