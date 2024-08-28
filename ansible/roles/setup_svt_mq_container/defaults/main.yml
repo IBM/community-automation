@@ -1,3 +1,4 @@
 svt_mq_image: someimage
 hyc_user: user
 hyc_token: token
+svt_mq_container_name: svtmq
