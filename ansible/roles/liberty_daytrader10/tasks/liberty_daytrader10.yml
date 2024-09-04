@@ -16,6 +16,10 @@
     template:
      src: server.xml.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
+  - name: copy bootstrap.properties template
+    template:
+     src: bootstrap.properties.j2
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
 
   - name: copy application war
     copy:
