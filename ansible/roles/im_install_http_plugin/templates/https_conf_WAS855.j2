@@ -1,7 +1,7 @@
 LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
 Listen {{ ihs_https_port }}
 <VirtualHost *:{{ ihs_https_port }}>
- ServerName {{ ansible_hostname }}
+ ServerName {{ ansible_fqdn }}
  SSLEnable
 </VirtualHost>
 KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
