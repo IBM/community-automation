@@ -183,7 +183,7 @@
 
   - name: Check server status
     failed_when: false
-    ansible.builtin.ommand:
+    ansible.builtin.command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ cc_server }}"
     register: op
 
