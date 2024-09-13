@@ -79,7 +79,7 @@
     </dataSource>
 <!--
     <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions"/> 
-    <httpSession cloneId="{{ ansible_hostname }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
+    <httpSession cloneId="{{ ansible_fqdn }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
 -->
 
 	<messagingEngine id="defaultME">

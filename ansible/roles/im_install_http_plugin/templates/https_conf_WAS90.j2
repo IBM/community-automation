@@ -2,7 +2,7 @@ LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
 Listen {{ ihs_https_port }}
 SSLCheckCertificateExpiration 30
 <VirtualHost *:{{ ihs_https_port }}>
- ServerName {{ ansible_hostname }}
+ ServerName {{ ansible_fqdn }}
  SSLEnable
  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
 </VirtualHost>
