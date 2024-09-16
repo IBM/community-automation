@@ -5,6 +5,7 @@
         <feature>mpMetrics-5.1</feature>
         <feature>clusterMember-1.0</feature>
         <feature>monitor-1.0</feature>
+        <feature>sessionDatabase-1.0</feature>
     </featureManager>
         
 	<!-- allow reuse of 'busy' ports for fast server recycling on linux (where ports remain blocked for up to 2 mins after server stops) ${tradelite.http.port} set in bootstrap.properties --> 
@@ -77,10 +78,9 @@
     <dataSource id="SessionDS" jdbcDriverRef="DB2JCC" jndiName="jdbc/Sessions" connectionManagerRef="Session" containerAuthDataRef="SessionSourceAuthData">
         <properties databaseName="{{ db_name }}" driverType="4" portNumber="{{ db_port }}" serverName="{{ db_host }}"/>
     </dataSource>
-<!--
+
     <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions"/> 
     <httpSession cloneId="{{ ansible_fqdn }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
--->
 
 	<messagingEngine id="defaultME">
 		<queue id="TradeBrokerQueue"/>
