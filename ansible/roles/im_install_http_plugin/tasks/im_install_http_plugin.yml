@@ -95,6 +95,14 @@
         Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         </VirtualHost>
         KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+  
+  - name: IHS disable access_log
+    ansible.builtin.lineinfile: 
+      dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+      search_string: 'CustomLog logs/access_log common'
+      line: '# CustomLog logs/access_log common'
+      state: present
+
   - name: IHS Header for 855x
     ansible.builtin.lineinfile: 
       dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
