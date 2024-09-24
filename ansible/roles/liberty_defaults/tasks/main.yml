@@ -6,7 +6,7 @@
   when: ansible_system != 'OS400'
 
 - name: Set OS400 wlp_cmd, wlp_nohup, wlp_usr_dir, wlp_output
-  ansible.builtin.set_fact: 
+  ansible.builtin.set_fact:
    wlp_cmd: "qsh "
    wlp_nohup: ""
    wlp_owner: qejbsvr
