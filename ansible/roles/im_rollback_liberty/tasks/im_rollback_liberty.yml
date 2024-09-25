@@ -13,9 +13,3 @@
     was_product_dir: "{{ install_base }}/{{ liberty_dir }}"
     im_package_id: "{{ im_liberty_package }}"
   when: rollback_version is defined
-
-
-  [nest@nest-dt-p10-cc ~]$ IM/eclipse/tools/imcl listInstalledPackages -long
-/home/nest/IM/eclipse : com.ibm.cic.agent_1.9.2006.20230925_1323 : IBM® Installation Manager : 1.9.2.6
-/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1
-/home/nest/wlp : com.ibm.websphere.liberty.ND_24.0.9.20240827_1743 : IBM WebSphere Application Server Liberty Network Deployment : 24.0.0.9
