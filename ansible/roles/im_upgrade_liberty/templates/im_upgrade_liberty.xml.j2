@@ -12,7 +12,7 @@
 <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
 </profile>
 <install modify='true'>
-    <offering profile='WebSphere Liberty' id='{{ im_liberty_package }}' version='{{ liberty_version_number }}' features='liberty'/>
+    <offering profile='WebSphere Liberty' id='{{ im_liberty_package }}' features='liberty'/>
 </install>
 <install>
     <offering profile='WebSphere Liberty' id='com.ibm.java.jdk.v{{ im_java_short_version }}' features='com.ibm.sdk.{{ im_java_short_version }}'/>
