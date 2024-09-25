@@ -1,0 +1,68 @@
+---
+- name: Zip up the current folder
+  community.general.archive:
+    path: "{{ wlp_usr_dir }}"
+    dest: "{{ install_base }}/{{ ansible_hostname }}.liberty_usr.save.zip"
+    mode: '0755'
+    format: zip
+
+- name: Check if previous liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/wlp/bin/server"
+  register: islib
+
+- name: Perform liberty operations
+  when: islib.stat.exists
+  block:
+    - name: Check liberty install type.
+      ansible.builtin.shell: "{{ install_base }}/wlp/bin/productInfo version --verbose"
+      register: productOutput
+
+    - name: Display Product Output
+      ansible.builtin.debug:
+        msg: "{{ productOutput }}"
+
+    - name: Upgrade liberty version
+      tags: upgrade
+      when: "'InstallationManager' in productOutput.stdout"
+      block:
+      - name: Check if imcl installed as a prereq
+        ansible.builtin.stat:
+          path: "{{ install_base }}/IM/eclipse/tools/imcl"
+        register: isimcl
+        failed_when: not isimcl.stat.exists
+
+      - name: Copy im_upgrade_liberty.xml template
+        ansible.builtin.template:
+          src: im_upgrade_liberty.xml.j2
+          dest: "im_upgrade_liberty.xml"
+
+      - name: Generate secureStorageFile.store
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+      - name: Generate external ibm secureStorageFile.store
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+      - name: Upgrade liberty
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_upgrade_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+        register: UpgradeOutput
+
+      - name: UpgradeOutput
+        ansible.builtin.debug:
+          msg: "{{ UpgradeOutput.stdout_lines }}"
+
+      - name: ListInstalledPackages
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+        register: packageOutput
+
+      - name: PackageOutput
+        ansible.builtin.debug:
+          msg: "{{ packageOutput.stdout_lines }}"
+
+      - name: Print the Liberty version
+        ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version"
+        register: versionOutput
+
+      - name: PackageOutput
+        ansible.builtin.debug:
+          msg: "{{ versionOutput.stdout_lines }}"

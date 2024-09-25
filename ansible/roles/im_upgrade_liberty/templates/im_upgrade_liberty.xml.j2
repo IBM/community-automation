@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<agent-input>
+<variables>
+    <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
+</variables>
+<server>
+    <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/'/>
+    <repository location='http://www.ibm.com/software/repositorymanager/com.ibm.java.jdk.v{{ im_java_short_version }}'/>
+</server>
+<profile id='WebSphere Liberty' installLocation='{{ install_base }}/{{ liberty_dir }}'>
+<data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
+<data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
+</profile>
+<install modify='true'>
+    <offering profile='WebSphere Liberty' id='{{ im_liberty_package }}' version='{{ liberty_version_number }}' features='liberty'/>
+</install>
+<install>
+    <offering profile='WebSphere Liberty' id='com.ibm.java.jdk.v{{ im_java_short_version }}' features='com.ibm.sdk.{{ im_java_short_version }}'/>
+  </install>
+<preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
+</agent-input>
