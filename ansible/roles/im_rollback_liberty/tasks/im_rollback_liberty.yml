@@ -1,0 +1,15 @@
+---
+- name: Find Liberty Rollback version
+  ansible.builtin.include_role:
+   name: im_rollback_find_version
+  vars:
+    was_product_dir: "{{ install_base }}/{{ liberty_dir }}"
+    im_package_id: "{{ im_liberty_package }}"
+
+- name: Rollback Liberty
+  ansible.builtin.include_role:
+   name: im_rollback_was_product
+  vars:
+    was_product_dir: "{{ install_base }}/{{ liberty_dir }}"
+    im_package_id: "{{ iim_liberty_package }}"
+  when: rollback_version is defined

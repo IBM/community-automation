@@ -1,0 +1,7 @@
+---
+- name: IM hack to remove current gsa repos
+  ansible.builtin.lineinfile:
+    path: "{{ install_base }}/var/ibm/InstallationManager/.settings/com.ibm.cic.agent.core.prefs"
+    regexp: "^com.ibm.cic.common.core.preferences.repositoryLocations*"
+    state: absent
+    backup: true
