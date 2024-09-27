@@ -32,10 +32,10 @@
         register: isimcl
         failed_when: not isimcl.stat.exists
 
-      - name: Copy im_upgrade_liberty.xml template
-        ansible.builtin.template:
-          src: im_upgrade_liberty.xml.j2
-          dest: "im_upgrade_liberty.xml"
+      # - name: Copy im_upgrade_liberty.xml template
+      #   ansible.builtin.template:
+      #     src: im_upgrade_liberty.xml.j2
+      #     dest: "im_upgrade_liberty.xml"
 
       - name: Generate secureStorageFile.store
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
@@ -44,7 +44,11 @@
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
       - name: Upgrade liberty
-        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_upgrade_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
+          -repositories https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/ \
+          -installationDirectory {{ install_base }}/{{ liberty_dir }} \
+          -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store \
+          -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ install_base }}/{{ shared_dir }}"
         register: UpgradeOutput
 
       - name: UpgradeOutput
