@@ -18,9 +18,9 @@
       ansible.builtin.shell: "{{ install_base }}/wlp/bin/productInfo version --verbose"
       register: productOutput
 
-    - name: Display Product Output
-      ansible.builtin.debug:
-        msg: "{{ productOutput }}"
+    # - name: Display Product Output
+    #   ansible.builtin.debug:
+    #     msg: "{{ productOutput }}"
 
     - name: Upgrade liberty version
       tags: upgrade
