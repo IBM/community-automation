@@ -12,3 +12,10 @@
     search_string: "offering.service.repositories.areUsed=false"
     line: "offering.service.repositories.areUsed=false"
     state: present
+  
+- name: IM disable offering.service.repositories.areUsed
+  ansible.builtin.lineinfile:
+    path: "{{ user_dir }}/var/ibm/InstallationManager/.settings/com.ibm.cic.agent.core.prefs"
+    search_string: "com.ibm.cic.common.core.preferences.searchForUpdates=false"
+    line: "com.ibm.cic.common.core.preferences.searchForUpdates=false"
+    state: present
