@@ -1,0 +1,5 @@
+---
+dependencies:
+  # - role: load_secrets
+  - role: ibm_installation_manager_cic_selector
+  - role: liberty_defaults
