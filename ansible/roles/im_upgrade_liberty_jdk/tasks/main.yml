@@ -1,0 +1,3 @@
+---
+- name: Upgrade the liberty servers Java
+  ansible.builtin.include_tasks: im_upgrade_liberty_jdk.yml

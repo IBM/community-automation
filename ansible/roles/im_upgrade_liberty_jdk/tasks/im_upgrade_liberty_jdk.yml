@@ -1,10 +1,4 @@
 ---
-- name: Zip up the current folder
-  community.general.archive:
-    path: "{{ wlp_usr_dir }}"
-    dest: "{{ install_base }}/{{ ansible_hostname }}.liberty_usr.save.zip"
-    mode: '0755'
-    format: zip
 
 - name: Check if previous liberty installed
   ansible.builtin.stat:
@@ -14,7 +8,7 @@
 - name: Perform liberty operations
   when: islib.stat.exists
   block:
-    - name: Check liberty install type.
+    - name: Check liberty install type
       ansible.builtin.shell: "{{ install_base }}/wlp/bin/productInfo version --verbose"
       register: productOutput
 
@@ -35,8 +29,8 @@
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
       - name: Upgrade liberty
-        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
-          -repositories https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/ \
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
+          -repositories https://www.ibm.com/software/repositorymanager/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -installationDirectory {{ install_base }}/{{ liberty_dir }} \
           -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store \
           -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ install_base }}/{{ shared_dir }}"
