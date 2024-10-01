@@ -11,5 +11,5 @@ cc_server: 'cc'
 wl_server: 'server'
 shared_dir: 'IM-shared'
 im_liberty_package: 'com.ibm.websphere.liberty.ND'
-im_liberty_jdk_package: 'com.ibm.java.jdk' # no java version since we are using this to rollback / upgrade
+im_liberty_jdk_package: 'com.ibm.java.jdk.v' # no java version since we are using this to rollback / upgrade
 im_java_short_version: '21' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8

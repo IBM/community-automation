@@ -4,12 +4,12 @@
    name: im_rollback_find_version
   vars:
     was_product_dir: "{{ install_base }}/{{ liberty_dir }}"
-    im_package_id: "{{ im_liberty_jdk_package }}"
+    im_package_id: "{{ im_liberty_jdk_package }}{{ im_java_short_version }}"
 
 - name: Rollback Liberty jdk
   ansible.builtin.include_role:
    name: im_rollback_was_product
   vars:
     was_product_dir: "{{ install_base }}/{{ liberty_dir }}"
-    im_package_id: "{{ im_liberty_jdk_package }}"
+    im_package_id: "{{ im_liberty_jdk_package }}{{ im_java_short_version }}"
   when: rollback_version is defined
