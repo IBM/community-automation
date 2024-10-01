@@ -40,6 +40,31 @@
         ansible.builtin.debug:
           msg: "{{ UpgradeOutput.stdout_lines }}"
 
+      - name: Check if usr/servers has server.env
+        ansible.builtin.stat:
+          path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
+        register: isserverenv
+        
+      - name: Remove JAVA_HOME from any servers server.env
+        when: isserverenv.stat.exists
+        ansible.builtin.lineinfile:
+          path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
+          regexp: "^JAVA_HOME*"
+          state: absent
+          
+      - name: Check if wlp/etc/server.env the global JAVA_HOME in server.env
+        ansible.builtin.stat:
+          path: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
+        register: isserverenv
+        
+      - name: Adust the  global JAVA_HOME in server.env
+        when: isserverenv.stat.exists
+        ansible.builtin.lineinfile:
+          path: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
+          regexp: "^JAVA_HOME*"
+          line: 'JAVA_HOME={{ install_base }}/{{ liberty_dir }}/java/{{} im_java_short_version }}.0'
+          state: present
+
       - name: ListInstalledPackages
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
         register: packageOutput
