@@ -28,7 +28,7 @@
       - name: Generate external ibm secureStorageFile.store
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
-      - name: Upgrade liberty
+      - name: Upgrade liberty jdk
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -repositories https://www.ibm.com/software/repositorymanager/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -installationDirectory {{ install_base }}/{{ liberty_dir }} \
