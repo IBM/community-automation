@@ -1,28 +1,30 @@
 ---
 - name: Liberty Server Start
-  tags: startServers 
+  tags: tartServers 
   block:
-  - name: check if liberty is installed
-    stat:
+  - name: Check if liberty is installed
+    ansible.builtin.stat:
       path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
      # must use nohup else the server stops after the controlling process exits
-  - name: Start Liberty Server 
-    command:
-      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+  - name: Start Liberty server 
+    ansible.builtin.command:
+      cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
-  - debug:
-     msg: '{{ cmdOutput.stdout_lines }}'
+  - name: Start Liberty server output
+    ansible.builtin.debug:
+      msg: '{{ cmdOutput.stdout_lines }}'
 
-  - name: check server status 
-    command:
-      cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+  - name: Check server status 
+    ansible.builtin.command:
+      cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
-  - debug:
-     msg: '{{ cmdOutput.stdout_lines }}'
+  - name: Server status output
+    ansible.builtin.debug:
+      msg: '{{ cmdOutput.stdout_lines }}'
