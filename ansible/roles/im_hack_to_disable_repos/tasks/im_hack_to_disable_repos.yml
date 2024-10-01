@@ -12,7 +12,7 @@
     search_string: "offering.service.repositories.areUsed=false"
     line: "offering.service.repositories.areUsed=false"
     state: present
-  
+
 - name: IM disable offering.service.repositories.areUsed
   ansible.builtin.lineinfile:
     path: "{{ ansible_user_dir }}/var/ibm/InstallationManager/.settings/com.ibm.cic.agent.core.prefs"
