@@ -56,6 +56,11 @@
     with_items:
     - "{{ install_base }}/{{ liberty_dir }}"
 
+  - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+    ansible.builtin.file:
+      path: "{{ install_base }}/IM/secureStorageFile.store"
+      state: absent
+
   - name:  generate secureStorageFile.store
     shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
