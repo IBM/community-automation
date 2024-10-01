@@ -62,7 +62,7 @@
         ansible.builtin.lineinfile:
           path: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
           regexp: "^JAVA_HOME*"
-          line: 'JAVA_HOME={{ install_base }}/{{ liberty_dir }}/java/{{} im_java_short_version }}.0'
+          line: 'JAVA_HOME={{ install_base }}/{{ liberty_dir }}/java/{{ im_java_short_version }}.0'
           state: present
 
       - name: ListInstalledPackages
