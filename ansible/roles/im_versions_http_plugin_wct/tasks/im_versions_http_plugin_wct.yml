@@ -1,6 +1,4 @@
 ---
-
- 
 - name: Versions
   tags: version 
   block:
@@ -19,7 +17,7 @@
   - name:  listInstalledPackages
     shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
-  
+
   - name: packageOutput
     debug: 
       msg: "{{ packageOutput.stdout_lines }}"
@@ -29,13 +27,13 @@
     file:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       state: directory
-      
+
   - name: Write IM listInstalledPackages to file
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ packageOutput.stdout }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-    when: 
+    when:
       - logs_dir is defined
       - env_name is defined
       - version_txt_file is defined
@@ -45,7 +43,7 @@
     register: HTTPServerVersionOutput
 
   - name: HTTPServerVersionOutput
-    debug: 
+    debug:
       msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
 
   - name: Plugin version
@@ -53,7 +51,7 @@
     register: PluginVersionOutput
 
   - name: PluginVersionOutput
-    debug: 
+    debug:
       msg: "{{ PluginVersionOutput.stdout_lines }}"
 
   - name: WCT version
@@ -61,6 +59,5 @@
     register: WCTVersionOutput
 
   - name: WCTVersionOutput
-    debug: 
+    debug:
       msg: "{{ WCTVersionOutput.stdout_lines }}"
-

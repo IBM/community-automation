@@ -3,9 +3,21 @@
   ansible.builtin.debug:
    msg: "IM repo->{{ im_upgrade_repo }}"
 
+- name: Check if imcl is installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isimcl
+
 - name:  Upgrade IM to the latest level
   ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
   register: updateOutput
+  when: isimcl.stat.exists
+
+- name: Install IM if it's not installed
+  ansible.builtin.include_role:
+    name: ibm_community_automation.ibm_community_automation.ibm_installation_manager
+  register: updateOutput
+  when: not isimcl.stat.exists
 
 - name: Upgrade output
   ansible.builtin.debug:
