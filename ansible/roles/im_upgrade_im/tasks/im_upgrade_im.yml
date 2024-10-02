@@ -6,7 +6,6 @@
 - name:  Upgrade IM to the latest level
   ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
   register: updateOutput
-  when: isimcl.stat.exists
 
 - name: Upgrade output
   ansible.builtin.debug:
