@@ -12,7 +12,7 @@
     ansible.builtin.shell:
       "{{ install_base }}/{{ liberty_dir }}/bin/collective exitMaintenanceMode \
       --host={{ cc_hostname }} \
-      --port={{ liberty_admin_ports }}\
+      --port={{ liberty_admin_ports }} \
       --user={{ liberty_admin_user }} \
       --password={{ liberty_admin_pass }} \
       --hostName={{ ansible_fqdn }} \
