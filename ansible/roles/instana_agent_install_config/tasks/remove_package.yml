@@ -1,6 +1,6 @@
 ---
 - name: Remove the instana package
-  become: yes
+  become: true
   ansible.builtin.package:
    name: 
     - "instana-agent-dynamic"
