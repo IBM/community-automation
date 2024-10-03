@@ -1,0 +1,28 @@
+---
+- name: Liberty enterMaintenanceMode
+  tags: enterMaintenanceMode
+  block:
+  - name: Check if liberty is installed
+    ansible.builtin.stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/collective"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: Liberty enterMaintenanceMode
+    ansible.builtin.shell:
+      "{{ install_base }}/{{ liberty_dir }}/bin/collective enterMaintenanceMode \
+      --host={{ cc_hostname }} \
+      --port={{ liberty_admin_ports }}\
+      --user={{ liberty_admin_user }} \
+      --password={{ liberty_admin_pass }} \
+      --hostName={{ ansible_fqdn }} \
+      --usrDir={{ wlp_usr_dir }} \
+      --server={{ wl_server }} \
+      --autoAcceptCertificates \
+      --break \
+      --force"
+    register: enterMaintenanceModeOutput
+
+  - name: Liberty enterMaintenanceModeOutput
+    ansible.builtin.debug:
+      msg: "{{ enterMaintenanceModeOutput.stdout_lines }}"
