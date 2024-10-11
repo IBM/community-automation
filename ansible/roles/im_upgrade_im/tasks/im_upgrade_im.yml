@@ -3,11 +3,33 @@
   ansible.builtin.debug:
    msg: "IM repo->{{ im_upgrade_repo }}"
 
-- name:  Upgrade IM to the latest level
-  ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
-  register: updateOutput
+- name: Test connection to repo
+  get_url:
+    url: "{{ im_upgrade_repo }}"
+    dest: test_im_upgrade_repo.html
+    mode: '0755'
+    validate_certs: false
+    timeout: 2
+  register: repoexists
 
-- name: Upgrade output
+- name: Delete temp file
+  file:
+    state: absent
+    path: test_im_upgrade_repo.html
+
+- name: Repo is not reachable
   ansible.builtin.debug:
-   msg: "{{ updateOutput.stdout_lines }}"
-  failed_when: ( updateOutput.rc not in [ 0, 1 ] )
+   msg: "IM repo->{{ im_upgrade_repo }} is not reachable, skipping im upgrade"
+  when: repoexists.rc
+
+- name: Repo is alive
+  when: repoexists.rc == 0
+  block:
+    - name: Upgrade IM to the latest level
+      ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
+      register: updateOutput
+
+    - name: Upgrade output
+      ansible.builtin.debug:
+      msg: "{{ updateOutput.stdout_lines }}"
+      failed_when: ( updateOutput.rc not in [ 0, 1 ] )
