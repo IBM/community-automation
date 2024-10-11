@@ -11,6 +11,7 @@
     validate_certs: false
     timeout: 2
   register: repoexists
+  ignore_errors: true
 
 - name: Delete temp file
   file:
