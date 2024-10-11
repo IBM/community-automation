@@ -8,7 +8,7 @@
   - name: start instana agent
     command: "{{ instana_dir_custom }}/bin/start"
     register: istart
-    become: yes
+    become: true
     ignore_errors: yes
     no_log: True
   - name: Instana start
@@ -24,7 +24,7 @@
 - block:
   - name: start instana agents 
     command: "{{ instana_dir_normal }}/bin/start"
-    become: yes
+    become: true
     register: istart
     ignore_errors: yes
     no_log: True

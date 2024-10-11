@@ -2,6 +2,6 @@
 
 - hosts: all
   gather_facts: true
-  become: yes
+  become: true
   roles:
   - role: ibm_community_automation.ibm_community_automation.fix_fyre_hosts_file

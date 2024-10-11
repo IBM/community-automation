@@ -60,5 +60,5 @@
      line: 'export PATH="{{ javaDir }}/{{ jVersion.stdout }}/bin:$PATH"'
      backup: yes
      mode: '0644'
-    become: yes
+    become: true
   when: isjava.stat.exists == False or forceReplace|bool == True

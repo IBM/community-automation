@@ -1,7 +1,7 @@
 ---
 # specific OS supports wildcards
 - name: remove extraneous packages
-  become: yes
+  become: true
   ignore_errors: yes
   zypper:
    name: "{{ packages }}"
@@ -15,13 +15,13 @@
    - "tignervnc"
 
 - name: zypper update
-  become: yes
+  become: true
   zypper:
    name: '*'
    state: latest
 
 - name: install packages
-  become: yes
+  become: true
   zypper:
    name: "{{ packages }}"
    state: present

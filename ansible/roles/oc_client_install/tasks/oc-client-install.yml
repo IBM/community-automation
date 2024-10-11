@@ -19,7 +19,7 @@
       validate_certs: false
     vars:
       client_os: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
-    become: yes
+    become: true
 
       #  - name: Download OCP CLI
       #    get_url:
@@ -45,7 +45,7 @@
       #      owner: root
       #      group: root
       #      mode: '0755'
-      #    become: yes
+      #    become: true
       #    become_user: root
       #
       #  - name: Copy kubectl to local bin
@@ -55,5 +55,5 @@
       #      owner: root
       #      group: root
       #      mode: '0755'
-      #    become: yes
+      #    become: true
       #    become_user: root

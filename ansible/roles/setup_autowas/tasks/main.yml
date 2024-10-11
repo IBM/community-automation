@@ -6,7 +6,7 @@
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
-  become: yes
+  become: true
   dnf:
    name: "{{ packages }}"
    state: latest
@@ -15,7 +15,7 @@
    - python2
 
 - name: Install paramiko python package
-  become: yes
+  become: true
   pip:
     name: paramiko
   args:
