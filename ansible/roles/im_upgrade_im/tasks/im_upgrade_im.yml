@@ -31,5 +31,5 @@
 
     - name: Upgrade output
       ansible.builtin.debug:
-      msg: "{{ updateOutput.stdout_lines }}"
+        msg: "{{ updateOutput.stdout_lines }}"
       failed_when: ( updateOutput.rc not in [ 0, 1 ] )
