@@ -8,21 +8,44 @@
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
-  - name: Liberty enterMaintenanceMode
-    ansible.builtin.shell:
-      "{{ install_base }}/{{ liberty_dir }}/bin/collective enterMaintenanceMode \
-      --host={{ cc_hostname }} \
-      --port={{ liberty_admin_ports }} \
-      --user={{ liberty_admin_user }} \
-      --password={{ liberty_admin_pass }} \
-      --hostName={{ ansible_fqdn }} \
-      --usrDir={{ wlp_usr_dir }} \
-      --server={{ wl_server }} \
-      --autoAcceptCertificates \
-      --break \
-      --force"
-    register: enterMaintenanceModeOutput
+  - name: Test connection to controller
+    get_url:
+      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}"
+      dest: "/tmp/cc_alive_{{ cc_hostname }}"
+      mode: '0755'
+      validate_certs: false
+      timeout: 2
+    register: ccalive
+    ignore_errors: true
 
-  - name: Liberty enterMaintenanceModeOutput
+  - name: Delete temp file
+    file:
+      state: absent
+      path: "/tmp/cc_alive_{{ cc_hostname }}"
+
+  - name: Controller is not reachable
     ansible.builtin.debug:
-      msg: "{{ enterMaintenanceModeOutput.stdout_lines }}"
+    msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
+    when: ccalive.msg is search('Request failed')
+
+  - name: Controller is alive
+    when: ccalive.msg is search('OK')
+    block:
+    - name: Liberty enterMaintenanceMode
+      ansible.builtin.shell:
+        "{{ install_base }}/{{ liberty_dir }}/bin/collective enterMaintenanceMode \
+        --host={{ cc_hostname }} \
+        --port={{ liberty_admin_ports }} \
+        --user={{ liberty_admin_user }} \
+        --password={{ liberty_admin_pass }} \
+        --hostName={{ ansible_fqdn }} \
+        --usrDir={{ wlp_usr_dir }} \
+        --server={{ wl_server }} \
+        --autoAcceptCertificates \
+        --break \
+        --force"
+      register: enterMaintenanceModeOutput
+
+    - name: Liberty enterMaintenanceModeOutput
+      ansible.builtin.debug:
+        msg: "{{ enterMaintenanceModeOutput.stdout_lines }}"
