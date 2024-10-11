@@ -25,7 +25,7 @@
 
   - name: Controller is not reachable
     ansible.builtin.debug:
-    msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
+      msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
     when: ccalive.msg is search('Request failed')
 
   - name: Controller is alive
