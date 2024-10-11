@@ -2,7 +2,7 @@
 
 ### fails with complex passwords
 - name: retrieve ftp3.linux.ibm.com/redhat/ibm-rhsm.sh
-  become: yes
+  become: true
   get_url:
    url: "ftp://{{ ftp3_username }}:{{ ftp3_password }}@ftp3.linux.ibm.com/redhat/ibm-rhsm.sh"
    dest: ~/ibm-rhsm.sh
@@ -22,13 +22,13 @@
 #   dest: "~/ibm-rhsm.sh"
 
 - name: change perms ibm-rhsm.sh
-  become: yes
+  become: true
   ansible.builtin.file:
     path: ~/ibm-rhsm.sh
     mode: '0755'
 
 - name: register rhel host
-  become: yes
+  become: true
   environment:
    FTP3USER: "{{ ftp3_username }}"
    FTP3PASS: "{{ ftp3_password }}"

@@ -1,11 +1,11 @@
 ---
 - name: remove custom package tree
-  become: yes
+  become: true
   file:
    path: "{{ instana_dir_custom }}"
    state: absent
 - name: remove normal package tree
-  become: yes
+  become: true
   file:
    path: "{{ instana_dir_normal }}"
    state: absent

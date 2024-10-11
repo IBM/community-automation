@@ -21,10 +21,10 @@
 - name: Repo is not reachable
   ansible.builtin.debug:
    msg: "IM repo->{{ im_upgrade_repo }} is not reachable, skipping im upgrade"
-  when: repoexists.msg contains "Request failed"
+  when: repoexists.msg search('Request failed')
 
 - name: Repo is alive
-  when: repoexists.msg contains "OK"
+  when: repoexists.msg search('OK')
   block:
     - name: Upgrade IM to the latest level
       ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"

@@ -6,7 +6,7 @@
    state: present
    regexp: 'X11Forwarding no'
    line: 'X11Forwarding yes'
-  become: yes
+  become: true
 
 - name: enable /etc/ssh/sshd_config X11UseLocalhost no
   lineinfile:
@@ -14,14 +14,14 @@
    state: present
    regexp: 'X11UseLocalhost yes'
    line: 'X11UseLocalhost no'
-  become: yes
+  become: true
 
 - name: restart sshd
   command: "systemctl restart sshd"
-  become: yes
+  become: true
   when: ansible_facts['distribution'] == "RedHat"
 
 - name: restart ssh
   command: "systemctl restart ssh"
-  become: yes
+  become: true
   when: ansible_facts['distribution'] == "Ubuntu"
