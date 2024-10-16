@@ -136,7 +136,7 @@
    ansible_user: "{{ target_user|default('root') }}"
    clusterName: "{{ clusterName }}"
    stackName: "{{ clusterName }}"
-   args: "{{ extra_props| default(omit) }}"
+  #args: "{{ extra_props| default(omit) }}"
   changed_when: false
   when: "fyre_addAnsibleHost|bool == true"
 
@@ -149,7 +149,8 @@
     clusterName: "{{ clusterName }}"
     stackName: "{{ clusterName }}"
     ansible_user: "{{ target_user|default(omit) }}"
-    args: "{{ extra_props| default(omit) }}"
-  no_log: True
+  #args: "{{ extra_props| default(omit) }}"
+  #no_log: True
   changed_when: false
   when: "fyre_addAnsibleHost|bool == false"
+
