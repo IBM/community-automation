@@ -2,5 +2,5 @@
 - name: Install common services onto OCP+Beta Fyre clusters
   hosts: bastion
   roles:
-  - ibm_community_automation.ibm_community_automation.csi_cephfs_fyre
-  - ibm_community_automation.ibm_community_automation.common_services
+  - csi_cephfs_fyre
+  - common_services

@@ -4,7 +4,7 @@
   vars:
   - ansible_user: root
   roles:
-  - role: ibm_community_automation.ibm_community_automation.podman
+  - role: podman
 
 - hosts: all
   vars:
@@ -12,6 +12,6 @@
   - javaDir: "/home/{{ jmeterUser }}/java"
   - jmeterDir: "/home/{{ jmeterUser }}/jmeter"
   roles:
-  - role: ibm_community_automation.ibm_community_automation.jmeter_java
-  - role: ibm_community_automation.ibm_community_automation.jmeter
-  - { role: ibm_community_automation.ibm_community_automation.vnc, when: vnc|bool }
+  - role: jmeter_java
+  - role: jmeter
+  - { role: vnc, when: vnc|bool }
