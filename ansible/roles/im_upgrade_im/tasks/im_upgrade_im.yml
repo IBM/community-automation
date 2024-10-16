@@ -26,6 +26,11 @@
 - name: Repo is alive
   when: repoexists.msg is search('OK')
   block:
+    - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+      ansible.builtin.file:
+        path: "{{ install_base_win}}{{ install_base }}/IM/secureStorageFile.store"
+        state: absent
+
     - name: Upgrade IM to the latest level
       ansible.builtin.shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
       register: updateOutput
