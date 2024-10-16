@@ -3,7 +3,7 @@
   ansible.builtin.debug:
    msg: "IM repo->{{ im_upgrade_repo }}"
 
-- name: Test connection to repo
+- name: Test connection to repo since this does fail
   get_url:
     url: "{{ im_upgrade_repo }}"
     dest: /tmp/test_im_upgrade_repo.html
