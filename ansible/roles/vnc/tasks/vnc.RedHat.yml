@@ -64,8 +64,6 @@
 
    - name: vnc pass
      shell: "echo 'vncPassw0rd' | vncpasswd -f > ~/.vnc/passwd"
-     args:
-       warn: no
      register: vncpass
 
    - name: chmod read-only 
@@ -79,8 +77,6 @@
    
    - name: user vnc enable
      command: "systemctl enable vncserver@:1 --now"
-     args:
-       warn: no
      register: uservncenable
      become: true
 

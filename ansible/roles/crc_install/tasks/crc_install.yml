@@ -14,8 +14,6 @@
       
     - name: archive dir structure
       command: 'tar tf ~/crc-linux-amd64.tar.xz'
-      args:
-        warn: no
       register: tarlist
       
     - debug: var=tarlist.stdout_lines

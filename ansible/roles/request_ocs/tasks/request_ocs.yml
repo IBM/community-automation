@@ -17,8 +17,6 @@
 
 - name: Install ocs from channel {{ ocs_channel }}
   shell: bash -lc "{{ ocs_bastion_setup_dir }}/ocs_install.sh {{ ocs_channel }} {{ setdefault }}"
-  args:
-      warn: false
   register: ocsinstall
 
 - name: Viewing ocs install log

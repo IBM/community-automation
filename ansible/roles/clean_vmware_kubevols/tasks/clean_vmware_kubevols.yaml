@@ -9,8 +9,6 @@
 
 - name: Clean kubevols for cluster {{ CLUSTER_NAME }}
   shell: bash -lc "ocp_clean_kubevols.sh"
-  args:
-      warn: false
   register: kubevols
 
 - name: Viewing kubevols cleanup for cluster {{ CLUSTER_NAME }}

@@ -79,8 +79,6 @@
   shell: "{{ oc_admin_login }}"
   retries: 12
   delay: 10
-  args:
-    warn: no
   register: oclogin
   until: oclogin.rc == 0
 
