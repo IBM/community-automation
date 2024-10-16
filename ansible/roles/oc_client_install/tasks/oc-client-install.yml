@@ -1,7 +1,7 @@
 ---
 
 - name: check for oc client
-  command: oc version  --client
+  command: ./oc version
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
   register: oc_installed
@@ -11,11 +11,10 @@
   when: oc_installed.rc != 0
   block:
   - name: Download OCP CLI
-    unarchive:
-      src: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}.tar.gz"
-      remote_src: true
-      dest: "/usr/local/bin"
-      mode: 0755
+    get_url:
+      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}-{{ ocp_client_version }}.tar.gz"
+      dest: "./openshift-client.tar.gz"
+      mode: '0755'
       validate_certs: false
     vars:
       client_os: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
@@ -44,3 +43,4 @@
       mode: '0755'
     become: yes
     become_user: root
+
