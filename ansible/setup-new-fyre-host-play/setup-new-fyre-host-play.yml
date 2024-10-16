@@ -6,9 +6,9 @@
   - ansible_ssh_common_args: -o StrictHostKeyChecking=no
   - ansible_user: root
   roles:
-  - role: ibm_community_automation.ibm_community_automation.nestuser
-  - role: ibm_community_automation.ibm_community_automation.fix_fyre_hosts_file
-  - role: ibm_community_automation.ibm_community_automation.osprereqs
-  - role: ibm_community_automation.ibm_community_automation.timezone
-  - role: ibm_community_automation.ibm_community_automation.authorized_keys
-  - role: ibm_community_automation.ibm_community_automation.issue_net
+  - role: nestuser
+  - role: fix_fyre_hosts_file
+  - role: osprereqs
+  - role: timezone
+  - role: authorized_keys
+  - role: issue_net

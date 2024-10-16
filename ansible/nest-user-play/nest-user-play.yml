@@ -7,4 +7,4 @@
   vars:
   - ansible_user: root
   roles:
-  - role: ibm_community_automation.ibm_community_automation.nestuser
+  - role: nestuser

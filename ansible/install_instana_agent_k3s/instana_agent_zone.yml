@@ -1,4 +1,4 @@
 ---
 - hosts: all
   roles:
-  - role: ibm_community_automation.ibm_community_automation.instana_agent_zone
+  - role: instana_agent_zone
