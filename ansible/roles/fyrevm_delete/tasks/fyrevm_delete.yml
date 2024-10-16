@@ -9,8 +9,6 @@
 - name: delete the named cluster
   no_log: "{{ noLog }}"
   command: curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyreurldelete }} --data @/tmp/fyre.{{ stackName }}.json
-  args:
-   warn: no
   delegate_to: localhost
   register: deleteStatus
 
@@ -29,8 +27,6 @@
     command: 'curl -X POST -k -u {{ fyreuser }}:{{ fyreapikey }} {{ fyrerequeststatus }}{{ (deleteStatus.stdout|from_json).request_id }}'
     retries: "{{ fyre_requestRetries }}"
     delay: 5
-    args:
-     warn: no
     register: fyreStatus
     delegate_to: localhost
     until: (fyreStatus.stdout|from_json).request[0].get('status') == 'error' or (fyreStatus.stdout|from_json).request[0].get('status') == 'completed'

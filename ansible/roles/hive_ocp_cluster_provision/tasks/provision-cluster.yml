@@ -98,8 +98,6 @@
   until: provision_results.stdout.find('Install Complete') != -1
   retries: 120
   delay: 60
-  args:
-    warn: no
   failed_when: provision_results.rc != 0 
 
 - name: Change to cluster namespace
