@@ -26,10 +26,10 @@
   - name: Controller is not reachable
     ansible.builtin.debug:
       msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
-    when: ccalive.msg is search('Request failed')
+    when: ccalive.status_code != 200
 
   - name: Controller is alive
-    when: ccalive.msg is search('OK')
+    when: ccalive.status_code == 200
     block:
     - name: Liberty exitMaintenanceMode
       ansible.builtin.shell:

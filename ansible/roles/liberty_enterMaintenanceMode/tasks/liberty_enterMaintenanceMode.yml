@@ -9,8 +9,8 @@
     failed_when: isliberty.stat.exists == False
 
   - name: Test connection to controller
-    get_url:
-      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}"
+    ansible.builtin.get_url:
+      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}/adminCenter"
       dest: "/tmp/cc_alive_{{ cc_hostname }}"
       mode: '0755'
       validate_certs: false
@@ -26,10 +26,10 @@
   - name: Controller is not reachable
     ansible.builtin.debug:
       msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
-    when: ccalive.msg is search('Request failed')
+    when: ccalive.status_code != 200
 
   - name: Controller is alive
-    when: ccalive.msg is search('OK')
+    when: ccalive.status_code == 200
     block:
     - name: Liberty enterMaintenanceMode
       ansible.builtin.shell:
