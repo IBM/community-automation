@@ -10,7 +10,7 @@
 
   - name: Test connection to controller
     get_url:
-      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}"
+      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}/adminCenter"
       dest: "/tmp/cc_alive_{{ cc_hostname }}"
       mode: '0755'
       validate_certs: false
