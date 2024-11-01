@@ -2,12 +2,12 @@
 
 # logic below to force kill linux  process
 - name: Get running processes list from remote host 
-  ignore_errors: yes
+  ignore_errors: true
   shell: "ps -few | grep {{ linux_process_to_kill }} | awk '{print $2}'"
   register: running_processes
 
 - name: Kill running processes
-  ignore_errors: yes
+  ignore_errors: true
   shell: "kill {{ item }}"
   with_items: "{{ running_processes.stdout_lines }}"
 
@@ -16,10 +16,10 @@
    state: absent
   timeout: 60
   with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: yes
+  ignore_errors: true
   register: WsServer_processes
 
 - name: Force kill stuck processes
-  ignore_errors: yes
+  ignore_errors: true
   shell: "kill -9 {{ item }}"
   with_items: "{{ WsServer_processes.results | select('failed') | map(attribute='item') | list }}"

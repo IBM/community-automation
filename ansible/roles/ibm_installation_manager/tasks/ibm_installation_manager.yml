@@ -36,7 +36,7 @@
   when:
   - ansible_architecture == 'chrp'
 - set_fact:
-    archive_name_match: 'agent.installer.os400.motif.ppc_{{ im_archive_driver }}.zip'
+    archive_name_match: 'agent.installer.os400.motif.ppc64_{{ im_archive_driver }}.zip'
   when:
   - ansible_system == 'OS400'
 
