@@ -3,11 +3,11 @@
 - name: Stop the running dmgr
   when: profile_type == 'dmgr'
   block:
-    - name: retrieve signers
+    - name: Retrieve signers
       shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
       register: retrieveSignersOutput
       failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
-    - name: retrieveSignersOutput
+    - name: RetrieveSignersOutput
       debug:
         msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
