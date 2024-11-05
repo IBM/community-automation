@@ -22,21 +22,37 @@
     - name: Adjust the HTTPServer profile id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "IBM HTTP Server.+?(?=')"
-        replace: '{{ profile_id_ibm_http_server }}'
+        regexp: "{{ regex_profile_id_ibm_http_server }}.+?(?=')"
+        replace: "{{ regex_profile_id_ibm_http_server }}"
         backup: true
     - name: Adjust the HTTPServer Plugins profile id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "Web server plug-ins for IBM WebSphere Application Server.+?(?=')"
-        replace: '{{ profile_id_ibm_http_plugin }}'
+        regexp: "{{ regex_profile_id_ibm_http_plugin }}.+?(?=')"
+        replace: "{{ regex_profile_id_ibm_http_plugin }}"
     - name: Adjust the WCT profile id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "WebSphere Customization Tools.+?(?=')"
-        replace: '{{ profile_id_ibm_wct_toolbox }}'
-  when: isregistry.stat.exists
+        regexp: "{{ regex_profile_id_ibm_wct_toolbox }}.+?(?=')"
+        replace: "{{ regex_profile_id_ibm_wct_toolbox }}"
 
+    - name: Adjust the HTTPServer context id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "{{ installContext_id_ibm_http_server }}.+?(?=.root')"
+        replace: '{{ profile_id_ibm_http_server }}.root'
+        backup: true
+    - name: Adjust the HTTPServer Plugins context id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "{{ installContext_id_ibm_http_plugin }}.+?(?=.root')"
+        replace: '{{ profile_id_ibm_http_plugin }}.root'
+    - name: Adjust the WCT context id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "{{ installContext_id_ibm_http_server }}.+?(?=.root')"
+        replace: '{{ installContext_id_ibm_wct_toolbox }}.root'
+  when: isregistry.stat.exists
 
 - name: copy ihs_plugin.xml template
   ansible.builtin.template:
