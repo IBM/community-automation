@@ -12,6 +12,32 @@
   - ansible_architecture == 'x86_64'
   - ansible_system == 'Windows' or 'CYG' in ansible_system
 
+- name: Any var/ibm/InstallationManager/installRegistry.xml
+  ansible.builtin.stat:
+    path: var/ibm/InstallationManager/installRegistry.xml
+  register: isregistry
+
+- name: Adjust any of the existing profile ids to match the ansible ( autowas adjustment )
+  block:
+    - name: Adjust the HTTPServer profile id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "IBM HTTP Server.+?(?=')"
+        replace: '{{ profile_id_ibm_http_server }}'
+        backup: true
+    - name: Adjust the HTTPServer Plugins profile id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "Web server plug-ins for IBM WebSphere Application Server.+?(?=')"
+        replace: '{{ profile_id_ibm_http_plugin }}'
+    - name: Adjust the WCT profile id
+      ansible.builtin.replace:
+        path: var/ibm/InstallationManager/installRegistry.xml
+        regexp: "WebSphere Customization Tools.+?(?=')"
+        replace: '{{ profile_id_ibm_wct_toolbox }}'
+  when: isregistry.stat.exists
+
+
 - name: copy ihs_plugin.xml template
   ansible.builtin.template:
     src: "im_http_plugin_{{ twas_release }}.xml.j2"
