@@ -153,4 +153,3 @@
   #no_log: True
   changed_when: false
   when: "fyre_addAnsibleHost|bool == false"
-
