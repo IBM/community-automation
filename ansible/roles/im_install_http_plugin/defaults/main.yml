@@ -2,8 +2,8 @@
 # trick the template to install onto windoze via cygwin
 install_ihs_base_win: ''
 profile_id_ibm_http_server: 'IBM HTTP Server'
-profile_id_ibm_http_plugin: 'Web Server Plug-ins for IBM WebSphere Application Server'
-profile_id_ibm_wct_toolbox: 'WebSphere Customization Toolbox'
+profile_id_ibm_http_plugin: 'Web server plug-ins for IBM WebSphere Application Server'
+profile_id_ibm_wct_toolbox: 'WebSphere Customization Tools'
 
 regex_profile_id_ibm_http_server: "<profile id='{{ profile_id_ibm_http_server }}"
 regex_profile_id_ibm_http_plugin: "<profile id='{{ profile_id_ibm_http_plugin }}"
