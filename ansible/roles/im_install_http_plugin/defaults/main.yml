@@ -9,6 +9,6 @@ regex_profile_id_ibm_http_server: "<profile id='{{ profile_id_ibm_http_server }}
 regex_profile_id_ibm_http_plugin: "<profile id='{{ profile_id_ibm_http_plugin }}"
 regex_profile_id_ibm_wct_toolbox: "<profile id='{{ profile_id_ibm_wct_toolbox }}"
 
-installContext_id_ibm_http_server: "<installContext id='{{ profile_id_ibm_http_server }}"
-installContext_id_ibm_http_plugin: "<installContext id='{{ profile_id_ibm_http_plugin }}"
-installContext_id_ibm_wct_toolbox: "<installContext id='{{ profile_id_ibm_wct_toolbox }}"
+regex_installContext_id_ibm_http_server: "<installContext id='{{ profile_id_ibm_http_server }}"
+regex_installContext_id_ibm_http_plugin: "<installContext id='{{ profile_id_ibm_http_plugin }}"
+regex_installContext_id_ibm_wct_toolbox: "<installContext id='{{ profile_id_ibm_wct_toolbox }}"
