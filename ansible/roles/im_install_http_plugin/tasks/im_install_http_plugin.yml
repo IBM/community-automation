@@ -62,20 +62,20 @@
   block:
     - name: Adjust the HTTPServer location id
       ansible.builtin.replace:
-        path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "{{ regex_profile_id_ibm_http_server }}.+?(?=')"
-        replace: "{{ regex_profile_id_ibm_http_server }}"
+        path: var/ibm/InstallationManager/installed.xml
+        regexp: "{{ regex_location_id_ibm_http_server }}.+?(?=')"
+        replace: "{{ regex_location_id_ibm_http_server }}"
         backup: true
     - name: Adjust the HTTPServer Plugins location id
       ansible.builtin.replace:
-        path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "{{ regex_profile_id_ibm_http_plugin }}.+?(?=')"
-        replace: "{{ regex_profile_id_ibm_http_plugin }}"
+        path: var/ibm/InstallationManager/installed.xml
+        regexp: "{{ regex_location_id_ibm_http_plugin }}.+?(?=')"
+        replace: "{{ regex_location_id_ibm_http_plugin }}"
     - name: Adjust the WCT location id
       ansible.builtin.replace:
-        path: var/ibm/InstallationManager/installRegistry.xml
-        regexp: "{{ regex_profile_id_ibm_wct_tools }}.+?(?=')"
-        replace: "{{ regex_profile_id_ibm_wct_tools }}"
+        path: var/ibm/InstallationManager/installed.xml
+        regexp: "{{ regex_location_id_ibm_wct_tools }}.+?(?=')"
+        replace: "{{ regex_location_id_ibm_wct_tools }}"
   when: isinstalled.stat.exists
 
 - name: copy ihs_plugin.xml template
