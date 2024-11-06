@@ -40,17 +40,17 @@
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
         regexp: "{{ regex_installContext_id_ibm_http_server }}.+?(?=.root')"
-        replace: '{{ regex_installContext_id_ibm_http_server }}.root'
+        replace: '{{ regex_installContext_id_ibm_http_server }}'
     - name: Adjust the HTTPServer Plugins context id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
         regexp: "{{ regex_installContext_id_ibm_http_plugin }}.+?(?=.root')"
-        replace: '{{ regex_installContext_id_ibm_http_plugin }}.root'
+        replace: '{{ regex_installContext_id_ibm_http_plugin }}'
     - name: Adjust the WCT context id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
         regexp: "{{ regex_installContext_id_ibm_http_server }}.+?(?=.root')"
-        replace: '{{ regex_installContext_id_ibm_http_server }}.root'
+        replace: '{{ regex_installContext_id_ibm_http_server }}'
   when: isregistry.stat.exists
 
 - name: copy ihs_plugin.xml template
