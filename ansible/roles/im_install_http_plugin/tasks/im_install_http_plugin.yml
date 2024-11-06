@@ -41,7 +41,6 @@
         path: var/ibm/InstallationManager/installRegistry.xml
         regexp: "{{ regex_installContext_id_ibm_http_server }}.+?(?=.root')"
         replace: '{{ regex_installContext_id_ibm_http_server }}.root'
-        backup: true
     - name: Adjust the HTTPServer Plugins context id
       ansible.builtin.replace:
         path: var/ibm/InstallationManager/installRegistry.xml
