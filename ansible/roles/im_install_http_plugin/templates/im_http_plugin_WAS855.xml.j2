@@ -6,7 +6,7 @@
   <server>
 	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ ihs_daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
   </server>
-  <profile id='{{ profile_id_ibm_http_server }}' installLocation='{{ install_ihs_base }}/{{ http_dir }}'>
+  <profile id='{{ id_ibm_http_server }}' installLocation='{{ install_ihs_base }}/{{ http_dir }}'>
     <data key='user.wasjava' value='java8'/>
     <data key='user.ihs.allowNonRootSilentInstall' value='true'/>
     <data key='user.ihs.http.server.service.name' value='none'/>
@@ -15,24 +15,24 @@
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- {{ profile_id_ibm_http_server }} for WebSphere Application Server 8.5.5.x -->
-    <offering profile='{{ profile_id_ibm_http_server }}' id='{{ im_http_package[twas_release] }}'  features='core.feature,arch.64bit'/>
+    <!-- {{ id_ibm_http_server }} for WebSphere Application Server 8.5.5.x -->
+    <offering profile='{{ id_ibm_http_server }}' id='{{ im_http_package[twas_release] }}'  features='core.feature,arch.64bit'/>
   </install>
-  <profile id='{{ profile_id_ibm_http_plugin }}' installLocation='{{ install_ihs_base }}/{{ plugin_dir }}'>
+  <profile id='{{ id_ibm_http_plugin }}' installLocation='{{ install_ihs_base }}/{{ plugin_dir }}'>
     <data key='user.wasjava' value='java8'/>
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- {{ profile_id_ibm_http_plugin }} 8.5.5.x -->
-    <offering profile='{{ profile_id_ibm_http_plugin }}' id='{{ im_plugin_package[twas_release] }}' features='core.feature,{{ im_twas855_java_package[ansible_architecture] }}'/>
+    <!-- {{ id_ibm_http_plugin }} 8.5.5.x -->
+    <offering profile='{{ id_ibm_http_plugin }}' id='{{ im_plugin_package[twas_release] }}' features='core.feature,{{ im_twas855_java_package[ansible_architecture] }}'/>
   </install>
-  <profile id='{{ profile_id_ibm_wct_toolbox }}' installLocation='{{ install_ihs_base }}/{{ wct_dir }}'>
+  <profile id='{{ id_ibm_wct_tools }}' installLocation='{{ install_ihs_base }}/{{ wct_dir }}'>
     <data key='user.wasjava' value='java8'/>
     <data key='user.internal.use.only.prev.wasjava' value='java8'/>
   </profile>
   <install>
-    <!-- {{ profile_id_ibm_wct_toolbox }} 8.5.5.x -->
-    <offering profile='{{ profile_id_ibm_wct_toolbox }}' id='{{ im_wct_package[twas_release] }}' features='core.feature,pct'/>
+    <!-- {{ id_ibm_wct_tools }} 8.5.5.x -->
+    <offering profile='{{ id_ibm_wct_tools }}' id='{{ im_wct_package[twas_release] }}' features='core.feature,pct'/>
   </install>
   <preference name='com.ibm.cic.common.core.preferences.eclipseCache' value='${sharedLocation}'/>
 </agent-input>

@@ -1,14 +1,18 @@
 ---
 # trick the template to install onto windoze via cygwin
 install_ihs_base_win: ''
-profile_id_ibm_http_server: 'IBM HTTP Server'
-profile_id_ibm_http_plugin: 'Web server plug-ins for IBM WebSphere Application Server'
-profile_id_ibm_wct_toolbox: 'WebSphere Customization Tools'
+id_ibm_http_server: 'IBM HTTP Server'
+id_ibm_http_plugin: 'Web server plug-ins for IBM WebSphere Application Server'
+id_ibm_wct_tools: 'WebSphere Customization Tools'
 
-regex_profile_id_ibm_http_server: "<profile id='{{ profile_id_ibm_http_server }}"
-regex_profile_id_ibm_http_plugin: "<profile id='{{ profile_id_ibm_http_plugin }}"
-regex_profile_id_ibm_wct_toolbox: "<profile id='{{ profile_id_ibm_wct_toolbox }}"
+regex_profile_id_ibm_http_server: "<profile id='{{ id_ibm_http_server }}"
+regex_profile_id_ibm_http_plugin: "<profile id='{{ id_ibm_http_plugin }}"
+regex_profile_id_ibm_wct_tools: "<profile id='{{ id_ibm_wct_tools }}"
 
-regex_installContext_id_ibm_http_server: "<installContext id='{{ profile_id_ibm_http_server }}"
-regex_installContext_id_ibm_http_plugin: "<installContext id='{{ profile_id_ibm_http_plugin }}"
-regex_installContext_id_ibm_wct_toolbox: "<installContext id='{{ profile_id_ibm_wct_toolbox }}"
+regex_installContext_id_ibm_http_server: "<installContext id='{{ id_ibm_http_server }}"
+regex_installContext_id_ibm_http_plugin: "<installContext id='{{ id_ibm_http_plugin }}"
+regex_installContext_id_ibm_wct_tools: "<installContext id='{{ id_ibm_wct_tools }}"
+
+regex_location_id_ibm_http_server: "<location id='{{ id_ibm_http_server }}"
+regex_location_id_ibm_http_plugin: "<location id='{{ id_ibm_http_plugin }}"
+regex_location_id_ibm_wct_tools: "<location id='{{ id_ibm_wct_tools }}"
