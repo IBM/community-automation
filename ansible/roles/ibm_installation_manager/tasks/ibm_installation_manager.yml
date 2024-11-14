@@ -78,9 +78,11 @@
 
 - name: unarchive im.zip
   unarchive:
-   src: "{{ install_base }}/im_install/im.zip"
-   dest: "{{ install_base }}/im_install"
+   src: im.zip"
+   dest: im_install"
    remote_src: True
+  args:
+    chdir: '{{ install_base }}/im_install'
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
