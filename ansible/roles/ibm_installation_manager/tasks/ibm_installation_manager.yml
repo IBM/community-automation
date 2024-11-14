@@ -76,11 +76,9 @@
 - name: Get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: im.zip"
+   dest: "{{ install_base }}/im_install/im.zip"
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
-  args:
-    chdir: '{{ install_base }}/im_install'
 
 - name: Unarchive im.zip
   unarchive:
@@ -88,14 +86,14 @@
    dest: im_install"
    remote_src: True
   args:
-    chdir: '{{ install_base }}/im_install'
+    chdir: "{{ install_base }}/im_install"
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
 - name: Run the install ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
   shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
   args:
-    chdir: '{{ install_base }}/im_install'
+    chdir: "{{ install_base }}/im_install"
   register: userinstcOutput
     
 - name: Userinstc output
