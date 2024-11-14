@@ -5,12 +5,12 @@
   register: isimcl
   failed_when: isimcl.stat.exists == False
 
-- name: Windoze?
-  set_fact:
-    install_ihs_base_win: 'c:\cygwin'
-  when:
-  - ansible_architecture == 'x86_64'
-  - ansible_system == 'Windows' or 'CYG' in ansible_system
+# - name: Windoze?
+#   set_fact:
+#     install_ihs_base_win: 'c:\cygwin'
+#   when:
+#   - ansible_architecture == 'x86_64'
+#   - ansible_system == 'Windows' or 'CYG' in ansible_system
 
 # - name: Any var/ibm/InstallationManager/installRegistry.xml
 #   ansible.builtin.stat:

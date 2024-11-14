@@ -22,7 +22,7 @@
   - ansible_system == 'Linux'
 - set_fact:
     archive_name_match: 'agent.installer.win32.win32.x86_64_{{ im_archive_driver }}.zip'
-    install_base_win: 'c:\cygwin'
+    # install_base_win: 'c:\cygwin'
   when:
   - ansible_architecture == 'x86_64'
   - ansible_system == 'Windows' or 'CYG' in ansible_system
