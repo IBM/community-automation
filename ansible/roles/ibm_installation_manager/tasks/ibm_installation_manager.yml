@@ -58,6 +58,12 @@
   file:
    path: "{{ install_base }}/im_install"
    state: directory
+
+- name: Clean up previous ibm_im_responsefile.xml 
+  ansible.builtin.file:
+    path: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
+    state: absent
+
 - name: copy ibm_im_responsefile.xml template
   template:
    src: ibm_im_responsefile.xml.j2
