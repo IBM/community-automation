@@ -76,9 +76,11 @@
 - name: Get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: "{{ install_base }}/im_install/im.zip"
+   dest: im.zip"
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
+  args:
+    chdir: '{{ install_base }}/im_install'
 
 - name: Unarchive im.zip
   unarchive:
