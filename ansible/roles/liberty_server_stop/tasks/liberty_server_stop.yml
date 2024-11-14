@@ -20,10 +20,10 @@
         - name: Stop Liberty Server
           ansible.builtin.command:
             cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
-          register: cmdOutput
-          failed_when: ( cmdOutput.rc not in [ 0, 1, 21 ] ) # GPF rc=21, which kills the server, mission accomplished
+          register: cmdOutput1
+          failed_when: ( cmdOutput1.rc not in [ 0, 1, 21 ] ) # GPF rc=21, which kills the server, mission accomplished
 
         - name: Stop output
           ansible.builtin.debug:
-            msg: '{{ cmdOutput.stdout_lines }}'
-          failed_when: ( cmdOutput.rc not in [ 0, 1, 21 ] )
+            msg: '{{ cmdOutput1.stdout_lines }}'
+          failed_when: ( cmdOutput1.rc not in [ 0, 1, 21 ] )
