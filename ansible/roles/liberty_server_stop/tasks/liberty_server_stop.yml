@@ -21,9 +21,9 @@
           ansible.builtin.command:
             cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
           register: cmdOutput
-          ignore_errors: true # GPF sometimes , I need to get the rc
+          failed_when: ( cmdOutput.rc not in [ 0, 1, 21 ] ) # GPF rc=21, which kills the server, mission accomplished
 
         - name: Stop output
           ansible.builtin.debug:
             msg: '{{ cmdOutput.stdout_lines }}'
-          failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+          failed_when: ( cmdOutput.rc not in [ 0, 1, 21 ] )
