@@ -1,6 +1,6 @@
 ---
 - name: Liberty Server Stop
-  tags: stop 
+  tags: stop
   block:
     - name: Check if liberty is installed
       ansible.builtin.stat:
@@ -8,12 +8,22 @@
       register: isliberty
       failed_when: not isliberty.stat.exists
 
-    - name: Stop Liberty Server 
+    - name: Status Liberty Server
       ansible.builtin.command:
-        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
       register: cmdOutput
       failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
 
-    - name: Stop output
-      ansible.builtin.debug:
-        msg: '{{ cmdOutput.stdout_lines }}'
+    - name: Stop Liberty Server block
+      when: cmdOutput.rc == 0
+      block:
+        - name: Stop Liberty Server
+          ansible.builtin.command:
+            cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+          register: cmdOutput
+          ignore_errors: true # GPF sometimes , I need to get the rc
+
+        - name: Stop output
+          ansible.builtin.debug:
+            msg: '{{ cmdOutput.stdout_lines }}'
+          failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
