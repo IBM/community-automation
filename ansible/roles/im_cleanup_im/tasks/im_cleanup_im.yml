@@ -2,7 +2,7 @@
 
 - name:  Uninstall IM 
   ignore_errors: true
-  shell: "{{ install_base_win}}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+  shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
   register: uninstallOutput
   failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
@@ -38,9 +38,9 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ install_base_win}}{{ install_base }}/{{ shared_dir }}"
-    - "{{ install_base_win}}{{ install_base }}/im_install"
-    - "{{ install_base_win}}{{ install_base }}/IM"
-    - "{{ install_base_win}}{{ install_base }}/javasharedresources"
+    - "{{ cygwin }}{{ install_base }}/{{ shared_dir }}"
+    - "{{ cygwin }}{{ install_base }}/im_install"
+    - "{{ cygwin }}{{ install_base }}/IM"
+    - "{{ cygwin }}{{ install_base }}/javasharedresources"
     - "~/var/"
     - "~/etc/"
