@@ -1,25 +1,24 @@
 ---
-- name: Stop the apache http server
+- name: Stop the http server
   tags: apache_stop 
   block:
-  - name: check if apachectl is installed
+  - name: check if HTTPServer is installed
     stat:
-      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl"
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin"
     register: ishttp
     failed_when: ishttp.stat.exists == False
 
-  - name: HTTPServer apachectl stop 
-    failed_when: false
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
-    register: ihsOutput
+  - name: Unix HTTPServer operations
+    when: ansible_system != 'Windows'
+    block:
+      - name: HTTPServer apachectl stop 
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
 
-  - name: check if adminctl is installed
-    stat:
-      path: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl"
-    register: ishttp
-    failed_when: ishttp.stat.exists == False
+      - name: HTTPServer adminctl stop 
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
 
-  - name: HTTPServer adminctl stop 
-    failed_when: false
-    shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
-    register: ihsOutput
+  - name: Windoze HTTPServer operations
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    block:
+    - name: Apache_k_install output
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop"

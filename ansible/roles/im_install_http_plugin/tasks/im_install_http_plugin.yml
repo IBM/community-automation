@@ -142,9 +142,22 @@
     ansible.builtin.debug:
       msg: "{{ packageOutput.stdout_lines }}"
 
-  - name:  start httpd
+  - name: Start httpd ( *nix )
     ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
     register: starthttpdOutput
+    when: ansible_system != 'Windows'
+
+  - name: Windoze http operations
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    block:
+    - name: Install httpd Windoze service
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k install"
+      register: apache_k_install
+    - name: Apache_k_install output
+      ansible.builtin.debug:
+        msg: "{{ apache_k_install.stdout_lines }}"
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k start"
+      register: starthttpdOutput
 
   - name: starthttpdOutput
     ansible.builtin.debug:

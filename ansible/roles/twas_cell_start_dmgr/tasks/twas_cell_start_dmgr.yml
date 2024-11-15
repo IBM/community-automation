@@ -12,7 +12,7 @@
       when: '"STARTED" not in statusDmgroutput.stdout'
       block:  
       - name: Start the dmgr
-        shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager.sh"
+        shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startManager{{ ext }}"
         register: startManagerOutput
         failed_when: ( startManagerOutput.rc not in [ 0, 255 ] )
       - name: StartManagerOutput check for errors
