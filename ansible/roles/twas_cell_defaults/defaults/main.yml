@@ -21,9 +21,9 @@ logs_dir: "{{ playbook_dir }}" # location on the ansible controller
 enable_wmq: false # if set to true, use real MQ versus internal SIB/JMS
 
 profile_templatePath:
-  managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
-  dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
-  default: '{{ install_base }}/{{ twas_dir }}/profileTemplates/default'
+  managed: managed
+  dmgr: management
+  default: default
 
 cellName: 'ndcell'
 clusterName: 'Cluster'
