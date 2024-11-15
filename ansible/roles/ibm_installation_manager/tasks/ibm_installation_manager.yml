@@ -54,10 +54,6 @@
       ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip 
       ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip
 
-- name: What is install_base set to
-  debug: 
-   msg: "{{ install_base }}"
-
 - name: Temp im install dir
   file:
    path: "{{ install_base }}/im_install"
@@ -73,6 +69,10 @@
    src: ibm_im_responsefile.xml.j2
    dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
+- name: What is install_base set to
+  debug: 
+   msg: "{{ install_base }}"
+   
 - name: Get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
