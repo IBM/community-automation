@@ -5,6 +5,7 @@ twas_release: 'WAS90' # WAS855
 install_ihs_base: "{{ install_base | default('/home/nest', true) }}"
 # trick the template to install onto windoze via cygwin
 cygwin: ''
+ext: '.sh'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'
