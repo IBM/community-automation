@@ -5,78 +5,12 @@
   register: isimcl
   failed_when: isimcl.stat.exists == False
 
-# - name: Windoze?
-#   set_fact:
-#     install_ihs_base_win: 'c:\cygwin'
-#   when:
-#   - ansible_architecture == 'x86_64'
-#   - ansible_system == 'Windows' or 'CYG' in ansible_system
-
-# - name: Any var/ibm/InstallationManager/installRegistry.xml
-#   ansible.builtin.stat:
-#     path: var/ibm/InstallationManager/installRegistry.xml
-#   register: isinstallRegistry
-
-# - name: Any var/ibm/InstallationManager/installed.xml
-#   ansible.builtin.stat:
-#     path: var/ibm/InstallationManager/installed.xml
-#   register: isinstalled
-
-# - name: Adjust any of the existing profile ids to match the ansible ( autowas adjustment )
-#   block:
-#     - name: Adjust the HTTPServer profile id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_profile_id_ibm_http_server }}.+?(?=')"
-#         replace: "{{ regex_profile_id_ibm_http_server }}"
-#         backup: true
-#     - name: Adjust the HTTPServer Plugins profile id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_profile_id_ibm_http_plugin }}.+?(?=')"
-#         replace: "{{ regex_profile_id_ibm_http_plugin }}"
-#     - name: Adjust the WCT profile id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_profile_id_ibm_wct_tools }}.+?(?=')"
-#         replace: "{{ regex_profile_id_ibm_wct_tools }}"
-
-#     - name: Adjust the HTTPServer context id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_installContext_id_ibm_http_server }}.+?(?=.root')"
-#         replace: '{{ regex_installContext_id_ibm_http_server }}'
-#     - name: Adjust the HTTPServer Plugins context id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_installContext_id_ibm_http_plugin }}.+?(?=.root')"
-#         replace: '{{ regex_installContext_id_ibm_http_plugin }}'
-#     - name: Adjust the WCT context id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installRegistry.xml
-#         regexp: "{{ regex_installContext_id_ibm_wct_tools }}.+?(?=.root')"
-#         replace: '{{ regex_installContext_id_ibm_wct_tools }}'
-#   when: isinstallRegistry.stat.exists
-
-# - name: Adjust any of the existing location ids to match the ansible ( autowas adjustment )
-#   block:
-#     - name: Adjust the HTTPServer location id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installed.xml
-#         regexp: "{{ regex_location_id_ibm_http_server }}.+?(?=')"
-#         replace: "{{ regex_location_id_ibm_http_server }}"
-#         backup: true
-#     - name: Adjust the HTTPServer Plugins location id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installed.xml
-#         regexp: "{{ regex_location_id_ibm_http_plugin }}.+?(?=')"
-#         replace: "{{ regex_location_id_ibm_http_plugin }}"
-#     - name: Adjust the WCT location id
-#       ansible.builtin.replace:
-#         path: var/ibm/InstallationManager/installed.xml
-#         regexp: "{{ regex_location_id_ibm_wct_tools }}.+?(?=')"
-#         replace: "{{ regex_location_id_ibm_wct_tools }}"
-#   when: isinstalled.stat.exists
+- name: Windoze?
+  set_fact:
+    cygwin: 'c:/cygwin64'
+  when:
+  - ansible_architecture == 'x86_64'
+  - ansible_system == 'Windows' or 'CYG' in ansible_system
 
 - name: copy ihs_plugin.xml template
   ansible.builtin.template:

@@ -13,6 +13,13 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
+  - name: Windoze?
+    set_fact:
+      cygwin: 'c:/cygwin64'
+    when:
+    - ansible_architecture == 'x86_64'
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
+
   - name: copy im_twas.xml template
     template:
      src: "im_twas_{{ twas_release }}.xml.j2"

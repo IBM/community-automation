@@ -2,6 +2,7 @@
 twas_im_driver: 'f5202422.01'
 twas_daily_or_test: 'test'
 install_base: '/home/nest'
+cygwin: ''
 twas_dir: 'was'
 app_dir: 'AppClient'
 shared_dir: 'IM-shared'
