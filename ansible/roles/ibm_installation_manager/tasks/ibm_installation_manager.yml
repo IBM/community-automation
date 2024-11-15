@@ -87,7 +87,7 @@
    dest: "{{ install_base }}/im_install"
    remote_src: True
 
-- name: Clean up im.zipo
+- name: Clean up im.zip
   ansible.builtin.file:
     path: /tmp/im.zip
     state: absent

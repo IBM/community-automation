@@ -1,14 +1,10 @@
-kdb=ihsserverkey.kdb
-ihshost=`hostname`
-rm -f ${kdb} ihsserverkey.rdb ihsserverkey.crl ihsserverkey.sth
+rm -f ihsserverkey.kdb ihsserverkey.rdb ihsserverkey.crl ihsserverkey.sth
 
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{{ install_ihs_base }}/{{ http_dir }}/gsk8/lib64
-export PATH={{ install_ihs_base }}/{{ http_dir }}/gsk8/bin/:$PATH
-echo "Creating $kdb"
-gsk8capicmd_64 -keydb -create -db ${kdb} -type cms -pw 'Just4T3st!ng' -stash -expire 7300
+echo "Creating ihsserverkey.kdb'
+../bin/gskcmd.bat -keydb -create -db ihsserverkey.kdb  -type cms -pw 'Just4T3st!ng' -stash -expire 7300
 echo "Creating certificates"
-gsk8capicmd_64 -cert -create -db ${kdb} -type cms -label ihs -pw 'Just4T3st!ng' -DN CN=$ihshost -size 2048 -default_cert yes -expire 7300
-gsk8capicmd_64 -cert -details -label "ihs" -db ${kdb} -pw 'Just4T3st!ng'
-echo "Completed creating ldap certificates"
-gsk8capicmd_64 -cert -list -db ${kdb} -pw 'Just4T3st!ng'
-gsk8capicmd_64 -cert -extract -db ${kdb} -type cms -label ihs -pw 'Just4T3st!ng' -target $ihshost.base64.cert
+./bin/gskcmd.bat -cert -create -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -DN CN={{ ansible_fqdn }} -size 2048 -default_cert yes -expire 7300
+./bin/gskcmd.bat -cert -details -label "ihs" -db ihsserverkey.kdb -pw 'Just4T3st!ng'
+./bin/gskcmd.bat "Completed creating ldap certificates"
+./bin/gskcmd.bat -cert -list -db ihsserverkey.kdb -pw 'Just4T3st!ng'
+./bin/gskcmd.bat -cert -extract -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -target {{ ansible_fqdn }}.base64.cert
