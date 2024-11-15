@@ -72,18 +72,19 @@
 - name: What is install_base set to
   debug: 
    msg: "{{ install_base }}"
-   
+
 - name: Get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
    dest: "{{ install_base }}/im_install/im.zip"
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
+   mode: '0755'
 
 - name: Unarchive im.zip
   unarchive:
-   src: im.zip"
-   dest: im_install"
+   src: im.zip
+   dest: im_install
    remote_src: True
   args:
     chdir: "{{ install_base }}/im_install"
