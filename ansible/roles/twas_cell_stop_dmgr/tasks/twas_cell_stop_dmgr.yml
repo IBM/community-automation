@@ -20,7 +20,7 @@
       when: '"STARTED" in statusDmgroutput.stdout'
       block:  
       - name: Stop the dmgr
-        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager{{ ext }}-username {{ twas_username }} -password {{ twas_password }}"
+        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager{{ ext }} -username {{ twas_username }} -password {{ twas_password }}"
         register: stopManagerOutput
         failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
       - name: stopManagerOutput
