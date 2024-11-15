@@ -4,7 +4,7 @@
   when: profile_type == 'dmgr'
   block:
    - name: Backup the dmgr config
-     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/backupConfig.sh -nostop"
+     ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/backupConfig{{ ext }} -nostop"
      register: backupConfigOutput
      failed_when: ( backupConfigOutput.rc not in [ 0, 255 ] )
    - name: BackupConfigOutput

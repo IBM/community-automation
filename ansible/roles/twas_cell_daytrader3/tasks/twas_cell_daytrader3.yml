@@ -22,7 +22,7 @@
    dest: "~/{{ DefaultEarFile }}"
 
 - name: run the daytrader config jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
   register: daytraderConfigOutput
   failed_when: ( daytraderConfigOutput.rc not in [ 0, 255 ] )
 - name: daytraderConfigOutput
@@ -30,7 +30,7 @@
    msg: "{{ daytraderConfigOutput.stdout_lines }}"
    
 - name: run the daytrader3 application install jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader3.py"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader3.py"
   register: daytrader3Output
   failed_when: ( daytrader3Output.rc not in [ 0, 255 ] )
 - name: daytrader3Output

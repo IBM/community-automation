@@ -4,7 +4,7 @@
   when: profile_type == 'managed'
   block:
     - name: Check the nodeagent status
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh nodeagent -username {{ twas_username }} -password {{ twas_password }}"
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} nodeagent -username {{ twas_username }} -password {{ twas_password }}"
       register: statusNodeOutput
       failed_when: ( statusNodeOutput.rc not in [ 0, 246, 255 ] )
 
@@ -12,7 +12,7 @@
       when: '"STARTED" not in statusNodeOutput.stdout'
       block:  
       - name: start the node
-        shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode.sh"
+        shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startNode{{ ext }}"
         register: startNodeOutput
         failed_when: ( startNodeOutput.rc not in [ 0, 255 ] )
       - name: startNodeOutput

@@ -4,7 +4,7 @@
   when: profile_type == 'dmgr'
   block:
     - name: Retrieve signers
-      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }}{{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
       register: retrieveSignersOutput
       failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
     - name: RetrieveSignersOutput
@@ -12,7 +12,7 @@
         msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
     - name: Check the dmgr status
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh dmgr -username {{ twas_username }} -password {{ twas_password }}"
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} dmgr -username {{ twas_username }} -password {{ twas_password }}"
       register: statusDmgroutput
       failed_when: ( statusDmgroutput.rc not in [ 0, 246, 255 ] )
 
@@ -20,7 +20,7 @@
       when: '"STARTED" in statusDmgroutput.stdout'
       block:  
       - name: Stop the dmgr
-        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager.sh -username {{ twas_username }} -password {{ twas_password }}"
+        shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopManager{{ ext }}-username {{ twas_username }} -password {{ twas_password }}"
         register: stopManagerOutput
         failed_when: ( stopManagerOutput.rc not in [ 0, 246, 255 ] )
       - name: stopManagerOutput

@@ -5,7 +5,7 @@
     - dynamic_cluster_only is not defined
   block:
     - name: retrieve signers
-      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners.sh {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }}{{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
       register: retrieveSignersOutput
       failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
     - name: retrieveSignersOutput
@@ -19,11 +19,11 @@
       when: dynamic_cluster_pause is defined
 
     - name: List the stopped servers minus the nodeagent
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
       register: serverListOutput
 
     - name: Start the default tWAS Server
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh {{ item }}"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer{{ ext }}{{ item }}"
       register: startDefaultOutput
       failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'

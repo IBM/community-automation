@@ -1,4 +1,6 @@
 ---
+cygwin: ''
+ext: '.sh'
 install_base: '/home/nest'
 liberty_dir: 'wlp'
 liberty_admin_user: 'admin'

@@ -2,12 +2,12 @@
 
 - name: twas version and status
   shell: |
-      [ -f {{ install_base }}/{{ twas_dir }}/bin/versionInfo.sh ] && {{ install_base }}/{{ twas_dir }}/bin/versionInfo.sh -ifixDetail || true
-      [ -f {{ install_base }}/{{ http_dir }}/bin/versionInfo.sh ] && {{ install_base }}/{{ http_dir }}/bin/versionInfo.sh -ifixDetail || true
-      [ -f {{ install_base }}/{{ plugin_dir }}/bin/versionInfo.sh ] && {{ install_base }}/{{ plugin_dir }}/bin/versionInfo.sh -ifixDetail || true
-      [ -f {{ install_base }}/{{ wct_dir }}/bin/versionInfo.sh ] && {{ install_base }}/{{ wct_dir }}/bin/versionInfo.sh -ifixDetail || true
-      [ -f {{ install_base }}/{{ app_dir }}/bin/versionInfo.sh ] && {{ install_base }}/{{ app_dir }}/bin/versionInfo.sh -ifixDetail || true
-      [ -f {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh ] && {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }} || true
+      [ -f {{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} ] && {{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail || true
+      [ -f {{ install_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} ] && {{ install_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail || true
+      [ -f {{ install_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }} ] && {{ install_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }} -ifixDetail || true
+      [ -f {{ install_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }} ] && {{ install_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }} -ifixDetail || true
+      [ -f {{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} ] && {{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail || true
+      [ -f {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} ] && {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }} || true
   register: twasstatus
 
 - name: twasstatus

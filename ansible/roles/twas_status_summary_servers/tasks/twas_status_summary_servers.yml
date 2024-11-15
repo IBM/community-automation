@@ -4,7 +4,7 @@
   ansible.builtin.shell: 
     cmd: |
       set -o pipefail
-      {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
+      {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
     executable: /bin/bash
   register: twasstatus
 

@@ -7,7 +7,7 @@
    mode: '0600'
 
 - name: Set the nodes servers into maint mode
-  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ~/enableMaintMode.py {{ profile_name }} {{ maint_mode_op }}"
+  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ~/enableMaintMode.py {{ profile_name }} {{ maint_mode_op }}"
   register: twasOpsOutput
   failed_when: ( twasOpsOutput.rc not in [ 0, 255 ] )
 - name: twasOpsOutput

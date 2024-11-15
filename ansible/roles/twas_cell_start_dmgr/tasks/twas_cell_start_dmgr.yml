@@ -4,7 +4,7 @@
   when: profile_type == 'dmgr'
   block:
     - name: Check the dmgr status
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus.sh dmgr -username {{ twas_username }} -password {{ twas_password }}"
+      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} dmgr -username {{ twas_username }} -password {{ twas_password }}"
       register: statusDmgroutput
       failed_when: ( statusDmgroutput.rc not in [ 0, 246, 255 ] )
 

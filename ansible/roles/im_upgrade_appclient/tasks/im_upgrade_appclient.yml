@@ -36,7 +36,7 @@
   tags: version
   block:
   - name: WAS version
-    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo.sh -ifixDetail"
+    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: wasVersionOutput
 
   - name: WasVersionOutput

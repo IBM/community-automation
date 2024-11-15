@@ -1,0 +1,8 @@
+---
+- name: Check windoze
+  ansible.builtin.set_fact:
+    cygwin: 'c:/cygwin64'
+    ext: '.bat'
+  when:
+    - ansible_architecture == 'x86_64'
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
