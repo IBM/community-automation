@@ -87,6 +87,11 @@
    dest: "{{ install_base }}/im_install"
    remote_src: True
 
+- name: Clean up im.zipo
+  ansible.builtin.file:
+    path: /tmp/im.zip
+    state: absent
+
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
 - name: Run the install ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
@@ -98,3 +103,8 @@
 - name: Userinstc output
   debug: 
    msg: "{{ userinstcOutput.stdout_lines }}"
+
+- name: Clean up im_install temp repo
+  ansible.builtin.file:
+    path: "{{ install_base }}/im_install"
+    state: absent
