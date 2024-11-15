@@ -76,18 +76,18 @@
 - name: Get im archive
   get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: "{{ install_base }}/im_install/im.zip"
+   dest: /tmp/im.zip
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
    mode: '0755'
 
 - name: Unarchive im.zip
   unarchive:
-   src: im.zip
+   src: /tmp/im.zip
    dest: im_install
    remote_src: True
   args:
-    chdir: "{{ install_base }}/im_install"
+    chdir: "{{ install_base }}"
 
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
