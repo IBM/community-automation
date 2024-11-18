@@ -163,6 +163,7 @@
     - name: Apache_k_install output
       ansible.builtin.debug:
         msg: "{{ apache_k_install.stdout_lines }}"
+    - name: Start apache -k start -n IBMHTTPServer
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMHTTPServer'"
       register: starthttpdOutput
     - name: StarthttpdOutput
@@ -174,6 +175,7 @@
     - name: Apache_k_admin_install output
       ansible.builtin.debug:
         msg: "{{ apache_k_install.stdout_lines }}"
+    - name: Start apache -k start -n IBMAdminHTTPServer
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer' -f conf/admin.conf"
       register: starthttpdOutput
     - name: StarthttpdOutput
