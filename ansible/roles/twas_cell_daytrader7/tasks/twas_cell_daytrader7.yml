@@ -11,8 +11,8 @@
       src: "../twas_cell_common_daytrader/templates/mq_config.py.j2"
       dest: "mq_config.py"
     when: 
-      profile_type == 'dmgr'
-      enable_wmq
+      - profile_type == 'dmgr'
+      - enable_wmq
   when: profile_type == 'dmgr'
 
 - block:
