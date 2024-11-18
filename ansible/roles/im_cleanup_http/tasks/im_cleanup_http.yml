@@ -2,27 +2,44 @@
 
 - name: Check if previous ihs installed
   ansible.builtin.stat:
-    path: "{{ install_ihs_base }}/{{ http_dir }}bin/apachectl"
+    path: "{{ install_ihs_base }}/{{ http_dir }}bin"
   register: isihs
 
-- name: Stop any httpd proccess gracefully
-  when: isihs.stat.exists == True
-  block: 
-  - name:  stop httpd
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+- name: Windoze http operations
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+  - name: Stop http
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop"
+    register: stopthttpdOutput
+  - name: Apache_k_stopoutput
+    ansible.builtin.debug:
+      msg: "{{ stopthttpdOutput.stdout_lines }}"
+  - name: Uninstall httpd Windoze service
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall"
+    register: apache_k_install
+  - name: Apache_k_uninstall output
+    ansible.builtin.debug:
+      msg: "{{ apache_k_uninstall.stdout_lines }}"
 
-  - name: Stop adminctl
+- name: Unix http operations
+  when: ansible_system != 'Windows'
+  block:
+  - name: Stop any httpd proccess gracefully
+    when: isihs.stat.exists == True
+    block: 
+    - name:  stop httpd
+      ignore_errors: true
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+    - name: Stop adminctl
+      ignore_errors: true
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
+  - name: Force pkill httpd  ( linux )
     ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
-
-- name: Force pkill httpd  ( linux )
-  ignore_errors: true
-  ansible.builtin.shell: "pkill httpd"
-  register: killOutput
-  failed_when: ( killOutput.rc not in [ 0, 1 ] )
-  when:
-    - ansible_architecture != 'chrp'
+    ansible.builtin.shell: "pkill httpd"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1 ] )
+    when:
+      - ansible_architecture != 'chrp'
 
 - name: Check if previous WCT installed
   ansible.builtin.stat:

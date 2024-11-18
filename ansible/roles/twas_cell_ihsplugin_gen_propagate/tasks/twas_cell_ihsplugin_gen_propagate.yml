@@ -14,7 +14,7 @@
    dest: "ihsplugin_gen_propagate.py"
 
 - name: run the ihsplugin_gen_propagate jython script
-  shell: "{{ cygwin }}{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
+  shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
   register: ihsplugin_gen_propagateOutput
   failed_when: ( ihsplugin_gen_propagateOutput.rc not in [ 0, 255 ] )
 - name: ihsplugin_gen_propagateOutput
