@@ -138,7 +138,7 @@
       msg: "{{ packageOutput.stdout_lines }}"
 
   - name: Unix http operations
-    when: ansible_system != 'Windows'
+    when: ansible_system is not search('CYG')
     block:
       - name: Start httpd ( *nix )
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
@@ -147,7 +147,6 @@
         ansible.builtin.debug:
           msg: "{{ starthttpdOutput.stdout_lines }}"
       - name: Start adminctl
-        when: ansible_system != 'Windows'
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
         register: startadminctlOutput
       - name: StartadminctlOutput

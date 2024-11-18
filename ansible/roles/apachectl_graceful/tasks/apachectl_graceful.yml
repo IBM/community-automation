@@ -9,7 +9,7 @@
     failed_when: ishttp.stat.exists == False
 
   - name: Unix HTTPServer operations
-    when: ansible_system != 'Windows'
+    when: ansible_system is not search('CYG')
     block:
       - name: HTTPServer graceful load new / updated config
         failed_when: false

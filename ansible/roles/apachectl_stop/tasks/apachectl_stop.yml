@@ -9,7 +9,7 @@
     failed_when: ishttp.stat.exists == False
 
   - name: Unix HTTPServer operations
-    when: ansible_system != 'Windows'
+    when: ansible_system is not search('CYG')
     block:
       - name: HTTPServer apachectl stop 
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
@@ -20,5 +20,7 @@
   - name: Windoze HTTPServer operations
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:
-    - name: Apache_k_install output
-      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop"
+    - name: Apache stop 
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMHTTPServer'"
+    - name: Apache stop admin
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"

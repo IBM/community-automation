@@ -26,7 +26,7 @@
   register: uninstallOutput
   failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
   when:
-  - ansible_system != 'Windows' and 'CYG' not in ansible_system
+  - ansible_system is not search('CYG') and 'CYG' not in ansible_system
 
 - name: UninstallAll output
   debug:

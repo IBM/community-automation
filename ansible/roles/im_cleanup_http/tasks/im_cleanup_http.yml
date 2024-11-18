@@ -36,7 +36,7 @@
         ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMAdminHTTPServer' -f conf/admin.conf"
 
 - name: Unix http operations
-  when: ansible_system != 'Windows'
+  when: ansible_system is not search('CYG')
   block:
   - name: Stop any httpd proccess gracefully
     when: isihs.stat.exists == True
