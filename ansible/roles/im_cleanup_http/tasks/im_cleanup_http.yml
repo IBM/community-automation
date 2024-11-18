@@ -8,34 +8,49 @@
 - name: Windoze http operations
   when: ansible_system == 'Windows' or 'CYG' in ansible_system
   block:
-  - name: Stop http
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMHTTPServer'"
-    register: stopthttpdOutput
-  - name: Apache_k_stopoutput
-    ansible.builtin.debug:
-      msg: "{{ stopthttpdOutput.stdout_lines }}"
-  - name: Uninstall httpd Windoze service
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMHTTPServer'"
-    register: apache_k_uninstall
-  - name: Apache_k_uninstall output
-    ansible.builtin.debug:
-      msg: "{{ apache_k_uninstall.stdout_lines }}"
-  - name: Stop http admin
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMAdminHTTPServer' -f conf/admin.conf"
-    register: stopthttpdOutput
-  - name: Apache_k_stopoutput
-    ansible.builtin.debug:
-      msg: "{{ stopthttpdOutput.stdout_lines }}"
-  - name: Uninstall httpd Windoze service
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMAdminHTTPServer' -f conf/admin.conf"
-    register: apache_k_uninstall
-  - name: Apache_k_uninstall output
-    ansible.builtin.debug:
-      msg: "{{ apache_k_uninstall.stdout_lines }}"
+  - name: Does IBMHTTPServer service exist?
+    ansible.builtin.shell: "sc query IBMHTTPServer"
+    register: isIBMHTTPServer
+    failed_when: isIBMHTTPServer.rc not in [0,36]
+  - name: IBMHTTPServer is enabled
+    when: isIBMHTTPServer.rc == 0
+    block:
+      - name: Stop http
+        when: isIBMHTTPServer.stdout is search('RUNNING')
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMHTTPServer'"
+        register: stopthttpdOutput
+      - name: Apache_k_stopoutput
+        ansible.builtin.debug:
+          msg: "{{ stopthttpdOutput.stdout_lines }}"
+      - name: Uninstall httpd Windoze service
+        ignore_errors: true
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMHTTPServer'"
+        register: apache_k_uninstall
+      - name: Apache_k_uninstall output
+        ansible.builtin.debug:
+          msg: "{{ apache_k_uninstall.stdout_lines }}"
+
+  - name: Does IBMAdminHTTPServer service exist?
+    ansible.builtin.shell: "sc query IBMAdminHTTPServer"
+    register: isIBMAdminHTTPServer
+    failed_when: isIBMAdminHTTPServer.rc not in [0,36]
+  - name: IBMAdminHTTPServer is enabled
+    when: isIBMAdminHTTPServer.rc == 0
+    block:
+      - name: Stop http admin
+        when: isIBMAdminHTTPServer.stdout is search('RUNNING')
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+        register: stopthttpdOutput
+      - name: Apache_k_stopoutput
+        ansible.builtin.debug:
+          msg: "{{ stopthttpdOutput.stdout_lines }}"
+      - name: Uninstall httpd Windoze service
+        ignore_errors: true
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+        register: apache_k_uninstall
+      - name: Apache_k_uninstall output
+        ansible.builtin.debug:
+          msg: "{{ apache_k_uninstall.stdout_lines }}"
 
 - name: Unix http operations
   when: ansible_system != 'Windows'
