@@ -1,7 +1,7 @@
 ---
 - block:
   - set_fact:
-    targetServerMapping: "cluster={{ clusterName }}"
+      targetServerMapping: "cluster={{ clusterName }}"
   - name: Copy daytrader_config.py.j2 template
     ansible.bulitin.template:
       src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
@@ -17,7 +17,7 @@
 
 - block:
   - set_fact:
-    targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
+      targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
   - name: Copy daytrader_config_base.py.j2 template
     ansible.bulitin.template:
       src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
