@@ -3,11 +3,11 @@
   - set_fact:
       targetServerMapping: "cluster={{ clusterName }}"
   - name: Copy daytrader_config.py.j2 template
-    ansible.bulitin.template:
+    ansible.builtin.template:
       src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
       dest: "daytrader_config.py"
   - name: Copy mq_config.py.j2 template
-    ansible.bulitin.template:
+    ansible.builtin.template:
       src: "../twas_cell_common_daytrader/templates/mq_config.py.j2"
       dest: "mq_config.py"
     when: 
@@ -19,42 +19,42 @@
   - set_fact:
       targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
   - name: Copy daytrader_config_base.py.j2 template
-    ansible.bulitin.template:
+    ansible.builtin.template:
       src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
       dest: "daytrader_config.py"
   when: profile_type == 'default'
 
 - name: Copy daytrader7.py.j2 template
-  ansible.bulitin.template:
+  ansible.builtin.template:
     src: "../twas_cell_common_daytrader/templates/daytrader7.py.j2"
     dest: "daytrader7.py"
 
 - name: Copy daytrader_vars.py.j2 template
-  ansible.bulitin.template:
+  ansible.builtin.template:
     src: "../twas_cell_common_daytrader/templates/daytrader_vars.py.j2"
     dest: "daytrader_vars.py"
 - name: Copy resource_scripts.py.j2 template
-  ansible.bulitin.template:
+  ansible.builtin.template:
     src: "../twas_cell_common_daytrader/templates/resource_scripts.py.j2"
     dest: "resource_scripts.py"
 - name: Copy daytrader app
-  ansible.bulitin.copy:
+  ansible.builtin.copy:
    src: "{{ DefaultEarFile }}"
    dest: "~/{{ DefaultEarFile }}"
 
 - name: Run the daytrader config jython script
-  ansible.bulitin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
+  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader_config.py"
   register: daytraderConfigOutput
   failed_when: ( daytraderConfigOutput.rc not in [ 0, 255 ] )
 - name: daytraderConfigOutput
-  ansible.bulitin.debug:
+  ansible.builtin.debug:
     msg: "{{ daytraderConfigOutput.stdout_lines }}"
 
 - name: Run the daytrader7 application install jython script
-  ansible.bulitin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
+  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f daytrader7.py"
   register: daytrader7Output
   failed_when: ( daytrader7Output.rc not in [ 0, 255 ] )
 - name: daytrader7Output
-  ansible.bulitin.debug:
+  ansible.builtin.debug:
     msg: "{{ daytrader7Output.stdout_lines }}"
 
