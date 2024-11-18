@@ -1,29 +1,29 @@
 ---
 - name: Copy dmgr configs
   block:
-  - set_fact:
-    targetServerMapping: "cluster={{ clusterName }}"
-  - name: Copy daytrader_config.py.j2 template
-    ansible.bulitin.template:
-      src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
-      dest: "daytrader_config.py"
-  - name: Copy mq_config.py.j2 template
-    ansible.bulitin.template:
-      src: "../twas_cell_common_daytrader/templates/mq_config.py.j2"
-      dest: "mq_config.py"
-    when: 
-      - profile_type == 'dmgr'
-      - enable_wmq
+    - set_fact:
+      targetServerMapping: "cluster={{ clusterName }}"
+    - name: Copy daytrader_config.py.j2 template
+      ansible.bulitin.template:
+        src: "../twas_cell_common_daytrader/templates/daytrader_config.py.j2"
+        dest: "daytrader_config.py"
+    - name: Copy mq_config.py.j2 template
+      ansible.bulitin.template:
+        src: "../twas_cell_common_daytrader/templates/mq_config.py.j2"
+        dest: "mq_config.py"
+      when: 
+        - profile_type == 'dmgr'
+        - enable_wmq
   when: profile_type == 'dmgr'
 
 - name: Copy base configs 
   block:
-  - set_fact:
-     targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
-  - name: Copy daytrader_config_base.py.j2 template
-    ansible.bulitin.template:
-      src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
-      dest: "daytrader_config.py"
+    - set_fact:
+      targetServerMapping: "node={{ profile_name }},server={{ appServerName }}"
+    - name: Copy daytrader_config_base.py.j2 template
+      ansible.bulitin.template:
+        src: "../twas_cell_common_daytrader/templates/daytrader_config_base.py.j2"
+        dest: "daytrader_config.py"
   when: profile_type == 'default'
 
 - name: Copy daytrader7.py.j2 template
