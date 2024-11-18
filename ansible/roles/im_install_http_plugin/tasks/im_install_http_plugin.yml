@@ -143,6 +143,9 @@
       - name: Start httpd ( *nix )
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
         register: starthttpdOutput
+      - name: StarthttpdOutput
+        ansible.builtin.debug:
+          msg: "{{ starthttpdOutput.stdout_lines }}"
       - name: Start adminctl
         when: ansible_system != 'Windows'
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
@@ -155,19 +158,27 @@
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:
     - name: Install httpd Windoze service
-      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer'"
       register: apache_k_install
     - name: Apache_k_install output
       ansible.builtin.debug:
         msg: "{{ apache_k_install.stdout_lines }}"
-      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMHTTPServer'"
       register: starthttpdOutput
-
-  - name: StarthttpdOutput
-    ansible.builtin.debug:
-      msg: "{{ starthttpdOutput.stdout_lines }}"
-
-
+    - name: StarthttpdOutput
+      ansible.builtin.debug:
+        msg: "{{ starthttpdOutput.stdout_lines }}"
+    - name: Install httpd admin Windoze service
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+      register: apache_k_admin_install
+    - name: Apache_k_admin_install output
+      ansible.builtin.debug:
+        msg: "{{ apache_k_install.stdout_lines }}"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+      register: starthttpdOutput
+    - name: StarthttpdOutput
+      ansible.builtin.debug:
+        msg: "{{ starthttpdOutput.stdout_lines }}"
 
   - name: Check server-status
     ansible.builtin.uri:
