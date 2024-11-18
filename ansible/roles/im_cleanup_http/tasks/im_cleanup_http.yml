@@ -16,7 +16,7 @@
       msg: "{{ stopthttpdOutput.stdout_lines }}"
   - name: Uninstall httpd Windoze service
     ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall"
-    register: apache_k_install
+    register: apache_k_uninstall
   - name: Apache_k_uninstall output
     ansible.builtin.debug:
       msg: "{{ apache_k_uninstall.stdout_lines }}"
