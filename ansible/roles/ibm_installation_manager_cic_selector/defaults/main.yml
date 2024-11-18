@@ -10,8 +10,8 @@ cic_selector_arch:
 cic_selector_os:
   AIX: 'aix'
   Linux: 'linux'
-  Windows: 'windows'
-  CYGWIN_NT-10.0-20348: 'windows' # hard coded to a specific cygwin version
+  Windows: 'win32'
+  CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
   OS400: 'os400'
 # cmvc defect to get this fixed : 803544
