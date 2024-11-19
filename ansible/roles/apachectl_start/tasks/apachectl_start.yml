@@ -18,7 +18,7 @@
 
       - name: HTTPServer apachectl start Output
         debug: 
-        msg: "{{ ihsOutput.stdout_lines }}"
+          msg: "{{ ihsOutput.stdout_lines }}"
 
       - name: check if adminctl is installed
         stat:
@@ -33,7 +33,7 @@
 
       - name: HTTPServer adminctl start Output
         debug: 
-        msg: "{{ adminctl.stdout_lines }}"
+          msg: "{{ adminctl.stdout_lines }}"
     
   - name: Windoze HTTPServer operations
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
