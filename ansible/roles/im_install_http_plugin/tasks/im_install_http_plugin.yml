@@ -118,6 +118,18 @@
       regexp: '@@AdminPort@@'
       replace: "{{ ihs_admin_port }}"
 
+  - name: Disable admin.config User otherwise must run as root
+    ansible.builtin.replace:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+      regexp: '^User'
+      replace: '#User'
+
+  - name: Disable admin.config Group otherwise must run as root
+    ansible.builtin.replace:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+      regexp: '^Group'
+      replace: '#Group'
+
   - name: enable server-status
     ansible.builtin.replace:
       path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
