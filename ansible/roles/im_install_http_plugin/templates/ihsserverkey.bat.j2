@@ -1,10 +1,10 @@
 rm -f ihsserverkey.kdb ihsserverkey.rdb ihsserverkey.crl ihsserverkey.sth
 
 echo "Creating ihsserverkey.kdb'
-../bin/gskcmd.bat -keydb -create -db ihsserverkey.kdb  -type cms -pw 'Just4T3st!ng' -stash -expire 7300
+call ../bin/gskcmd.bat -keydb -create -db ihsserverkey.kdb  -type cms -pw 'Just4T3st!ng' -stash -expire 7300
 echo "Creating certificates"
-./bin/gskcmd.bat -cert -create -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -DN CN={{ ansible_fqdn }} -size 2048 -default_cert yes -expire 7300
-./bin/gskcmd.bat -cert -details -label "ihs" -db ihsserverkey.kdb -pw 'Just4T3st!ng'
-./bin/gskcmd.bat "Completed creating ldap certificates"
-./bin/gskcmd.bat -cert -list -db ihsserverkey.kdb -pw 'Just4T3st!ng'
-./bin/gskcmd.bat -cert -extract -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -target {{ ansible_fqdn }}.base64.cert
+call ../bin/gskcmd.bat -cert -create -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -DN CN={{ ansible_fqdn }} -size 2048 -default_cert yes -expire 7300
+call ../bin/gskcmd.bat -cert -details -label "ihs" -db ihsserverkey.kdb -pw 'Just4T3st!ng'
+echo "Completed creating IHS certificates"
+call ../bin/gskcmd.bat -cert -list -db ihsserverkey.kdb -pw 'Just4T3st!ng'
+call ../bin/gskcmd.bat -cert -extract -db ihsserverkey.kdb -type cms -label ihs -pw 'Just4T3st!ng' -target {{ ansible_fqdn }}.base64.cert

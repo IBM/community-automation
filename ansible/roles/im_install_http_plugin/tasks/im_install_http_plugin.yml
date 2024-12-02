@@ -175,26 +175,78 @@
   - name: Windoze http operations
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:
+    - name: Windoze create c:/temp/logs
+      ansible.builtin.file:
+        path: "c:/temp/logs"
+        state: directory
+
+    - name: Windoze switch log dir to c:/temp/logs
+      ansible.builtin.lineinfile: 
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        search_string: 'Log logs'
+        line: 'Log c:/temp/logs'
+        state: present
+
+    - name: Windoze switch log dir to c:/temp/logs pid
+      ansible.builtin.lineinfile: 
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        search_string: 'PidFile logs'
+        line: 'PidFile c:/temp/logs'
+        state: present
+
     - name: Install httpd Windoze service
-      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer'"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
       register: apache_k_install
     - name: Apache_k_install output
       ansible.builtin.debug:
         msg: "{{ apache_k_install.stdout_lines }}"
+
+    ## Unable to find a simple command line option to allow user loginAsService, switch logs to c:/temp/logs
+    # - name: Change Windoze service account
+    #   ansible.builtin.shell: "sc config IBMHTTPServer obj='.\\{{ user_username }}' password={{ user_password }} type=own"
+    #   register: sc_config
+    # - name: Change Windoze service account output
+    #   ansible.builtin.debug:
+    #     msg: "{{ sc_config.stdout_lines }}"
+
     - name: Start apache -k start -n IBMHTTPServer
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMHTTPServer'"
       register: starthttpdOutput
     - name: StarthttpdOutput
       ansible.builtin.debug:
         msg: "{{ starthttpdOutput.stdout_lines }}"
+
+    - name: Windoze switch log dir to c:/temp/logs for admin
+      ansible.builtin.lineinfile: 
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+        search_string: 'Log logs'
+        line: 'Log c:/temp/logs'
+        state: present
+
+    - name: Windoze switch log dir to c:/temp/logs admin pid
+      ansible.builtin.lineinfile: 
+        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+        search_string: 'PidFile logs'
+        line: 'PidFile c:/temp/logs'
+        state: present
+
     - name: Install httpd admin Windoze service
-      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMAdminHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
       register: apache_k_admin_install
     - name: Apache_k_admin_install output
       ansible.builtin.debug:
         msg: "{{ apache_k_install.stdout_lines }}"
+
+    # # Unable to find a simple command line option to allow user loginAsService, switch logs to c:/temp/logs
+    # - name: Change Windoze service account admin
+    #   ansible.builtin.shell: "sc config IBMAdminHTTPServer obj='.\\{{ user_username }}' password={{ user_password }} type=own"
+    #   register: sc_config
+    # - name: Change Windoze service account admin output
+    #   ansible.builtin.debug:
+    #     msg: "{{ sc_config.stdout_lines }}"
+
     - name: Start apache -k start -n IBMAdminHTTPServer
-      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"
       register: starthttpdOutput
     - name: StarthttpdOutput
       ansible.builtin.debug:
