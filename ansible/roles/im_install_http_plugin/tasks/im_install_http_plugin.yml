@@ -221,7 +221,7 @@
         replace: 'Log c:/temp/logs'
 
     - name: Windoze switch log dir to c:/temp/logs admin pid
-      ansible.builtin.lineinfile: 
+      ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
         regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
