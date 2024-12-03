@@ -183,14 +183,14 @@
     - name: Windoze switch log dir to c:/temp/logs
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        regex: '^Log logs$'
+        regexp: '^Log logs$'
         replace: 'Log c:/temp/logs'
         state: present
 
     - name: Windoze switch log dir to c:/temp/logs pid
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        regex: 'PidFile logs'
+        regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
         state: present
 
@@ -219,14 +219,14 @@
     - name: Windoze switch log dir to c:/temp/logs for admin
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        regex: '^Log logs$'
+        regexp: '^Log logs$'
         replace: 'Log c:/temp/logs'
         state: present
 
     - name: Windoze switch log dir to c:/temp/logs admin pid
       ansible.builtin.lineinfile: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        regex: 'PidFile logs'
+        regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
         state: present
 
