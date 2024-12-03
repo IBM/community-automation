@@ -96,7 +96,7 @@
         SSLEnable
         Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         </VirtualHost>
-        KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
+        KeyFile {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
   - name: IHS disable access_log
     ansible.builtin.replace: 
