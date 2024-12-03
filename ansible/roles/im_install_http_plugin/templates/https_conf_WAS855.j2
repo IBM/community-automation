@@ -1,5 +1,5 @@
 LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
-Listen {{ ihs_https_port }}
+Listen 0.0.0.0:{{ ihs_https_port }}
 <VirtualHost *:{{ ihs_https_port }}>
  ServerName {{ ansible_fqdn }}
  SSLEnable

@@ -181,17 +181,17 @@
         state: directory
 
     - name: Windoze switch log dir to c:/temp/logs
-      ansible.builtin.lineinfile: 
+      ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        search_string: 'Log logs'
-        line: 'Log c:/temp/logs'
+        regex: '^Log logs$'
+        replace: 'Log c:/temp/logs'
         state: present
 
     - name: Windoze switch log dir to c:/temp/logs pid
-      ansible.builtin.lineinfile: 
+      ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        search_string: 'PidFile logs'
-        line: 'PidFile c:/temp/logs'
+        regex: 'PidFile logs'
+        replace: 'PidFile c:/temp/logs'
         state: present
 
     - name: Install httpd Windoze service
@@ -217,17 +217,17 @@
         msg: "{{ starthttpdOutput.stdout_lines }}"
 
     - name: Windoze switch log dir to c:/temp/logs for admin
-      ansible.builtin.lineinfile: 
+      ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        search_string: 'Log logs'
-        line: 'Log c:/temp/logs'
+        regex: '^Log logs$'
+        replace: 'Log c:/temp/logs'
         state: present
 
     - name: Windoze switch log dir to c:/temp/logs admin pid
       ansible.builtin.lineinfile: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        search_string: 'PidFile logs'
-        line: 'PidFile c:/temp/logs'
+        regex: 'PidFile logs'
+        replace: 'PidFile c:/temp/logs'
         state: present
 
     - name: Install httpd admin Windoze service
