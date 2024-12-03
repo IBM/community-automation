@@ -89,7 +89,7 @@
       path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
       block: |
         LoadModule ibm_ssl_module modules/mod_ibm_ssl.so
-        Listen {{ ihs_https_port }}
+        Listen 0.0.0.0:{{ ihs_https_port }}
         SSLCheckCertificateExpiration 30
         <VirtualHost *:{{ ihs_https_port }}>
         ServerName {{ ansible_fqdn }}
@@ -99,11 +99,10 @@
         KeyFile {{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey.kdb
 
   - name: IHS disable access_log
-    ansible.builtin.lineinfile: 
+    ansible.builtin.replace: 
       dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-      search_string: 'CustomLog logs/access_log common'
-      line: '# CustomLog logs/access_log common'
-      state: present
+      regexp: 'CustomLog logs/access_log common'
+      line: '#CustomLog logs/access_log common'
 
   - name: IHS Header for 855x
     ansible.builtin.lineinfile: 
@@ -135,7 +134,6 @@
       path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
       regexp: '    Require all denied'
       after: '    SetHandler server-status'
-      before: 'To allow access from a specific IP:'
       replace: '#    Require all denied'
 
   - name: Configure plugin
@@ -183,14 +181,8 @@
     - name: Windoze switch log dir to c:/temp/logs
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        regexp: '^Log logs$'
-        replace: 'Log c:/temp/logs'
-
-    - name: Windoze switch log dir to c:/temp/logs pid
-      ansible.builtin.replace: 
-        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
-        regexp: 'PidFile logs'
-        replace: 'PidFile c:/temp/logs'
+        regexp: ' logs'
+        replace: ' c:/temp/logs'
 
     - name: Install httpd Windoze service
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
@@ -217,14 +209,8 @@
     - name: Windoze switch log dir to c:/temp/logs for admin
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        regexp: '^Log logs$'
-        replace: 'Log c:/temp/logs'
-
-    - name: Windoze switch log dir to c:/temp/logs admin pid
-      ansible.builtin.replace: 
-        dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
-        regexp: 'PidFile logs'
-        replace: 'PidFile c:/temp/logs'
+        regexp: ' logs'
+        replace: ' c:/temp/logs'
 
     - name: Install httpd admin Windoze service
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMAdminHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
