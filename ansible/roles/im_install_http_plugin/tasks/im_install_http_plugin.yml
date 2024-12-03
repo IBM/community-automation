@@ -185,14 +185,12 @@
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
         regexp: '^Log logs$'
         replace: 'Log c:/temp/logs'
-        state: present
 
     - name: Windoze switch log dir to c:/temp/logs pid
       ansible.builtin.replace: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
         regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
-        state: present
 
     - name: Install httpd Windoze service
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
@@ -221,14 +219,12 @@
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
         regexp: '^Log logs$'
         replace: 'Log c:/temp/logs'
-        state: present
 
     - name: Windoze switch log dir to c:/temp/logs admin pid
       ansible.builtin.lineinfile: 
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
         regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
-        state: present
 
     - name: Install httpd admin Windoze service
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMAdminHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
