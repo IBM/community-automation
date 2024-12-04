@@ -10,11 +10,6 @@
     targetappServerName: dmgr
   when: profile_type == 'dmgr'
 
-- name: Copy ihsplugin_gen_propagate.py.j2 template
-  ansible.builtin.template:
-    src: "ihsplugin_gen_propagate.py.j2"
-    dest: "ihsplugin_gen_propagate.py"
-
 - name: Unset windoze comment cuz its not
   ansible.builtin.set_fact: 
     comment_out_for_windoze: ''
@@ -23,6 +18,12 @@
   ansible.builtin.set_fact: 
     comment_out_for_windoze: '#'
   when: ansible_system == 'Windows' or ansible_system is search('CYG')
+  
+- name: Copy ihsplugin_gen_propagate.py.j2 template
+  ansible.builtin.template:
+    src: "ihsplugin_gen_propagate.py.j2"
+    dest: "ihsplugin_gen_propagate.py"
+
 
 - name: Run the ihsplugin_gen_propagate jython script
   ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
