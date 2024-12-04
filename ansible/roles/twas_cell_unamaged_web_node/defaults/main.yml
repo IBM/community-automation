@@ -1,0 +1,8 @@
+---
+un_managed_node_os:
+  AIX: 'aix'
+  Linux: 'linux'
+  Windows: 'windows'
+  CYGWIN_NT-10.0-20348: 'windows' # hard coded to a specific cygwin version
+  ZOS: 'os390'
+  OS400: 'os400'
