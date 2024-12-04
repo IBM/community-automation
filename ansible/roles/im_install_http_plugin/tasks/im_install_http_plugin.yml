@@ -63,7 +63,7 @@
       msg: "{{ isPluginConfigured.stdout_lines }}"
 
   - name: Remove the old WCT IHS/Plugin configs
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -removeDefinitionLocation -defLocPathname {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer"
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -removeDefinitionLocation -defLocPathname {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }} -defLocName {{ webServerName }}"
     register: isPluginConfigured
     when:
       - isPluginConfigured.rc == 0
@@ -77,7 +77,7 @@
       replace: '\\'
 
   - name: Configure plugin
-    ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -defLocPathname {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }} -defLocName ihsWebServer -createDefinition -response wct_definition.xml -importDefinitionLocation"
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -defLocPathname {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }} -defLocName {{ webServerName }} -createDefinition -response wct_definition.xml -importDefinitionLocation"
     register: configurepluginOutput
 
   - name: ConfigurepluginOutput
@@ -136,6 +136,14 @@
       after: '    SetHandler server-status'
       replace: '#    Require all denied'
 
+  - name: Configure http admin.passwd
+    ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/htpasswd -bc {{install_ihs_base }}/{{ http_dir }}/conf/admin.passwd {{ ihs_admin_user }} {{ ihs_admin_pass }}"
+    register: configAdminPassOutput
+
+  - name: configAdminPassOutput
+    ansible.builtin.debug:
+      msg: "{{ configAdminPassOutput.stdout_lines }}"
+
   - name: Configure plugin
     ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey{{ ext }}"
     args:
@@ -189,6 +197,26 @@
         dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
         regexp: 'PidFile logs'
         replace: 'PidFile c:/temp/logs'
+
+    # the wct configure plugin on windoze pretends to work , but actually fails, most likely due to path issues
+    # manually configure the httpd.conf with:
+    # LoadModule was_ap24_module c:/cygwin64/home/nest/Plugins/bin/64bits/mod_was_ap24_http.dll
+    # WebSpherePluginConfig c:/cygwin64/home/nest/Plugins/config/webserver1/plugin-cfg.xml
+    - name: Insert/Update https config
+      ansible.builtin.blockinfile:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        block: |
+          LoadModule was_ap24_module {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/bin/64bits/mod_was_ap24_http.dll
+          WebSpherePluginConfig {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/config/{{ webServerName }}/plugin-cfg.xml
+
+    - name: Windoze create config/{{ webServerName }}
+      ansible.builtin.file:
+        path: "{{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/config/{{ webServerName }}"
+        state: directory
+    - name: Windoze create logs/{{ webServerName }}
+      ansible.builtin.file:
+        path: "{{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        state: directory
 
     - name: Install httpd Windoze service
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k install -n 'IBMHTTPServer' -f {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
@@ -256,7 +284,6 @@
   - name: Is IHS running output
     ansible.builtin.debug: 
       msg: "{{ isIHSup }}"
-
 
 - name: HTTPServer version
   ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
