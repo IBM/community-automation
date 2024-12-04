@@ -137,7 +137,9 @@
       replace: '#    Require all denied'
 
   - name: Configure http admin.passwd
-    ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/htpasswd -bc {{install_ihs_base }}/{{ http_dir }}/conf/admin.passwd {{ ihs_admin_user }} {{ ihs_admin_pass }}"
+    ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/htpasswd -bc admin.passwd {{ ihs_admin_user }} {{ ihs_admin_pass }}"
+    args:
+      chdir: "{{ install_ihs_base }}/{{ http_dir }}/conf"  
     register: configAdminPassOutput
 
   - name: configAdminPassOutput

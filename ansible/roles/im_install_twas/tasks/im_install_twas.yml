@@ -15,7 +15,7 @@
 
   - name: Windoze?
     set_fact:
-      cygwin: '/cygdrive/c/cygwin64'
+      cygwin: 'c:/cygwin64'
     when:
     - ansible_architecture == 'x86_64'
     - ansible_system == 'Windows' or 'CYG' in ansible_system
