@@ -200,8 +200,8 @@
 
     # the wct configure plugin on windoze pretends to work , but actually fails, most likely due to path issues
     # manually configure the httpd.conf with:
-    # LoadModule was_ap24_module c:/cygwin64/home/nest/Plugins/bin/64bits/mod_was_ap24_http.dll
-    # WebSpherePluginConfig c:/cygwin64/home/nest/Plugins/config/webserver1/plugin-cfg.xml
+    # LoadModule was_ap24_module /cygdrive/c/cygwin64/home/nest/Plugins/bin/64bits/mod_was_ap24_http.dll
+    # WebSpherePluginConfig /cygdrive/c/cygwin64/home/nest/Plugins/config/webserver1/plugin-cfg.xml
     - name: Insert/Update https config
       ansible.builtin.blockinfile:
         path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
