@@ -4,4 +4,4 @@
     cygwin: 'c:/cygwin64'
     ext: '.bat'
   when:
-    - ansible_system == 'Windows' or ansible_system is search('CYG')
+    - ansible_system == 'Windows' or 'CYG' in ansible_system

@@ -17,8 +17,8 @@
 - name: Set windoze comment
   ansible.builtin.set_fact: 
     comment_out_for_windoze: '#'
-  when: ansible_system == 'Windows' or ansible_system is search('CYG')
-  
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+
 - name: Copy ihsplugin_gen_propagate.py.j2 template
   ansible.builtin.template:
     src: "ihsplugin_gen_propagate.py.j2"

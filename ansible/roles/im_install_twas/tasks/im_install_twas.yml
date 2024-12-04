@@ -43,7 +43,7 @@
     failed_when: ( killOutput.rc not in [ 0, 123 ] )
     changed_when: false
     when:
-      - ansible_system == 'Windows' or ansible_system is search('CYG')
+      - ansible_system == 'Windows' or 'CYG' in ansible_system
 
   - name: Uninstall twas
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }}"

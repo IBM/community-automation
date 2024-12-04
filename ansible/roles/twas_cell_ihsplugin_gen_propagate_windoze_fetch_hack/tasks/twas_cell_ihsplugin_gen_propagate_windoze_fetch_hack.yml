@@ -1,7 +1,7 @@
 ---
 
 - name: Windoze hack due to some path issues for propogate - fetch
-  when: ansible_system == 'Windows' or ansible_system is search('CYG')`
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system`
   block:
   - name: Fetch plugin-cfg.xml
     fetch:
