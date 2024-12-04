@@ -51,7 +51,7 @@
   - name: Copy ihsserverkey{{ ext }} template
     ansible.builtin.template:
       src: ihsserverkey{{ ext }}.j2
-      dest: "{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey{{ ext }}"
+      dest: "{{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}/conf/ihsserverkey{{ ext }}"
       mode: 0755
 
   - name:  Check for any old WCT IHS/Plugin configs
