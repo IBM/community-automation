@@ -1,7 +1,7 @@
 ---
 
 - name: Windoze hack due to some path issues for propogate - copy
-  when: ansible_system == 'Windows' or 'ansible_system is search('CYG')`
+  when: ansible_system == 'Windows' or ansible_system is search('CYG')`
   block:
   - name: Remove any previous plugin-key* files
     file:
