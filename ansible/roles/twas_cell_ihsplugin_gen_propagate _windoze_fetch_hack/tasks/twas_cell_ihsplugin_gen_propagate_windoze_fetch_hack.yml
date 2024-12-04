@@ -1,0 +1,20 @@
+---
+
+- name: Windoze hack due to some path issues for propogate - fetch
+  when: ansible_system == 'Windows' or 'ansible_system is search('CYG')`
+  block:
+  - name: Fetch plugin-cfg.xml
+    fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config/cells/{{ cellName }}/nodes/{{ webNode }}/servers/{{ webServerName }}/plugin-cfg.xml"
+      dest: /tmp/plugin-cfg.xml
+      flat: yes
+  - name: Fetch plugin-key.sth
+    fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config/cells/{{ cellName }}/nodes/{{ webNode }}/servers/{{ webServerName }}/plugin-key.sth"
+      dest: /tmp/plugin-key.sth
+      flat: yes
+  - name: Fetch plugin-key.kdb
+    fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/config/cells/{{ cellName }}/nodes/{{ webNode }}/servers/{{ webServerName }}/plugin-key.kdb"
+      dest: /tmp/plugin-key.kdb
+      flat: yes

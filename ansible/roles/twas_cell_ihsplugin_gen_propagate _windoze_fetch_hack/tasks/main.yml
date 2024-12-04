@@ -1,0 +1,3 @@
+---
+- name: Windoze fetch hack
+  ansible.builtin.include_tasks: twas_cell_ihsplugin_gen_propagate_windows_fetch_hack.yml

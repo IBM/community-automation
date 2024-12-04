@@ -181,7 +181,7 @@
           msg: "{{ startadminctlOutput.stdout_lines }}"
 
   - name: Windoze http operations
-    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    when: ansible_system == 'Windows' or 'ansible_system is search('CYG')
     block:
     - name: Windoze create c:/temp/logs
       ansible.builtin.file:
