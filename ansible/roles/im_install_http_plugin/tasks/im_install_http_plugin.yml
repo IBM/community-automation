@@ -69,12 +69,12 @@
       - isPluginConfigured.rc == 0
       - isPluginConfigured.stdout is not search('No definition')
 
-  - name: Convert forward slash to back slash for windoze
-    when: ansible_system == 'Windows' or 'CYG' in ansible_system
-    ansible.builtin.replace:
-      path:  wct_definition.xml
-      regexp: '\/'
-      replace: '\\'
+  # - name: Convert forward slash to back slash for windoze
+  #   when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  #   ansible.builtin.replace:
+  #     path:  wct_definition.xml
+  #     regexp: '\/'
+  #     replace: '\\'
 
   - name: Configure plugin
     ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/WCT/wctcmd{{ ext }} -tool pct -defLocPathname {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }} -defLocName {{ webServerName }} -createDefinition -response wct_definition.xml -importDefinitionLocation"
