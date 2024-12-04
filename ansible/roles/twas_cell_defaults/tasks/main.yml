@@ -1,7 +1,7 @@
 ---
 - name: Check windoze
   ansible.builtin.set_fact:
-    cygwin: '/cygdrive/c/cygwin64'
+    cygwin: 'c:/cygwin64'
     ext: '.bat'
   when:
     - ansible_system == 'Windows' or ansible_system is search('CYG')
