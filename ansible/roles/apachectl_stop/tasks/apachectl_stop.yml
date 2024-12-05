@@ -23,4 +23,4 @@
     - name: Apache stop 
       ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMHTTPServer'"
     - name: Apache stop admin
-      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"
+      ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMAdminHTTPServer'"
