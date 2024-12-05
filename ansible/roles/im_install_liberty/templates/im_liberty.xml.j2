@@ -1,13 +1,13 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <agent-input>
   <variables>
-    <variable name='sharedLocation' value='{{ install_base }}/{{ shared_dir }}'/>
+    <variable name='sharedLocation' value='{{ cygwin }}{{ install_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
 	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/'/>
 	  <repository location='http://www.ibm.com/software/repositorymanager/com.ibm.java.jdk.v{{ im_java_short_version }}'/>
   </server>
-  <profile id='WebSphere Liberty' installLocation='{{ install_base }}/{{ liberty_dir }}'>
+  <profile id='WebSphere Liberty' installLocation='{{ cygwin }}{{ install_base }}/{{ liberty_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
     <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
     <data key='user.feature' value='#NULL'/>
