@@ -16,7 +16,7 @@
   </profile>
   <install>
     <!-- IBM HTTP Server for WebSphere Application Server 8.5.5.x -->
-    <offering profile='IBM HTTP Server' id='{{ im_http_package[twas_release] }}'  features='core.feature,arch.64bit'/>
+    <offering profile='IBM HTTP Server' id='{{ im_http_package[twas_release] }}'  features='core.feature'/>
   </install>
   <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}'>
     <data key='user.wasjava' value='java8'/>
