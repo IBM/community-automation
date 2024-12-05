@@ -46,7 +46,7 @@
       - ansible_system == 'Windows' or 'CYG' in ansible_system
 
   - name: Uninstall twas
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }}"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }} {{ im_twas_java_package }} -installationDirectory {{ cygwin }}{{ install_base }}/{{ twas_dir }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
@@ -55,7 +55,7 @@
       msg: "{{ uninstallOutput.stdout_lines }}"
 
   - name: Uninstall AppClient
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_appclient_package[twas_release] }}"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_appclient_package[twas_release] }} {{ im_twas_java_package }} -installationDirectory {{ cygwin }}{{ install_base }}/{{ app_dir }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
