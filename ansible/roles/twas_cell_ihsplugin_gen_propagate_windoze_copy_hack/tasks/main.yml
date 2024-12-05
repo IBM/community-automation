@@ -2,8 +2,8 @@
 - name: Windoze copy hack
   ansible.builtin.include_tasks: twas_cell_ihsplugin_gen_propagate_windoze_copy_hack.yml
 - name: Stop httpd
-  ansible.builtin.include_role: 
+  ansible.builtin.include_role:
     name: apachectl_stop
 - name: Start httpd
-  ansible.builtin.include_role: 
+  ansible.builtin.include_role:
     name: apachectl_start
