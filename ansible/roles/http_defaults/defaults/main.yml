@@ -6,6 +6,7 @@ install_ihs_base: "{{ install_base | default('/home/nest', true) }}"
 # trick the template to install onto windoze via cygwin
 cygwin: ''
 ext: '.sh'
+win_bit: 'arch.64bit'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'

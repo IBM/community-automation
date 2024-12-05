@@ -3,5 +3,6 @@
   ansible.builtin.set_fact:
     cygwin: 'c:/cygwin64'
     ext: '.bat'
+    win_bit: 'arch.32bit'
   when:
     - ansible_system == 'Windows' or 'CYG' in ansible_system
