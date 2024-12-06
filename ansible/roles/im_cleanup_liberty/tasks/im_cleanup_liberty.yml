@@ -1,60 +1,64 @@
 ---
 
-# blindly try fuser ( linux )
-- name:  blindly try fuser ( linux )
-  ignore_errors: true
-  shell: "fuser -k {{ item }}"
-  register: killOutput
-  failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
-  with_items:
-  - "{{ install_base }}/{{ liberty_dir }}"
-
-- name: check if previous liberty installed
-  stat:
-   path: "{{install_base }}/{{ liberty_dir }}/bin/server"
+- name: Check if previous liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
   register: islib
 
 - name: Uninstall Liberty
   when: islib.stat.exists == True
   block: 
-  - name:  stop any running servers
+  - name:  Stop any running servers
     ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+    ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
     register: stopOutput
     failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
     with_items:
-    - "{{ wl_server }}"
-    - "{{ cc_server }}"
+      - "{{ wl_server }}"
+      - "{{ cc_server }}"
 
-   # blindly try fuser ( linux )
-  - name:  blindly try fuser ( linux )
+  # blindly try fuser ( linux )
+  - name: Blindly try fuser ( linux )
+    when: ansible_system is not search('CYG')
     ignore_errors: true
-    shell: "fuser -k {{install_base }}/{{ liberty_dir }}"
+    ansible.builtin.shell: "fuser -k {{ item }}"
     register: killOutput
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
+    changed_when: false
+    with_items:
+      - "{{ install_base }}/{{ liberty_dir }}"
 
-  - name:  uninstall liberty and java
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
+  - name: Blindly try kill ( windoze )
+    ignore_errors: true
+    ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 123 ] )
+    changed_when: false
+    when:
+      - ansible_system == 'Windows' or 'CYG' in ansible_system
+
+  - name: Uninstall liberty and java
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     when: im_force_liberty == false
 
   # add this when / if the user changes the jdk versions
-  - name:  uninstallAll when im_force_liberty true
+  - name: UninstallAll when im_force_liberty true
     ignore_errors: true
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     when: im_force_liberty == true
-    
-  - name: uninstall liberty and java output
-    debug: 
-     msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Uninstall liberty and java output
+    ansible.builtin.debug: 
+      msg: "{{ uninstallOutput.stdout_lines }}"
 
 - name: Remove previous liberty dir
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_base }}/{{ liberty_dir }}"
-  - "{{ wlp_usr_dir }}"
+    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ wlp_usr_dir }}"
