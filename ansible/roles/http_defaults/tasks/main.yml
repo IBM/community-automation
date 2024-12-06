@@ -11,6 +11,7 @@
 - name: Set windoze http tWAS 855x facts
   ansible.builtin.set_fact:
     mod_was: 'ap22'
+    dll_bit: '32bits'
   when:
     - ansible_system == 'Windows' or 'CYG' in ansible_system
     - twas_release == 'WAS855'
