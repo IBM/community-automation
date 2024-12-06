@@ -28,14 +28,19 @@
     with_items:
       - "{{ install_base }}/{{ liberty_dir }}"
 
+  # Windoze uninstallAll seems to be hanging, try to flush the hosts brain
+  - name: Unconditionally reboot the machine with all defaults
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    ansible.builtin.reboot:
+    become: true
+
   - name: Blindly try kill ( windoze )
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
     ignore_errors: true
     ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
     register: killOutput
     failed_when: ( killOutput.rc not in [ 0, 123 ] )
     changed_when: false
-    when:
-      - ansible_system == 'Windows' or 'CYG' in ansible_system
 
   - name: Uninstall liberty and java
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
