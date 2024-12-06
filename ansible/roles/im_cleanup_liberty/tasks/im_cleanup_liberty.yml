@@ -59,8 +59,8 @@
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
   - name: UninstallAll output
-    debug:
-    msg: "{{ uninstallOutput.stdout_lines }}"
+    ansible.builtin.debug:
+      msg: "{{ uninstallOutput.stdout_lines }}"
     when: uninstallOutput.stdout_line is defined
 
 - name: Remove previous liberty dir
