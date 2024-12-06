@@ -31,7 +31,7 @@
   # Windoze uninstallAll seems to be hanging, try to flush the hosts brain
   - name: Unconditionally reboot the machine with all defaults
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
-    ansible.windows.win_reboot:
+    ansible.builtin.shell: 'shutdown /r'
     become: true
 
   - name: Blindly try kill ( windoze )
