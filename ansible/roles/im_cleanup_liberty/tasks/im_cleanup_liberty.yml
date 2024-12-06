@@ -57,19 +57,11 @@
     ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-    # when: im_force_liberty == false
 
-  # add this when / if the user changes the jdk versions
-  - name: UninstallAll when im_force_liberty true
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
-    register: uninstallOutput
-    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-    when: im_force_liberty == true
-
-  - name: Uninstall liberty and java output
-    ansible.builtin.debug: 
-      msg: "{{ uninstallOutput.stdout_lines }}"
+  - name: UninstallAll output
+    debug:
+    msg: "{{ uninstallOutput.stdout_lines }}"
+    when: uninstallOutput.stdout_line is defined
 
 - name: Remove previous liberty dir
   ansible.builtin.file:
