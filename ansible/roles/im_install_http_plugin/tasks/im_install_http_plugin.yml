@@ -136,6 +136,13 @@
       after: '    SetHandler server-status'
       replace: '#    Require all denied'
 
+  - name: enable server-status windoze tWAS855x
+    ansible.builtin.replace:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+      regexp: '    Deny from all'
+      after: '    SetHandler server-status'
+      replace: '#    Deny from all'
+
   - name: Configure http admin.passwd
     ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/htpasswd -bc admin.passwd {{ ihs_admin_user }} {{ ihs_admin_pass }}"
     args:

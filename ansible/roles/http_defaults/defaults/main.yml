@@ -7,6 +7,8 @@ install_ihs_base: "{{ install_base | default('/home/nest', true) }}"
 cygwin: ''
 ext: '.sh'
 win_bit: 'arch.64bit'
+dll_bit: '64bits'
+mod_was: 'ap24'
 http_dir: 'HTTPServer'
 plugin_dir: 'Plugins'
 wct_dir: 'WCT'
