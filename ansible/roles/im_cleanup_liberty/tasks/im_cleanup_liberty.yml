@@ -29,10 +29,21 @@
       - "{{ install_base }}/{{ liberty_dir }}"
 
   # Windoze uninstallAll seems to be hanging, try to flush the hosts brain
-  - name: Unconditionally reboot the machine with all defaults
+  - name: Windoze reboot to flush brain
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
-    ansible.builtin.shell: 'shutdown /r'
-    become: true
+    block:
+      - name: Restart windoze
+        ansible.builtin.shell: 'shutdown /r'
+        become: true
+      - name: Wait for the reboot and reconnect 
+        wait_for:
+          port: 22
+          host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+          search_regex: OpenSSH
+          delay: 60
+          timeout: 60
+          retries: 10
+        connection: local
 
   - name: Blindly try kill ( windoze )
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
