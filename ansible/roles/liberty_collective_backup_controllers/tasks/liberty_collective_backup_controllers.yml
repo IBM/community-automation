@@ -39,16 +39,16 @@
         - "{{ wlp_output }}/{{ cc_server }}"
       when: ansible_system == 'OS400'
 
-    - name: Check create server
+    - name: Create backup controller server
       ansible.builtin.shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server create {{ cc_server }}"
       register: op
 
-    - name: Check create server output
+    - name: Check backup controller server
       ansible.builtin.debug:
         msg: '{{ op.stdout_lines }}'
 
     - name: Replicate backup controller
-      ansible.builtin.shell: 
+      ansible.builtin.shell:
         "{{ install_base }}/{{ liberty_dir }}/bin/collective replicate {{ cc_server }} \ 
         --host={{ cc_primary_server }} \
         --port={{ cc_primary_port }} \
