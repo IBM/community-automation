@@ -1,0 +1,54 @@
+---
+
+- name: UnInstall
+  tags: uninstall 
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+   # blindly try fuser ( linux )
+  - name: Blindly try fuser ( linux )
+    ignore_errors: true
+    shell: "fuser -k {{install_base }}/{{ twas_dir }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
+    changed_when: false
+    when: ansible_system is not search('CYG')
+
+  - name: Blindly try kill ( windoze )
+    ignore_errors: true
+    ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 123 ] )
+    changed_when: false
+    when:
+      - ansible_system == 'Windows' or 'CYG' in ansible_system
+
+  - name: Uninstall twas
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_package[twas_release] }} {{ im_twas_java_package }} -installationDirectory {{ cygwin }}{{ install_base }}/{{ twas_dir }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+
+  - name: Uninstall twas output
+    ansible.builtin.debug:
+      msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Uninstall AppClient
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_appclient_package[twas_release] }} {{ im_twas_java_package }} -installationDirectory {{ cygwin }}{{ install_base }}/{{ app_dir }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+
+  - name: Uninstall AppClient output
+    ansible.builtin.debug:
+      msg: "{{ uninstallOutput.stdout_lines }}"
+
+  - name: Remove previous twas appclient dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ install_base }}/{{ twas_dir }}"
+      - "{{ install_base }}/{{ app_dir }}"

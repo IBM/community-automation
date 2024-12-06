@@ -1,2 +1,3 @@
 ---
-- include_tasks: im_install_twas.yml
+- name: Install tWAS
+  ansible.builtin.include_tasks: im_install_twas.yml
