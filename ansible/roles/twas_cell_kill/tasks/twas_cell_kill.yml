@@ -1,22 +1,33 @@
 ---
 
-- name: Get running processes
-  shell: "ps -ef | grep -v grep | grep -w '{{install_base }}/{{ twas_dir }}'  | awk '{print $2}'"
-  register: running_processes
+  - name: Unix kill operations
+    when: ansible_system is not search('CYG')
+    block:
+      - name: Get running processes
+        ansibl.builtin.shell: "ps -ef | grep -v grep | grep -w '{{install_base }}/{{ twas_dir }}'  | awk '{print $2}'"
+        register: running_processes
 
-- name: Kill running processes
-  shell: "kill {{ item }}"
-  with_items: "{{ running_processes.stdout_lines }}"
+      - name: Kill running processes
+        ansibl.builtin.shell: "kill {{ item }}"
+        with_items: "{{ running_processes.stdout_lines }}"
 
-- wait_for:
-    path: "/proc/{{ item }}/status"
-    state: absent
-  with_items: "{{ running_processes.stdout_lines }}"
-  ignore_errors: true
-  register: killed_processes
+      - wait_for:
+          path: "/proc/{{ item }}/status"
+          state: absent
+        with_items: "{{ running_processes.stdout_lines }}"
+        ignore_errors: true
+        register: killed_processes
 
-- name: Force kill stuck processes
-  shell: "kill -9 {{ item }}"
-  with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
+      - name: Force kill stuck processes
+        ansibl.builtin.shell: "kill -9 {{ item }}"
+        with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
 
-
+  - name: Windoze kill operations
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    block:
+      - name: Blindly try kill ( windoze )
+        ignore_errors: true
+        ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
+        register: killOutput
+        failed_when: ( killOutput.rc not in [ 0, 123 ] )
+        changed_when: false
