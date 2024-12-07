@@ -6,6 +6,12 @@
   when:
     - ansible_system == 'Windows' or 'CYG' in ansible_system
 
+- name: Windoze path debug
+  ansible.builtin.debug:
+    msg: 
+      - "cygwin={{ cygwin }}"
+      - "install_base={{ install_base }}"
+
 - name: Check if imcl is installed
   ansible.builtin.stat:
     path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl"
