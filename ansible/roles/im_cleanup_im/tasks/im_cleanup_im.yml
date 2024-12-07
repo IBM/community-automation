@@ -1,45 +1,52 @@
 ---
+- name: Check if imcl is installed
+  ansible.builtin.stat:
+    path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isimcl
 
-- name: IM uninstallAll *nix
-  when: ansible_system is not search('CYG')
+- name: IM installed?
+  when: isimcl.stat.exists
   block:
-    - name: UninstallAll *nix
-      ignore_errors: true
-      ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
-      register: uninstallOutput
-      failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+  - name: IM uninstallAll *nix
+    when: ansible_system is not search('CYG')
+    block:
+      - name: UninstallAll *nix
+        ignore_errors: true
+        ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+        register: uninstallOutput
+        failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
-    - name: UninstallAll output
-      debug:
-        msg: "{{ uninstallOutput.stdout_lines }}"
+      - name: UninstallAll output
+        debug:
+          msg: "{{ uninstallOutput.stdout_lines }}"
 
-    - name: Uninstall *nix ibm installation manager
-      ignore_errors: false
-      ansible.builtin.shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
-      register: uninstallOutput
-      failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+      - name: Uninstall *nix ibm installation manager
+        ignore_errors: false
+        ansible.builtin.shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
+        register: uninstallOutput
+        failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
-    - name: UninstallAll output
-      ansible.builtin.debug:
-        msg: "{{ uninstallOutput.stdout_lines }}"
-      when: uninstallOutput.stdout_line is defined
+      - name: UninstallAll output
+        ansible.builtin.debug:
+          msg: "{{ uninstallOutput.stdout_lines }}"
+        when: uninstallOutput.stdout_line is defined
 
-- name: Uninstall IBM Installation Manager windoze
-  when: ansible_system == 'Windows' or 'CYG' in ansible_system
-  ignore_errors: false
-  ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstall com.ibm.cic.agent"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  changed_when: false
+  - name: Uninstall IBM Installation Manager windoze
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    ignore_errors: false
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstall com.ibm.cic.agent"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+    changed_when: false
 
-- name: Remove IM directories
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ cygwin }}{{ install_base }}/{{ shared_dir }}"
-    - "{{ cygwin }}{{ install_base }}/im_install"
-    - "{{ cygwin }}{{ install_base }}/IM"
-    - "{{ cygwin }}{{ install_base }}/javasharedresources"
-    - "~/var/"
-    - "~/etc/"
+  - name: Remove IM directories
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ cygwin }}{{ install_base }}/{{ shared_dir }}"
+      - "{{ cygwin }}{{ install_base }}/im_install"
+      - "{{ cygwin }}{{ install_base }}/IM"
+      - "{{ cygwin }}{{ install_base }}/javasharedresources"
+      - "~/var/"
+      - "~/etc/"
