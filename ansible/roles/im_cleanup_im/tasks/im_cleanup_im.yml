@@ -14,7 +14,7 @@
 
 - name: Check if imcl is installed
   ansible.builtin.stat:
-    path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl"
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
   register: isimcl
 
 - name: IM installed?
