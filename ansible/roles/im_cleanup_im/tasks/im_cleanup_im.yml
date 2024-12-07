@@ -1,4 +1,11 @@
 ---
+- name: Set windoze facts
+  ansible.builtin.set_fact:
+    cygwin: 'c:/cygwin64'
+    ext: '.bat'
+  when:
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
+
 - name: Check if imcl is installed
   ansible.builtin.stat:
     path: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl"
@@ -12,7 +19,7 @@
     block:
       - name: UninstallAll *nix
         ignore_errors: true
-        ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
         register: uninstallOutput
         failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
