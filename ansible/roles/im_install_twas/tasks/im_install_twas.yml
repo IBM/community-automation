@@ -23,7 +23,7 @@
      #    - "{{ cc_server }}"
 
   - name: Generate secureStorageFile.store
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
     #  this command is hanging on the pok zlinux boxes for some crazy networking reason
     #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager
@@ -31,8 +31,16 @@
     #  - name:  generate external ibm secureStorageFile.store
     #    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
+  - name: Remove previous twas appclient dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ cygwin }}{{ install_base }}/{{ twas_dir }}"
+      - "{{ cygwin }}{{ install_base }}/{{ app_dir }}"
+
   - name: Install tWAS
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: InstallOutput
@@ -40,7 +48,7 @@
       msg: "{{ installOutput.stdout_lines }}"
 
   - name: ListInstalledPackages
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
   
   - name: PackageOutput
@@ -51,7 +59,7 @@
   tags: version 
   block:
   - name: tWAS version
-    ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: twasVersionOutput
 
   - name: Output twasVersionOutput
@@ -59,7 +67,7 @@
       msg: "{{ twasVersionOutput.stdout_lines }}"
 
   - name: AppClient version
-    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: appVersionOutput
 
   - name: Output appVersionOutput
