@@ -9,6 +9,7 @@ liberty_admin_port: '9080'
 liberty_admin_ports: '9443'
 liberty_http_port: '9080'
 liberty_http_ports: '9443'
+controller_role: primary
 cc_primary_port: '{{ liberty_http_ports }}'
 cc_server: 'cc'
 wl_server: 'server'

@@ -1,5 +1,6 @@
 ---
 - name: dynamicRouting
+  when: controller_role == 'primary'
   tags: dynamicRouting 
   block:
   - name: check if liberty is installed
