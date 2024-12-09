@@ -56,10 +56,10 @@
   - name: Windoze HTTPServer restart
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:
+      - name: Apache stop
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMHTTPServer'"
       - name: Apache start
         ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMHTTPServer'"
-      - name: Apache start admin
-        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"
 
   - name: HTTPServer graceful load new routing ( *nix )
     when: ansible_system is not search('CYG')
