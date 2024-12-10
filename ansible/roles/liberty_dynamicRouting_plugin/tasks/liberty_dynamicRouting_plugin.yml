@@ -79,17 +79,17 @@
           regexp: '<Property name="keyring" value='
           replace: '<Property name="keyring" value="c:/temp/keys/plugin-key.kdb"/>'
       - name: Copy the modified windoze file to c:/temp/keys
-        copy:
+        ansible.builtin.copy:
           src: "{{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/config/{{ webServerName }}/{{ item }}"
           dest: c:/temp/keys
-        remote_src: true
+          remote_src: true
         with_items:
           - plugin-key.kdb
           - plugin-key.rdb
           - plugin-key.crl
           - plugin-key.sth
       - name: Remove any previous plugin-key* files ( windoze )
-        file:
+        ansible.builtin.file:
           path: "{{ install_ihs_base }}/{{ plugin_dir }}/config/{{ webServerName }}/{{ item }}"
           state: absent
         with_items:
