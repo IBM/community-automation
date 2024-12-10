@@ -187,6 +187,7 @@
         ansible.builtin.debug:
           msg: "{{ startadminctlOutput.stdout_lines }}"
 
+  # for some reason having logs in c:/cygwin64/nest/HTTPServer/logs does not work
   - name: Windoze http operations
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:
