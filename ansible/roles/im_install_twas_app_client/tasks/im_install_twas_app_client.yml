@@ -8,19 +8,10 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: Copy im_twas.xml template
+  - name: Copy im_appclient.xml template
     ansible.builtin.template:
-      src: "im_twas_{{ twas_release }}.xml.j2"
-      dest: "im_twas.xml"
-
-     #  - name:  stop any running servers
-     #    ignore_errors: true
-     #    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-     #    register: stopOutput
-     #    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-     #    with_items:
-     #    - "{{ wl_server }}"
-     #    - "{{ cc_server }}"
+      src: "im_appclient_{{ twas_release }}.xml.j2"
+      dest: "im_client.xml"
 
   - name: Generate secureStorageFile.store
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
@@ -31,15 +22,15 @@
     #  - name:  generate external ibm secureStorageFile.store
     #    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
-  - name: Remove previous twas dir
+  - name: Remove previous appclient dir
     ansible.builtin.file:
       path: "{{ item }}"
       state: absent
     with_items:
-      - "{{ cygwin }}{{ install_base }}/{{ twas_dir }}"
+      - "{{ cygwin }}{{ install_base }}/{{ app_dir }}"
 
-  - name: Install tWAS
-    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+  - name: Install AppClient
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_appclient.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: InstallOutput
@@ -57,10 +48,10 @@
 - name: Versions
   tags: version 
   block:
-  - name: tWAS version
-    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-    register: twasVersionOutput
+    - name: AppClient version
+      ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+      register: appVersionOutput
 
-  - name: Output twasVersionOutput
-    ansible.builtin.debug: 
-      msg: "{{ twasVersionOutput.stdout_lines }}"
+    - name: Output appVersionOutput
+      ansible.builtin.debug:
+        msg: "{{ appVersionOutput.stdout_lines }}"
