@@ -1,7 +1,14 @@
 ---
 
-- name: UnInstall
-  tags: uninstall 
+- name: Check if AppClient is installed
+  ansible.builtin.stat:
+    path: "{{ cygwin }}{{ install_base }}/{{ app_dir }}"
+  register: isappclient
+
+- name: Uninstall AppClient
+  when: 
+      - isappclient.stat is defined
+      - isappclient.stat.exists
   block:
     - name: Check if imcl installed as a prereq
       ansible.builtin.stat:

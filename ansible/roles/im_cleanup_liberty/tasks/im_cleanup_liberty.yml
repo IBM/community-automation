@@ -6,7 +6,9 @@
   register: islib
 
 - name: Uninstall Liberty
-  when: islib.stat.exists == True
+  when: 
+    - islib.stat is defined
+    - islib.stat.exists == True
   block: 
   - name:  Stop any running servers
     ignore_errors: true
