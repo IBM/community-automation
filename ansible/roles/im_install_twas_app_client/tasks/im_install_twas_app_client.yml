@@ -11,7 +11,7 @@
   - name: Copy im_appclient.xml template
     ansible.builtin.template:
       src: "im_appclient_{{ twas_release }}.xml.j2"
-      dest: "im_client.xml"
+      dest: "im_appclient.xml"
 
   - name: Generate secureStorageFile.store
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
