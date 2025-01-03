@@ -73,12 +73,13 @@
    msg: "{{ install_base }}"
 
 - name: Get im archive
-  get_url:
+  ansible.builtin.get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
    dest: /tmp/im.zip
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
    mode: '0755'
+   validate_certs: false
 
 - name: Unarchive im.zip
   unarchive:
