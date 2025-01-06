@@ -4,7 +4,7 @@
   register: isheap
   changed_when: false
 
-- name: Remove tWAS heapdumps  
+- name: Remove Liberty heapdumps  
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
@@ -15,7 +15,7 @@
   register: isjavacore
   changed_when: false
 
-- name: Remove tWAS javacores  
+- name: Remove Liberty javacores  
   ansible.builtin.file:
     path: "{{ item }}"
     state: absent
