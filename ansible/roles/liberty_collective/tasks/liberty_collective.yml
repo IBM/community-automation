@@ -45,7 +45,7 @@
      msg: '{{ op.stdout_lines }}'
 
   - name:  create controller 
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --hostName {{ ansible_fqdn }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
+    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective create {{ cc_server }} --hostName={{ cc_primary_server }} --keystorePassword={{ liberty_admin_pass }} --createConfigFile=controller.xml"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
     register: op
