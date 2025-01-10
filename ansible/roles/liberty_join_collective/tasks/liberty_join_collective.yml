@@ -53,9 +53,18 @@
   - name: update to tlsv1.2
     lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
-      regexp: '^sslProtocol="TLSv1.2,TLSv1.3"'
+      regexp: 'sslProtocol="TLSv1.2,TLSv1.3"'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     sslProtocol="TLSv1.2,TLSv1.3"'
+
+  - name: Optionally disable / enable HNV
+    when: 
+      - disable_hnv exists
+    lineinfile:
+      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/collectiveMember.xml"
+      regexp: 'verifyHostname'
+      insertafter: '<ssl id="defaultSSLConfig"'
+      line: '     verifyHostname="{{ diable_hnv }}"'
 
   - name: autoAcceptCertificates
     lineinfile:
