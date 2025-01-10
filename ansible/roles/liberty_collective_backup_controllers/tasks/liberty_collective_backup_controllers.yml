@@ -91,7 +91,7 @@
         path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
         regexp: 'verifyHostname'
         insertafter: '<ssl id="defaultSSLConfig"'
-        line: '     verifyHostname="{{ diable_hnv }}"'
+        line: '     verifyHostname="{{ disable_hnv }}"'
 
     - name: Add autoAcceptCertificates
       ansible.builtin.lineinfile:

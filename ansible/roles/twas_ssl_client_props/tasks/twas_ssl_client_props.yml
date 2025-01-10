@@ -5,3 +5,12 @@
    path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/properties/ssl.client.props"
    regexp: 'SSL_TLSv2'
    replace: '{{ sslProtocol }}'
+
+# https://www.ibm.com/support/pages/hostname-verification-websphere-application-server-traditional
+- name: Optionally disable / enable HNV ssl.client.props
+  when: 
+    - disable_hnv is defined
+  lineinfile:
+    path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/properties/ssl.client.props"
+    regexp: 'com.ibm.ssl.verifyHostname'
+    line: 'com.ibm.ssl.verifyHostname=false
