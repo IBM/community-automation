@@ -73,7 +73,7 @@
 
   - name: Optionally disable / enable HNV
     when: 
-      - disable_hnv exists
+      - disable_hnv is defined
     lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/controller.xml"
       regexp: 'verifyHostname'
