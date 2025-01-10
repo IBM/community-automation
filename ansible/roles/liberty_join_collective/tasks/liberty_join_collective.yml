@@ -61,7 +61,7 @@
     when: 
       - enable_hnv is defined
     lineinfile:
-      path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/collectiveMember.xml"
+      path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
       regexp: 'verifyHostname'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     verifyHostname="{{ enable_hnv }}"'
