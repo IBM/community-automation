@@ -1,17 +1,28 @@
 ---
-    
-- name:  stop httpd
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
-  register: stophttpdOutput
+- name: Unix http operations
+  when: ansible_system is not search('CYG')
+  block:
+    - name: Stop httpd
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+      register: stophttpdOutput
+    - name: Stop adminctl
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop "
+      register: stopadminctlOutput
 
-- name: stophttpdOutput
+- name: Windoze http operations
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+    - name: Stop apache -k start -n IBMHTTPServer
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMHTTPServer'"
+      register: starthttpdOutput
+    - name: Stop apache -k start -n IBMAdminHTTPServer
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop -n 'IBMAdminHTTPServer'"
+      register: startadminctlOutput
+
+- name: StophttpdOutput
   debug: 
    msg: "{{ stophttpdOutput.stdout_lines }}"
 
-- name:  stop adminctl
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop "
-  register: stopadminctlOutput
-
-- name: stopadminctlOutput
+- name: Strict-Transport-SecuritytopadminctlOutput
   debug: 
    msg: "{{ stopadminctlOutput.stdout_lines }}"

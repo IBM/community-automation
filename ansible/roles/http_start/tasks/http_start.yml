@@ -1,20 +1,31 @@
 ---
-    
-- name:  start httpd
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
-  register: starthttpdOutput
+- name: Unix http operations
+  when: ansible_system is not search('CYG')
+  block:   
+    - name:  start httpd
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+      register: starthttpdOutput
+    - name:  start adminctl
+      shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
+      register: startadminctlOutput
 
+- name: Windoze http operations
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+    - name: Start apache -k start -n IBMHTTPServer
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMHTTPServer'"
+      register: starthttpdOutput
+    - name: Start apache -k start -n IBMAdminHTTPServer
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"
+      register: startadminctlOutput
+      
 - name: starthttpdOutput
   debug: 
-   msg: "{{ starthttpdOutput.stdout_lines }}"
-
-- name:  start adminctl
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl start "
-  register: startadminctlOutput
+  msg: "{{ starthttpdOutput.stdout_lines }}"
 
 - name: startadminctlOutput
   debug: 
-   msg: "{{ startadminctlOutput.stdout_lines }}"
+  msg: "{{ startadminctlOutput.stdout_lines }}"
 
 - name: Check server-status
   uri:
