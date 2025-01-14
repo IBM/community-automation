@@ -20,9 +20,9 @@
       register: startadminctlOutput
 
 - name: StophttpdOutput
-  debug: 
-   msg: "{{ stophttpdOutput.stdout_lines }}"
+  ansible.builtin.debug: 
+    msg: "{{ stophttpdOutput.stdout_lines }}"
 
 - name: Strict-Transport-SecuritytopadminctlOutput
-  debug: 
-   msg: "{{ stopadminctlOutput.stdout_lines }}"
+  ansible.builtin.debug: 
+    msg: "{{ stopadminctlOutput.stdout_lines }}"

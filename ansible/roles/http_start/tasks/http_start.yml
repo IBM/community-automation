@@ -18,14 +18,14 @@
     - name: Start apache -k start -n IBMAdminHTTPServer
       ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k start -n 'IBMAdminHTTPServer'"
       register: startadminctlOutput
-      
+
 - name: starthttpdOutput
-  debug: 
-  msg: "{{ starthttpdOutput.stdout_lines }}"
+  ansible.builtin.debug: 
+    msg: "{{ starthttpdOutput.stdout_lines }}"
 
 - name: startadminctlOutput
-  debug: 
-  msg: "{{ startadminctlOutput.stdout_lines }}"
+  ansible.builtin.debug: 
+    msg: "{{ startadminctlOutput.stdout_lines }}"
 
 - name: Check server-status
   uri:
