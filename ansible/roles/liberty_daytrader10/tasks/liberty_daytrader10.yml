@@ -3,32 +3,32 @@
   tags: daytrader10 
   block:
   - name: check if liberty is installed
-    stat:
+    ansible.builtin.stat:
       path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
   - name: copy jvm.options template
-    template:
+    ansible.builtin.template:
      src: jvm.options.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/jvm.options"
   - name: copy server.xml template
-    template:
+    ansible.builtin.template:
      src: server.xml.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
   - name: copy bootstrap.properties template
-    template:
+    ansible.builtin.template:
      src: bootstrap.properties.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
 
   - name: copy application war
-    copy:
+    ansible.builtin.copy:
       src: "{{ appLoc }}" # files/io.openliberty.sample.daytrader10.war
       dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader10.war"
       mode: '0755'
 
   - name: db2jars dir
-    file:
+    ansible.builtin.file:
       path: '{{ item }}'
       state: directory
       recurse: yes
@@ -36,36 +36,36 @@
     - "{{ wlp_usr_dir }}/shared/resources/db2jars"
 
   - name: copy db2jcc4.jar 
-    copy:
+    ansible.builtin.copy:
       src: /tmp/db2jcc4.jar
       dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc4.jar"
       mode: '0755'
   - name: copy db2jcc_license_cu.jar 
-    copy:
+    ansible.builtin.copy:
       src: /tmp/db2jcc_license_cu.jar
       dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc_license_cu.jar"
       mode: '0755'
 
   - name: autoAcceptCertificates
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
   #### THIS IS ONLY TEMP SCHADER dirty fix
   - name: THIS IS ONLY TEMP SCHADER dirty fix - switch to 64bit jdk
-    replace:
+    ansible.builtin.replace:
       path: "{{install_base }}/{{ liberty_dir }}/etc/default.env"
       regexp: '32bit'
       replace: '64bit'
     when: ansible_system == 'OS400'
 
   - name: Conditional role
-    include_role:
+    ansible.builtin.include_role:
       name: liberty_ibmi_grantauth
 
   - name: Stop Liberty Server 
-    command:
+    ansible.builtin.command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
@@ -75,7 +75,7 @@
 
      # must use nohup else the server stops after the controlling process exits
   - name: Start Liberty Server 
-    command:
+    ansible.builtin.command:
       cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
@@ -84,7 +84,7 @@
      msg: '{{ cmdOutput.stdout_lines }}'
 
   - name: check server status 
-    command:
+    ansible.builtin.command:
       cmd: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )

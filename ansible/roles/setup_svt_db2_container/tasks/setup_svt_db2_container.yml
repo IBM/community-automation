@@ -32,18 +32,37 @@
   #- name: get podman runRoot dir
   #  shell: 'podman info | grep runRoot'
   #  register: podman_runRoot
-- name: Copy the podmand.conf template to /etc/tmpfiles.d/
-  become: true
-  ansible.builtin.copy:
-    src: /usr/lib/tmpfiles.d/podman.conf
-    dest: /etc/tmpfiles.d/podman.conf
-    remote_src: yes
-- name: Add podman nonRoot dir to systemd tmp
-  become: true
-  lineinfile:
-    path: /etc/tmpfiles.d/podman.conf
-    line: "x /run/user/{{ ansible_user_uid }}"
+# is this needed any longer???
+# - name: Copy the podmand.conf template to /etc/tmpfiles.d/
+#   become: true
+#   ansible.builtin.copy:
+#     src: /usr/lib/tmpfiles.d/podman.conf
+#     dest: /etc/tmpfiles.d/podman.conf
+#     remote_src: yes
+# - name: Add podman nonRoot dir to systemd tmp
+#   become: true
+#   lineinfile:
+#     path: /etc/tmpfiles.d/podman.conf
+#     line: "x /run/user/{{ ansible_user_uid }}"
 
+- name: Create user containers.conf directory
+  ansible.builtin.file:
+    path: '.config/containers/'
+    state: directory
+    mode: '0755'
+    
+- name: Override podman 5.x pasta networking with slirp4netns
+  ansible.builtin.blockinfile:
+    path: ".config/containers/containers.conf"
+    create: true
+    mode: '0755'
+    marker: "# {mark} Revert to slirp4netns ANSIBLE MANAGED BLOCK"
+    block: |
+      [network]
+      # default_rootless_network_cmd = ""
+      # change to.
+      default_rootless_network_cmd = "slirp4netns"
+      
 - name: Pull the svt db2 image
   containers.podman.podman_image:
     name: "{{ svt_db2_image }}"
