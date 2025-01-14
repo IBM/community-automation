@@ -6,9 +6,9 @@
   register: isappclient
 
 - name: Uninstall AppClient
-  when: 
-      - isappclient.stat is defined
-      - isappclient.stat.exists
+  when:
+    - isappclient.stat is defined
+    - isappclient.stat.exists
   block:
     - name: Check if imcl installed as a prereq
       ansible.builtin.stat:

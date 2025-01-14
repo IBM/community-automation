@@ -1,3 +1,0 @@
----
-# trick the template to install onto windoze via cygwin
-cygwin: ''

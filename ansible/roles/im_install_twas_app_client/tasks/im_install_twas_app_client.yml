@@ -1,6 +1,6 @@
 ---
 - name: Install
-  tags: install 
+  tags: install
   block:
   - name: Check if imcl installed as a prereq
     ansible.builtin.stat:
@@ -34,19 +34,19 @@
     register: installOutput
 
   - name: InstallOutput
-    ansible.builtin.debug: 
+    ansible.builtin.debug:
       msg: "{{ installOutput.stdout_lines }}"
 
   - name: ListInstalledPackages
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
-  
+
   - name: PackageOutput
     ansible.builtin.debug: 
       msg: "{{ packageOutput.stdout_lines }}"
 
 - name: Versions
-  tags: version 
+  tags: version
   block:
     - name: AppClient version
       ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
