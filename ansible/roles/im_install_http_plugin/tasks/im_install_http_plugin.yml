@@ -48,6 +48,14 @@
       src: wct_definition.xml.j2
       dest: "wct_definition.xml"
 
+  # if windoze switch all forward slash to backslash to allow the wct command to work
+  - name: Replace forward slash with backslash for widoze wct command
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    ansible.builtin.replace:
+      path: "wct_definition.xml"
+      regexp: '/'
+      replace: '\\'
+
   - name: Copy ihsserverkey{{ ext }} template
     ansible.builtin.template:
       src: ihsserverkey{{ ext }}.j2
