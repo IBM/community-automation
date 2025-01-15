@@ -3,55 +3,55 @@
   tags: join_collective 
   block:
   - name: check if liberty is installed
-    stat:
+    ansible.builtin.stat:
       path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
     register: isliberty
     failed_when: isliberty.stat.exists == False
 
   - name:  stop existing server process
     ignore_errors: true
-    shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+    ansible.builtin.shell: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
     when: iscc.stat.exists == True
     register: op
 
-  - debug:
+  - ansible.builtin.debug:
      msg: '{{ op }}'
 
   - name:  join collective
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --hostname={{ ansible_fqdn }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
+    ansible.builtin.shell: "{{install_base }}/{{ liberty_dir }}/bin/collective join {{ wl_server }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --hostname={{ ansible_fqdn }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --keystorePassword={{ liberty_admin_pass }} --autoAcceptCertificates --createConfigFile=collectiveMember.xml"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: joinOutput
 
-  - debug:
+  - ansible.builtin.debug:
      msg: "{{ joinOutput.stdout_lines }}"
 
     # cheat and create a getJVMpath utility by making a copy of bin/productInfo, stripping off the end commands:
   - name: copy getJVMpath utility
-    copy:
+    ansible.builtin.copy:
      src: getJVMpath
      dest: "~/getJVMpath"
      mode: 0755
 
   - name: run the getJVMpath script
-    shell: "~/getJVMpath"
+    ansible.builtin.shell: "~/getJVMpath"
     register: getJVMpathOutput
     failed_when: ( getJVMpathOutput.rc not in [ 0, 255 ] )
   - name: getJVMpathOutput
-    debug:
+    ansible.builtin.debug:
      msg: "{{ getJVMpathOutput.stdout_lines[0] }}"
 
   - name:  collective updateHost with config access
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/collective updateHost {{ ansible_fqdn }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --useCollectiveSSHKey=true  --hostWritePath={{ wlp_usr_dir }} --autoAcceptCertificates --hostJAVAHome={{ getJVMpathOutput.stdout_lines[0] }}"
+    ansible.builtin.shell: "{{install_base }}/{{ liberty_dir }}/bin/collective updateHost {{ ansible_fqdn }} --host={{ cc_hostname }} --port={{ liberty_admin_ports }} --user={{ liberty_admin_user }} --password={{ liberty_admin_pass }} --useCollectiveSSHKey=true  --hostWritePath={{ wlp_usr_dir }} --autoAcceptCertificates --hostJAVAHome={{ getJVMpathOutput.stdout_lines[0] }}"
     args:
       chdir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
     register: updateHostOutput
 
-  - debug:
+  - ansible.builtin.debug:
      msg: "{{ updateHostOutput.stdout_lines }}"
 
   - name: update to tlsv1.2
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
       regexp: 'sslProtocol="TLSv1.2,TLSv1.3"'
       insertafter: '<ssl id="defaultSSLConfig"'
@@ -60,32 +60,69 @@
   - name: Optionally disable / enable HNV
     when: 
       - enable_hnv is defined
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
       regexp: 'verifyHostname'
       insertafter: '<ssl id="defaultSSLConfig"'
       line: '     verifyHostname="{{ enable_hnv }}"'
 
+  # any backup controllers?
+  - name: Backup controller logic server stanza
+    when:
+      - cc_backup_1 is defined
+      - cc_backup_2 is defined
+    block:
+      # initial state from the join:
+      # <!-- Connection to the collective controller -->
+      # <collectiveMember controllerHost="nest-win2025-lib-c1.dev.fyre.ibm.com"
+      #                   controllerPort="9443" />
+      - name: Remove existing controllerHost 
+        ansible.builtin.lineinfile:
+          path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
+          regexp: 'collectiveMember controllerHost'
+          state: absent
+      - name: Remove existing controllerPort
+        ansible.builtin.lineinfile:
+          path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
+          regexp: 'controllerPort="{{ liberty_admin_ports }}" />'
+          state: absent
+      # <!-- Connection to the collective controller -->
+      # <collectiveMember controllerHost="nest-cc11.fyre.ibm.com" controllerPort="9443" >
+      #    <failoverController host="nest-cc21.fyre.ibm.com" port="9443"/>
+      #    <failoverController host="nest-cc51.fyre.ibm.com" port="9443"/>
+      # </collectiveMember>`
+      - name: Add the primary and the 2 backup controllers
+        ansible.builtin.lineinfile:
+          path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
+          regexp: '<!-- Connection to the collective controller -->'
+          insertafter: '<!-- Connection to the collective controller -->'
+          line: "{{ item }}"
+          with_items: 
+            - '    <collectiveMember controllerHost="{{ cc_primary_server }}" controllerPort="{{ liberty_admin_ports }}" >'
+            - '      <failoverController host="{{ cc_backup_1 }}" port="{{ liberty_admin_ports }}"/>'
+            - '      <failoverController host="{{ cc_backup_2 }}" port="{{ liberty_admin_ports }}"/>'
+            - '    </collectiveMember>'
+
   - name: autoAcceptCertificates
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.env"
       regexp: 'autoAcceptCertificates'
       line: 'JVM_ARGS=-Dcom.ibm.websphere.collective.utility.autoAcceptCertificates=true'
 
   - name: include collectiveMember.xml in server.xml
-    lineinfile:
+    ansible.builtin.lineinfile:
       path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
       regexp: '^controller.xml'
       insertbefore: '</server>'
       line: '    <include location="${server.config.dir}/collectiveMember.xml" />'
 
   - name: Conditional role
-    include_role:
+    ansible.builtin.include_role:
       name: liberty_ibmi_grantauth
 
     # must use nohup else the server stops after the controlling process exits
   - name: Start Liberty Server
-    command:
+    ansible.builtin.command:
       cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
     register: cmdOutput
     failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
