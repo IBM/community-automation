@@ -18,6 +18,7 @@
       - '*.zip'
       - '*.tar'
       - '*.gz'
+      - '*.lck'
       dest: logs.zip
       format: zip
 
