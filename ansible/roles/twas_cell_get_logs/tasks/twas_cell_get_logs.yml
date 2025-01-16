@@ -2,7 +2,7 @@
 
 - name: Any logs?
   ansible.builtin.stat:
-    path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+    path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
   register: islogs
 
 - name: Log archive logic
@@ -11,9 +11,9 @@
   - name: Archive the logs dir to fetch
     community.general.archive:
       path:
-      - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
+      - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
       exclude_path:
-      - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
+      - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
       exclusion_patterns:
       - '*.zip'
       - '*.tar'
