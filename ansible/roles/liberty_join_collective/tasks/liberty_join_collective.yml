@@ -92,16 +92,15 @@
       #    <failoverController host="nest-cc51.fyre.ibm.com" port="9443"/>
       # </collectiveMember>`
       - name: Add the primary and the 2 backup controllers
-        ansible.builtin.lineinfile:
+        ansible.builtin.blockinfile:
           path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
-          regexp: '<!-- Connection to the collective controller -->'
+          marker: "<!-- {mark} primary and backup controllers -->"
           insertafter: '<!-- Connection to the collective controller -->'
-          line: "{{ item }}"
-          with_items: 
-            - '    <collectiveMember controllerHost="{{ cc_primary_server }}" controllerPort="{{ liberty_admin_ports }}" >'
-            - '      <failoverController host="{{ cc_backup_1 }}" port="{{ liberty_admin_ports }}"/>'
-            - '      <failoverController host="{{ cc_backup_2 }}" port="{{ liberty_admin_ports }}"/>'
-            - '    </collectiveMember>'
+          block: |
+            '    <collectiveMember controllerHost="{{ cc_primary_server }}" controllerPort="{{ liberty_admin_ports }}" >'
+            '      <failoverController host="{{ cc_backup_1 }}" port="{{ liberty_admin_ports }}"/>'
+            '      <failoverController host="{{ cc_backup_2 }}" port="{{ liberty_admin_ports }}"/>'
+            '    </collectiveMember>'
 
   - name: autoAcceptCertificates
     ansible.builtin.lineinfile:
