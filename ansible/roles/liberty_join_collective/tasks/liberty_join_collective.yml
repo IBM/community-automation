@@ -94,13 +94,13 @@
       - name: Add the primary and the 2 backup controllers
         ansible.builtin.blockinfile:
           path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/collectiveMember.xml"
-          marker: "<!-- {mark} primary and backup controllers -->"
+          marker: '<!-- {mark} primary and backup controllers -->''
           insertafter: '<!-- Connection to the collective controller -->'
           block: |
-            '    <collectiveMember controllerHost="{{ cc_primary_server }}" controllerPort="{{ liberty_admin_ports }}" >'
-            '      <failoverController host="{{ cc_backup_1 }}" port="{{ liberty_admin_ports }}"/>'
-            '      <failoverController host="{{ cc_backup_2 }}" port="{{ liberty_admin_ports }}"/>'
-            '    </collectiveMember>'
+                <collectiveMember controllerHost="{{ cc_primary_server }}" controllerPort="{{ liberty_admin_ports }}" >
+                  <failoverController host="{{ cc_backup_1 }}" port="{{ liberty_admin_ports }}"/>
+                  <failoverController host="{{ cc_backup_2 }}" port="{{ liberty_admin_ports }}"/>
+                </collectiveMember>
 
   - name: autoAcceptCertificates
     ansible.builtin.lineinfile:
