@@ -28,7 +28,7 @@
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
       state: directory
 
-  - name: Write IM listInstalledPackages to file
+  - name: Write IM listInstalledPackages to txt file
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ packageOutput.stdout }}"
@@ -37,6 +37,16 @@
       - logs_dir is defined
       - env_name is defined
       - version_txt_file is defined
+
+  - name: Write IM listInstalledPackages to json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ packageOutput.stdout }}|to_json"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+    when: 
+      - logs_dir is defined
+      - env_name is defined
+      - version_json_file is defined
 
   - name: HTTPServer version
     ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
