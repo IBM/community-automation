@@ -23,6 +23,7 @@
     ansible.builtin.copy:
       content: "{{ packageOutput.stdout }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+      mode: '0755'
     when: 
       - logs_dir is defined
       - env_name is defined
@@ -31,8 +32,9 @@
   - name: Write IM listInstalledPackages to json file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ packageOutput.stdout }}|to_json"
+      content: "{{ packageOutput.stdout | to_json }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+      mode: '0755'
     when: 
       - logs_dir is defined
       - env_name is defined
@@ -52,7 +54,7 @@
     - name: twasVersionOutput
       ansible.builtin.debug: 
         msg: "{{ twasVersionOutput.stdout_lines }}"
-    when: istwas.stat.exists == True
+    when: istwas.stat.exists
 
   - name: check if AppClient installed
     ansible.builtin.stat:
@@ -67,4 +69,4 @@
     - name: tWAS Application Client versionsInfo output
       ansible.builtin.debug:
         msg: "{{ appVersionOutput.stdout_lines }}"
-    when: isapp.stat.exists == True
+    when: isapp.stat.exists

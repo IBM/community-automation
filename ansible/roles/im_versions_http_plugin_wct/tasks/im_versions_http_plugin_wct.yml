@@ -33,6 +33,7 @@
     ansible.builtin.copy:
       content: "{{ packageOutput.stdout }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+      mode: '0755'
     when:
       - logs_dir is defined
       - env_name is defined
@@ -41,8 +42,9 @@
   - name: Write IM listInstalledPackages to json file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ packageOutput.stdout }}|to_json"
+      content: "{{ packageOutput.stdout | to_json }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+      mode: '0755'
     when: 
       - logs_dir is defined
       - env_name is defined

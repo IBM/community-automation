@@ -1,5 +1,4 @@
 ---
-
 - name: Versions Liberty
   tags: Version Liberty
   block:
@@ -14,7 +13,7 @@
     - name: imcl listInstalledPackages
       ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
       register: packageOutput
-  
+
     - name: packageOutput
       ansible.builtin.debug: 
         msg: "{{ packageOutput.stdout_lines }}"
@@ -30,21 +29,23 @@
       ansible.builtin.copy:
         content: "{{ packageOutput.stdout }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-      when: 
+        mode: '0755'
+      when:
         - logs_dir is defined
         - env_name is defined
         - version_txt_file is defined
-    
+
     - name: Write IM listInstalledPackages to json file
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ packageOutput.stdout }}|to_json"
+        content: "{{ packageOutput.stdout | to_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
-      when: 
+        mode: '0755'
+      when:
         - logs_dir is defined
         - env_name is defined
         - version_json_file is defined
-    when: isimcl.stat.exists == True
+    when: isimcl.stat.exists
 
   - name: check if Liberty installed
     block:
@@ -60,5 +61,4 @@
     - name: libertyVersionOutput
       ansible.builtin.debug: 
         msg: "{{ libertyVersionOutput.stdout_lines }}"
-      when: islib.stat.exists == True
-
+      when: islib.stat.exists
