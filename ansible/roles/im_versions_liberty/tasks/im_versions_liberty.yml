@@ -3,18 +3,18 @@
   tags: Version Liberty
   block:
 
-  - name: check if imcl installed
+  - name: Check if imcl installed
     ansible.builtin.stat:
       path: "{{ install_base }}/IM/eclipse/tools/imcl"
     register: isimcl
 
-  - name:  imcl listInstalledPackages
+  - name: Imcl listInstalledPackages
     block:
-    - name: imcl listInstalledPackages
+    - name: Imcl listInstalledPackages
       ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
       register: packageOutput
 
-    - name: packageOutput
+    - name: PackageOutput
       ansible.builtin.debug: 
         msg: "{{ packageOutput.stdout_lines }}"
 
@@ -38,7 +38,7 @@
     - name: Write IM listInstalledPackages to json file
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ packageOutput.stdout | to_json }}"
+        content: "{{ packageOutput.stdout_lines | to_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
         mode: '0755'
       when:
@@ -47,9 +47,9 @@
         - version_json_file is defined
     when: isimcl.stat.exists
 
-  - name: check if Liberty installed
+  - name: Check if Liberty installed
     block:
-    - name: check if Liberty installed
+    - name: Check if Liberty installed
       ansible.builtin.stat:
         path: "{{ install_base }}/{{ liberty_dir }}/bin/server" 
       register: islib
@@ -58,7 +58,7 @@
       ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version" 
       register: libertyVersionOutput
 
-    - name: libertyVersionOutput
-      ansible.builtin.debug: 
+    - name: LibertyVersionOutput
+      ansible.builtin.debug:
         msg: "{{ libertyVersionOutput.stdout_lines }}"
       when: islib.stat.exists

@@ -32,7 +32,7 @@
   - name: Write IM listInstalledPackages to json file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ packageOutput.stdout | to_json }}"
+      content: "{{ packageOutput.stdout_lines | to_json }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
       mode: '0755'
     when: 
