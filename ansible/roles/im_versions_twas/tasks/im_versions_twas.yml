@@ -1,72 +1,67 @@
 ---
+- name:  listInstalledPackages
+  ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+  register: packageOutput
 
-- name: tWAS Versions
-  tags: tWAS version 
+- name: packageOutput
+  ansible.builtin.debug: 
+    msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Create version dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+
+- name: Write IM listInstalledPackages to txt file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ packageOutput.stdout }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+    mode: '0755'
+  when: 
+    - logs_dir is defined
+    - env_name is defined
+    - version_txt_file is defined
+
+- name: Write IM listInstalledPackages to json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+    mode: '0755'
+  when: 
+    - logs_dir is defined
+    - env_name is defined
+    - version_json_file is defined
+
+- name: check if tWAS installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+  register: istwas
+
+- name: tWAS versions
   block:
-  
-  - name:  listInstalledPackages
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
-    register: packageOutput
-  
-  - name: packageOutput
+  - name: tWAS version
+    ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: twasVersionOutput
+
+  - name: twasVersionOutput
     ansible.builtin.debug: 
-      msg: "{{ packageOutput.stdout_lines }}"
+      msg: "{{ twasVersionOutput.stdout_lines }}"
+  when: istwas.stat.exists
 
-  - name: Create version dir
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
-      state: directory
+- name: check if AppClient installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+  register: isapp
 
-  - name: Write IM listInstalledPackages to txt file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ packageOutput.stdout }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-      - version_txt_file is defined
-
-  - name: Write IM listInstalledPackages to json file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ packageOutput.stdout_lines | to_json }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-      - version_json_file is defined
-
-  - name: check if tWAS installed
-    ansible.builtin.stat:
-      path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-    register: istwas
-
-  - name: tWAS versions
-    block:
-    - name: tWAS version
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-      register: twasVersionOutput
-
-    - name: twasVersionOutput
-      ansible.builtin.debug: 
-        msg: "{{ twasVersionOutput.stdout_lines }}"
-    when: istwas.stat.exists
-
-  - name: check if AppClient installed
-    ansible.builtin.stat:
-      path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-    register: isapp
-
-  - name: AppClient versions
-    block:
-    - name: AppClient version
-      ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-      register: appVersionOutput
-    - name: tWAS Application Client versionsInfo output
-      ansible.builtin.debug:
-        msg: "{{ appVersionOutput.stdout_lines }}"
-    when: isapp.stat.exists
+- name: AppClient versions
+  block:
+  - name: AppClient version
+    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: appVersionOutput
+  - name: tWAS Application Client versionsInfo output
+    ansible.builtin.debug:
+      msg: "{{ appVersionOutput.stdout_lines }}"
+  when: isapp.stat.exists
