@@ -49,6 +49,17 @@
   - name: twasVersionOutput
     ansible.builtin.debug: 
       msg: "{{ twasVersionOutput.stdout_lines }}"
+
+  - name: Write tWAS versionInfo to json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ twasVersionOutput.stdout_lines | to_json(indent=4) }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_{{ versioninfo_json_file }}"
+      mode: '0755'
+    when: 
+      - logs_dir is defined
+      - env_name is defined
+      - versioninfo_json_file is defined
   when: istwas.stat.exists
 
 - name: check if AppClient installed
@@ -64,4 +75,14 @@
   - name: tWAS Application Client versionsInfo output
     ansible.builtin.debug:
       msg: "{{ appVersionOutput.stdout_lines }}"
+  - name: Write AppClient versionInfo to json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ appVersionOutput.stdout_lines | to_json(indent=4) }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/appclient_{{ versioninfo_json_file }}"
+      mode: '0755'
+    when: 
+      - logs_dir is defined
+      - env_name is defined
+      - versioninfo_json_file is defined
   when: isapp.stat.exists

@@ -58,3 +58,14 @@
     - name: LibertyVersionOutput
       ansible.builtin.debug:
         msg: "{{ libertyVersionOutput.stdout_lines }}"
+
+    - name: Write liberty version to json file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ libertyVersionOutput.stdout_lines | to_json(indent=4) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/liberty_{{ versioninfo_json_file }}"
+        mode: '0755'
+      when: 
+        - logs_dir is defined
+        - env_name is defined
+        - versioninfo_json_file is defined
