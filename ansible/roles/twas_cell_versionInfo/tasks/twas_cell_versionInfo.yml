@@ -11,3 +11,23 @@
 - name: WebSphere VersionInfo output
   ansible.builtin.debug:
     msg: '{{ tversions.stdout_lines }}'
+
+- name: Create version dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+    mode: '0755'
+
+- name: Write tWAS versionInfo to json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ tversions.stdout_lines | to_json(indent=4) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
+    mode: '0755'
+  when: 
+    - logs_dir is defined
+    - env_name is defined
+    - versioninfo_json_file is defined
+
+
