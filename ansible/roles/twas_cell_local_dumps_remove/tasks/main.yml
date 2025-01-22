@@ -1,3 +1,0 @@
----
-- name: Remove the local dumps dir
-  include_tasks: twas_cell_local_dumps_remove.yml

@@ -1,3 +1,0 @@
----
-- name: Remove the local configs
-  ansible.builtin.include_tasks: liberty_local_logs_remove.yml
