@@ -11,3 +11,21 @@
 - name: Summary of tWAS server status output
   ansible.builtin.debug:
     msg: '{{ twasstatus.stdout_lines }}'
+
+- name: Create status dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+    mode: '0755'
+
+- name: Write tWAS status to json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ twasstatus.stdout_lines | to_json(indent=4) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+    mode: '0755'
+  when: 
+    - logs_dir is defined
+    - env_name is defined
+    - status_json_file is defined

@@ -1,0 +1,37 @@
+---
+- name: Liberty Server Status
+  tags: StatusServers
+  block:
+    - name: Check if liberty is installed
+      ansible.builtin.stat:
+        path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+      register: isliberty
+      failed_when: isliberty.stat.exists == False
+
+    - name: Check server status
+      ansible.builtin.command:
+        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+      register: cmdOutput1
+      failed_when: ( cmdOutput1.rc not in [ 0, 1, 2 ] )
+
+    - name: Server status output
+      ansible.builtin.debug:
+        msg: '{{ cmdOutput1.stdout_lines }}'
+
+    - name: Create status dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+        mode: '0755'
+
+    - name: Write Liberty status to json file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ cmdOutput1.stdout_lines | to_json(indent=4) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+        mode: '0755'
+      when: 
+        - logs_dir is defined
+        - env_name is defined
+        - status_json_file is defined
