@@ -1,0 +1,5 @@
+---
+# NOTE That the binary has been installed to this location
+# https://www.ibm.com/support/pages/garbage-collection-and-memory-visualizer
+IBM_GCMV: "/mnt/data/binaries/gcmv/gcmv -nosplash -display 2100x1080 -rc -application com.ibm.java.diagnostics.visualizer.headless.application "
+vbgc_filename: 'verbosegc.log'
