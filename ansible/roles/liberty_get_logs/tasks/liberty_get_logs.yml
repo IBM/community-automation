@@ -31,11 +31,17 @@
       path: logs.zip
       state: absent
 
+  - name: Create local logs dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
+      state: directory
+
   - name: Extract the liberty log archive
     delegate_to: localhost
     ansible.builtin.unarchive:
       src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}logs/"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
       remote_src: false
 
   - name: Remove logs.zip
