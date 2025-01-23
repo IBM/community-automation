@@ -65,8 +65,9 @@
     delegate_to: localhost
     when: isvbgclogs.rc == 0
     ansible.builtin.assemble:
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc*"
+      src: "{{ item }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc.log"
+    with_items: "{{ isvbgclogs.stdout_lines }}"
     register: assemblevbgc
 
   - name: Assemble logs
