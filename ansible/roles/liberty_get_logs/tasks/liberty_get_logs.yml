@@ -66,11 +66,6 @@
     when: isvbgclogs.rc == 0
     ansible.builtin.shell: "cat {{ item }} >> {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc.log"
     with_items: "{{ isvbgclogs.stdout_lines }}"
-    register: concatvbgc
-
-  - name: Concat logs
-    ansible.builtin.debug:
-      msg: "{{ concatvbgc.stdout_lines }}"
 
   - name: Remove original verbosegc files
     delegate_to: localhost
