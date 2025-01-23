@@ -35,7 +35,7 @@
     delegate_to: localhost
     ansible.builtin.unarchive:
       src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}logs/"
       remote_src: false
 
   - name: Remove logs.zip
@@ -46,7 +46,7 @@
 
   - name: Log/error directory location
     ansible.builtin.debug:
-      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
 
   # logic to create 1 verbosegc log file for input to IBM Verbose GC processing, if any gc files
   - name: Any verbosegc files?
