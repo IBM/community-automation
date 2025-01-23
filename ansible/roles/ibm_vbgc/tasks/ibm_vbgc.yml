@@ -4,7 +4,7 @@
   delegate_to: localhost
   ansible.builtin.shell: 'find . -name {{ vbgc_filename }}* '
   args:
-    chdir: "logs/{{ env_name }}/"
+    chdir: "{{ logs_dir }}/{{ env_name }}/"
   register: gcfilesoutput
 
 - name: Verbose gc files found output
