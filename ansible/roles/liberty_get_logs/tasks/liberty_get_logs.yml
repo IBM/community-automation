@@ -64,15 +64,13 @@
   - name: Concat any verbosegc files into 1
     delegate_to: localhost
     when: isvbgclogs.rc == 0
-    ansible.builtin.assemble:
-      src: "{{ item }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc.log"
+    ansible.builtin.shell: "cat {{ item }} >> {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc.log"
     with_items: "{{ isvbgclogs.stdout_lines }}"
-    register: assemblevbgc
+    register: concatvbgc
 
-  - name: Assemble logs
+  - name: Concat logs
     ansible.builtin.debug:
-      msg: "{{ assemblevbgc.stdout_lines }}"
+      msg: "{{ concatvbgc.stdout_lines }}"
 
   - name: Remove original verbosegc files
     delegate_to: localhost
