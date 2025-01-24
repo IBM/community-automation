@@ -19,7 +19,7 @@ fyre_deployCheckRetries: 360
 
 #Default Specs
 fyre_platform: "x"
-fyre_os: "Ubuntu 20.04"
+fyre_os: "Ubuntu 22.04"
 fyre_memory: 8
 fyre_cpu: 4
 fyre_site: "svl"
