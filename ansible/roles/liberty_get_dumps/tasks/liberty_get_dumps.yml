@@ -44,6 +44,15 @@
       path: dumps.zip
       state: absent
 
+  - name: List the contents of the dump zip file ( debug )
+    delegate_to: localhost
+    ansible.builtin.shell: "unzip -l {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+    register: zipcontents
+
+  - name: List the contents of the dump zip file output ( debug )
+    debug:
+      msg: "{{ zipcontents.stdout_lines }}"
+
   - name: Extract the liberty dump archive
     delegate_to: localhost
     ansible.builtin.unarchive:
