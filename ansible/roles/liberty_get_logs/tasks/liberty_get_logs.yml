@@ -21,55 +21,58 @@
         - '*.gz'
       format: zip
 
+  - name: Create local logs dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs/"
+      state: directory
+
   - name: fetch the liberty log archive
     ansible.builtin.fetch:
       src: logs.zip
-      dest: "{{ logs_dir }}/{{ env_name }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs.zip"
 
   - name: Remove temp logs.zip
     ansible.builtin.file:
       path: logs.zip
       state: absent
 
-  - name: Create local logs dir
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
-      state: directory
-
   - name: Extract the liberty log archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
+      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs.zip"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs/"
       remote_src: false
 
   - name: Remove logs.zip
     delegate_to: localhost
     ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs.zip"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs.zip"
       state: absent
 
   - name: Log/error directory location
     ansible.builtin.debug:
-      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/"
+      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs/"
 
-  # logic to create 1 verbosegc log file for input to IBM Verbose GC processing, if any gc files
-  - name: Any verbosegc files?
-    delegate_to: localhost
-    ansible.builtin.shell: "ls -1 {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc*"
-    register: isvbgclogs
-    ignore_errors: true
+  - name: Verbose GC log processing
+    when: verboseGC == True
+    block: 
+      # logic to create 1 verbosegc log file for input to IBM Verbose GC processing, if any gc files
+      - name: Any verbosegc files?
+        delegate_to: localhost
+        ansible.builtin.shell: "ls -1 {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs/verbosegc*"
+        register: isvbgclogs
+        ignore_errors: true
 
-  - name: Concat any verbosegc files into 1
-    delegate_to: localhost
-    when: isvbgclogs.rc == 0
-    ansible.builtin.shell: "cat {{ item }} >> {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/logs/verbosegc.log"
-    with_items: "{{ isvbgclogs.stdout_lines }}"
+      - name: Concat any verbosegc files into 1
+        delegate_to: localhost
+        when: isvbgclogs.rc == 0
+        ansible.builtin.shell: "cat {{ item }} >> {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wl_server }}/logs/verbosegc.log"
+        with_items: "{{ isvbgclogs.stdout_lines }}"
 
-  - name: Remove original verbosegc files
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ item }}"
-      state: absent
-    with_items: "{{ isvbgclogs.stdout_lines }}"
+      - name: Remove original verbosegc files
+        delegate_to: localhost
+        ansible.builtin.file:
+          path: "{{ item }}"
+          state: absent
+        with_items: "{{ isvbgclogs.stdout_lines }}"
