@@ -27,10 +27,17 @@
         - '*.tar'
         - '*.gz'
 
+  - name: Create local server dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      state: directory
+
   - name: Fetch the liberty dump archive
     ansible.builtin.fetch:
+      flat: true
       src: dumps.zip
-      dest: "{{ dumps_dir }}/{{ env_name }}"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
 
   - name: Remove temp dumps.zip
     ansible.builtin.file:
@@ -40,16 +47,16 @@
   - name: Extract the liberty dump archive
     delegate_to: localhost
     ansible.builtin.unarchive:
-      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
-      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
       remote_src: false
 
   - name: Remove dumps.zip
     delegate_to: localhost
     file:
-      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
       state: absent
 
   - name: Dumps directory location
     debug:
-      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
