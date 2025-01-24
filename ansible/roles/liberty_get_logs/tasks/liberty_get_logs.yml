@@ -31,7 +31,7 @@
     ansible.builtin.fetch:
       flat: true
       src: logs.zip
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
 
   - name: Remove temp logs.zip
     ansible.builtin.file:
