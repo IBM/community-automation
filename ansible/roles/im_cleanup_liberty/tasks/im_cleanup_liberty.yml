@@ -6,10 +6,10 @@
   register: islib
 
 - name: Uninstall Liberty
-  when: 
+  when:
     - islib.stat is defined
     - islib.stat.exists == True
-  block: 
+  block:
   - name:  Stop any running servers
     ignore_errors: true
     ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
