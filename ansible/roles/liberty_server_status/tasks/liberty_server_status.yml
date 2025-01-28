@@ -21,7 +21,7 @@
     - name: Create status dir
       delegate_to: localhost
       ansible.builtin.file:
-        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
         state: directory
         mode: '0755'
 
@@ -29,9 +29,9 @@
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ cmdOutput1.stdout_lines | to_json(indent=4) }}"
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
         mode: '0755'
-      when: 
+      when:
         - logs_dir is defined
         - env_name is defined
         - status_json_file is defined
