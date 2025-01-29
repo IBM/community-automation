@@ -18,9 +18,16 @@
     dest: "{{ vbgc_dir }}"
     mode: 0755
 
+- name: Copy the reate_vbgc_chart.sh script to working dir
+  delegate_to: localhost
+  copy: 
+    src: scripts/create_vbgc_chart.sh 
+    dest: "{{ vbgc_dir }}"
+    mode: 0755
+
 - name: Run the IBM GCMV script
   delegate_to: localhost
-  ansible.builtin.shell: "scripts/create_vbgc_chart.sh {{ ibm_gcmv_cmd }}"
+  ansible.builtin.shell: "create_vbgc_chart.sh {{ ibm_gcmv_cmd }}"
   args:
     chdir: "{{ vbgc_dir }}"
   register: vbgcoutput
