@@ -32,7 +32,7 @@
     ansible.builtin.fetch:
       flat: true
       src: logs.zip
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
 
   - name: Unarchive the twas logs
     delegate_to: localhost
