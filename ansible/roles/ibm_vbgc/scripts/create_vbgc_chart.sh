@@ -13,7 +13,7 @@ do
     echo 'debug' >> /tmp/gcmv.debug.out
     pwd >> /tmp/gcmv.debug.out
     ls -l >> /tmp/gcmv.debug.out
-    $IBM_GCMV -data=$t1 -p ./gcmv.genheap.epf -f $line -o $outputDir/IBM_GCMV
+    $IBM_GCMV -data=$t1 -p ./gcmv.genheap.epf -f $line -o $outputDir/IBM_GCMV >> /tmp/gcmv.$$.out
     rm -rf $line $t1
 done < vbgcfiles.txt
 # purge the temp dir's for the GCMV
