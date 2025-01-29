@@ -27,7 +27,8 @@
 
 - name: Run the IBM GCMV script
   delegate_to: localhost
-  ansible.builtin.cmd: "./create_vbgc_chart.sh {{ ibm_gcmv_cmd }}"
+  ansible.builtin.command: 
+    cmd: "./create_vbgc_chart.sh {{ ibm_gcmv_cmd }}"
   args:
     chdir: "{{ vbgc_dir }}"
   register: vbgcoutput
