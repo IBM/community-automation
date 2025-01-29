@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -x
 export DISPLAY=:1
-IBM_GCMV=$1
+IBM_GCMV=$@
 
 find . -name verbosegc* > vbgcfiles.txt
 while read line
