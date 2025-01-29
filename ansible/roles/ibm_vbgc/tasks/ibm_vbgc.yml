@@ -12,7 +12,7 @@
     msg: "{{ gcfilesoutput.stdout_lines }}"
 
 - name: Copy the gcmv.genheap.epf config file to working dir
-  delegate: localhost
+  delegate_to: localhost
   copy: 
     src: files/rgcmv.genheap.epf
     dest: "{{ vbgc_dir }}"
