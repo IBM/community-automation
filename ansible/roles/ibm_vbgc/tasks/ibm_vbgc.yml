@@ -18,7 +18,7 @@
     dest: "{{ vbgc_dir }}"
     mode: 0755
 
-- name: Copy the reate_vbgc_chart.sh script to working dir
+- name: Copy the create_vbgc_chart.sh script to working dir
   delegate_to: localhost
   copy: 
     src: scripts/create_vbgc_chart.sh 
