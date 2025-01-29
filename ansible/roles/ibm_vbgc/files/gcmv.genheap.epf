@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+  <root type="user">
+    <map/>
+    <node name="com">
+      <map/>
+      <node name="ibm">
+        <map/>
+        <node name="java">
+          <map/>
+          <node name="diagnostics">
+            <map/>
+            <node name="visualizer">
+              <map/>
+              <node name="prefs">
+                <map/>
+                <node name="coredisplayers">
+                  <map>
+                    <entry key="DisplayerPreferenceHelperEnableFileViewer" value="true"/>
+                    <entry key="DisplayerPreferenceHelperEnableHovers" value="true"/>
+                    <entry key="HTMLReportPreferencesHelperShowStats" value="true"/>
+                    <entry key="HTMLReportPreferencesHelperSinglePlot" value="false"/>
+                    <entry key="LinePlotPreferenceHelperCursorFuzziness" value="10"/>
+                    <entry key="LinePlotPreferenceHelperDrawDataLegend" value="true"/>
+                    <entry key="LinePlotPreferenceHelperDrawLegend" value="true"/>
+                    <entry key="LinePlotPreferenceHelperForceYAxisStartAtZero" value="true"/>
+                    <entry key="LinePlotPreferenceHelperImageFormat" value="1"/>
+                    <entry key="LinePlotPreferenceHelperLegendPosition" value="0"/>
+                    <entry key="LinePlotPreferenceHelperLineThickness" value="1"/>
+                    <entry key="LinePlotPreferenceHelperPadPlots" value="true"/>
+                    <entry key="TabbedDataPreferenceHelperDisplayDateFirst" value="false"/>
+                    <entry key="TabbedDataPreferenceHelperLineThickness" value=","/>
+                    <entry key="com.ibm.java.diagnostics.visualizer.display.DisplayerRegistry.v1" value="[com.ibm.java.diagnostics.visualizer.displayer.tabbed.TabbedDataDisplayer, com.ibm.java.diagnostics.visualizer.displayer.structured.StructuredDataDisplayer, com.ibm.java.diagnostics.visualizer.displayer.html.HTMLReportDisplayer, com.ibm.java.diagnostics.visualizer.displayer.plot.ZoomingPlotDataDisplayer]"/>
+                  </map>
+                </node>
+                <node name="gc">
+                  <map/>
+                  <node name="defaultextensions">
+                    <map>
+                      <entry key="RecommendationPreferenceHelperCompactFractionThreshold" value="15"/>
+                      <entry key="RecommendationPreferenceHelperCriticallyHighOccupancyThreshold" value="80"/>
+                      <entry key="RecommendationPreferenceHelperExcessiveTenuringThreshold" value="1"/>
+                      <entry key="RecommendationPreferenceHelperFinalizerThreshold" value="750"/>
+                      <entry key="RecommendationPreferenceHelperFragmentationThreshold" value="15"/>
+                      <entry key="RecommendationPreferenceHelperHeapSizeJitterCountThreshold" value="15"/>
+                      <entry key="RecommendationPreferenceHelperHeapSizeJitterThreshold" value="15"/>
+                      <entry key="RecommendationPreferenceHelperHighOccupancyThreshold" value="70"/>
+                      <entry key="RecommendationPreferenceHelperLeakThreshold" value="10"/>
+                      <entry key="RecommendationPreferenceHelperLowOccupancyThreshold" value="40"/>
+                      <entry key="RecommendationPreferenceHelperPauseThreshold" value="5000"/>
+                      <entry key="RecommendationPreferenceHelperRequestThreshold" value="65536"/>
+                      <entry key="RecommendationPreferenceHelperSystemGCErrorThreshold" value="5"/>
+                      <entry key="UnitFormatPreferenceHelperDateFormat" value=""/>
+                      <entry key="UnitFormatPreferenceHelperEnableDateFormat" value="UnitFormatPreferenceHelperEnableDateFormat"/>
+                      <entry key="UnitFormatPreferencehelper.test" value="5"/>
+                      <entry key="VGCParserPreferenceHelperIgnoreSystemGCs" value="false"/>
+                      <entry key="VGCParserPreferenceHelperInteropolateTimes" value="true"/>
+                    </map>
+                  </node>
+                </node>
+                <node name="impl">
+                  <map>
+                    <entry key="Colours0" value="0,175,175"/>
+                    <entry key="Colours1" value="0,0,255"/>
+                    <entry key="Colours2" value="255,0,0"/>
+                    <entry key="Colours3" value="50,175,50"/>
+                    <entry key="Colours4" value="255,0,255"/>
+                    <entry key="Colours5" value="255,192,203"/>
+                    <entry key="Colours6" value="173,216,230"/>
+                    <entry key="Colours7" value="165,42,42"/>
+                    <entry key="Colours8" value="30,144,255"/>
+                    <entry key="Colours9" value="255,165,0"/>
+                    <entry key="NativeMemoryLabels.aix.virtual" value="165,42,42"/>
+                    <entry key="NativeMemoryLabels.inuse" value="0,175,175"/>
+                    <entry key="NativeMemoryLabels.paging" value="30,144,255"/>
+                    <entry key="NativeMemoryLabels.pinned" value="255,165,0"/>
+                    <entry key="NativeMemoryLabels.reserved" value="0,0,255"/>
+                    <entry key="NumColours" value="10"/>
+                    <entry key="OracleVGCLabels.heap.size.after" value="0,0,255"/>
+                    <entry key="OracleVGCLabels.used.heap.after" value="0,175,175"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.age" value="AxisUnits.number.of.flips"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.data" value="AxisUnits.MB"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.gc.number" value="number"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.gc.scope" value="AxisUnits.region"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.gc.type" value="AxisUnits.collection.type"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.heap" value="AxisUnits.GB"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.moved" value="AxisUnits.MB"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.number" value="AxisUnits.100s"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.restart" value="instance"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.time" value="AxisUnits.seconds"/>
+                    <entry key="OutputPropertiesImpl_axis.units_VGCAxes.time.from.start" value="AxisUnits.date"/>
+                    <entry key="SourcePreferenceHelperBufferSize" value="1024"/>
+                    <entry key="StructuredIDsToDisplayPropertiesImpl" value="VGCLabels.gc.attributes,VGCLabels.system.attributes,summary,RealtimeLabels.quantum.pause.summary"/>
+                    <entry key="TupleIDsToDisplayPropertiesImpl" value="VGCLabels.live.normal.heap.after.gc,VGCLabels.jvm.restarts,VGCLabels.flat.heap.size,OracleVGCLabels.used.heap.after,OracleVGCLabels.heap.size.after,VGCLabels.tenured.heap.size"/>
+                    <entry key="UnstructuredIDsToDisplayPropertiesImpl" value="VGCLabels.source.name,tuning.recommendation,VGCLabels.version"/>
+                    <entry key="VGCLabels.common.numa.end" value="255,165,0"/>
+                    <entry key="VGCLabels.common.numa.start" value="0,128,0"/>
+                    <entry key="VGCLabels.compact.times" value="255,128,64"/>
+                    <entry key="VGCLabels.flat.heap.size" value="0,0,255"/>
+                    <entry key="VGCLabels.free.flat.heap" value="50,175,50"/>
+                    <entry key="VGCLabels.free.flat.heap.before.gc" value="255,128,0"/>
+                    <entry key="VGCLabels.free.nursery.heap" value="165,42,42"/>
+                    <entry key="VGCLabels.free.tenured.heap" value="30,144,255"/>
+                    <entry key="VGCLabels.jvm.restarts" value="255,165,0"/>
+                    <entry key="VGCLabels.live.normal.heap.after.gc" value="0,175,175"/>
+                    <entry key="VGCLabels.live.nursery.heap.after.gc" value="248,83,54"/>
+                    <entry key="VGCLabels.live.tenured.heap.after.gc" value="0,175,175"/>
+                    <entry key="VGCLabels.local.numa.end" value="0,0,255"/>
+                    <entry key="VGCLabels.local.numa.start" value="173,216,230"/>
+                    <entry key="VGCLabels.mark.times" value="0,128,192"/>
+                    <entry key="VGCLabels.non.local.numa.end" value="0,175,175"/>
+                    <entry key="VGCLabels.non.local.numa.start" value="255,0,255"/>
+                    <entry key="VGCLabels.nursery.size" value="255,0,255"/>
+                    <entry key="VGCLabels.pause.times.with.exclusive.access" value="165,42,42"/>
+                    <entry key="VGCLabels.pause.times.without.exclusive.access" value="50,175,50"/>
+                    <entry key="VGCLabels.request.sizes.which.triggered.failures" value="255,0,0"/>
+                    <entry key="VGCLabels.sweep.times" value="255,128,255"/>
+                    <entry key="VGCLabels.tenure.age" value="255,128,64"/>
+                    <entry key="VGCLabels.tenured.heap.size" value="255,192,203"/>
+                    <entry key="VGCLabels.total.numa.end" value="255,192,203"/>
+                    <entry key="VGCLabels.total.numa.start" value="255,0,0"/>
+                    <entry key="VGCLabels.trigger.intervals" value="0,128,0"/>
+                    <entry key="VGCLabels.used.loa.after.collection" value="0,128,255"/>
+                    <entry key="VGCLabels.used.soa.after.collection" value="255,165,0"/>
+                    <entry key="com.ibm.java.diagnostics.visualizer.impl.extensions.ParserRegistry.v1" value="[com.ibm.java.diagnostics.visualizer.gc.solarissupport.parser.SunVGCParser, com.ibm.java.diagnostics.visualizer.gc.i5classic.parser.I5ClassicParser, com.ibm.java.diagnostics.visualizer.parser.javadump.JavaDumpParser, com.ibm.java.diagnostics.visualizer.memory.parser.PsNativeParser, com.ibm.java.diagnostics.visualizer.memory.parser.PerfMonParser, com.ibm.java.diagnostics.visualizer.gc.realtime.parser.RealTimeParserV2, com.ibm.java.diagnostics.visualizer.memory.parser.SVMonParser, com.ibm.java.diagnostics.visualizer.gc.i5V6r1.parser.I5V6r1Parser, com.ibm.java.diagnostics.visualizer.gc.realtime.parser.RealTimeParser, com.ibm.java.diagnostics.visualizer.parser.vgc.sovereign.SovereignVGCParser, com.ibm.java.diagnostics.visualizer.gc.v8support.parser.V8Parser, com.ibm.java.diagnostics.visualizer.gc.hp.parser.HPVGCParser, com.ibm.java.diagnostics.visualizer.gc.iseriessupport.parser.ISeriesVGCParser, com.ibm.java.diagnostics.visualizer.parser.vgc.j926.J926VGCParser, com.ibm.java.diagnostics.visualizer.gc.i5V5r4.parser.I5V5r4Parser, com.ibm.java.diagnostics.visualizer.parser.tgc.TGCParserImpl, com.ibm.java.diagnostics.visualizer.gc.solarissupport.parser.OracleG1VGCParser, com.ibm.java.diagnostics.visualizer.parser.vgc.j9.J950VGCParser]"/>
+                    <entry key="com.ibm.java.diagnostics.visualizer.impl.extensions.PostProcessorRegistry.v1" value="[com.ibm.java.diagnostics.visualizer.postprocessor.vgc.analysis.RollingAveragesPostProcessor, com.ibm.java.diagnostics.visualizer.gc.solarissupport.postprocessor.DerivedOraclePostProcessor, com.ibm.java.diagnostics.visualizer.postprocessor.vgc.analysis.UnitSelectingPostProcessor, com.ibm.java.diagnostics.visualizer.postprocessor.vgc.analysis.DerivedVGCDataPostProcessor]"/>
+                  </map>
+                </node>
+              </node>
+            </node>
+          </node>
+        </node>
+      </node>
+    </node>
+  </root>
+</preferences>

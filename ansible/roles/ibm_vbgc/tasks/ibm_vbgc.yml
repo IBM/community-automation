@@ -10,3 +10,21 @@
 - name: Verbose gc files concat output
   ansible.builtin.debug:
     msg: "{{ gcfilesoutput.stdout_lines }}"
+
+- name: Copy the gcmv.genheap.epf config file to working dir
+  delegate: localhost
+  copy: 
+    src: files/rgcmv.genheap.epf
+    dest: "{{ vbgc_dir }}"
+    mode: 0755
+
+- name: Run the IBM GCMV script
+  delegate_to: localhost
+  ansible.builtin.script: "scripts/create_vbgc_chart.sh {{ ibm_gcmv_cmd }}"
+  args:
+    chdir: "{{ vbgc_dir }}"
+  register: vbgcoutput
+
+- name: IBM GCMV output
+  ansible.builtin.debug:
+    msg: "{{ vbgcoutput.stdout_lines }}"
