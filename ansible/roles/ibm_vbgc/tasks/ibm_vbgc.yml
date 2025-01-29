@@ -14,7 +14,7 @@
 - name: Copy the gcmv.genheap.epf config file to working dir
   delegate_to: localhost
   copy: 
-    src: files/rgcmv.genheap.epf
+    src: files/gcmv.genheap.epf
     dest: "{{ vbgc_dir }}"
     mode: 0755
 
