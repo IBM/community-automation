@@ -28,3 +28,8 @@
 - name: IBM GCMV output
   ansible.builtin.debug:
     msg: "{{ vbgcoutput.stdout_lines }}"
+
+- name: Clean up gcmv.genheap.epf
+  ansible.builtin.file:
+    path: "{{ vbgc_dir }}/gcmv.genheap.epf"
+    state: absent
