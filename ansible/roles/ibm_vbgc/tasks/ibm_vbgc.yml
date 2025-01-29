@@ -1,27 +1,12 @@
 ---
 
-- name: Find all the verbosegc log files
+- name: Find all the verbosegc log files and concat into 1 file
   delegate_to: localhost
-  ansible.builtin.shell: 'find . -name {{ vbgc_filename }}* '
+  ansible.builtin.script: scripts/merge_into_single_file.sh
   args:
-    chdir: "{{ logs_dir }}/{{ env_name }}/"
+    chdir: "{{ vbgc_dir }}"
   register: gcfilesoutput
 
-- name: Verbose gc files found output
+- name: Verbose gc files concat output
   ansible.builtin.debug:
     msg: "{{ gcfilesoutput.stdout_lines }}"
-
-# - name: QuickCheck all logs
-#   delegate_to: localhost
-#   ansible.builtin.shell: 'java -jar ~/QuickCheck6.jar ~/daytrader.txt . '
-#   args:
-#     chdir: "logs/{{ env_name }}/"
-#   register: qcoutput
-
-# - name: Quickcheck output
-#   ansible.builtin.debug:
-#     msg: "{{ qcoutput.stdout_lines }}"
-
-# - name: Quickcheck dir location
-#   ansible.builtin.debug:
-#     msg: "{{ playbook_dir }}/logs/{{ env_name }}/QuickCheckOutput/"
