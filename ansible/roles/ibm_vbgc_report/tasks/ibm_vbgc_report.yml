@@ -39,7 +39,9 @@
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_single_report.html"
         insertafter: '<!-- lineplots -->'
-        line: '{{ item }}\n <img src="{{ item }}" width=100% alt="{{ item }}">'
+        line: |
+          {{ item }}
+          <img src="{{ item }}" width=100% alt="{{ item }}">
       with_items:
         - "{{ lineplotoutput.stdout_lines }}"
 
@@ -54,6 +56,7 @@
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         insertafter: '<!-- lineplots -->'
-        line: '<a href="{{ item }}" target=_blank>"{{ item }}"</a> <a href="{{ item }}" target=_blank><font color=black>Report</font></a>'
-      with_items:
+        line: '<a href="{{ item.0 }}" target=_blank>{{ item.0 }}</a> <a href="{{ item.1 }}" target=_blank><font color=black>Report</font></a>'
+      with_subelements:
         - "{{ lineplotoutput.stdout_lines }}"
+        - "{{ indexhtmloutput.stdout_lines }}"
