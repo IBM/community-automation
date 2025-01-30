@@ -62,7 +62,7 @@
 
     - name: Add line index.html url gcmv_report
       delegate_to: localhost
-      ansible.builtin.lineinfile:
+      ansible.builtin.replace:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         regexp: 'replace_report_url'
         replace: '{{ item }}'
