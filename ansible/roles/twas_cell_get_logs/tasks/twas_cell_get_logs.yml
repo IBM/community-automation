@@ -61,6 +61,7 @@
           vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
       
       - name: Run the IBM verbosegc report logic
+        run_once: true
         ansible.builtin.include_role:
           name: ibm_vbgc_report
         vars:
