@@ -51,6 +51,11 @@
         src: gcmv_report.html.j2
         dest: "{{ vbgc_report_dir }}/gcmv_report.html"
 
+    # disable the black until one can figure out how to check for errors in the reports
+    # check for keywords indicative of problems
+    # gcmvissues=$(egrep -c 'Excessive|Problem|Leak' $reportIndex/Report/index.html)
+    # [ $gcmvissues == 0 ] && vcolor="black" || vcolor="red"
+    # a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>
     - name: Add line plot gcmv_report
       delegate_to: localhost
       ansible.builtin.lineinfile:
@@ -58,6 +63,6 @@
         insertafter: '<!-- reports -->'
         line: |
           <br>
-          <a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>
+          <a href="{{ item }}" target=_blank>{{ item }}</font></a>
       with_items:
         - "{{ indexhtmloutput.stdout_lines }}"
