@@ -40,7 +40,7 @@
         path: "{{ vbgc_report_dir }}/gcmv_single_report.html"
         insertafter: '<!-- lineplots -->'
         line: '{{ item }} <img src="{{ item }}" width=100% alt="{{ item }}">'
-        with_items: 
+      with_items:
         - "{{ lineplotoutput.stdout_lines }}"
 
     - name: Copy gcmv_reports.html.j2
@@ -55,5 +55,5 @@
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         insertafter: '<!-- lineplots -->'
         line: '<a href="{{ item }}" target=_blank>"{{ item }}"</a> <a href="{{ item }}" target=_blank><font color=black>Report</font></a>'
-        with_items: 
+      with_items:
         - "{{ lineplotoutput.stdout_lines }}"
