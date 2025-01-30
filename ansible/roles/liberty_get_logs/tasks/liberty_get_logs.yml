@@ -77,3 +77,9 @@
           name: ibm_vbgc
         vars:
           vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers"
+ 
+      - name: Run the IBM verbosegc report logic
+        ansible.builtin.include_role:
+          name: ibm_vbgc_report
+        vars:
+          vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"
