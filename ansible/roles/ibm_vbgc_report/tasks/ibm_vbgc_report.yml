@@ -56,6 +56,8 @@
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         insertafter: '<!-- reports -->'
-        line: '<a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>'
+        line: |
+          <br>
+          <a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>
       with_items:
         - "{{ indexhtmloutput.stdout_lines }}"
