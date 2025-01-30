@@ -51,12 +51,20 @@
         src: gcmv_report.html.j2
         dest: "{{ vbgc_report_dir }}/gcmv_report.html"
 
-    - name: Add line plot/ index.html url
+    - name: Add line plot gcmv_report
       delegate_to: localhost
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         insertafter: '<!-- lineplots -->'
-        line: '<a href="{{ item.0 }}" target=_blank>{{ item.0 }}</a> <a href="{{ item.1 }}" target=_blank><font color=black>Report</font></a>'
-      with_subelements:
+        line: '<a href="{{ item }}" target=_blank>{{ item }}</a> <a href="replace_report_url" target=_blank><font color=black>Report</font></a>'
+      with_items:
         - "{{ lineplotoutput.stdout_lines }}"
+
+    - name: Add line index.html url gcmv_report
+      delegate_to: localhost
+      ansible.builtin.lineinfile:
+        path: "{{ vbgc_report_dir }}/gcmv_report.html"
+        regexp: 'replace_report_url'
+        replace: '{{ item }}'
+      with_items:
         - "{{ indexhtmloutput.stdout_lines }}"
