@@ -55,16 +55,7 @@
       delegate_to: localhost
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
-        insertafter: '<!-- lineplots -->'
-        line: '<a href="{{ item }}" target=_blank>{{ item }}</a> <a href="replace_report_url" target=_blank><font color=black>Report</font></a>'
-      with_items:
-        - "{{ lineplotoutput.stdout_lines }}"
-
-    - name: Add line index.html url gcmv_report
-      delegate_to: localhost
-      ansible.builtin.replace:
-        path: "{{ vbgc_report_dir }}/gcmv_report.html"
-        regexp: 'replace_report_url'
-        replace: '{{ item }}'
+        insertafter: '<!-- reports -->'
+        line: '<a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>'
       with_items:
         - "{{ indexhtmloutput.stdout_lines }}"
