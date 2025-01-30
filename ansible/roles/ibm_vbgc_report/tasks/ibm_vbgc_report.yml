@@ -39,7 +39,7 @@
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_single_report.html"
         insertafter: '<!-- lineplots -->'
-        line: '{{ item }} <img src="{{ item }}" width=100% alt="{{ item }}">'
+        line: '{{ item }}\n <img src="{{ item }}" width=100% alt="{{ item }}">'
       with_items:
         - "{{ lineplotoutput.stdout_lines }}"
 
