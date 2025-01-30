@@ -35,6 +35,7 @@
         dest: "{{ vbgc_report_dir }}/gcmv_single_report.html"
 
     - name: Add line plot/ index.html url
+      delegate_to: localhost
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_single_report.html"
         insertafter: '<!-- lineplots -->'
@@ -49,6 +50,7 @@
         dest: "{{ vbgc_report_dir }}/gcmv_report.html"
 
     - name: Add line plot/ index.html url
+      delegate_to: localhost
       ansible.builtin.lineinfile:
         path: "{{ vbgc_report_dir }}/gcmv_report.html"
         insertafter: '<!-- lineplots -->'
