@@ -7,7 +7,7 @@
   with_items:
     - { 'key': 'tWAS Dmgr' , 'value': '{{ groups.dmgr }}'}
     - { 'key': 'tWAS Server' , 'value': '{{ groups.ts }}'}
-    - { 'key': 'tWAS IHS:' , 'value': '{{ groups.ihs }}'}
+    - { 'key': 'tWAS IHS' , 'value': '{{ groups.ihs }}'}
 
 - name: Add Liberty Server
   delegate_to: localhost
