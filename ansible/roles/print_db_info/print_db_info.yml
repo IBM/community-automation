@@ -5,9 +5,7 @@
     - name: Get the DB container version info
       containers.podman.podman_container_exec:
         name: "{{ svt_db_container_name }}"
-        # command: "su - db2inst1 -c db2level"
-        command: db2level
-        user: db2inst1
+        command: "su - db2inst1 -c db2level"
       register: dbinfo
 
     - name: Create local logs dir
