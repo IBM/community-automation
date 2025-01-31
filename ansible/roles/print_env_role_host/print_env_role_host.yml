@@ -6,7 +6,7 @@
       envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
   with_items:
     - { 'key': 'tWAS Dmgr' , 'value': '{{ groups.dmgr }}'}
-    - { 'key': 'tWAS Server:' , 'value': '{{ groups.ts }}'}
+    - { 'key': 'tWAS Server' , 'value': '{{ groups.ts }}'}
     - { 'key': 'tWAS IHS:' , 'value': '{{ groups.ihs }}'}
 
 - name: Add Liberty Server
@@ -17,7 +17,7 @@
   set_fact:
       envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
   with_items:
-    - { 'key': 'Liberty Server:' , 'value': '{{ groups.ls }}'}
+    - { 'key': 'Liberty Server' , 'value': '{{ groups.ls }}'}
 
 - name: Add Controller
   delegate_to: localhost
