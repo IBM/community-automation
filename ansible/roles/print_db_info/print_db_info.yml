@@ -17,6 +17,6 @@
     - name: Save dbinfo to db_info.json
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ dbinfo.stdout | to_nice_json }}"
+        content: "{{ dbinfo.stdout_lines | to_json(indent=4) }}"
         dest: "{{ logs_dir }}/{{ env_name }}/db_info.json"
         mode: '0444'

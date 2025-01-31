@@ -18,6 +18,6 @@
     - name: Save mqinfo to mq_info.json
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ mqinfo.stdout | to_nice_json }}"
+        content: "{{ mqinfo.stdout_lines | to_json(indent=4) }}"
         dest: "{{ logs_dir }}/{{ env_name }}/mq_info.json"
         mode: '0444'
