@@ -1,0 +1,23 @@
+---
+- name: Print MQ info
+  when: groups.mq is defined
+  block:
+    - name: Get the MQ container version info
+      containers.podman.podman_container_exec:
+        name: "{{ svt_mq_container_name }}"
+        command: "dspmqver"
+      register: mqinfo
+
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}"
+        state: directory
+        mode: '0755'
+
+    - name: Save mqinfo to mq_info.json
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ mqinfo.stdout | to_nice_json }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/mq_info.json"
+        mode: '0444'

@@ -1,0 +1,3 @@
+---
+- name: Print DB container info
+  ansible.builtin.include_tasks: print_db_info.yml
