@@ -7,7 +7,6 @@
   with_items:
     - { 'key': 'tWAS Dmgr' , 'value': '{{ groups.dmgr }}'}
     - { 'key': 'tWAS Server' , 'value': '{{ groups.ts }}'}
-    - { 'key': 'tWAS IHS' , 'value': '{{ groups.ihs }}'}
 
 - name: Add Liberty Server
   delegate_to: localhost
@@ -28,6 +27,15 @@
       envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
   with_items:
     - { 'key': 'Controller' , 'value': '{{ groups.cc }}'}
+
+- name: Add WebServer
+  delegate_to: localhost
+  when: 
+    - groups.ihs is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+        - { 'key': 'webserver' , 'value': '{{ groups.ihs }}'}
 
 - name: Add Stress
   delegate_to: localhost
