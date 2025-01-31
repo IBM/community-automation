@@ -1,0 +1,4 @@
+mq_user: mq_user
+mq_pass: mq_pass
+mq_host: mq_host
+mq_port: mq_port

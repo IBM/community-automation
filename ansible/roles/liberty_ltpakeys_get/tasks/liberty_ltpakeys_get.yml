@@ -1,0 +1,14 @@
+---
+- name: check for the existence ltpa.keys
+  stat:
+   path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
+  register: onprem
+
+- block:
+  - name: fetch controller ltpa.keys
+    fetch:
+      src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
+      dest: /tmp/ltpa.keys
+      flat: yes
+  when: onprem.stat.exists == True
+

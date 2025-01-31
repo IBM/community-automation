@@ -1,8 +1,4 @@
 ---
-### "ansible_architecture": "s390x",
-### "ansible_architecture": "ppc64le",
-### "ansible_architecture": "x86_64",
-### "ansible_architecture": "chrp", --- AIX
 
 - name: Install
   tags: install 
@@ -41,7 +37,7 @@
     failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
   - name:  uninstall liberty and java
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} {{ im_java_package }}"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
     register: uninstallOutput
     failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
     
@@ -55,6 +51,11 @@
       state: absent
     with_items:
     - "{{ install_base }}/{{ liberty_dir }}"
+
+  - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+    ansible.builtin.file:
+      path: "{{ install_base }}/IM/secureStorageFile.store"
+      state: absent
 
   - name:  generate secureStorageFile.store
     shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
@@ -71,7 +72,7 @@
      msg: "{{ installOutput.stdout_lines }}"
 
   - name:  listInstalledPackages
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages"
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
   
   - name: packageOutput
@@ -81,8 +82,26 @@
   - name: copy server.env template to override default wlp_user_dir and wlp_output_dir
     when: ansible_system == 'OS400'
     template:
-     src: server.env.j2
-     dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
+     src: server.env.os400.j2
+     dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
+ 
+  - name: java17+ on distributed
+    when: ansible_system != 'OS400'
+    block:
+    - name: create ~/wlp/etc directory
+      file:
+       path: '{{ item }}'
+       state: directory
+      with_items:
+      - "{{install_base }}/{{ liberty_dir }}/etc"
+      - "{{ wlp_usr_dir }}/shared/apps"
+      - "{{ wlp_usr_dir }}/shared/config"
+      - "{{ wlp_usr_dir }}/shared/resources"
+
+    - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
+      template:
+       src: server.env.j2
+       dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
 
 - name: Versions
   tags: version 

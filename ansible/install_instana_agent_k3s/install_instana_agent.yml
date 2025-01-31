@@ -1,0 +1,4 @@
+---
+- hosts: all
+  roles:
+  - role: instana_agent_install_config_k3s

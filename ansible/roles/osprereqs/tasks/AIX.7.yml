@@ -2,7 +2,7 @@
 ### https://www.ibm.com/support/pages/understanding-aix-virtual-rpm-package-rpmrte
 - name: updtvpkg
   command: 'updtvpkg'
-  become: yes
+  become: true
 - name: check if aixtoolbox is installed
   stat:
    path: /opt/freeware/bin/dnf
@@ -17,18 +17,18 @@
      url: "https://public.dhe.ibm.com/aix/freeSoftware/aixtoolbox/ezinstall/ppc/dnf_aixtoolbox.sh"
      dest: /tmp/aixtoolbox/dnf_aixtoolbox.sh
      validate_certs: false
-    become: yes
+    become: true
   - name: chmod +x dnf_aixtoolbox.sh 
     ansible.builtin.file:
       path: /tmp/aixtoolbox/dnf_aixtoolbox.sh
       owner: root
       mode: '1777'
-    become: yes
+    become: true
   - name: install aixtoolbox 
     command: '/tmp/aixtoolbox/dnf_aixtoolbox.sh -y'
     args:
      chdir: /tmp/aixtoolbox
-    become: yes
+    become: true
   when: istoolbox.stat.exists == False
 - name: add /opt/freeware/bin to the path
   lineinfile:
@@ -36,15 +36,15 @@
     regexp: '/opt/freeware/bin'
     line: 'export PATH=/opt/freeware/bin:$PATH'
     create: true
-  become: yes
+  become: true
 - name: Install the latest version sudo
   ignore_errors: yes
   command: '/opt/freeware/bin/dnf -y install sudo zip unzip less'
-  become: yes
+  become: true
 - name: dnf update all latest
   ignore_errors: yes
   command: '/opt/freeware/bin/dnf -y update'
-  become: yes
+  become: true
 - name: enable full core dump from applications
   command: 'chdev -l sys0 -a fullcore=true'
-  become: yes
+  become: true

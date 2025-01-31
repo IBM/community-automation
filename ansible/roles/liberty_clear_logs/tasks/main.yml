@@ -1,0 +1,3 @@
+---
+- name: Clear the Liberty logs directory
+  ansible.builtin.include_tasks: liberty_clear_logs.yml

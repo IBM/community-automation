@@ -2,13 +2,13 @@
 # specific OS supports wildcards, if preceded with @ its a group
 # if the db is corrupt, this can fix it: rpm --rebuilddb
 - name: dnf update
-  become: yes
+  become: true
   dnf:
    name: '*'
    state: latest
 
 - name: install packages
-  become: yes
+  become: true
   dnf:
    name: "{{ packages }}"
    state: present

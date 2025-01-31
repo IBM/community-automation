@@ -7,4 +7,4 @@
    regexp: "{{ansible_facts['fqdn'] }}"
    line: "{{ ansible_facts['default_ipv4']['address'] }} {{ ansible_facts['fqdn'] }} {{ ansible_facts['hostname'] }}"
    backup: yes
-  become: yes
+  become: true

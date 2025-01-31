@@ -1,0 +1,71 @@
+---
+- name: Check if imcl installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isimcl
+
+- name: Imcl listInstalledPackages
+  when: isimcl.stat.exists
+  block:
+    - name: Imcl listInstalledPackages
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+      register: packageOutput
+
+    - name: PackageOutput
+      ansible.builtin.debug: 
+        msg: "{{ packageOutput.stdout_lines }}"
+
+    - name: Create version dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+
+    - name: Write IM listInstalledPackages to txt file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ packageOutput.stdout }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
+        mode: '0755'
+      when:
+        - logs_dir is defined
+        - env_name is defined
+        - version_txt_file is defined
+
+    - name: Write IM listInstalledPackages to json file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+        mode: '0755'
+      when:
+        - logs_dir is defined
+        - env_name is defined
+        - version_json_file is defined
+
+- name: Check if Liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server" 
+  register: islib
+
+- name: Check if Liberty installed
+  when: islib.stat.exists
+  block:
+    - name: Liberty version
+      ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version" 
+      register: libertyVersionOutput
+
+    - name: LibertyVersionOutput
+      ansible.builtin.debug:
+        msg: "{{ libertyVersionOutput.stdout_lines }}"
+
+    - name: Write liberty version to json file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ libertyVersionOutput.stdout_lines | to_json(indent=4) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/liberty_{{ versioninfo_json_file }}"
+        mode: '0755'
+      when: 
+        - logs_dir is defined
+        - env_name is defined
+        - versioninfo_json_file is defined

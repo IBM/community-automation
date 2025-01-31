@@ -26,7 +26,7 @@ properties(jobProps)
 
 timestamps {
   ansiColor('xterm') {
-    node ( 'kube_pod_slave' ) {
+    node {
 
       //def scmVars = checkout scm
       checkout scm
@@ -34,17 +34,17 @@ timestamps {
         sh """
           set +x # hide sensitive info being echo'd to log
           export ANSIBLE_FORCE_COLOR=true
-	  if [ ${params.agent_os} == 'Unix' ] ; then
+	        if [ ${params.agent_os} == 'Unix' ] ; then
 	          ansible-playbook -i ${params.osnames}, ./ansible/install_instana_agent/install_instana_agent.yml \
-			-e instana_host=${params.instana_host} \
-			-e instana_port=${params.instana_port} \
-			-e agent_key=${params.agent_key} \
-			-e instana_mode='dynamic' \
-			-e instana_runtime=' -j ' \
-			-e instana_zone=${params.instana_zone} \
-			-e custom_agent_url=${params.custom_agent_url}
+            -e instana_host=${params.instana_host} \
+            -e instana_port=${params.instana_port} \
+            -e agent_key=${params.agent_key} \
+            -e instana_mode='dynamic' \
+            -e instana_runtime=' -j ' \
+            -e instana_zone=${params.instana_zone} \
+            -e custom_agent_url=${params.custom_agent_url}
 	  else
-	          ansible-playbook -i ${params.osnames}, ./ansible/install_instana_agent/install_instana_agent.yml \
+      ansible-playbook -i ${params.osnames}, ./ansible/install_instana_agent/install_instana_agent.yml \
 			-e instana_host=${params.instana_host} \
 			-e instana_port=${params.instana_port} \
 			-e agent_key=${params.agent_key} \

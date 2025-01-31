@@ -1,15 +1,34 @@
 ---
 
-- name: copy ihsplugin_gen_propagate.py.j2 template
-  template:
-   src: "ihsplugin_gen_propagate.py.j2"
-   dest: "ihsplugin_gen_propagate.py"
+- name: Set targetappServerName for default
+  ansible.builtin.set_fact:
+    targetappServerName: "{{ appServerName }}"
+  when: profile_type == 'default'
 
-- name: run the ihsplugin_gen_propagate jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
+- name: Set targetappServerName for dmgr
+  ansible.builtin.set_fact:
+    targetappServerName: dmgr
+  when: profile_type == 'dmgr'
+
+- name: Unset windoze comment cuz its not
+  ansible.builtin.set_fact: 
+    comment_out_for_windoze: ''
+  when: ansible_system is not search('CYG')
+- name: Set windoze comment
+  ansible.builtin.set_fact: 
+    comment_out_for_windoze: '#'
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+
+- name: Copy ihsplugin_gen_propagate.py.j2 template
+  ansible.builtin.template:
+    src: "ihsplugin_gen_propagate.py.j2"
+    dest: "ihsplugin_gen_propagate.py"
+
+
+- name: Run the ihsplugin_gen_propagate jython script
+  ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f ihsplugin_gen_propagate.py"
   register: ihsplugin_gen_propagateOutput
   failed_when: ( ihsplugin_gen_propagateOutput.rc not in [ 0, 255 ] )
-- name: ihsplugin_gen_propagateOutput
-  debug:
-   msg: "{{ ihsplugin_gen_propagateOutput.stdout_lines }}"
-   
+- name: Plugin ihsplugin_gen_propagateOutput
+  ansible.builtin.debug:
+    msg: "{{ ihsplugin_gen_propagateOutput.stdout_lines }}"

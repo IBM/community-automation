@@ -1,18 +1,18 @@
 ---
 
 - name: Add authorized keys
-  when: authorized_keys_url is defined 
+  when: authorized_keys_url is defined
   block:
-  - name: authorized_keys root
-    authorized_key:
-     user: root
-     state: present
-     manage_dir: yes
-     key: "{{ authorized_keys_url }}"
-    become: yes
-  - name: authorized_keys user
-    authorized_key:
-     user: "{{ user_username }}"
-     state: present
-     manage_dir: yes
-     key: "{{ authorized_keys_url }}"
+    - name: Authorized_keys root
+      authorized_key:
+        user: root
+        state: present
+        manage_dir: true
+        key: "{{ authorized_keys_url }}"
+      become: true
+    - name: Authorized_keys user
+      authorized_key:
+        user: "{{ user_username }}"
+        state: present
+        manage_dir: true
+        key: "{{ authorized_keys_url }}"

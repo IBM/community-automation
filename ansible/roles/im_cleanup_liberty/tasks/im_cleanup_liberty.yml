@@ -1,72 +1,74 @@
 ---
 
-# blindly try fuser ( linux )
-- name:  blindly try fuser ( linux )
-  ignore_errors: true
-  shell: "fuser -k {{ item }}"
-  register: killOutput
-  failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
-  with_items:
-  - "{{ install_base }}/{{ liberty_dir }}"
-
-- name: check if previous liberty installed
-  stat:
-   path: "{{install_base }}/{{ liberty_dir }}/bin/server"
+- name: Check if previous liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
   register: islib
 
-- name:  stop any running servers
-  ignore_errors: true
-  shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-  register: stopOutput
-  failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-  with_items:
-  - "{{ wl_server }}"
-  - "{{ cc_server }}"
-  when: islib.stat.exists == True
+- name: Uninstall Liberty
+  when:
+    - islib.stat is defined
+    - islib.stat.exists == True
+  block:
+  - name:  Stop any running servers
+    ignore_errors: true
+    ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+    register: stopOutput
+    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+    with_items:
+      - "{{ wl_server }}"
+      - "{{ cc_server }}"
 
-- name:  uninstall liberty 
-  ignore_errors: true
-  shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstallAll"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
+  # blindly try fuser ( linux )
+  - name: Blindly try fuser ( linux )
+    when: ansible_system is not search('CYG')
+    ignore_errors: true
+    ansible.builtin.shell: "fuser -k {{ item }}"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
+    changed_when: false
+    with_items:
+      - "{{ install_base }}/{{ liberty_dir }}"
 
-# windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
-# ansible_user: Administrator
-- name:  uninstall Windoze ibm installation manager
-  ignore_errors: true
-  shell: "~/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system == 'Windows' or 'CYG' in ansible_system
+  # Windoze uninstallAll seems to be hanging, try to flush the hosts brain
+  # - name: Windoze reboot to flush brain
+  #   when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  #   block:
+  #     - name: Restart windoze
+  #       ansible.builtin.shell: 'shutdown /r'
+  #       become: true
+  #     - name: Wait for the reboot and reconnect 
+  #       wait_for:
+  #         port: 22
+  #         host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
+  #         search_regex: OpenSSH
+  #         delay: 60
+  #         timeout: 60
+  #         retries: 10
+  #       connection: local
 
-- name:  uninstall *nix ibm installation manager
-  ignore_errors: true
-  shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system != 'Windows' and 'CYG' not in ansible_system
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
+  - name: Blindly try kill ( windoze )
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    ignore_errors: true
+    ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 123 ] )
+    changed_when: false
+
+  - name: Uninstall liberty and java
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
+    register: uninstallOutput
+    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+
+  - name: UninstallAll output
+    ansible.builtin.debug:
+      msg: "{{ uninstallOutput.stdout_lines }}"
+    when: uninstallOutput.stdout_line is defined
 
 - name: Remove previous liberty dir
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_base }}/{{ liberty_dir }}"
-  - "{{ wlp_usr_dir }}"
-  - "{{ install_base }}/{{ shared_dir }}"
-  - "{{ install_base }}/im_install"
-  - "{{ install_base }}/IM"
-  - "{{ install_base }}/javasharedresources"
-  - "{{ install_base }}/im_liberty.xml"
-  - "~/var/"
-  - "~/etc/"
+    - "{{ install_base }}/{{ liberty_dir }}"
+    - "{{ wlp_usr_dir }}"

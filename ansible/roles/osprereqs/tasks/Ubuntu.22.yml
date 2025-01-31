@@ -1,8 +1,8 @@
 ---
 # specific OS supports wildcards
 - name: remove extraneous packages
-  become: yes
-  ignore_errors: yes
+  become: true
+  ignore_errors: true
   apt:
    name: "{{ packages }}"
    state: absent
@@ -16,20 +16,44 @@
    - "tignervnc"
 
 - name: apt update
-  become: yes
+  become: true
   apt:
    name: '*'
    state: latest
 
 - name: install packages
-  become: yes
+  become: true
   apt:
    name: "{{ packages }}"
    state: present
   vars:
    packages:
-           #   - 'libxtst6'
-           #   - 'libgtk2.0-0'
-           #   - 'libxft2'
    - 'zip'
    - 'unzip'
+
+- name: Install packages tWAS 855x 32bit packages
+  when: 
+    - twas855x|bool 
+    - ansible_architecture == 'x86_64'
+  become: true
+  command: dpkg --add-architecture i386
+
+- name: dpkg --add-architecture i386 tWAS 855x 32bit packages
+  when: 
+    - twas855x|bool 
+    - ansible_architecture == 'x86_64'
+  become: true
+  apt:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - libxtst6
+   - libgtk2.0-0
+   - libc6:i386
+   - libgcc1:i386
+   - libgtk2.0-0:i386
+   - libstdc++6:i386
+   - libxft2
+   - libxft2:i386
+   - libxtst6:i386

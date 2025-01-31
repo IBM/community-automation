@@ -1,0 +1,13 @@
+---
+- name: Any logs?
+  ansible.builtin.stat:
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+  register: islogs
+
+- name: Remove Liberty logs dir
+  when:
+    - islogs.stat is defined
+    - islogs.stat.exists
+  ansible.builtin.file:
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+    state: absent

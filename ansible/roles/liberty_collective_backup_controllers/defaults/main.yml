@@ -1,0 +1,4 @@
+---
+min_heap: '256m'
+max_heap: '1024m'
+controller_role: backup

@@ -1,0 +1,17 @@
+---
+- name: Set windoze http facts
+  ansible.builtin.set_fact:
+    cygwin: 'c:/cygwin64'
+    ext: '.bat'
+    win_bit: 'arch.32bit'
+    dll_bits: '64bits'
+  when:
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
+
+- name: Set windoze http tWAS 855x facts
+  ansible.builtin.set_fact:
+    mod_was: 'ap22'
+    dll_bits: '32bits'
+  when:
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
+    - twas_release == 'WAS855'

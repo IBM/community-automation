@@ -1,0 +1,3 @@
+---
+- name: Clear liberty javacore and heapdumps
+  include_tasks: liberty_clear_dumps.yml
