@@ -45,6 +45,12 @@
 - name: Display the Dictionary
   debug: var=envroles
 
+- name: Create local logs dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}"
+    state: directory
+
 - name: 
   ansible.builtin.copy:
     content: "{{ envroles | to_nice_json }}"
