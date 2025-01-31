@@ -1,21 +1,5 @@
 ---
-- name: Create and Add items to dictionary Liberty
-  delegate_to: localhost
-  when: env_name is not search('tWAS')
-  set_fact:
-      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
-  with_items:
-    - { 'key': 'Liberty Server:' , 'value': '{{ groups.ls }}'}
-
-- name: Add Controller item to dictionary if defined
-  delegate_to: localhost
-  when: groups.cc is defined
-  set_fact:
-      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
-  with_items:
-    - { 'key': 'Controller' , 'value': '{{ groups.cc }}'}
-
-- name: Create and Add items to dictionary tWAS
+- name: Add tWAS
   delegate_to: localhost
   when: env_name is search('tWAS')
   set_fact:
@@ -25,17 +9,52 @@
     - { 'key': 'tWAS Server:' , 'value': '{{ groups.ts }}'}
     - { 'key': 'tWAS IHS:' , 'value': '{{ groups.ihs }}'}
 
-- name: Add items to dictionary common
+- name: Add Liberty Server
+  delegate_to: localhost
+  when: 
+    - env_name is not search('tWAS')
+    - groups.ls is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Liberty Server:' , 'value': '{{ groups.ls }}'}
+
+- name: Add Controller
+  delegate_to: localhost
+  when: 
+    - env_name is not search('tWAS')
+    - groups.cc is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Controller' , 'value': '{{ groups.cc }}'}
+
+- name: Add Stress
+  delegate_to: localhost
+  when: 
+    - groups.stress is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'stress' , 'value': '{{ groups.stress }}'}
+
+- name: Add database
+  delegate_to: localhost
+  when: 
+    - groups.db is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'database' , 'value': '{{ groups.db }}'}
+
+- name: Add email
   delegate_to: localhost
   set_fact:
       envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
   with_items:
     - { 'key': 'email' , 'value': '{{ env_owner }}'}
-    - { 'key': 'database' , 'value': '{{ groups.db }}'}
-    - { 'key': 'stress' , 'value': '{{ groups.stress }}'}
 
-
-- name: Add mq item to dictionary if defined
+- name: Add mq
   when: groups.mq is defined
   set_fact:
       envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
