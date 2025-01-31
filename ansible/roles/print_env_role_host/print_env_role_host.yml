@@ -81,6 +81,6 @@
 - name: 
   ansible.builtin.copy:
     content: "{{ envroles | to_nice_json }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ env_name }}.json"
+    dest: "{{ logs_dir }}/{{ env_name }}/env_role_host.json"
     mode: '0444'
   delegate_to: localhost
