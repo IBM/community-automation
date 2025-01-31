@@ -1,0 +1,53 @@
+---
+- name: Create and Add items to dictionary Liberty
+  delegate_to: localhost
+  when: env_name is not search('tWAS')
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Liberty Server:' , 'value': '{{ groups.ls }}'}
+
+- name: Add Controller item to dictionary if defined
+  delegate_to: localhost
+  when: groups.cc is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Controller' , 'value': '{{ groups.cc }}'}
+
+- name: Create and Add items to dictionary tWAS
+  delegate_to: localhost
+  when: env_name is search('tWAS')
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'tWAS Dmgr' , 'value': '{{ groups.dmgr }}'}
+    - { 'key': 'tWAS Server:' , 'value': '{{ groups.ts }}'}
+    - { 'key': 'tWAS IHS:' , 'value': '{{ groups.ihs }}'}
+
+- name: Add items to dictionary common
+  delegate_to: localhost
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'email' , 'value': '{{ env_owner }}'}
+    - { 'key': 'database' , 'value': '{{ groups.db }}'}
+    - { 'key': 'stress' , 'value': '{{ groups.stress }}'}
+
+
+- name: Add mq item to dictionary if defined
+  when: groups.mq is defined
+  set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'mq' , 'value': '{{ groups.mq }}'}
+
+- name: Display the Dictionary
+  debug: var=envroles
+
+- name: 
+  ansible.builtin.copy:
+    content: "{{ envroles | to_nice_json }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ env_name }}.json"
+    mode: '0444'
+  delegate_to: localhost

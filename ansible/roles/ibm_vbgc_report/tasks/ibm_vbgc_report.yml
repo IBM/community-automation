@@ -62,6 +62,9 @@
     # ./nest-cc-1.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:1
     # ./nest-cc-3.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:0
     # ./nest-cc-2.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:0
+
+    # some ideas
+    # debug: msg="{{ ansible_hostname | regex_replace('^ip-', '') }}"
     - name: Add line plot gcmv_report
       delegate_to: localhost
       ansible.builtin.lineinfile:
