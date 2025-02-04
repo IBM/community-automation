@@ -17,7 +17,7 @@
     - name: Stop the application servers
       ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer{{ ext }} {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
       register: stopDefaultOutput
-      failed_when: ( stopDefaultOutput.rc not in [ 0,246,255 ] )
+      failed_when: ( stopDefaultOutput.rc not in [ 0,246 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
 
     - name: stopDefaultOutput
@@ -28,3 +28,12 @@
         label: "{{ item.stdout }}"
       failed_when: 
       - '" Error " in item.stdout'
+  rescue:
+    - ansible.builtin.include_role:
+        name: linux_kill_process
+      vars:
+        linux_kill_process: {{ linux_kill_process }}
+      when: stopDefaultOutput.rc == 255
+
+
+      
