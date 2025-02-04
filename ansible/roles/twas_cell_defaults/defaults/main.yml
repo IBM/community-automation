@@ -44,3 +44,4 @@ im_appclient_package:
 im_twas_java_package: 'com.ibm.java.jdk.v8'
 
 verboseGC: true
+linux_process_to_kill: 'java'
