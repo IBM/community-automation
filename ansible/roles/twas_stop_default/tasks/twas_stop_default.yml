@@ -32,7 +32,7 @@
     - ansible.builtin.include_role:
         name: linux_kill_process
       vars:
-        linux_kill_process: {{ linux_kill_process }}
+        linux_kill_process: "{{ linux_kill_process }}"
       when: stopDefaultOutput.rc == 255
 
 
