@@ -13,6 +13,7 @@
       ansible.builtin.file:
         path: "{{ logs_dir }}/{{ env_name }}"
         state: directory
+        mode: '0755'
 
     - name: Save dbinfo to db_info.json
       delegate_to: localhost
