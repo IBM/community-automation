@@ -5,6 +5,9 @@ set -x
 export DISPLAY=:1
 IBM_GCMV=$@
 
+ls -l /home/nest/gcmv/gcmv
+
+echo "IBM_GCMV=$IBM_GCMV"
 find . -name verbosegc* > vbgcfiles.txt
 while read line
 do
