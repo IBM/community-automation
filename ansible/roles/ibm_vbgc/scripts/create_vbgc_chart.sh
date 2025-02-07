@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 set -x
 export DISPLAY=:1
 IBM_GCMV=$@
 
-echo "IBM_GCMV=$IBM_GCMV" > IBM_GCMV.location
 find . -name verbosegc* > vbgcfiles.txt
 while read line
 do
