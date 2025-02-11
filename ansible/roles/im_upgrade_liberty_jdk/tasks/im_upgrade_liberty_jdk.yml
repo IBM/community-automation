@@ -23,17 +23,27 @@
         failed_when: not isimcl.stat.exists
 
       - name: Generate secureStorageFile.store
-        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+        ansible.builtin.shell: "{{ cygwin }}/{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ cygwin }}/{{ install_base }}/IM/secureStorageFile.store"
+        register: saveCredentialOutput
+
+      - name: saveCredentialOutput
+        ansible.builtin.debug:
+          msg: "{{ saveCredentialOutput.stdout_lines }}"
 
       - name: Generate external ibm secureStorageFile.store
-        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+        ansible.builtin.shell: "{{ cygwin }}/{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile{{ cygwin }}/ {{ install_base }}/IM/secureStorageFile.store"
+        register: saveCredentialOutput
+
+      - name: saveCredentialOutput
+        ansible.builtin.debug:
+          msg: "{{ saveCredentialOutput.stdout_lines }}"
 
       - name: Upgrade liberty jdk
         ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_jdk_package }}{{ im_java_short_version }} \
           -repositories https://www.ibm.com/software/repositorymanager/{{ im_liberty_jdk_package }}{{ im_java_short_version }} \
-          -installationDirectory {{ install_base }}/{{ liberty_dir }} \
-          -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store \
-          -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ install_base }}/{{ shared_dir }}"
+          -installationDirectory {{ cygwin }}/{{ install_base }}/{{ liberty_dir }} \
+          -acceptLicense -secureStorageFile {{ cygwin }}/{{ install_base }}/IM/secureStorageFile.store \
+          -preferences com.ibm.cic.common.core.preferences.eclipseCache={{ cygwin }}/{{ install_base }}/{{ shared_dir }}"
         register: UpgradeOutput
 
       - name: UpgradeOutput

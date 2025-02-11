@@ -38,7 +38,8 @@
 
       - name: Generate external ibm secureStorageFile.store
         ansible.builtin.shell: "{{ cygwin }}/{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ cygwin }}/{{ install_base }}/IM/secureStorageFile.store"
-
+        register: saveCredentialOutput
+        
       - name: saveCredentialOutput
         ansible.builtin.debug:
           msg: "{{ saveCredentialOutput.stdout_lines }}"
