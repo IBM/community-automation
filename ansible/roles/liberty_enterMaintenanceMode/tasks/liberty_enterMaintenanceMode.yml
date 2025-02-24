@@ -41,7 +41,7 @@
         --user={{ liberty_admin_user }} \
         --password={{ liberty_admin_pass }} \
         --hostName={{ ansible_fqdn }} \
-        --usrDir={{ wlp_usr_dir }} \
+        --usrDir={{ cygwin }}{{ wlp_usr_dir }} \
         --server={{ wl_server }} \
         --autoAcceptCertificates \
         --break \
