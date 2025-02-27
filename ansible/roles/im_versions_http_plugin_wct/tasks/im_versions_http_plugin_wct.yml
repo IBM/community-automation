@@ -134,7 +134,7 @@
 - name: Write Plugin versionInfo to txt file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ PluginVersionOutput.stdout_lines | to_json(indent=4) }}"
+    content: "{{ PluginVersionOutput.stdout_lines }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plugin_versionInfo.txt"
     mode: '0755'
   when: 
@@ -182,7 +182,7 @@
 - name: Write WCT versionInfo to txt file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ WCTVersionOutput.stdout_lines | to_json(indent=4) }}"
+    content: "{{ WCTVersionOutput.stdout_lines }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_versionInfo.txt"
     mode: '0755'
   when: 

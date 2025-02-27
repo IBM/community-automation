@@ -67,7 +67,7 @@
   - name: Write tWAS versionInfo to txt file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ twasVersionOutput.stdout_lines | to_json(indent=4) }}"
+      content: "{{ twasVersionOutput.stdout_lines }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt"
       mode: '0755'
     when: 
@@ -137,7 +137,7 @@
   - name: Write AppClient versionInfo to txt file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ appVersionOutput.stdout_lines | to_json(indent=4) }}"
+      content: "{{ appVersionOutput.stdout_lines }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/appclient_versionInfo.txt"
       mode: '0755'
     when: 
