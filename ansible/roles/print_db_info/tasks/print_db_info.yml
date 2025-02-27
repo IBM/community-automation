@@ -41,8 +41,8 @@
 
         - name: Find the db version from the db2ls file
           ansible.builtin.set_fact:
-            db_version: "{{ db_version_output.stdout }}" # ?? some tricky regex
-            db_fixpack: "{{ db_fixpack_output.stdout }}" # ?? some tricky regex
+            db_Version: "{{ db_version_output.stdout }}" # ?? some tricky regex
+            db_Fixpack: "{{ db_fixpack_output.stdout }}" # ?? some tricky regex
 
     - name: Default the db version db2ls file not found
       when: not isdb2ls.stat.exists

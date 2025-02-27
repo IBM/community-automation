@@ -28,9 +28,9 @@
     # temp hard code info ?? some tricky regex
     - name: Find the db version from the db2ls file
       ansible.builtin.set_fact:
-        mq_name: "IBM MQ"
-        mq_version: "IBM MQ"
-        mq_level: "p941-001-241129"
+        mq_Name: "IBM MQ"
+        mq_Version: "IBM MQ"
+        mq_Level: "p941-001-241129"
         mq_BuildType: "IKAP - (Production)"
         mq_Platform: "IBM MQ for Linux (x86-64 platform)"
         mq_Mode: "64-bit"
