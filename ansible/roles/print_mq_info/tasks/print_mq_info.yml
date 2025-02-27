@@ -8,6 +8,43 @@
         command: "dspmqver"
       register: mqinfo
 
+  #   "Name:        IBM MQ",
+  #   "Version:     9.4.1.1",
+  #   "Level:       p941-001-241129",
+  #   "BuildType:   IKAP - (Production)",
+  #   "Platform:    IBM MQ for Linux (x86-64 platform)",
+  #   "Mode:        64-bit",
+  #   "O/S:         Linux 5.14.0-503.26.1.el9_5.x86_64",
+  #   "O/S Details: Red Hat Enterprise Linux 9.5 (Plow)",
+  #   "InstName:    Installation1",
+  #   "InstDesc:    IBM MQ V9.4.1.1 (Unzipped)",
+  #   "Primary:     N/A",
+  #   "InstPath:    /opt/mqm",
+  #   "DataPath:    /mnt/mqm/data",
+  #   "MaxCmdLevel: 941",
+  #   "LicenseType: Developer",
+  #   "ReleaseType: Continuous Delivery (CD)"
+
+    # temp hard code info ?? some tricky regex
+    - name: Find the db version from the db2ls file
+      ansible.builtin.set_fact:
+        mq_name: "IBM MQ"
+        mq_version: "IBM MQ"
+        mq_level: "p941-001-241129"
+        mq_BuildType: "IKAP - (Production)"
+        mq_Platform: "IBM MQ for Linux (x86-64 platform)"
+        mq_Mode: "64-bit"
+        mq_os: "Linux 5.14.0-503.26.1.el9_5.x86_64"
+        mq_osDetails: "Red Hat Enterprise Linux 9.5 (Plow)"
+        mq_InstName: "Installation1"
+        mq_InstDesc: "IBM MQ V9.4.1.1 (Unzipped)"
+        mq_Primary: "N/A"
+        mq_InstPath: "/opt/mqm"
+        mq_DataPath: "/mnt/mqm/data"
+        mq_MaxCmdLevel: "941"
+        mq_LicenseType: "Developer"
+        mq_ReleaseType: "Continuous Delivery (CD)"
+
     - name: Create local logs dir
       delegate_to: localhost
       ansible.builtin.file:
@@ -17,7 +54,7 @@
 
     - name: Save mqinfo to mq_info.json
       delegate_to: localhost
-      ansible.builtin.copy:
-        content: "{{ mqinfo.stdout_lines | to_json(indent=4) }}"
+      ansible.builtin.template:
+        src: mq_info.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/mq_info.json"
         mode: '0444'
