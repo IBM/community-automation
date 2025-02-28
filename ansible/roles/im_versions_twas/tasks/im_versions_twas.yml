@@ -76,9 +76,11 @@
 
   # replace this clunky with some cool regex
   - name: Get the Name from the file ( need to regex it )
+    delegate_to: localhost
     shell: "grep -m 1 'Name' {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt | awk -F ':' '{print $2}'"
     register: twas_Name_ouput
   - name: Get the Version from the file ( need to regex it )
+    delegate_to: localhost
     shell: "grep -m 3 'Version' v.txt|tail -1 {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt | awk -F ':' '{print $2}'"
     register: twas_Version_ouput
   # todo more
