@@ -37,7 +37,7 @@
 
         - name: Get the fixpack from the file ( need to regex it )
           shell: "grep -v '#' {{ logs_dir }}/{{ env_name }}/db2ls.info | awk -F ':' '{print $3}'"
-          register: db_version_output
+          register: db_fixpack_output
 
         - name: Find the db version from the db2ls file
           ansible.builtin.set_fact:
