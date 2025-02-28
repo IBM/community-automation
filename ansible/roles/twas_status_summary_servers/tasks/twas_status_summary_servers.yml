@@ -1,7 +1,7 @@
 ---
 
 - name: Summary of tWAS server status
-  ansible.builtin.shell: 
+  ansible.builtin.shell:
     cmd: |
       set -o pipefail
       {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
@@ -25,7 +25,7 @@
     content: "{{ twasstatus.stdout_lines | to_json(indent=4) }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
     mode: '0755'
-  when: 
+  when:
     - logs_dir is defined
     - env_name is defined
     - status_json_file is defined

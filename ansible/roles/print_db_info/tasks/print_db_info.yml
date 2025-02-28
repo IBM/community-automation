@@ -47,8 +47,8 @@
     - name: Default the db version db2ls file not found
       when: not isdb2ls.stat.exists
       ansible.builtin.set_fact:
-        db_version: "V12.1.1.0"
-        db_fixpack: "0"
+        db_Version: "V12.1.1.0"
+        db_Fixpack: "0"
 
     - name: Create local logs dir
       delegate_to: localhost
