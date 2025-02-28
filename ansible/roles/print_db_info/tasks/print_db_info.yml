@@ -32,10 +32,12 @@
 
         # replace this clunky with some cool regex
         - name: Get the version from the file ( need to regex it )
+          delegate_to: localhost
           shell: "grep -v '#' {{ logs_dir }}/{{ env_name }}/db2ls.info | awk -F ':' '{print $2}'"
           register: db_version_output
 
         - name: Get the fixpack from the file ( need to regex it )
+          delegate_to: localhost
           shell: "grep -v '#' {{ logs_dir }}/{{ env_name }}/db2ls.info | awk -F ':' '{print $3}'"
           register: db_fixpack_output
 
@@ -46,11 +48,13 @@
               - "{{ db_fixpack_output }}"
 
         - name: Set the DB version / fixpack facts
+          delegate_to: localhost
           ansible.builtin.set_fact:
             db_Version: "{{ db_version_output.stdout }}" # ?? some tricky regex
             db_Fixpack: "{{ db_fixpack_output.stdout }}" # ?? some tricky regex
 
     - name: Default the db version db2ls file not found
+      delegate_to: localhost
       when: not isdb2ls.stat.exists
       ansible.builtin.set_fact:
         db_Version: "V12.1.1.0"
