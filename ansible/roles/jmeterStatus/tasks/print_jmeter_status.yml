@@ -1,0 +1,28 @@
+---
+- name: Print Jmeter status 
+  when: groups.stress is defined
+  block:
+    # if the db container is not running this will not work
+    # this is a new script thus many of the stress engines do not have it
+    # ignore error
+    #
+    - name: Get the Jmeter container status 
+      ignore_errors: true
+      containers.podman.podman_container_exec:
+        name: "{{ svt_jmeter_container_name }}"
+        command: "jmeter_json_payload.sh"
+      register: jmeterStatus
+
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}"
+        state: directory
+        mode: '0755'
+
+    - name: Save Jmeter status to stress_status.json
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ jmeterStatus.stdout }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/stress_status.json"
+        mode: '0444'
