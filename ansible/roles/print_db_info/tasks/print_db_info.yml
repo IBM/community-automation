@@ -26,7 +26,7 @@
             src: ~/dbdir/backup/db2ls.info
             dest: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
             flat: yes
-            register: db2ls
+          register: db2ls
         - name: Print out the content
           ansible.builtin.debug:
             msg: "{{db2ls}}"
