@@ -26,11 +26,6 @@
             src: ~/dbdir/backup/db2ls.info
             dest: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
             flat: yes
-          register: db2ls
-        - name: Print out the content
-          ansible.builtin.debug:
-            msg: "{{db2ls}}"
-
         # #PATH:VRMF:FIXPACK:SPECIAL:INSTALLTIME:INSTALLERUID 
         # /opt/ibm/db2/V12.1:12.1.1.0:0 ::Tue Feb  4 22:54:29 2025 UTC :0 
 
