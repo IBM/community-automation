@@ -3,17 +3,18 @@
   when: ansible_system is not search('CYG')
   block:
     # logic below to force kill linux  process
-    - name: Get running processes list from remote host 
+    - name: Get running processes list from remote host
       ignore_errors: true
-      shell: "ps -few | grep {{ linux_process_to_kill }} | awk '{print $2}'"
+      ansible.builtin.shell: "ps -few | grep {{ linux_process_to_kill }} | awk '{print $2}'"
       register: running_processes
 
     - name: Kill running processes
       ignore_errors: true
-      shell: "kill {{ item }}"
+      ansible.builtin.shell: "kill {{ item }}"
       with_items: "{{ running_processes.stdout_lines }}"
 
-    - wait_for:
+    - name: Kill wait_for
+      ansible.builtin.wait_for:
       path: "/proc/{{ item }}/status"
       state: absent
       timeout: 60
@@ -23,5 +24,5 @@
 
     - name: Force kill stuck processes
       ignore_errors: true
-      shell: "kill -9 {{ item }}"
+      ansible.builtin.shell: "kill -9 {{ item }}"
       with_items: "{{ WsServer_processes.results | select('failed') | map(attribute='item') | list }}"
