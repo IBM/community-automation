@@ -7,10 +7,6 @@
         name: "{{ svt_mq_container_name }}"
         command: "dspmqver"
       register: mqinfo
-    - name: Print out mqinfo 
-      ansible.builtin.debug:
-        msg: "{{mqinfo.stdout_lines}}"
-
   #   "Name:        IBM MQ",
   #   "Version:     9.4.1.1",
   #   "Level:       p941-001-241129",
