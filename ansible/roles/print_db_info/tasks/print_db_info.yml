@@ -19,7 +19,7 @@
       register: isdb2ls
 
     - name: Block for db2ls.info
-      when: isdb2ls.stat.exists
+      when: (isdb2ls.stat.exists and isdb2ls.stat.size != 0)
       block:
         - name: Fetch the dbdir/backup/db2ls.info
           fetch:
