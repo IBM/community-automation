@@ -7,6 +7,9 @@
         name: "{{ svt_mq_container_name }}"
         command: "dspmqver"
       register: mqinfo
+    - name: Print out mqinfo 
+      ansible.builtin.debug:
+        msg: "{{mqinfo}}"
 
   #   "Name:        IBM MQ",
   #   "Version:     9.4.1.1",
@@ -28,22 +31,22 @@
     # temp hard code info ?? some tricky regex
     - name: Find the db version from the db2ls file
       ansible.builtin.set_fact:
-        mq_Name: "IBM MQ"
-        mq_Version: "IBM MQ"
-        mq_Level: "p941-001-241129"
-        mq_BuildType: "IKAP - (Production)"
-        mq_Platform: "IBM MQ for Linux (x86-64 platform)"
-        mq_Mode: "64-bit"
-        mq_os: "Linux 5.14.0-503.26.1.el9_5.x86_64"
-        mq_osDetails: "Red Hat Enterprise Linux 9.5 (Plow)"
-        mq_InstName: "Installation1"
-        mq_InstDesc: "IBM MQ V9.4.1.1 (Unzipped)"
-        mq_Primary: "N/A"
-        mq_InstPath: "/opt/mqm"
-        mq_DataPath: "/mnt/mqm/data"
-        mq_MaxCmdLevel: "941"
-        mq_LicenseType: "Developer"
-        mq_ReleaseType: "Continuous Delivery (CD)"
+        mq_Name: "{{content[0] | trim}}"
+        mq_Version: "{{content[1] | trim}}"
+        mq_Level: "{{content[2] | trim}}"
+        mq_BuildType: "{{content[3] | trim}}"
+        mq_Platform: "{{content[4] | trim}}"
+        mq_Mode: "{{content[5] | trim}}"
+        mq_os: "{{content[6] | trim}}"
+        mq_osDetails: "{{content[7] | trim}}"
+        mq_InstName: "{{content[8] | trim}}"
+        mq_InstDesc: "{{content[9] | trim}}"
+        mq_Primary: "{{content[10] | trim}}"
+        mq_InstPath: "{{content[11] | trim}}"
+        mq_DataPath: "{{content[12] | trim}}"
+        mq_MaxCmdLevel: "{{content[13] | trim}}"
+        mq_LicenseType: "{{content[14] | trim}}"
+        mq_ReleaseType: "{{content[15] | trim}}"
 
     - name: Create local logs dir
       delegate_to: localhost
