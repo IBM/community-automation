@@ -31,7 +31,7 @@
     # temp hard code info ?? some tricky regex
     - name: Do some regex
       ansible.builtin.set_fact:
-        content: "{{ mqinfo.stdout_lines | regex_findall('(?<=:)[^\"]+', multiline=True)}}"
+        content: "{{ mqinfo.stdout_lines | regex_search('(?<=:)[^\"]+', multiline=True)}}"
     - name: Print out content
       debug:
         msg: "{{content}}"
