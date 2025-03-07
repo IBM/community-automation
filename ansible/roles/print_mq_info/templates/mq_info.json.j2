@@ -1,6 +1,6 @@
 {
-    "hostname": "{{ ansible_fqdn }}",
-    "container_name": "{{ container_name }}",
+    "hostname": "{{ inventory_hostname }}",
+    "container_name": "{{ svt_mq_container_name }}",
     "Name": "{{ mq_Name }}",
     "Version": "{{ mq_Version }}",
     "Level": "{{ mq_Level }}",
