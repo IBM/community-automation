@@ -7,7 +7,7 @@ Make sure docker or podman(RHEL 8) is installed and running on your workstation
 **NOTES:**
 
 - You may need to do a **docker logout** before you begin.
-- default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
+- default ssh keys are coming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
 **Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
 
@@ -72,7 +72,7 @@ EXAMPLE:
 
 **NOTE:** This only need to be run once.
 
-From the repo home folder "community-autommation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
+From the repo home folder "community-automation", run the following command which will setup your person installer client with all of hte necessary prereqs to run playbooks. [README](https://github.com/IBM/community-automation/tree/master/scripts/common)  
 
 ```
 # cd community-automation
