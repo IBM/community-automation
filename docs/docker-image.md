@@ -9,7 +9,7 @@ Make sure docker or podman(RHEL 8) is installed and running on your workstation
 - You may need to do a **docker logout** before you begin.
 - default ssh keys are comming from your ~/.ssh/id_rsa and ~/.ssh/id_rsa.pub
 
-**Tested on MAC (big sur), Ubunutu 16.04,18.04,20.04, and RHEL 7/8**
+**Tested on MAC (big sur), Ubuntu 16.04,18.04,20.04, and RHEL 7/8**
 
 ## MAC, Ubuntu, and RHEL 7 users
 
