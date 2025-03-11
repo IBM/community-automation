@@ -40,6 +40,8 @@
     state: "{{ jmeter_state }}" # started created absent stopped present
     restart: yes
     timezone: '{{ jmeter_tz }}'
+    env:
+    - SCRIPT_ID: '{{ jmeter_script_id }}'
     volume:
     - '/home/{{ ansible_user }}/jmeter.log:/jmeter/jmeter.log'
     - '/home/{{ ansible_user }}/jmeter.error:/jmeter/jmeter.error'

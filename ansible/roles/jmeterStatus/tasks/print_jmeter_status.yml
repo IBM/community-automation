@@ -1,12 +1,12 @@
 ---
-- name: Print Jmeter status 
+- name: Print Jmeter status
   when: groups.stress is defined
   block:
     # if the db container is not running this will not work
     # this is a new script thus many of the stress engines do not have it
     # ignore error
     #
-    - name: Get the Jmeter container status 
+    - name: Get the Jmeter container status
       ignore_errors: true
       containers.podman.podman_container_exec:
         name: "{{ svt_jmeter_container_name }}"
@@ -20,7 +20,32 @@
         state: directory
         mode: '0755'
 
+    # Support multiple stress enginges, check for file.  If it exists, read it and combine
+    - name: Check if stress_status.json has data
+      delegate_to: localhost
+      stat:
+        path: "{{ logs_dir }}/{{ env_name }}/stress_status.json"
+      register: isstatus
+
+    - name: Read in previous stress_status.json to combine
+      when: isstatus.stat.exists
+      block:
+        - name: Read the contents of a file
+          delegate_to: localhost
+          ansible.builtin.file:
+            path: "{{ logs_dir }}/{{ env_name }}/stress_status.json"
+            state: present
+          register: status_contents
+
+        - name: Save Jmeter status to stress_status.json ( combined )
+          delegate_to: localhost
+          ansible.builtin.copy:
+            content: "{{ jmeterStatus.stdout }} | ansible.builtin.combine ( {{ status_contents.contents}} )"
+            dest: "{{ logs_dir }}/{{ env_name }}/stress_status.json"
+            mode: '0444'
+
     - name: Save Jmeter status to stress_status.json
+      when: not isstatus.stat.exists
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ jmeterStatus.stdout }}"
