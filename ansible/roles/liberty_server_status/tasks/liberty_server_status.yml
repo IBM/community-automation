@@ -13,11 +13,11 @@
 
 - name: Server status output
   ansible.builtin.debug:
-    msg: '{{ cmdOutput1.stdout_lines }}'
+    msg: '{{ cmdOutput1.stdout | trim }}'
 
 - name: Set status facts
   ansible.builtin.set_fact:
-    server_status: '{{ cmdOutput1.stdout }}'
+    server_status: '{{ cmdOutput1.stdout | trim }}'
 
 - name: Create status dir
   delegate_to: localhost
