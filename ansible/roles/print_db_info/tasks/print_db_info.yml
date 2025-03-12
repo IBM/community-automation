@@ -14,7 +14,7 @@
 
     # the db2ls.info file is new, and prob not on all the target dbs yet
     - name: Check if dbdir/backup/db2ls.info exists
-      stat:
+      ansible.builtin.stat:
         path: dbdir/backup/db2ls.info
       register: isdb2ls
 
@@ -22,7 +22,7 @@
       when: (isdb2ls.stat.exists and isdb2ls.stat.size != 0)
       block:
         - name: Fetch the dbdir/backup/db2ls.info
-          fetch:
+          ansible.builtin.fetch:
             src: ~/dbdir/backup/db2ls.info
             dest: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
             flat: yes
@@ -62,7 +62,7 @@
     # Support multiple stress enginges, check for file.  If it exists, read it and combine
     - name: Check if db_info exists
       delegate_to: localhost
-      stat:
+      ansible.builtin.stat:
         path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
       register: isinfo
 
@@ -78,7 +78,7 @@
           delegate_to: localhost
           ansible.builtin.template:
             src: db_info.json.j2
-            dest: "{{ logs_dir }}/{{ env_name }}/{ db_info_json_file }}.temp.json"
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json"
             mode: '0444'
 
         - name: Read the current dbinfo temp json
