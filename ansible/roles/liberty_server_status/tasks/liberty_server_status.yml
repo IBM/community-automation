@@ -7,7 +7,7 @@
 
 - name: Check server status
   ansible.builtin.command:
-    ansible.builtin.cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+    cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
   register: cmdOutput1
   failed_when: ( cmdOutput1.rc not in [ 0, 1, 2 ] )
 
