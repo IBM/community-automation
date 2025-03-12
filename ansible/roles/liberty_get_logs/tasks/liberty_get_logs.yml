@@ -70,7 +70,7 @@
       msg: "{{ verboseGC }}"
 
   - name: Verbose GC log processing
-    when: verboseGC
+    when: verboseGC|bool
     block: 
       - name: Run the IBM verbosegc logic
         ansible.builtin.include_role:

@@ -74,11 +74,6 @@
           ansible.builtin.set_fact:
             prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
             
-        - name: Read the contents previous db_info
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
-
         - name: Save dbinfo to temp json
           delegate_to: localhost
           ansible.builtin.template:
