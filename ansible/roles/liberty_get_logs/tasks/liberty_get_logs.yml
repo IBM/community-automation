@@ -53,7 +53,7 @@
   - name: List the contents of the logs zip file output ( debug )
     debug:
       msg: "{{ zipcontents.stdout_lines }}"
-      
+
   - name: Remove logs.zip
     delegate_to: localhost
     ansible.builtin.file:
@@ -66,7 +66,7 @@
 
   - name: Is verboseGC set?
     when: verboseGC is defined
-    debug:
+    ansible.builtin.debug:
       msg: "{{ verboseGC }}"
 
   - name: Verbose GC log processing
@@ -77,7 +77,7 @@
           name: ibm_vbgc
         vars:
           vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers"
- 
+
       - name: Run the IBM verbosegc report logic
         run_once: true
         ansible.builtin.include_role:
