@@ -63,7 +63,7 @@
     - name: Check if db_info exists
       delegate_to: localhost
       stat:
-        path: "{{ logs_dir }}/{{ env_name }}/db_info.json"
+        path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
       register: isinfo
 
     - name: Read in previous stress_status to combine
@@ -72,31 +72,36 @@
         - name: Read the contents previous db_info
           delegate_to: localhost
           ansible.builtin.set_fact:
-            prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/db_info.json') | from_json }}"
+            prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
             
+        - name: Read the contents previous db_info
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
+
         - name: Save dbinfo to temp json
           delegate_to: localhost
           ansible.builtin.template:
             src: db_info.json.j2
-            dest: "{{ logs_dir }}/{{ env_name }}/db_info.temp.json"
+            dest: "{{ logs_dir }}/{{ env_name }}/{ db_info_json_file }}.temp.json"
             mode: '0444'
 
         - name: Read the current dbinfo temp son
           delegate_to: localhost
           ansible.builtin.set_fact:
-            current_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/db_info.temp.json') | from_json }}"
+            current_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json') | from_json }}"
 
         - name: Save db_info ( combined )
           delegate_to: localhost
           ansible.builtin.copy:
             content: "{{ current_info | ansible.builtin.combine(prev_info) }}"
-            dest: "{{ logs_dir }}/{{ env_name }}/db_info.json"
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
             mode: '0444'
 
         - name: Remove temp status json
           delegate_to: localhost
           ansible.builtin.file:
-            path: "{{ logs_dir }}/{{ env_name }}/db_info.temp.json"
+            path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json"
             state: absent
 
     - name: Save dbinfo to db_info.json
@@ -104,5 +109,5 @@
       delegate_to: localhost
       ansible.builtin.template:
         src: db_info.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/db_info.json"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
         mode: '0444'
