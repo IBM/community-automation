@@ -30,7 +30,7 @@
     - name: Read in previous stress_status to combine
       when: isstatus.stat.exists
       block:
-        - name: Read the contents of a file
+        - name: Read the contents of the previous stress_status
           delegate_to: localhost
           ansible.builtin.set_fact:
             prev_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json') | from_json }}"

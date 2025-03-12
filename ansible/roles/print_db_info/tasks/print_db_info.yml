@@ -66,7 +66,7 @@
         path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
       register: isinfo
 
-    - name: Read in previous stress_status to combine
+    - name: Read in previous db_info to combine
       when: isinfo.stat.exists
       block:
         - name: Read the contents previous db_info
@@ -74,14 +74,14 @@
           ansible.builtin.set_fact:
             prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
             
-        - name: Save dbinfo to temp json
+        - name: Save db_info to temp json
           delegate_to: localhost
           ansible.builtin.template:
             src: db_info.json.j2
             dest: "{{ logs_dir }}/{{ env_name }}/{ db_info_json_file }}.temp.json"
             mode: '0444'
 
-        - name: Read the current dbinfo temp son
+        - name: Read the current dbinfo temp json
           delegate_to: localhost
           ansible.builtin.set_fact:
             current_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json') | from_json }}"
@@ -99,7 +99,7 @@
             path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json"
             state: absent
 
-    - name: Save dbinfo to db_info.json
+    - name: Save db_info to json
       when: not isinfo.stat.exists
       delegate_to: localhost
       ansible.builtin.template:
