@@ -60,18 +60,18 @@
         mode: '0755'
 
     # Support multiple stress enginges, check for file.  If it exists, read it and combine
-    - name: Check if stress_status exists
+    - name: Check if db_info exists
       delegate_to: localhost
       stat:
         path: "{{ logs_dir }}/{{ env_name }}/db_info.json"
-      register: isstatus
+      register: isinfo
 
     - name: Read in previous stress_status to combine
-      when: isstatus.stat.exists
+      when: isinfo.stat.exists
       block:
-        - name: Read the contents of a file
+        - name: Read the contents previous db_info
           delegate_to: localhost
-          set_fact:
+          ansible.builtin.set_fact:
             prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/db_info.json') | from_json }}"
             
         - name: Save dbinfo to temp json
@@ -86,7 +86,7 @@
           ansible.builtin.set_fact:
             current_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/db_info.temp.json') | from_json }}"
 
-        - name: Save db info ( combined )
+        - name: Save db_info ( combined )
           delegate_to: localhost
           ansible.builtin.copy:
             content: "{{ current_info | ansible.builtin.combine(prev_info) }}"
@@ -100,7 +100,7 @@
             state: absent
 
     - name: Save dbinfo to db_info.json
-      when: not isstatus.stat.exists
+      when: not isinfo.stat.exists
       delegate_to: localhost
       ansible.builtin.template:
         src: db_info.json.j2

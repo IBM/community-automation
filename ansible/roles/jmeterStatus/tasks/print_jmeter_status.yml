@@ -23,7 +23,7 @@
     # Support multiple stress enginges, check for file.  If it exists, read it and combine
     - name: Check if stress_status exists
       delegate_to: localhost
-      stat:
+      ansible.builtin.stat:
         path: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
       register: isstatus
 
@@ -32,9 +32,9 @@
       block:
         - name: Read the contents of a file
           delegate_to: localhost
-          set_fact:
+          ansible.builtin.set_fact:
             prev_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json') | from_json }}"
-            
+
         - name: Save Jmeter status to stress_status ( combined )
           delegate_to: localhost
           ansible.builtin.copy:
@@ -43,7 +43,7 @@
             mode: '0444'
 
     - name: Current Jmeter status
-      debug:   
+      ansible.builtin.debug:
         msg: "{{ jmeterStatus.stdout }}"
 
     - name: Save Jmeter status to stress_status
