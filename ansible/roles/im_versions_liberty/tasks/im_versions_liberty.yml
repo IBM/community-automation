@@ -21,27 +21,61 @@
         path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
 
-    - name: Write IM listInstalledPackages to txt file
-      delegate_to: localhost
-      ansible.builtin.copy:
-        content: "{{ packageOutput.stdout }}"
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-        mode: '0755'
-      when:
-        - logs_dir is defined
-        - env_name is defined
-        - version_txt_file is defined
-
     - name: Write IM listInstalledPackages to json file
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}.json"
         mode: '0755'
-      when:
-        - logs_dir is defined
-        - env_name is defined
-        - version_json_file is defined
+
+    - name: ImVersionOutput
+      ansible.builtin.debug:
+        msg: "{{ packageOutput.stdout | trim }}"
+
+    - name: Set IM version facts
+      ansible.builtin.set_fact:
+        imVersion: '{{ packageOutput.stdout | trim }}'
+
+    - name: Write IM version to json
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: im_version_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}.json"
+        mode: '0444'
+
+    - name: Check if envs combined IM version json exists
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ im_version_json_file }}.json"
+      register: isversion
+
+    - name: Write IM version to the combined json file ( seed server )
+      when: not isversion.stat.exists
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: im_version_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ im_version_json_file }}.json"
+        mode: '0444'
+
+    - name: Write Liberty status to the combined json file ( combined servers )
+      when: isversion.stat.exists
+      block:
+        - name: Read the contents previous IM version
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            combined_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ im_version_json_file }}.json') | from_json }}"
+
+        - name: Read the current IM version json
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            current_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}.json') | from_json }}"
+
+        - name: Save IM version ( combined )
+          delegate_to: localhost
+          ansible.builtin.copy:
+            content: "{{ current_status | ansible.builtin.combine(combined_status) }}"
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ im_version_json_file }}.json"
+            mode: '0444'
 
 - name: Check if Liberty installed
   ansible.builtin.stat:
@@ -66,7 +100,7 @@
     - name: Write Liberty version to json
       delegate_to: localhost
       ansible.builtin.template:
-        src: server_version.json.j2
+        src: liberty_version_info.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.json"
         mode: '0444'
 
@@ -80,7 +114,7 @@
       when: not isversion.stat.exists
       delegate_to: localhost
       ansible.builtin.template:
-        src: server_status.json.j2
+        src: liberty_version_info.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
         mode: '0444'
 
