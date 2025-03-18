@@ -99,14 +99,14 @@
 #   delegate_to: localhost
 #   ansible.builtin.template:
 #     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/http_{{ versioninfo_json_file }}"
+#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
 #     mode: '0444'
 
 - name: Write HTTP versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ HTTPServerVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/http_{{ versioninfo_json_file }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
     mode: '0755'
   when: 
     - logs_dir is defined
@@ -148,14 +148,14 @@
 #   delegate_to: localhost
 #   ansible.builtin.template:
 #     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plugin_{{ versioninfo_json_file }}"
+#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
 #     mode: '0444'
 
 - name: Write Plugin versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ PluginVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plugin_{{ versioninfo_json_file }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
     mode: '0755'
   when: 
     - logs_dir is defined
@@ -196,14 +196,14 @@
 #   delegate_to: localhost
 #   ansible.builtin.template:
 #     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ versioninfo_json_file }}"
+#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
 #     mode: '0444'
 
 - name: Write WCT versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ WCTVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ versioninfo_json_file }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
     mode: '0755'
   when: 
     - logs_dir is defined

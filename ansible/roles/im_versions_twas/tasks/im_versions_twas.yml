@@ -94,14 +94,14 @@
   #   delegate_to: localhost
   #   ansible.builtin.template:
   #     src: version_info.json.j2
-  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_{{ versioninfo_json_file }}"
+  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
   #     mode: '0444'
 
   - name: Write tWAS versionInfo to json file
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ twasVersionOutput.stdout_lines | to_json(indent=4) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_{{ versioninfo_json_file }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0755'
     when: 
       - logs_dir is defined
@@ -150,14 +150,14 @@
   #   delegate_to: localhost
   #   ansible.builtin.template:
   #     src: version_info.json.j2
-  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/appclient_{{ versioninfo_json_file }}"
+  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
   #     mode: '0444'
 
   - name: Write AppClient versionInfo to json file
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ appVersionOutput.stdout_lines | to_json(indent=4) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/appclient_{{ versioninfo_json_file }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0755'
     when: 
       - logs_dir is defined
