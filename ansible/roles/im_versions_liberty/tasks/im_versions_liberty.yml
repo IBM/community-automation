@@ -4,6 +4,67 @@
     path: "{{ install_base }}/IM/eclipse/tools/imcl"
   register: isimcl
 
+- name: Check if Liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server" 
+  register: islib
+
+- name: Check if Liberty installed
+  when: islib.stat.exists
+  block:
+    - name: Liberty version
+      ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version" 
+      register: libertyVersionOutput
+
+    - name: LibertyVersionOutput
+      ansible.builtin.debug:
+        msg: "{{ libertyVersionOutput.stdout | trim }}"
+
+    - name: Set Liberty version facts
+      ansible.builtin.set_fact:
+        libertyVersion: '{{ libertyVersionOutput.stdout | trim }}'
+
+    - name: Write Liberty version to json
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: liberty_version_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.json"
+        mode: '0444'
+
+    - name: Check if envs combined Liberty version json exists
+      delegate_to: localhost
+      ansible.builtin.stat:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
+      register: isversion
+
+    - name: Write Liberty version to the combined json file ( seed server )
+      when: not isversion.stat.exists
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: liberty_version_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
+        mode: '0444'
+
+    - name: Write Liberty status to the combined json file ( combined servers )
+      when: isversion.stat.exists
+      block:
+        - name: Read the contents previous Liberty version
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            combined_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json') | from_json }}"
+
+        - name: Read the current Liberty version json
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            current_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.json') | from_json }}"
+
+        - name: Save Liberty version ( combined )
+          delegate_to: localhost
+          ansible.builtin.copy:
+            content: "{{ current_status | ansible.builtin.combine(combined_status) }}"
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
+            mode: '0444'
+
 - name: Imcl listInstalledPackages
   when: isimcl.stat.exists
   block:
@@ -75,65 +136,4 @@
           ansible.builtin.copy:
             content: "{{ current_status | ansible.builtin.combine(combined_status) }}"
             dest: "{{ logs_dir }}/{{ env_name }}/{{ im_version_json_file }}.json"
-            mode: '0444'
-
-- name: Check if Liberty installed
-  ansible.builtin.stat:
-    path: "{{ install_base }}/{{ liberty_dir }}/bin/server" 
-  register: islib
-
-- name: Check if Liberty installed
-  when: islib.stat.exists
-  block:
-    - name: Liberty version
-      ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version" 
-      register: libertyVersionOutput
-
-    - name: LibertyVersionOutput
-      ansible.builtin.debug:
-        msg: "{{ libertyVersionOutput.stdout | trim }}"
-
-    - name: Set Liberty version facts
-      ansible.builtin.set_fact:
-        libertyVersion: '{{ libertyVersionOutput.stdout | trim }}'
-
-    - name: Write Liberty version to json
-      delegate_to: localhost
-      ansible.builtin.template:
-        src: liberty_version_info.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.json"
-        mode: '0444'
-
-    - name: Check if envs combined Liberty version json exists
-      delegate_to: localhost
-      ansible.builtin.stat:
-        path: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
-      register: isversion
-
-    - name: Write Liberty version to the combined json file ( seed server )
-      when: not isversion.stat.exists
-      delegate_to: localhost
-      ansible.builtin.template:
-        src: liberty_version_info.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
-        mode: '0444'
-
-    - name: Write Liberty status to the combined json file ( combined servers )
-      when: isversion.stat.exists
-      block:
-        - name: Read the contents previous Liberty version
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            combined_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json') | from_json }}"
-
-        - name: Read the current Liberty version json
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            current_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.json') | from_json }}"
-
-        - name: Save Liberty version ( combined )
-          delegate_to: localhost
-          ansible.builtin.copy:
-            content: "{{ current_status | ansible.builtin.combine(combined_status) }}"
-            dest: "{{ logs_dir }}/{{ env_name }}/{{ versioninfo_json_file }}.json"
             mode: '0444'
