@@ -82,13 +82,6 @@
         path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
 
-    - name: Write IM listInstalledPackages to json file
-      delegate_to: localhost
-      ansible.builtin.copy:
-        content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}.json"
-        mode: '0755'
-
     - name: ImVersionOutput
       ansible.builtin.debug:
         msg: "{{ packageOutput.stdout | trim }}"
