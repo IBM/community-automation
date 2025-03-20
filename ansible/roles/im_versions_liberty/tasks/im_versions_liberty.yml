@@ -29,6 +29,30 @@
       ansible.builtin.set_fact:
         imVersion: '{{ packageOutput.stdout | trim }}'
 
+# https://stackoverflow.com/questions/35605603/using-ansible-set-fact-to-create-a-dictionary-from-register-results
+
+#"/home/nest/IM/eclipse : com.ibm.cic.agent_1.10.1001.20250214_1440 : IBM\u00ae Installation Manager : 1.10.1.1",
+#"/home/nest/HTTPServer : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#"/home/nest/HTTPServer : com.ibm.websphere.IHS.v90_9.0.5023.20250305_0341 : IBM HTTP Server for WebSphere Application Server : 9.0.5.23",
+#"/home/nest/Plugins : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#"/home/nest/Plugins : com.ibm.websphere.PLG.v90_9.0.5023.20250305_0341 : Web Server Plug-ins for IBM WebSphere Application Server : 9.0.5.23",
+#"/home/nest/WCT : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#"/home/nest/WCT : com.ibm.websphere.WCT.v90_9.0.5023.20250305_0341 : WebSphere Customization Toolbox : 9.0.5.23",
+#"/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1",
+#"/home/nest/wlp : com.ibm.java.jdk.v17_17.0.14000.20250212_1931 : IBM Semeru Runtime Certified Edition Version 17 : 17.0.14.0",
+#"/home/nest/wlp : com.ibm.websphere.liberty.ND_25.0.3.20250306_0302 : IBM WebSphere Application Server Liberty Network Deployment : 25.0.0.3",
+
+# counter:
+# https://docs.ansible.com/ansible/latest/collections/community/general/docsite/filter_guide_abstract_informations_counting_elements_in_sequence.html
+
+# instantOn logic
+
+    - name: Combine dictionaries
+      set_fact:
+        combined_dict: "{{ combined_dict | combine(hostvars[item]['startup_times'], recursive=True, list_merge='append') }}"
+      loop: "{{ groups['vms'] }}"
+
+#-----------------------
     - name: Write IM version to json
       delegate_to: localhost
       ansible.builtin.template:

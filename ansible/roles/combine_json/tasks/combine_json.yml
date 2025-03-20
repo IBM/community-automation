@@ -1,0 +1,31 @@
+---
+- name: Remove previous combined json
+  ansible.builtin.file:
+    path: "{{ json_path }}/{{ json_file }}"
+    state: absent
+
+- name: " Find {{ json_path }}/{{ json_file }}"
+  delegate_to: localhost
+  ansible.builtin.find:
+    paths: "{{ json_path }}"
+    recurse: true
+    patterns: "{{ json_file }}"
+  register: foundem
+
+- name: Print found files
+  ansible.builtin.debug:
+    var: '{{ item }}'
+  with_items: "{{ foundem.files | map(attribute='path') | list }}"
+
+- name: Inialize combined dict
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+    combined_dict: {}
+
+- name: Save Liberty version ( combined )
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ combined_dict | ansible.builtin.combine({{ lookup('ansible.builtin.file', '{{ item }} | from_json }}) }}"
+    dest: "{{ json_path }}/{{ json_file }}"
+    mode: '0444'
+  with_items: "{{ foundem.files | map(attribute='path') | list }}"
