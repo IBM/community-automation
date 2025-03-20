@@ -2,8 +2,8 @@
 - name: Check if liberty is installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
-  register: isliberty
-  failed_when: isliberty.stat.exists == False
+  register: islib
+  failed_when: islib.stat.exists == False
 
 - name: Check server status
   ansible.builtin.command:
@@ -26,11 +26,9 @@
     state: directory
     mode: '0755'
 
-- name: Save server status json files
-  block:
-    - name: Write Liberty status to json file
-      delegate_to: localhost
-      ansible.builtin.template:
-        src: server_status.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
-        mode: '0444'
+- name: Write Liberty status to json file
+  delegate_to: localhost
+  ansible.builtin.template:
+    src: server_status.json.j2
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
+    mode: '0444'

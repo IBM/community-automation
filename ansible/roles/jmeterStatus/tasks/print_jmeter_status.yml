@@ -25,7 +25,6 @@
         msg: "{{ jmeterStatus.stdout }}"
 
     - name: Save Jmeter status to stress_status
-      when: not isstatus.stat.exists
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ jmeterStatus.stdout }}"
