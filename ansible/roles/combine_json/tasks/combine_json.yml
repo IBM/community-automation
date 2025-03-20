@@ -22,10 +22,21 @@
   ansible.builtin.set_fact:
     combined_dict: {}
 
+- name: Print combined_dict
+  ansible.builtin.debug:
+    var: '{{ combined_dict }}'
+
+- name: Save Liberty version ( seed combined )
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ combined_dict }}"
+    dest: "{{ json_path }}/{{ json_file }}"
+    mode: '0444'
+
 - name: Save Liberty version ( combined )
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ combined_dict | ansible.builtin.combine({{ lookup('ansible.builtin.file', '{{ item }} | from_json }}) }}"
+    content: "{{ lookup('ansible.builtin.file', '{{ json_path }}/{{ json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json )}}"
     dest: "{{ json_path }}/{{ json_file }}"
     mode: '0444'
   with_items: "{{ foundem.files | map(attribute='path') | list }}"

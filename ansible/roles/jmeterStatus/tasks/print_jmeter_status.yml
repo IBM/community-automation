@@ -2,7 +2,7 @@
 - name: Print Jmeter status
   when: groups.stress is defined
   block:
-    # if the db container is not running this will not work
+    # if the stress container is not running this will not work
     # this is a new script thus many of the stress engines do not have it
     # ignore error
     #
@@ -16,31 +16,9 @@
     - name: Create local logs dir
       delegate_to: localhost
       ansible.builtin.file:
-        path: "{{ logs_dir }}/{{ env_name }}"
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
         mode: '0755'
-
-    # Support multiple stress enginges, check for file.  If it exists, read it and combine
-    - name: Check if stress_status exists
-      delegate_to: localhost
-      ansible.builtin.stat:
-        path: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
-      register: isstatus
-
-    - name: Read in previous stress_status to combine
-      when: isstatus.stat.exists
-      block:
-        - name: Read the contents of the previous stress_status
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            prev_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json') | from_json }}"
-
-        - name: Save Jmeter status to stress_status ( combined )
-          delegate_to: localhost
-          ansible.builtin.copy:
-            content: "{{ jmeterStatus.stdout | from_json | ansible.builtin.combine(prev_status) }}"
-            dest: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
-            mode: '0444'
 
     - name: Current Jmeter status
       ansible.builtin.debug:
@@ -51,5 +29,5 @@
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ jmeterStatus.stdout }}"
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
         mode: '0444'

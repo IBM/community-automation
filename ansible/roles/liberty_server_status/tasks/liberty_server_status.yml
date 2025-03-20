@@ -32,39 +32,5 @@
       delegate_to: localhost
       ansible.builtin.template:
         src: server_status.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}.json"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
         mode: '0444'
-
-    # - name: Check if envs combined server status json exists
-    #   delegate_to: localhost
-    #   ansible.builtin.stat:
-    #     path: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
-    #   register: isserver
-
-    # - name: Write Liberty status to the combined json file ( seed server )
-    #   when: not isserver.stat.exists
-    #   delegate_to: localhost
-    #   ansible.builtin.template:
-    #     src: server_status.json.j2
-    #     dest: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
-    #     mode: '0444'
-
-    # - name: Write Liberty status to the combined json file ( combined servers )
-    #   when: isserver.stat.exists
-    #   block:
-    #     - name: Read the contents previous server status
-    #       delegate_to: localhost
-    #       ansible.builtin.set_fact:
-    #         combined_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json') | from_json }}"
-
-    #     - name: Read the current server status json
-    #       delegate_to: localhost
-    #       ansible.builtin.set_fact:
-    #         current_status: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}.json') | from_json }}"
-
-    #     - name: Save servers status ( combined )
-    #       delegate_to: localhost
-    #       ansible.builtin.copy:
-    #         content: "{{ current_status | ansible.builtin.combine(combined_status) }}"
-    #         dest: "{{ logs_dir }}/{{ env_name }}/{{ status_json_file }}.json"
-    #         mode: '0444'

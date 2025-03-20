@@ -55,54 +55,13 @@
     - name: Create local logs dir
       delegate_to: localhost
       ansible.builtin.file:
-        path: "{{ logs_dir }}/{{ env_name }}"
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
         mode: '0755'
 
-    # Support multiple stress enginges, check for file.  If it exists, read it and combine
-    - name: Check if db_info exists
-      delegate_to: localhost
-      ansible.builtin.stat:
-        path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
-      register: isinfo
-
-    - name: Read in previous db_info to combine
-      when: isinfo.stat.exists
-      block:
-        - name: Read the contents previous db_info
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            prev_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json') | from_json }}"
-            
-        - name: Save db_info to temp json
-          delegate_to: localhost
-          ansible.builtin.template:
-            src: db_info.json.j2
-            dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json"
-            mode: '0444'
-
-        - name: Read the current dbinfo temp json
-          delegate_to: localhost
-          ansible.builtin.set_fact:
-            current_info: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json') | from_json }}"
-
-        - name: Save db_info ( combined )
-          delegate_to: localhost
-          ansible.builtin.copy:
-            content: "{{ current_info | ansible.builtin.combine(prev_info) }}"
-            dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
-            mode: '0444'
-
-        - name: Remove temp status json
-          delegate_to: localhost
-          ansible.builtin.file:
-            path: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.temp.json"
-            state: absent
-
     - name: Save db_info to json
-      when: not isinfo.stat.exists
       delegate_to: localhost
       ansible.builtin.template:
         src: db_info.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/{{ db_info_json_file }}.json"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ db_info_json_file }}"
         mode: '0444'
