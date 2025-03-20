@@ -12,19 +12,10 @@
     patterns: "{{ json_file }}"
   register: foundem
 
-- name: Print found files
-  ansible.builtin.debug:
-    var: '{{ item }}'
-  with_items: "{{ foundem.files | map(attribute='path') | list }}"
-
 - name: Inialize combined dict
   delegate_to: localhost
   ansible.builtin.set_fact:
     combined_dict: {}
-
-- name: Print combined_dict
-  ansible.builtin.debug:
-    var: '{{ combined_dict }}'
 
 - name: Save Liberty version ( seed combined )
   delegate_to: localhost

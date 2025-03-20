@@ -47,15 +47,42 @@
 
 # instantOn logic
 
-    - name: Combine dictionaries
-      set_fact:
-        combined_dict: "{{ combined_dict | combine(hostvars[item]['startup_times'], recursive=True, list_merge='append') }}"
-      loop: "{{ groups['vms'] }}"
+    - name: Inialize combined dict
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        combined_dict: {}
 
-#-----------------------
     - name: Write IM version to json
       delegate_to: localhost
       ansible.builtin.template:
         src: im_version_info.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
         mode: '0444'
+
+    - name: Save IM version ( seed  )
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ combined_dict }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
+        mode: '0444'
+
+    - name: Save Liberty version ( combined )
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}') | from_json | ansible.builtin.combine( '{{ item }}' | from_json, list_merge='append')}}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
+        mode: '0444'
+      with_items: "{{ fpackageOutput.stdout_lines }}"
+
+#     - name: Combine dictionaries
+#       set_fact:
+#         combined_dict: "{{ combined_dict | combine(hostvars[item]['startup_times'], recursive=True, list_merge='append') }}"
+#       loop: "{{ groups['vms'] }}"
+
+# #-----------------------
+#     - name: Write IM version to json
+#       delegate_to: localhost
+#       ansible.builtin.template:
+#         src: im_version_info.json.j2
+#         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
+#         mode: '0444'
