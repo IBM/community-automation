@@ -63,23 +63,28 @@
         mode: '0444'
 
     - name: Load seed json
+      delegate_to: localhost
       slurp:
         src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
       register: imported_json
 
     - name: Print slurped var
+      delegate_to: localhost
       ansible.builtin.debug:
         msg: "{{ imported_json.content|b64decode|from_json }}"
 
     - name: Append addtional IM versions
+      delegate_to: localhost
       set_fact:
         imported_json: "{{ imported_json.content|b64decode|from_json | default([]) | combine({ community.general.counter: 'world' }) }}"
 
     - name: Print updated var
+      delegate_to: localhost
       ansible.builtin.debug:
         var: imported_json
 
     - name: write var to file
+      delegate_to: localhost
       copy: 
         content: "{{ imported_json | to_nice_json }}" 
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
