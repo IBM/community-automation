@@ -31,17 +31,33 @@
 
 # https://stackoverflow.com/questions/35605603/using-ansible-set-fact-to-create-a-dictionary-from-register-results
 
-#"/home/nest/IM/eclipse : com.ibm.cic.agent_1.10.1001.20250214_1440 : IBM\u00ae Installation Manager : 1.10.1.1",
-#"/home/nest/HTTPServer : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
-#"/home/nest/HTTPServer : com.ibm.websphere.IHS.v90_9.0.5023.20250305_0341 : IBM HTTP Server for WebSphere Application Server : 9.0.5.23",
-#"/home/nest/Plugins : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
-#"/home/nest/Plugins : com.ibm.websphere.PLG.v90_9.0.5023.20250305_0341 : Web Server Plug-ins for IBM WebSphere Application Server : 9.0.5.23",
-#"/home/nest/WCT : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
-#"/home/nest/WCT : com.ibm.websphere.WCT.v90_9.0.5023.20250305_0341 : WebSphere Customization Toolbox : 9.0.5.23",
-#"/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1",
-#"/home/nest/wlp : com.ibm.java.jdk.v17_17.0.14000.20250212_1931 : IBM Semeru Runtime Certified Edition Version 17 : 17.0.14.0",
-#"/home/nest/wlp : com.ibm.websphere.liberty.ND_25.0.3.20250306_0302 : IBM WebSphere Application Server Liberty Network Deployment : 25.0.0.3",
+# from this:
+# "/home/nest/IM/eclipse : com.ibm.cic.agent_1.10.1001.20250214_1440 : IBM\u00ae Installation Manager : 1.10.1.1",
+# "/home/nest/HTTPServer : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+# "/home/nest/HTTPServer : com.ibm.websphere.IHS.v90_9.0.5023.20250305_0341 : IBM HTTP Server for WebSphere Application Server : 9.0.5.23",
+# "/home/nest/Plugins : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+# "/home/nest/Plugins : com.ibm.websphere.PLG.v90_9.0.5023.20250305_0341 : Web Server Plug-ins for IBM WebSphere Application Server : 9.0.5.23",
+# "/home/nest/WCT : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+# "/home/nest/WCT : com.ibm.websphere.WCT.v90_9.0.5023.20250305_0341 : WebSphere Customization Toolbox : 9.0.5.23",
+# "/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1",
+# "/home/nest/wlp : com.ibm.java.jdk.v17_17.0.14000.20250212_1931 : IBM Semeru Runtime Certified Edition Version 17 : 17.0.14.0",
+# "/home/nest/wlp : com.ibm.websphere.liberty.ND_25.0.3.20250306_0302 : IBM WebSphere Application Server Liberty Network Deployment : 25.0.0.3",
 
+# to this:
+# {
+#   "nest-lib-dt10-cc.fyre.ibm.com": {
+#     "1": "/home/nest/IM/eclipse : com.ibm.cic.agent_1.10.1001.20250214_1440 : IBM® Installation Manager : 1.10.1.1",
+#     "2": "/home/nest/HTTPServer : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#     "3": "/home/nest/HTTPServer : com.ibm.websphere.IHS.v90_9.0.5023.20250305_0341 : IBM HTTP Server for WebSphere Application Server : 9.0.5.23",
+#     "4": "/home/nest/Plugins : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#     "5": "/home/nest/Plugins : com.ibm.websphere.PLG.v90_9.0.5023.20250305_0341 : Web Server Plug-ins for IBM WebSphere Application Server : 9.0.5.23",
+#     "6": "/home/nest/WCT : com.ibm.java.jdk.v8_8.0.8040.20250128_0059 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40",
+#     "7": "/home/nest/WCT : com.ibm.websphere.WCT.v90_9.0.5023.20250305_0341 : WebSphere Customization Toolbox : 9.0.5.23",
+#     "8": "/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1",
+#     "9": "/home/nest/wlp : com.ibm.java.jdk.v17_17.0.14000.20250212_1931 : IBM Semeru Runtime Certified Edition Version 17 : 17.0.14.0",
+#     "10": "/home/nest/wlp : com.ibm.websphere.liberty.ND_25.0.3.20250306_0302 : IBM WebSphere Application Server Liberty Network Deployment : 25.0.0.3"
+#   }
+# }
 # counter:
 # https://docs.ansible.com/ansible/latest/collections/community/general/docsite/filter_guide_abstract_informations_counting_elements_in_sequence.html
 
@@ -54,6 +70,80 @@
     # - name: Print im_dict
     #   ansible.builtin.debug:
     #     msg: "{{ im_dict }}"
+
+# this looks promising
+# https://stackoverflow.com/questions/56687736/how-to-add-items-to-an-existing-dictionary-in-ansible#56691158
+
+
+# ---
+
+# - name: test
+#   hosts: localhost
+
+#   vars:
+#     add_this:
+#       key3: value3
+#       key4: value4
+#       key5: value5
+
+#     mydict:
+#       localhost:
+#           MYENV:
+#               key1: "value1"
+#               key2: "value2"
+#           MYENV2:
+#               key1: "value1"
+#               key2: "value2"
+#           MYENV3:
+#               key1: "value1"
+#               key2: "value2"
+
+#   tasks:
+#     - set_fact: # collect dictionary keys
+#         keys: "{{ mydict.localhost|
+#                   dict2items|
+#                   json_query('[].key') }}"
+#     - name: keys
+#       debug:
+#         var: keys
+
+#     - set_fact: # collect dictionary values and add item
+#         values: "{{ mydict.environments|
+#                     dict2items|
+#                     json_query('[].value')|
+#                     map('combine', add_this)|list }}"
+#     - name: values
+#       debug:
+#         var: values
+#     - set_fact: # create dict environments
+#         environments: "{{ environments|
+#                           default({})|
+#                           combine({item.0: item.1}) }}"
+#       loop: "{{ keys|zip(values)|list }}"
+
+#     - name: environments
+#       debug:
+#         var: environments
+
+#     - set_fact: # create dictionary new_dict
+#         new_dict: "{{ new_dict|
+#                       default({})|
+#                       combine({'environments': environments}) }}"
+#     - debug:
+#         var: new_dict
+
+#     - name: write new_dict to file
+#       delegate_to: localhost
+#       copy:
+#         content: "{{ new_dict | to_nice_json }}"
+#         dest: /tmp/new_dict.json
+
+# -----------------------
+
+    - name: Size of stdout_lines
+      delegate_to: localhost
+      set_fact:
+        max_counter: "{{ packageOutput.stdout_lines | length }}"
 
     - name: Write IM version to json ( seed )
       delegate_to: localhost
@@ -73,20 +163,50 @@
       ansible.builtin.debug:
         msg: "{{ imported_json.content|b64decode|from_json }}"
 
-    - name: Append addtional IM versions
+    - name: Create seed dict
       delegate_to: localhost
-      set_fact:
-        imported_json: "{{ imported_json.content|b64decode|from_json | default([]) | combine({ community.general.counter: 'world' }) }}"
+      ansible.builtin.set_fact:
+        append_this: "{{ imported_json.content|b64decode|from_json }}"
 
-    - name: Print updated var
+    - name: Get primary key
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        primary_key: "{{ lookup('dict', append_this) }}"
+
+    - name: Print primary_key
       delegate_to: localhost
       ansible.builtin.debug:
-        var: imported_json
+        msg: "{{ primary_key.key }}"
+
+    - name: Print append_this dict ( seed )
+      delegate_to: localhost
+      ansible.builtin.debug:
+        msg: "{{ imported_json.content|b64decode|from_json }}"
+
+    - name: Create dict with IM version(s)
+      ansible.builtin.set_fact:
+        append_this: "{{ append_this | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+    - name: New dict append_this
+      delegate_to: localhost
+      ansible.builtin.debug:
+        msg: "{{ append_this }}"
+
+    # - name: Append addtional IM versions
+    #   delegate_to: localhost
+    #   set_fact:
+    #     imported_json: "{{ imported_json.content|b64decode|from_json | default({}) | ansible.builtin.combine( append_this, recursive=True, list_merge='append' ) }}"
+
+    # - name: Print updated var
+    #   delegate_to: localhost
+    #   ansible.builtin.debug:
+    #     var: imported_json
 
     - name: write var to file
       delegate_to: localhost
-      copy: 
-        content: "{{ imported_json | to_nice_json }}" 
+      copy:
+        content: "{{ append_this | to_nice_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
 
     # - name: Save Liberty version ( combined )
