@@ -209,6 +209,16 @@
         content: "{{ append_this | to_nice_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
 
+# The logic above creates a json file like:
+# {
+#   "0": "/home/nest/IM/eclipse : com.ibm.cic.agent_1.10.1001.20250214_1440 : IBM® Installation Manager : 1.10.1.1",
+#   "1": "/home/nest/wlp : com.ibm.java.jdk.v11_11.0.2401.20240919_0407 : IBM Semeru Runtime Certified Edition Version 11 : 11.0.24.1",
+#   "2": "/home/nest/wlp : com.ibm.java.jdk.v21_21.0.6000.20250221_0527 : IBM Semeru Runtime Certified Edition Version 21  : 21.0.6.0",
+#   "3": "/home/nest/wlp : com.ibm.websphere.liberty.ND_25.0.4.20250319_1902 : IBM WebSphere Application Server Liberty Network Deployment : 25.0.0.4",
+#   "nest-lib-dt10-cc.fyre.ibm.com": {
+#     "imVersion": "seed"
+#   }
+# }
     # - name: Save Liberty version ( combined )
     #   delegate_to: localhost
     #   ansible.builtin.copy:
