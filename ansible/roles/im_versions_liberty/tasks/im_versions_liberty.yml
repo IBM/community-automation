@@ -182,16 +182,18 @@
       delegate_to: localhost
       ansible.builtin.debug:
         msg: "{{ imported_json.content|b64decode|from_json }}"
-
     - name: Create dict with IM version(s)
       ansible.builtin.set_fact:
-        append_this: "{{ append_this | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+        list_package: "{{ list_package | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
+    - name: New dict list_package
+      ansible.builtin.set_fact:
+        package: "{{{primary_key.key: list_package}}}"
     - name: New dict append_this
       delegate_to: localhost
       ansible.builtin.debug:
-        msg: "{{ append_this }}"
+        msg: "{{ package }}"
 
     # - name: Append addtional IM versions
     #   delegate_to: localhost
