@@ -29,7 +29,7 @@
 
     - name: New dict list_package
       ansible.builtin.set_fact:
-        package: "{{{ ansible_fqdn  list_package }}}"
+        package: "{{{ ansible_fqdn : list_package }}}"
 
     - name: New dict append_this
       delegate_to: localhost
