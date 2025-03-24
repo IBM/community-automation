@@ -182,6 +182,7 @@
       delegate_to: localhost
       ansible.builtin.debug:
         msg: "{{ imported_json.content|b64decode|from_json }}"
+
     - name: Create dict with IM version(s)
       ansible.builtin.set_fact:
         list_package: "{{ list_package | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
@@ -189,7 +190,8 @@
 
     - name: New dict list_package
       ansible.builtin.set_fact:
-        package: "{{{primary_key.key: list_package}}}"
+        package: "{{{ primary_key.key: list_package }}}"
+
     - name: New dict append_this
       delegate_to: localhost
       ansible.builtin.debug:
@@ -208,7 +210,7 @@
     - name: write var to file
       delegate_to: localhost
       copy:
-        content: "{{ append_this | to_nice_json }}"
+        content: "{{ package | to_nice_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
 
 # The logic above creates a json file like:
