@@ -47,7 +47,7 @@
 - name: Write http versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ versions | to_nice_json }}"
+    content: "{{ versions | to_nice_json, sort_keys=false }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ http_versioninfo_json_file }}"
     mode: '0444'
     
@@ -81,7 +81,7 @@
 - name: Write plugin versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ versions | to_nice_json }}"
+    content: "{{ versions | to_nice_json, sort_keys=false }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ plugin_versioninfo_json_file }}"
     mode: '0444'
 
@@ -122,6 +122,6 @@
 - name: Write plugin versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ versions | to_nice_json }}"
+    content: "{{ versions | to_nice_json, sort_keys=false }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wct_versioninfo_json_file }}"
     mode: '0444'
