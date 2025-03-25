@@ -27,7 +27,7 @@
 
 - name: Size of stdout_lines
   delegate_to: localhost
-  set_fact:
+  ansible.builtin.set_fact:
     max_counter: "{{ HTTPServerVersionOutput.stdout_lines | length }}"
 
 - name: Create dict with http version
@@ -46,7 +46,7 @@
 
 - name: Write http versionInfo to json file
   delegate_to: localhost
-  copy:
+  ansible.builtin.copy:
     content: "{{ versions | to_nice_json }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ http_versioninfo_json_file }}"
     mode: '0444'
@@ -61,7 +61,7 @@
 
 - name: Size of stdout_lines
   delegate_to: localhost
-  set_fact:
+  ansible.builtin.set_fact:
     max_counter: "{{ PluginVersionOutput.stdout_lines | length }}"
 
 - name: Create dict with plugin version(s)
@@ -80,7 +80,7 @@
 
 - name: Write plugin versionInfo to json file
   delegate_to: localhost
-  copy:
+  ansible.builtin.copy:
     content: "{{ versions | to_nice_json }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ plugin_versioninfo_json_file }}"
     mode: '0444'
@@ -102,7 +102,7 @@
 
 - name: Size of stdout_lines
   delegate_to: localhost
-  set_fact:
+  ansible.builtin.set_fact:
     max_counter: "{{ WCTVersionOutput.stdout_lines | length }}"
 
 - name: Create dict with wct version(s)
@@ -121,7 +121,7 @@
 
 - name: Write plugin versionInfo to json file
   delegate_to: localhost
-  copy:
+  ansible.builtin.copy:
     content: "{{ versions | to_nice_json }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wct_versioninfo_json_file }}"
     mode: '0444'

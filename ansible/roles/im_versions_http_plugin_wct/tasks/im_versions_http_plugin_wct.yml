@@ -15,7 +15,7 @@
 
 - name: Size of stdout_lines
   delegate_to: localhost
-  set_fact:
+  ansible.builtin.set_fact:
     max_counter: "{{ packageOutput.stdout_lines | length }}"
 
 - name: Create dict with http/plugin/wct version(s)
