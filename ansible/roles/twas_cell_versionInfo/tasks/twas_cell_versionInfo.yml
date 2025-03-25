@@ -29,6 +29,7 @@
       max_counter: "{{ tversions.stdout_lines | length }}"
 
   - name: Create dict with tWAS version(s)
+    no_log: true
     ansible.builtin.set_fact:
       twas_version: "{{ twas_version | default({}) | combine( { item: tversions.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
     with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
