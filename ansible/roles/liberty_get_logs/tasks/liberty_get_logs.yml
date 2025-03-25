@@ -64,10 +64,10 @@
     ansible.builtin.debug:
       msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
 
-  - name: Is verboseGC set?
-    when: verboseGC is defined
-    ansible.builtin.debug:
-      msg: "{{ verboseGC }}"
+  # - name: Is verboseGC set?
+  #   when: verboseGC is defined
+  #   ansible.builtin.debug:
+  #     msg: "{{ verboseGC }}"
 
   - name: Verbose GC log processing
     when: verboseGC|bool
