@@ -34,7 +34,7 @@
 
 - name: Write http IM versions to json file
   delegate_to: localhost
-  copy:
+  ansible.builtin.copy:
     content: "{{ versions | to_nice_json }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_versioninfo_json_file }}"
     mode: '0444'
