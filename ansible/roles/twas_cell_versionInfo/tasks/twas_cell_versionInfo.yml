@@ -60,9 +60,10 @@
   - name: AppClient version
     ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: appVersionOutput
-  - name: tWAS Application Client versionsInfo output
-    ansible.builtin.debug:
-      msg: "{{ appVersionOutput.stdout_lines }}"
+
+  # - name: tWAS Application Client versionsInfo output
+  #   ansible.builtin.debug:
+  #     msg: "{{ appVersionOutput.stdout_lines }}"
 
   - name: Size of stdout_lines
     delegate_to: localhost
