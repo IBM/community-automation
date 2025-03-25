@@ -19,13 +19,28 @@
     state: directory
     mode: '0755'
 
-- name: Write tWAS status to json file
+- name: Size of stdout_lines
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+    max_counter: "{{ twasstatus.stdout_lines | length }}"
+
+- name: Create dict with server status
+  ansible.builtin.set_fact:
+    wct_version: "{{ wct_version | default({}) | combine( { item: twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+- name: New dict server status
+  ansible.builtin.set_fact:
+    versions: "{{{ ansible_fqdn : wct_version }}}"
+
+- name: New dict append_this
+  delegate_to: localhost
+  ansible.builtin.debug:
+    msg: "{{ versions }}"
+
+- name: Write server status json file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ twasstatus.stdout_lines | to_json(indent=4) }}"
+    content: "{{ versions | to_nice_json, sort_keys=false }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
-    mode: '0755'
-  when:
-    - logs_dir is defined
-    - env_name is defined
-    - status_json_file is defined
+    mode: '0444'
