@@ -1,22 +1,10 @@
 ---
-- name: Is IHS running?
-  ignore_errors: true
-  ansible.builtin.uri:
-    url: "https://localhost:{{ ihs_https_port }}"
-    return_content: no
-    validate_certs: false
-  register: isIHSup
-
-- name: Is IHS running output
-  ansible.builtin.debug:
-    msg: "{{ isIHSup }}"
-
-- name:  listInstalledPackages
+- name: IM listInstalledPackages
   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
   register: packageOutput
 
-- name: packageOutput
-  ansible.builtin.debug: 
+- name: IM packageOutput
+  ansible.builtin.debug:
     msg: "{{ packageOutput.stdout_lines }}"
 
 - name: Create version dir
@@ -25,187 +13,28 @@
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
-- name: Write IM listInstalledPackages to txt file
+- name: Size of stdout_lines
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ packageOutput.stdout }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-    mode: '0755'
-  when:
-    - logs_dir is defined
-    - env_name is defined
-    - version_txt_file is defined
+  set_fact:
+    max_counter: "{{ packageOutput.stdout_lines | length }}"
 
-- name: Write IM listInstalledPackages to json file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - version_json_file is defined
-
-- name: HTTPServer version
-  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-  register: HTTPServerVersionOutput
-
-- name: HTTPServerVersionOutput
-  ansible.builtin.debug:
-    msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
-
-    # "Name                  IBM HTTP Server for WebSphere Application Server",
-    # "Version               9.0.5.23",
-    # "ID                    IHS",
-    # "Build Level           f5232508.04",
-    # "Package               com.ibm.websphere.IHS.v90_9.0.5023.20250226_1855",
-    # "Architecture          x86-64 (64 bit)",
-
-    # "Name            IBM SDK, Java Technology Edition, Version 8",
-    # "Version         8.0.8.40",
-    # "ID              JAVA8",
-    # "Build Level     pxa6480sr8fp40-20250123_01",
-    # "Architecture    x86-64 (64 bit)",
-
-- name: Write HTTP versionInfo to txt file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ HTTPServerVersionOutput.stdout_lines }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/http_versionInfo.txt"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-
-# replace this clunky with some cool regex
-- name: Get the Name from the file ( need to regex it )
-  delegate_to: localhost
-  shell: "grep -m 1 'Name' {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/http_versionInfo.txt | awk -F ':' '{print $2}'"
-  register: twas_Name_ouput
-- name: Get the Version from the file ( need to regex it )
-  delegate_to: localhost
-  shell: "grep -m 3 'Version' v.txt|tail -1 {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/http_versionInfo.txt | awk -F ':' '{print $2}'"
-  register: twas_Version_ouput
-# todo more
-
-- name: Find the tWAS versionInfo from the versionInfo txt file
-  delegate_to: localhost
+- name: Create dict with http/plugin/wct version(s)
   ansible.builtin.set_fact:
-    twas_Name: "{{ twas_Name_ouput.stdout }}" # ?? some tricky regex
-    twas_Version: "{{ twas_Version_ouput.stdout }}" # ?? some tricky regex
+    http_version: "{{ http_version | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
-# - name: Write HTTP versionInfo to json file
-#   delegate_to: localhost
-#   ansible.builtin.template:
-#     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-#     mode: '0444'
+- name: New dict http_version
+  ansible.builtin.set_fact:
+    versions: "{{{ ansible_fqdn : http_version }}}"
 
-- name: Write HTTP versionInfo to json file
+- name: New dict append_this
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ HTTPServerVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - versioninfo_json_file is defined
-    
-- name: Plugin version
-  ansible.builtin.shell: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-  register: PluginVersionOutput
-
-- name: PluginVersionOutput
   ansible.builtin.debug:
-    msg: "{{ PluginVersionOutput.stdout_lines }}"
+    msg: "{{ versions }}"
 
-    # "Name                  Web Server Plug-ins for IBM WebSphere Application Server",
-    # "Version               9.0.5.23",
-    # "ID                    PLG",
-    # "Build Level           f5232508.04",
-    # "Package               com.ibm.websphere.PLG.v90_9.0.5023.20250226_1855",
-    # "Architecture          x86-64 (64 bit)",
-
-    # "Name            IBM SDK, Java Technology Edition, Version 8",
-    # "Version         8.0.8.40",
-    # "ID              JAVA8",
-    # "Build Level     pxa6480sr8fp40-20250123_01",
-    # "Architecture    x86-64 (64 bit)",
-
-- name: Write Plugin versionInfo to txt file
+- name: Write http IM versions to json file
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ PluginVersionOutput.stdout_lines }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plugin_versionInfo.txt"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-
-# - name: Write Plugin versionInfo to json file
-#   delegate_to: localhost
-#   ansible.builtin.template:
-#     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-#     mode: '0444'
-
-- name: Write Plugin versionInfo to json file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ PluginVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - versioninfo_json_file is defined
-
-- name: WCT version
-  ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-  register: WCTVersionOutput
-
-- name: WCTVersionOutput
-  ansible.builtin.debug:
-    msg: "{{ WCTVersionOutput.stdout_lines }}"
-
-    # "Name                  WebSphere Customization Toolbox",
-    # "Version               9.0.5.23",
-    # "ID                    WCT",
-    # "Build Level           f5232508.04",
-    # "Package               com.ibm.websphere.WCT.v90_9.0.5023.20250226_1855",
-    # "Architecture          x86-64 (64 bit)",
-
-    # "Version         8.0.8.40",
-    # "ID              JAVA8",
-    # "Build Level     pxa6480sr8fp40-20250123_01",
-    # "Architecture    x86-64 (64 bit)",
-
-- name: Write WCT versionInfo to txt file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ WCTVersionOutput.stdout_lines }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_versionInfo.txt"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-
-# - name: Write WCT versionInfo to json file
-#   delegate_to: localhost
-#   ansible.builtin.template:
-#     src: version_info.json.j2
-#     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-#     mode: '0444'
-
-- name: Write WCT versionInfo to json file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ WCTVersionOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - versioninfo_json_file is defined
+  copy:
+    content: "{{ versions | to_nice_json }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_versioninfo_json_file }}"
+    mode: '0444'
