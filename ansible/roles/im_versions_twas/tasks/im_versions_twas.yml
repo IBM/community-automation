@@ -14,153 +14,27 @@
     state: directory
     mode: '0755'
 
-- name: Write IM listInstalledPackages to txt file
+- name: Size of stdout_lines
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ packageOutput.stdout }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_txt_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - version_txt_file is defined
+  set_fact:
+    max_counter: "{{ packageOutput.stdout_lines | length }}"
 
-- name: Write IM listInstalledPackages to json file
+- name: Create dict with IM version(s)
+  ansible.builtin.set_fact:
+    list_package: "{{ list_package | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+- name: New dict list_package
+  ansible.builtin.set_fact:
+    package: "{{{ ansible_fqdn : list_package }}}"
+
+- name: New dict append_this
   delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ packageOutput.stdout_lines | to_json(indent=4) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_json_file }}"
-    mode: '0755'
-  when: 
-    - logs_dir is defined
-    - env_name is defined
-    - version_json_file is defined
+  ansible.builtin.debug:
+    msg: "{{ package }}"
 
-- name: check if tWAS installed
-  ansible.builtin.stat:
-    path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }}"
-  register: istwas
-
-- name: tWAS versions
-  block:
-  - name: tWAS version
-    ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-    register: twasVersionOutput
-
-  - name: twasVersionOutput
-    ansible.builtin.debug: 
-      msg: "{{ twasVersionOutput.stdout_lines }}"
-
-    # "Name                  IBM WebSphere Application Server Network Deployment",
-    # "Version               9.0.5.23",
-    # "ID                    ND",
-    # "Build Level           f5232508.04",
-    # "Package               com.ibm.websphere.ND.v90_9.0.5023.20250226_1855",
-    # "Architecture          x86-64 (64 bit)",
-
-    # "Name            IBM SDK, Java Technology Edition, Version 8",
-    # "Version         8.0.8.40",
-    # "ID              JAVA8",
-    # "Build Level     pxa6480sr8fp40-20250123_01",
-    # "Architecture    x86-64 (64 bit)",
-
-  - name: Write tWAS versionInfo to txt file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ twasVersionOutput.stdout_lines }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-
-  # replace this clunky with some cool regex
-  - name: Get the Name from the file ( need to regex it )
-    delegate_to: localhost
-    shell: "grep -m 1 'Name' {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt | awk -F ':' '{print $2}'"
-    register: twas_Name_ouput
-  - name: Get the Version from the file ( need to regex it )
-    delegate_to: localhost
-    shell: "grep -m 3 'Version' v.txt|tail -1 {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/twas_versionInfo.txt | awk -F ':' '{print $2}'"
-    register: twas_Version_ouput
-  # todo more
-
-  - name: Find the tWAS versionInfo from the versionInfo txt file
-    ansible.builtin.set_fact:
-      twas_Name: "{{ twas_Name_ouput.stdout }}" # ?? some tricky regex
-      twas_Version: "{{ twas_Version_ouput.stdout }}" # ?? some tricky regex
-
-  # - name: Write tWAS versionInfo to json file
-  #   delegate_to: localhost
-  #   ansible.builtin.template:
-  #     src: version_info.json.j2
-  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-  #     mode: '0444'
-
-  - name: Write tWAS versionInfo to json file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ twasVersionOutput.stdout_lines | to_json(indent=4) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-      - versioninfo_json_file is defined
-  when: istwas.stat.exists
-
-- name: check if AppClient installed
-  ansible.builtin.stat:
-    path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }}"
-  register: isapp
-
-- name: AppClient versions
-  block:
-  - name: AppClient version
-    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
-    register: appVersionOutput
-  - name: tWAS Application Client versionsInfo output
-    ansible.builtin.debug:
-      msg: "{{ appVersionOutput.stdout_lines }}"
-
-    # "Name                  Application Client for IBM WebSphere Application Server",
-    # "Version               9.0.5.20",
-    # "ID                    APPCLIENT",
-    # "Build Level           f5202422.01",
-    # "Package               com.ibm.websphere.APPCLIENT.v90_9.0.5020.20240605_1405",
-    # "Architecture          x86-64 (64 bit)",
-
-    # "Name            IBM SDK, Java Technology Edition, Version 8",
-    # "Version         8.0.8.25",
-    # "ID              JAVA8",
-    # "Build Level     pxa6480sr8fp25-20240328_01",
-    # "Architecture    x86-64 (64 bit)",
-
-  - name: Write AppClient versionInfo to txt file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ appVersionOutput.stdout_lines }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/appclient_versionInfo.txt"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-
-  # - name: Write AppClient versionInfo to json file
-  #   delegate_to: localhost
-  #   ansible.builtin.template:
-  #     src: version_info.json.j2
-  #     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-  #     mode: '0444'
-
-  - name: Write AppClient versionInfo to json file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ appVersionOutput.stdout_lines | to_json(indent=4) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
-      mode: '0755'
-    when: 
-      - logs_dir is defined
-      - env_name is defined
-      - versioninfo_json_file is defined
-  when: isapp.stat.exists
+- name: write var to file
+  delegate_to: localhost
+  copy:
+    content: "{{ package | to_nice_json }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
