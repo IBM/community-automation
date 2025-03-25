@@ -20,12 +20,12 @@
 
 - name: Create dict with http/plugin/wct version(s)
   ansible.builtin.set_fact:
-    http_version: "{{ http_version | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    http_version: "{{ http_version | default( {} ) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
 - name: New dict http_version
   ansible.builtin.set_fact:
-    versions: "{{{ ansible_fqdn : http_version }}}"
+    versions: "{{ { ansible_fqdn : http_version } }}"
 
 # - name: New dict append_this
 #   delegate_to: localhost

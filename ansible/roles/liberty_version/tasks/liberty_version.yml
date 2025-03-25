@@ -12,9 +12,9 @@
       ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version"
       register: libertyVersionOutput
 
-    - name: LibertyVersionOutput
-      ansible.builtin.debug:
-        msg: "{{ libertyVersionOutput.stdout | trim }}"
+    # - name: LibertyVersionOutput
+    #   ansible.builtin.debug:
+    #     msg: "{{ libertyVersionOutput.stdout | trim }}"
 
     - name: Set Liberty version facts
       ansible.builtin.set_fact:

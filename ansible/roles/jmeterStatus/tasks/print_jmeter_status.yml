@@ -24,9 +24,9 @@
       ansible.builtin.set_fact:
         jmeter_status: "{{{ ansible_fqdn : jmeterStatus.stdout | from_json }}}"
 
-    - name: Current Jmeter status
-      ansible.builtin.debug:
-        msg: "{{ jmeter_status }}"
+    # - name: Current Jmeter status
+    #   ansible.builtin.debug:
+    #     msg: "{{ jmeter_status }}"
 
     - name: Save Jmeter status to stress_status
       delegate_to: localhost

@@ -29,9 +29,10 @@
       ansible.builtin.set_fact:
         content: "{{ mqinfo.stdout_lines | map('regex_findall','(?<=:)[^\"]+') | flatten }}"
         
-    - name: Print out content
-      debug:
-        msg: "{{content}}"
+    # - name: Print out content
+    #   ansible.builtin.debug:
+    #     msg: "{{ content }}"
+
     - name: Set MQ info fact
       ansible.builtin.set_fact:
         mq_Name: "{{content[0] | trim}}"

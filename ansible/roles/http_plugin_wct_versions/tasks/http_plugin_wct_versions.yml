@@ -7,15 +7,32 @@
     validate_certs: false
   register: isIHSup
 
-- name: Is IHS running output
-  ansible.builtin.debug:
-    msg: "{{ isIHSup }}"
+# - name: Is IHS running output
+#   ansible.builtin.debug:
+#     msg: "{{ isIHSup }}"
 
 - name: Create version dir
   delegate_to: localhost
   ansible.builtin.file:
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
+
+- name: Set http status ( started )
+  when: isIHSup.status == 200
+  ansible.builtin.set_fact:
+    http_status: "{{ { ansible_fqdn : { 'status': 'started' } } }}"
+
+- name: Set http status ( stopped )
+  when: isIHSup.status == -1
+  ansible.builtin.set_fact:
+    http_status: "{{ { ansible_fqdn : { 'status': 'stopped' } } }}"
+
+- name: Write http status to json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ http_status | to_nice_json( sort_keys=false ) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ http_status_json_file }}"
+    mode: '0444'
 
 - name: HTTPServer version
   ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"

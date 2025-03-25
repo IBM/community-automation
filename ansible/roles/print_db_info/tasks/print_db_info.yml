@@ -34,12 +34,15 @@
           ansible.builtin.slurp: 
             src: ~/dbdir/backup/db2ls.info
           register: output
-        - name: print out the value
-          ansible.builtin.debug:
-            msg: "{{ output }}"
+
+        # - name: print out the value
+        #   ansible.builtin.debug:
+        #     msg: "{{ output }}"
+
         - name: Do some regex
           ansible.builtin.set_fact:
             content: "{{ output.content | b64decode | regex_search('(?:\\d{1,3}\\.){3}\\d{1,3}\\:\\d+') | split(':') }}"
+
         - name: Set the DB version / fixpack facts
           ansible.builtin.set_fact:
             db_Version: "{{ content[0] }}" # ?? some tricky regex
