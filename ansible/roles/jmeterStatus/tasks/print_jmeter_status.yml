@@ -22,7 +22,7 @@
 
     - name: Add the hostname to the status
       ansible.builtin.set_fact:
-        jmeter_status: "{{{ ansible_fqdn : jmeterStatus.stdout }}}"
+        jmeter_status: "{{{ ansible_fqdn : jmeterStatus.stdout | from_json }}}"
 
     - name: Current Jmeter status
       ansible.builtin.debug:
