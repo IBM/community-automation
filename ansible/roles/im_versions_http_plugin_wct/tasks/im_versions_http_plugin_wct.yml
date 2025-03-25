@@ -36,5 +36,5 @@
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ versions | to_nice_json }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_versioninfo_json_file }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"
     mode: '0444'
