@@ -8,9 +8,9 @@
     executable: /bin/bash
   register: twasstatus
 
-- name: Summary of tWAS server status output
-  ansible.builtin.debug:
-    msg: '{{ twasstatus.stdout_lines }}'
+# - name: Summary of tWAS server status output
+#   ansible.builtin.debug:
+#     msg: '{{ twasstatus.stdout_lines }}'
 
 - name: Create status dir
   delegate_to: localhost
@@ -33,10 +33,10 @@
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : wct_version }}}"
 
-- name: New dict append_this
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "{{ versions }}"
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ versions }}"
 
 - name: Write server status json file
   delegate_to: localhost

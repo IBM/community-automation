@@ -3,9 +3,9 @@
   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
   register: packageOutput
 
-- name: IM packageOutput
-  ansible.builtin.debug:
-    msg: "{{ packageOutput.stdout_lines }}"
+# - name: IM packageOutput
+#   ansible.builtin.debug:
+#     msg: "{{ packageOutput.stdout_lines }}"
 
 - name: Create version dir
   delegate_to: localhost
@@ -27,10 +27,10 @@
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : http_version }}}"
 
-- name: New dict append_this
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "{{ versions }}"
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ versions }}"
 
 - name: Write http IM versions to json file
   delegate_to: localhost

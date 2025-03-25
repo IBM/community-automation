@@ -21,9 +21,9 @@
   ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
   register: HTTPServerVersionOutput
 
-- name: HTTPServerVersionOutput
-  ansible.builtin.debug:
-    msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
+# - name: HTTPServerVersionOutput
+#   ansible.builtin.debug:
+#     msg: "{{ HTTPServerVersionOutput.stdout_lines }}"
 
 - name: Size of stdout_lines
   delegate_to: localhost
@@ -39,10 +39,10 @@
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : http_version }}}"
 
-- name: New dict append_this
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "{{ versions }}"
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ versions }}"
 
 - name: Write http versionInfo to json file
   delegate_to: localhost
@@ -55,9 +55,9 @@
   ansible.builtin.shell: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
   register: PluginVersionOutput
 
-- name: PluginVersionOutput
-  ansible.builtin.debug:
-    msg: "{{ PluginVersionOutput.stdout_lines }}"
+# - name: PluginVersionOutput
+#   ansible.builtin.debug:
+#     msg: "{{ PluginVersionOutput.stdout_lines }}"
 
 - name: Size of stdout_lines
   delegate_to: localhost
@@ -73,10 +73,10 @@
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : plugin_version }}}"
 
-- name: New dict append_this
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "{{ versions }}"
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ versions }}"
 
 - name: Write plugin versionInfo to json file
   delegate_to: localhost
@@ -96,9 +96,9 @@
   ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
   register: WCTVersionOutput
 
-- name: WCTVersionOutput
-  ansible.builtin.debug:
-    msg: "{{ WCTVersionOutput.stdout_lines }}"
+# - name: WCTVersionOutput
+#   ansible.builtin.debug:
+#     msg: "{{ WCTVersionOutput.stdout_lines }}"
 
 - name: Size of stdout_lines
   delegate_to: localhost
@@ -114,10 +114,10 @@
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : wct_version }}}"
 
-- name: New dict append_this
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "{{ versions }}"
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ versions }}"
 
 - name: Write plugin versionInfo to json file
   delegate_to: localhost

@@ -31,10 +31,10 @@
       ansible.builtin.set_fact:
         package: "{{{ ansible_fqdn : list_package }}}"
 
-    - name: New dict append_this
-      delegate_to: localhost
-      ansible.builtin.debug:
-        msg: "{{ package }}"
+    # - name: New dict append_this
+    #   delegate_to: localhost
+    #   ansible.builtin.debug:
+    #     msg: "{{ package }}"
 
     - name: write var to file
       delegate_to: localhost

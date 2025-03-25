@@ -12,9 +12,9 @@
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
 
-  - name: WebSphere VersionInfo output
-    ansible.builtin.debug:
-      msg: '{{ tversions.stdout_lines }}'
+  # - name: WebSphere VersionInfo output
+  #   ansible.builtin.debug:
+  #     msg: '{{ tversions.stdout_lines }}'
 
   - name: Create version dir
     delegate_to: localhost
@@ -37,10 +37,10 @@
     ansible.builtin.set_fact:
       versions: "{{{ ansible_fqdn : twas_version }}}"
 
-  - name: New dict append_this
-    delegate_to: localhost
-    ansible.builtin.debug:
-      msg: "{{ versions }}"
+  # - name: New dict append_this
+  #   delegate_to: localhost
+  #   ansible.builtin.debug:
+  #     msg: "{{ versions }}"
 
   - name: Write tWAS versionInfo to json file
     delegate_to: localhost
@@ -78,10 +78,10 @@
     ansible.builtin.set_fact:
       versions: "{{{ ansible_fqdn : app_version }}}"
 
-  - name: New dict append_this
-    delegate_to: localhost
-    ansible.builtin.debug:
-      msg: "{{ versions }}"
+  # - name: New dict append_this
+  #   delegate_to: localhost
+  #   ansible.builtin.debug:
+  #     msg: "{{ versions }}"
 
   - name: Write AppClient versionInfo to json file
     delegate_to: localhost
