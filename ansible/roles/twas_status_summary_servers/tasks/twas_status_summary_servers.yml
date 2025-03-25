@@ -41,6 +41,6 @@
 - name: Write server status json file
   delegate_to: localhost
   ansible.builtin.copy:
-    content: "{{ versions | to_nice_json, sort_keys=false }}"
+    content: "{{ versions | to_nice_json( sort_keys=false ) }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
     mode: '0444'

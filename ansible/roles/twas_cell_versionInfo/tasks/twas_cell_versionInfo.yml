@@ -45,7 +45,7 @@
   - name: Write tWAS versionInfo to json file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ versions | to_nice_json, sort_keys=false }}"
+      content: "{{ versions | to_nice_json( sort_keys=false ) }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0444'
   
@@ -86,6 +86,6 @@
   - name: Write AppClient versionInfo to json file
     delegate_to: localhost
     ansible.builtin.copy:
-      content: "{{ versions | to_nice_json, sort_keys=false }}"
+      content: "{{ versions | to_nice_json( sort_keys=false ) }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ app_versioninfo_json_file }}"
       mode: '0444'
