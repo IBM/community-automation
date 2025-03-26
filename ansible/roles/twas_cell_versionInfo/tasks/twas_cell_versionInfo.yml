@@ -12,9 +12,16 @@
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
 
-  # - name: WebSphere VersionInfo output
-  #   ansible.builtin.debug:
-  #     msg: '{{ tversions.stdout_lines }}'
+  - name: Read the release / version from properties/version/WAS.product 
+    community.general.xml:
+      path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+      xpath: /product
+      content: attribute
+    register: xml_output
+
+  - name: Show xml attribute value
+    ansible.builtin.debug:
+      var: xml_output.matches
 
   - name: Create version dir
     delegate_to: localhost
