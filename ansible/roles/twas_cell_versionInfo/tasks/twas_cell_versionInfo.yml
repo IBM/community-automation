@@ -62,9 +62,9 @@
     delegate_to: localhost
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      xpath: /was:product
+      xpath: /product
       namespaces:
-        was: "file:///{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/product.dtd"
+        was: "http://https://nest-ci-agent-1.fyre.ibm.com/nestInfo/dtd/WAS.product.dtd"
       content: attribute
     register: product
 
@@ -103,17 +103,17 @@
     delegate_to: localhost
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      xpath: /product/build-info/['level']
-      content: text
+      xpath: /product/build-info
+      content: attribute
     register: product_level
 
   - name: Show an attribute value level
     ansible.builtin.debug:
-      var: product_level.matches[0]
+      var: product_level.matches[0]['build-info']['level']
 
   - name: Create dict with product_level
     ansible.builtin.set_fact:
-      product_version: "{{ product_level.matches[0] }}"
+      product_level: "{{ product_level.matches[0]['build-info']['level'] }}"
 
   - name: Show xml attribute value product_level
     ansible.builtin.debug:
@@ -129,7 +129,7 @@
       content: "{{ version_level | to_nice_json( sort_keys=false ) }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
       mode: '0444'
-
+  
   - name: WebSphere VersionInfo
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
