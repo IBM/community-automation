@@ -12,9 +12,15 @@
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
 
+  - name: Fetch properties/version/WAS.product 
+    ansible.builtin.fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
+      flat: yes
+
   - name: Read the release / version from properties/version/WAS.product 
     community.general.xml:
-      path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
       xpath: /product
       content: attribute
     register: xml_output
