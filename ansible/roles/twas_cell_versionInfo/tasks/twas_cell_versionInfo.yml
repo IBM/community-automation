@@ -15,66 +15,12 @@
       state: directory
       mode: '0755'
 
-  - name: Fetch properties/version/WAS.product
-    ansible.builtin.fetch:
-      src: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      flat: yes
-
-  - name: Read the product name from properties/version/WAS.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      xpath: /product
-      content: attribute
-    register: product
-
-  - name: Set twas_Product fact
-    ansible.builtin.set_fact:
-      twas_Product: "{{ product.matches[0]['product']['name'] }}"
-
-  - name: Print twas_Product debug
-    ansible.builtin.debug:
-      var: "{{ twas_Product }}"
-
-  - name: Read the product version from properties/version/WAS.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      xpath: /product/version
-      content: text
-    register: version
-
-  - name: Set twas_Version fact
-    ansible.builtin.set_fact:
-      twas_Version: '{{ version.matches[0]["version"] }}'
-
-  - name: Print twas_Version debug
-    ansible.builtin.debug:
-      var: "{{ twas_Version }}"
-
-  - name: Read the level from properties/version/WAS.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
-      xpath: /product/build-info
-      content: attribute
-    register: product_level
-
-  - name: Set twas_Build_Level fact
-    ansible.builtin.set_fact:
-      twas_Build_Level: '{{ product_level.matches[0]["build-info"]["level"] }}'
-
-  - name: Print twas_Build_Level debug
-    ansible.builtin.debug:
-      var: "{{ twas_Build_Level }}"
-
-  - name: Write tWAS version_level to json file
-    delegate_to: localhost
-    ansible.builtin.template:
-      src: version_level.json.j2
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      mode: '0444'
+  - name: Read the WAS.product xml file
+    ansible.builtin.include_role:
+      name: twas_cell_version_level
+    vars:
+      product: WAS
+      staging_json_file: "{{ version_level_json_file }}"
 
   - name: WebSphere VersionInfo
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
@@ -110,66 +56,12 @@
   when: isapp.stat.exists
   block:
 
-  - name: Fetch properties/version/APPCLIENT.product
-    ansible.builtin.fetch:
-      src: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
-      flat: yes
-
-  - name: Read the product name from properties/version/WAS.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
-      xpath: /product
-      content: attribute
-    register: product
-
-  - name: Set twas_Product fact
-    ansible.builtin.set_fact:
-      twas_Product: "{{ product.matches[0]['product']['name'] }}"
-
-  - name: Print twas_Product debug
-    ansible.builtin.debug:
-      var: "{{ twas_Product }}"
-
-  - name: Read the product version from properties/version/APPCLIENT.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
-      xpath: /product/version
-      content: text
-    register: version
-
-  - name: Set twas_Version fact
-    ansible.builtin.set_fact:
-      twas_Version: '{{ version.matches[0]["version"] }}'
-
-  - name: Print twas_Version debug
-    ansible.builtin.debug:
-      var: "{{ twas_Version }}"
-
-  - name: Read the level from properties/version/APPCLIENT.product
-    delegate_to: localhost
-    community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
-      xpath: /product/build-info
-      content: attribute
-    register: product_level
-
-  - name: Set twas_Build_Level fact
-    ansible.builtin.set_fact:
-      twas_Build_Level: '{{ product_level.matches[0]["build-info"]["level"] }}'
-
-  - name: Print twas_Build_Level debug
-    ansible.builtin.debug:
-      var: "{{ twas_Build_Level }}"
-
-  - name: Write tWAS version_level to json file
-    delegate_to: localhost
-    ansible.builtin.template:
-      src: version_level.json.j2
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
-      mode: '0444'
+  - name: Read the WAS.product xml file
+    ansible.builtin.include_role:
+      name: twas_cell_version_level
+    vars:
+      product: APPCLIENT
+      staging_json_file: "app_{{ version_level_json_file }}"
 
   - name: Merge the Server / Appclient json ( combined )
     delegate_to: localhost

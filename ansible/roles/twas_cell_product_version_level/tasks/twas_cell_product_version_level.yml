@@ -1,0 +1,62 @@
+---
+
+  - name: Fetch properties/version/{{ product }}.product
+    ansible.builtin.fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/properties/version/{{ product }}.product"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      flat: yes
+
+  - name: Read the product name from properties/version/{{ product }}.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      xpath: /product
+      content: attribute
+    register: product
+
+  - name: Set twas_Product fact
+    ansible.builtin.set_fact:
+      twas_Product: "{{ product.matches[0]['product']['name'] }}"
+
+  - name: Print twas_Product debug
+    ansible.builtin.debug:
+      var: "{{ twas_Product }}"
+
+  - name: Read the product version from properties/version/{{ product }}.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      xpath: /product/version
+      content: text
+    register: version
+
+  - name: Set twas_Version fact
+    ansible.builtin.set_fact:
+      twas_Version: '{{ version.matches[0]["version"] }}'
+
+  - name: Print twas_Version debug
+    ansible.builtin.debug:
+      var: "{{ twas_Version }}"
+
+  - name: Read the level from properties/version/{{ product }}.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      xpath: /product/build-info
+      content: attribute
+    register: product_level
+
+  - name: Set twas_Build_Level fact
+    ansible.builtin.set_fact:
+      twas_Build_Level: '{{ product_level.matches[0]["build-info"]["level"] }}'
+
+  - name: Print twas_Build_Level debug
+    ansible.builtin.debug:
+      var: "{{ twas_Build_Level }}"
+
+  - name: Write {{ product }} version_level to staging json file
+    delegate_to: localhost
+    ansible.builtin.template:
+      src: version_level.json.j2
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ staging_json_file }}"
+      mode: '0444'
