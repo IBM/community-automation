@@ -17,7 +17,7 @@
 
   - name: Read the WAS.product xml file
     ansible.builtin.include_role:
-      name: twas_cell_version_level
+      name: twas_cell_product_version_level
     vars:
       product: WAS
       staging_json_file: "{{ version_level_json_file }}"
@@ -56,9 +56,9 @@
   when: isapp.stat.exists
   block:
 
-  - name: Read the WAS.product xml file
+  - name: Read the APPCLIENT.product xml file
     ansible.builtin.include_role:
-      name: twas_cell_version_level
+      name: twas_cell_product_version_level
     vars:
       product: APPCLIENT
       staging_json_file: "app_{{ version_level_json_file }}"
