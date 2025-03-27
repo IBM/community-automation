@@ -112,7 +112,7 @@
 
   - name: Fetch properties/version/APPCLIENT.product
     ansible.builtin.fetch:
-      src: "{{ install_base }}/{{ twas_dir }}/properties/version/APPCLIENT.product"
+      src: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
       flat: yes
 
