@@ -68,9 +68,13 @@
       content: attribute
     register: product
 
-  - name: Show xml attribute value /product/name
+  - name: Set twas_Product fact
+    ansible.builtin.set_fact:
+      twas_Product: "{{ product.matches[0]['product']['name'] }}"
+
+  - name: Print twas_Product debug
     ansible.builtin.debug:
-      var: "{{ product.matches[0]['product']['name'] }}"
+      var: "{{ twas_Product }}"
 
   - name: Read the product version from properties/version/WAS.product
     delegate_to: localhost
@@ -80,24 +84,13 @@
       content: text
     register: version
 
-  - name: Show xml attribute value /product/version
+  - name: Set twas_Version fact
+    ansible.builtin.set_fact:
+      twas_Version: '{{ version.matches[0]["version"] }}'
+
+  - name: Print twas_Version debug
     ansible.builtin.debug:
-      var: version.matches[0]['version']
-
-  - name: Create dict with product_version
-    ansible.builtin.set_fact:
-      product_version: "{{ version.matches[0] }}"
-
-  - name: New dict version_level
-    ansible.builtin.set_fact:
-      version_level: "{{ { ansible_fqdn : product_version } }}"
-
-  - name: Write tWAS version_level to json file
-    delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ version_level | to_nice_json( sort_keys=false ) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      mode: '0444'
+      var: "{{ twas_Version }}"
 
   - name: Read the level from properties/version/WAS.product
     delegate_to: localhost
@@ -107,29 +100,21 @@
       content: attribute
     register: product_level
 
-  - name: Show an attribute value level
-    ansible.builtin.debug:
-      var: product_level.matches[0]['build-info']['level']
-
-  - name: Create dict with product_level
+  - name: Set twas_Build_Level fact
     ansible.builtin.set_fact:
-      product_level: "{{ product_level.matches[0]['build-info']['level'] }}"
+      twas_Build_Level: '{{ product_level.matches[0]["build-info"]["level"] }}'
 
-  - name: Show xml attribute value product_level
+  - name: Print twas_Build_Level debug
     ansible.builtin.debug:
-      var: "{{ product_level }}"
-
-  - name: Combined the product version / level
-    ansible.builtin.set_fact:
-      version_level: "{{ product_version | combine( { product_level }, recursive=True, list_merge='append' ) }}"
+      var: "{{ twas_Build_Level }}"
 
   - name: Write tWAS version_level to json file
     delegate_to: localhost
-    ansible.builtin.copy:
-      content: "{{ version_level | to_nice_json( sort_keys=false ) }}"
+    ansible.builtin.template:
+      src: version_level.json.j2
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
       mode: '0444'
-  
+
   - name: WebSphere VersionInfo
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
