@@ -15,43 +15,6 @@
       state: directory
       mode: '0755'
 
-# testing some xpath -> https://www.freeformatter.com/xpath-tester.html#before-output
-# /product shows all the elements
-# /product/build-info shows the date / level
-# ansible xml does not!!!!
-
-# cat properties/version/WAS.product 
-
-# <?xml version="1.0" encoding="UTF-8"?>
-# <!DOCTYPE product SYSTEM "product.dtd">
-# <product name="IBM WebSphere Application Server Network Deployment">
-#   <id>ND</id>
-#   <version>9.0.5.23</version>
-#   <build-info
-#     date="3/7/25"
-#     level="f5232509.07"/>
-# </product>
-
-# cat ./properties/version/dtd/product.dtd
-
-# <?xml version="1.0" encoding="UTF-8"?>
-# <!-- Copyright IBM Corp. This is the DTD For the WebSphere product version data 
-# files that contain product installation information. -->
-
-
-# <!ELEMENT product (id, version, build-info)>
-# <!ATTLIST product name CDATA #REQUIRED>
-
-# <!ELEMENT version (#PCDATA)>
-
-# <!ELEMENT id (#PCDATA)>
-
-# <!ELEMENT build-info EMPTY>
-# <!ATTLIST build-info
-#     date CDATA #REQUIRED
-#     level CDATA #REQUIRED>
-
-
   - name: Fetch properties/version/WAS.product
     ansible.builtin.fetch:
       src: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
@@ -63,8 +26,6 @@
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/WAS.product"
       xpath: /product
-      namespaces:
-        was: "http://https://nest-ci-agent-1.fyre.ibm.com/nestInfo/dtd/WAS.product.dtd"
       content: attribute
     register: product
 
@@ -133,11 +94,6 @@
     ansible.builtin.set_fact:
       versions: "{{{ ansible_fqdn : twas_version }}}"
 
-  # - name: New dict append_this
-  #   delegate_to: localhost
-  #   ansible.builtin.debug:
-  #     msg: "{{ versions }}"
-
   - name: Write tWAS versionInfo to json file
     delegate_to: localhost
     ansible.builtin.copy:
@@ -153,13 +109,78 @@
 - name: AppClient versions
   when: isapp.stat.exists
   block:
+
+  - name: Fetch properties/version/APPCLIENT.product
+    ansible.builtin.fetch:
+      src: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
+      flat: yes
+
+  - name: Read the product name from properties/version/WAS.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
+      xpath: /product
+      content: attribute
+    register: product
+
+  - name: Set twas_Product fact
+    ansible.builtin.set_fact:
+      twas_Product: "{{ product.matches[0]['product']['name'] }}"
+
+  - name: Print twas_Product debug
+    ansible.builtin.debug:
+      var: "{{ twas_Product }}"
+
+  - name: Read the product version from properties/version/APPCLIENT.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
+      xpath: /product/version
+      content: text
+    register: version
+
+  - name: Set twas_Version fact
+    ansible.builtin.set_fact:
+      twas_Version: '{{ version.matches[0]["version"] }}'
+
+  - name: Print twas_Version debug
+    ansible.builtin.debug:
+      var: "{{ twas_Version }}"
+
+  - name: Read the level from properties/version/APPCLIENT.product
+    delegate_to: localhost
+    community.general.xml:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/APPCLIENT.product"
+      xpath: /product/build-info
+      content: attribute
+    register: product_level
+
+  - name: Set twas_Build_Level fact
+    ansible.builtin.set_fact:
+      twas_Build_Level: '{{ product_level.matches[0]["build-info"]["level"] }}'
+
+  - name: Print twas_Build_Level debug
+    ansible.builtin.debug:
+      var: "{{ twas_Build_Level }}"
+
+  - name: Write tWAS version_level to json file
+    delegate_to: localhost
+    ansible.builtin.template:
+      src: version_level.json.j2
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+      mode: '0444'
+
+  - name: Merge the Server / Appclient json ( combined )
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}') | from_json, recursive=True, list_merge='append' )}}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+      mode: '0444'
+
   - name: AppClient version
     ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: appVersionOutput
-
-  # - name: tWAS Application Client versionsInfo output
-  #   ansible.builtin.debug:
-  #     msg: "{{ appVersionOutput.stdout_lines }}"
 
   - name: Size of stdout_lines
     delegate_to: localhost
@@ -174,11 +195,6 @@
   - name: New dict app_version
     ansible.builtin.set_fact:
       versions: "{{ { ansible_fqdn : app_version } }}"
-
-  # - name: New dict append_this
-  #   delegate_to: localhost
-  #   ansible.builtin.debug:
-  #     msg: "{{ versions }}"
 
   - name: Write AppClient versionInfo to json file
     delegate_to: localhost
