@@ -1,2 +1,3 @@
 ---
-- include_tasks: twas_cell_versionInfo.yml
+- name: Parse the tWAS xx.product 
+  ansible.builtin.include_tasks: twas_cell_product_version_level.yml
