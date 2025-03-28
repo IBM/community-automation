@@ -20,6 +20,7 @@
       name: twas_cell_product_version_level
     vars:
       twas_product: WAS
+      target_dir: "{{ twas_dir }}"
       staging_json_file: "{{ version_level_json_file }}"
 
   - name: WebSphere VersionInfo
@@ -61,6 +62,7 @@
       name: twas_cell_product_version_level
     vars:
       twas_product: APPCLIENT
+      target_dir: "{{ app_dir }}"
       staging_json_file: "app_{{ version_level_json_file }}"
 
   - name: Merge the Server / Appclient json ( combined )

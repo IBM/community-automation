@@ -2,7 +2,7 @@
 
   - name: Fetch properties/version/{{ twas_product }}.product
     ansible.builtin.fetch:
-      src: "{{ install_base }}/{{ twas_dir }}/properties/version/{{ twas_product }}.product"
+      src: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
       flat: yes
 
