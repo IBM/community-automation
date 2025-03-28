@@ -160,6 +160,18 @@
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wct_versioninfo_json_file }}"
     mode: '0444'
 
+- name: Inialize combined dict
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+    combined_dict: {}
+
+- name: Save ( seed combined )
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ combined_dict }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+    mode: '0444'
+
 - name: Save IHS/PLG/WCT to version_level json ( combined )
   delegate_to: localhost
   ansible.builtin.copy:
