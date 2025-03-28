@@ -19,7 +19,7 @@
     ansible.builtin.include_role:
       name: twas_cell_product_version_level
     vars:
-      product: WAS
+      twas_product: WAS
       staging_json_file: "{{ version_level_json_file }}"
 
   - name: WebSphere VersionInfo
@@ -60,7 +60,7 @@
     ansible.builtin.include_role:
       name: twas_cell_product_version_level
     vars:
-      product: APPCLIENT
+      twas_product: APPCLIENT
       staging_json_file: "app_{{ version_level_json_file }}"
 
   - name: Merge the Server / Appclient json ( combined )

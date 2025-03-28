@@ -1,15 +1,15 @@
 ---
 
-  - name: Fetch properties/version/{{ product }}.product
+  - name: Fetch properties/version/{{ twas_product }}.product
     ansible.builtin.fetch:
-      src: "{{ install_base }}/{{ twas_dir }}/properties/version/{{ product }}.product"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      src: "{{ install_base }}/{{ twas_dir }}/properties/version/{{ twas_product }}.product"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
       flat: yes
 
-  - name: Read the product name from properties/version/{{ product }}.product
+  - name: Read the product name from properties/version/{{ twas_product }}.product
     delegate_to: localhost
     community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
       xpath: /product
       content: attribute
     register: product
@@ -22,10 +22,10 @@
     ansible.builtin.debug:
       var: "{{ twas_Product }}"
 
-  - name: Read the product version from properties/version/{{ product }}.product
+  - name: Read the product version from properties/version/{{ twas_product }}.product
     delegate_to: localhost
     community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
       xpath: /product/version
       content: text
     register: version
@@ -38,10 +38,10 @@
     ansible.builtin.debug:
       var: "{{ twas_Version }}"
 
-  - name: Read the level from properties/version/{{ product }}.product
+  - name: Read the level from properties/version/{{ twas_product }}.product
     delegate_to: localhost
     community.general.xml:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ product }}.product"
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
       xpath: /product/build-info
       content: attribute
     register: product_level
