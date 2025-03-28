@@ -54,7 +54,7 @@
     ansible.builtin.debug:
       var: "{{ twas_Build_Level }}"
 
-  - name: Write {{ product }} version_level to staging json file
+  - name: Write {{ twas_product }} version_level to staging json file
     delegate_to: localhost
     ansible.builtin.template:
       src: version_level.json.j2
