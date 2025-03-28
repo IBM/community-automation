@@ -176,7 +176,7 @@
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json )}}"
-    dest: "{{ json_path }}/{{ json_file }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
     mode: '0444'
   with_items: 
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
