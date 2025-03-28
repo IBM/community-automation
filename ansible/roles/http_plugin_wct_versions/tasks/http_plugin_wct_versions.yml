@@ -34,8 +34,16 @@
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ http_status_json_file }}"
     mode: '0444'
 
+- name: Read the IHS.product xml file
+  ansible.builtin.include_role:
+    name: twas_cell_product_version_level
+  vars:
+    twas_product: IHS
+    target_dir: "{{ http_dir }}"
+    staging_json_file: "ihs_{{ version_level_json_file }}"
+
 - name: HTTPServer version
-  ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+  ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
   register: HTTPServerVersionOutput
 
 # - name: HTTPServerVersionOutput
@@ -67,6 +75,14 @@
     content: "{{ versions | to_nice_json( sort_keys=false ) }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ http_versioninfo_json_file }}"
     mode: '0444'
+
+- name: Read the IHS.product xml file
+  ansible.builtin.include_role:
+    name: twas_cell_product_version_level
+  vars:
+    twas_product: PLG
+    target_dir: "{{ plugin_dir }}"
+    staging_json_file: "plg_{{ version_level_json_file }}"
 
 - name: Plugin version
   ansible.builtin.shell: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
@@ -102,6 +118,14 @@
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ plugin_versioninfo_json_file }}"
     mode: '0444'
 
+- name: Read the WCT.product xml file
+  ansible.builtin.include_role:
+    name: twas_cell_product_version_level
+  vars:
+    twas_product: WCT
+    target_dir: "{{ wct_dir }}"
+    staging_json_file: "wct_{{ version_level_json_file }}"
+
 - name: WCT version
   ansible.builtin.shell: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
   register: WCTVersionOutput
@@ -129,9 +153,20 @@
 #   ansible.builtin.debug:
 #     msg: "{{ versions }}"
 
-- name: Write plugin versionInfo to json file
+- name: Write wct versionInfo to json file
   delegate_to: localhost
   ansible.builtin.copy:
     content: "{{ versions | to_nice_json( sort_keys=false ) }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ wct_versioninfo_json_file }}"
     mode: '0444'
+
+- name: Save IHS/PLG/WCT to version_level json ( combined )
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json )}}"
+    dest: "{{ json_path }}/{{ json_file }}"
+    mode: '0444'
+  with_items: 
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
