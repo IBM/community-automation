@@ -24,14 +24,19 @@
   ansible.builtin.set_fact:
     max_counter: "{{ twasstatus.stdout_lines | length }}"
 
-- name: Create dict with server status
+- name: Create list with server names
   ansible.builtin.set_fact:
-    wct_version: "{{ wct_version | default({}) | combine( { item: twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    twas_server_name: "{{ twas_server_name | default([]) + [ {{ twasstatus.stdout_lines[item | int]| regex_search('\".*?\"') | first }} }}"
+  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+- name: Create dict with server name and status
+  ansible.builtin.set_fact:
+    twas_server_status: "{{ twas_server_status | default({}) | combine( { twas_server_name.stdout_lines[item | int]: twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
 - name: New dict server status
   ansible.builtin.set_fact:
-    versions: "{{{ ansible_fqdn : wct_version }}}"
+    versions: "{{{ ansible_fqdn : twas_server_status }}}"
 
 # - name: New dict append_this
 #   delegate_to: localhost
