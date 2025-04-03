@@ -4,17 +4,13 @@
   ansible.builtin.shell:
     cmd: |
       set -o pipefail
-      {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' > /tmp/server_status.out || true
+      {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
     executable: /bin/bash
   register: twasstatus
 
-- name: Read server_status.out contents into a list
-  ansible.builtin.set_fact:
-    twasstatus: "{{ lookup('file', '/tmp/server_status.out').splitlines() }}"
-
-- name: Summary of tWAS server status output
-  ansible.builtin.debug:
-    msg: '{{ twasstatus }}'
+# - name: Summary of tWAS server status output
+#   ansible.builtin.debug:
+#     msg: '{{ twasstatus.stdout_lines }}'
 
 - name: Create status dir
   delegate_to: localhost
@@ -23,10 +19,10 @@
     state: directory
     mode: '0755'
 
-- name: Size of twasstatus
+- name: Size of stdout_lines
   delegate_to: localhost
   ansible.builtin.set_fact:
-    max_counter: "{{ twasstatus | length }}"
+    max_counter: "{{ twasstatus.stdout_lines | length }}"
 
 - name: Create list with server names
   ansible.builtin.set_fact:
@@ -35,9 +31,15 @@
     # this is not working well. The line below removes the server name
     # this below retuns null 
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
-    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.[item | int] | regex_search("([\\]+)(.+)$", "\2") ] }}'
+    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
+- name: pick up the lines we are interested in.
+  set_fact:
+    important_lines: "{{ important_lines|default([]) + [item] }}"
+  when: item | length > 1
+  with_items:
+  - "{{ server_list.stdout_lines }}"
 
 - name: Debug twas_server_name list
   delegate_to: localhost
