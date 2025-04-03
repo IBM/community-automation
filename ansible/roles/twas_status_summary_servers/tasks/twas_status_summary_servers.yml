@@ -10,7 +10,7 @@
 
 - name: Read server_status.out contents into a list
   ansible.builtin.set_fact:
-    twasstatus: "{{ lookup('file', read_file_contents_into_list__file_path).splitlines() }}"
+    twasstatus: "{{ lookup('file', '/tmp/server_status.out').splitlines() }}"
 
 - name: Summary of tWAS server status output
   ansible.builtin.debug:
