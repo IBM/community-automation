@@ -39,7 +39,7 @@
 
 - name: Create dict with server name and status
   ansible.builtin.set_fact:
-    twas_server_status: "{{ twas_server_status | default({}) | combine( { item + twas_server_name[item | int] : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    twas_server_status: "{{ twas_server_status | default({}) | combine( { twas_server_name[item | int] : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
 - name: New dict server status
