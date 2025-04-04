@@ -20,7 +20,6 @@
     mode: '0755'
 
 - name: Size of stdout_lines
-  delegate_to: localhost
   ansible.builtin.set_fact:
     max_counter: "{{ twasstatus.stdout_lines | length }}"
 
@@ -30,25 +29,17 @@
     # twas_server_name: "{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search('\\.*?\\') ] }}"
     # this is not working well. The line below removes the server name
     # this below retuns null 
-    # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
-    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
+    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
+    # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
-- name: pick up the lines we are interested in.
-  set_fact:
-    important_lines: "{{ important_lines|default([]) + [item] }}"
-  when: item | length > 1
-  with_items:
-  - "{{ server_list.stdout_lines }}"
-
 - name: Debug twas_server_name list
-  delegate_to: localhost
   ansible.builtin.debug:
     msg: "{{ twas_server_name }}"
 
 - name: Create dict with server name and status
   ansible.builtin.set_fact:
-    twas_server_status: "{{ twas_server_status | default({}) | combine( { twas_server_name[item | int] : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    twas_server_status: "{{ twas_server_status | default({}) | combine( { item + twas_server_name[item | int] : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
 - name: New dict server status
