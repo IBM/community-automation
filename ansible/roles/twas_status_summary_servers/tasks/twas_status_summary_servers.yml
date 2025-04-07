@@ -19,22 +19,37 @@
   ansible.builtin.set_fact:
     max_counter: "{{ twasstatus.stdout_lines | length }}"
 
-- name: Create list with server names
+## new format of the server status combined
+# {
+# "nest-twas9-dt-s4.fyre.ibm.com":[ 
+#         {"server": "nodeagent", "status":"ADMU0508I: The Node Agent \"nodeagent\" is STARTED"},
+#         {"server": "server", "status":"ADMU0508I: The Application Server \"server\" is STARTED"}
+#         ],  
+# "nest-twas9-dt-s1.fyre.ibm.com":[ 
+#         {"server": "nodeagent", "status":"ADMU0508I: The Node Agent \"nodeagent\" is STARTED"}, 
+#         {"server": "server", "status": "ADMU0508I: The Application Server \"server\" is STARTED"}
+#         ],  
+# "nest-twas9-dt-s2.fyre.ibm.com":[
+#         {"server": "nodeagent", "status":"ADMU0508I: The Node Agent \"nodeagent\" is STARTED"}, 
+#         {"server": "server", "status": "ADMU0508I: The Application Server \"server\" is STARTED"}
+#         ],  
+# "nest-twas9-dt-dmgr.fyre.ibm.com":[
+#         {"server": "dmgr","status": "ADMU0508I: The Deployment Manager \"dmgr\" is STARTED"}
+#         ],  
+# "nest-twas9-dt-s3.fyre.ibm.com":[
+#         {"server": "nodeagent", "status":"ADMU0508I: The Node Agent \"nodeagent\" is STARTED"}, 
+#         {"server": "server", "status": "ADMU0508I: The Application Server \"server\" is STARTED"}
+#         ]   
+# }
+- name: Create list with server name / status
   ansible.builtin.set_fact:
-    # this regex should return the server name , but the ansible fails out
-    # twas_server_name: "{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search('\\.*?\\') ] }}"
-    # this is not working well. The line below removes the server name
-    # this below retuns null 
-    # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
-    # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
     # NOTE: the get_twas_server_status -> plugins/filter/get_twas_server_status
-    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_status ] }}'
-
+    twas_server_name_status: '{{ twas_server_name_status | default({}) + { "server": twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_name } }}'
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
-- name: Debug twas_server_name list
+- name: Debug twas_server_name_status list
   ansible.builtin.debug:
-    msg: "{{ twas_server_name }}"
+    msg: "{{ twas_server_name_status }}"
 
 - name: Create dict with server name and status
   ansible.builtin.set_fact:
