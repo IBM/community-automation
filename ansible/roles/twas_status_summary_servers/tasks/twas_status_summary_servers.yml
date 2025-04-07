@@ -27,7 +27,7 @@
     # this below retuns null 
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
-    # NOTE: the get_twas_server_status -> plugins/modules/get_twas_server_status
+    # NOTE: the get_twas_server_status -> plugins/filter/get_twas_server_status
     twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_status ] }}'
 
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
