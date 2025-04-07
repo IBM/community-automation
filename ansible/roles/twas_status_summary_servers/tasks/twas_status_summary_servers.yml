@@ -29,9 +29,15 @@
     # twas_server_name: "{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search('\\.*?\\') ] }}"
     # this is not working well. The line below removes the server name
     # this below retuns null 
-    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
+    # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
+    twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | get_twas_server_status ] }}'
+
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+- name: Format the data using the custom filter
+  set_fact:
+    formatted_data: "{{ combined_dict | get_twas_server_status }}"
 
 - name: Debug twas_server_name list
   ansible.builtin.debug:
