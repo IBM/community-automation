@@ -8,10 +8,6 @@
     executable: /bin/bash
   register: twasstatus
 
-# - name: Summary of tWAS server status output
-#   ansible.builtin.debug:
-#     msg: '{{ twasstatus.stdout_lines }}'
-
 - name: Create status dir
   delegate_to: localhost
   ansible.builtin.file:
@@ -31,13 +27,10 @@
     # this below retuns null 
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("\S+\\") ] }}'
     # twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | regex_search("([\\]+)([\"])(.+)([\\])(.+)$", "\2") ] }}'
+    # NOTE: the filter_plugin is in the nest-ops repo ansible/filter_plugins/get_twas_server_status
     twas_server_name: '{{ twas_server_name | default([]) + [ twasstatus.stdout_lines[item | int] | get_twas_server_status ] }}'
 
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
-
-- name: Format the data using the custom filter
-  set_fact:
-    formatted_data: "{{ combined_dict | get_twas_server_status }}"
 
 - name: Debug twas_server_name list
   ansible.builtin.debug:
@@ -45,18 +38,12 @@
 
 - name: Create dict with server name and status
   ansible.builtin.set_fact:
-    # goofy logic here to ensure that even if the twas_server_name is null / not uniq, the key is
-    twas_server_status: "{{ twas_server_status | default({}) | combine( { item|string+'-'+twas_server_name[item | int]|string : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    twas_server_status: "{{ twas_server_status | default({}) | combine( { twas_server_name[item | int]|string : twasstatus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
 - name: New dict server status
   ansible.builtin.set_fact:
     versions: "{{{ ansible_fqdn : twas_server_status }}}"
-
-# - name: New dict append_this
-#   delegate_to: localhost
-#   ansible.builtin.debug:
-#     msg: "{{ versions }}"
 
 - name: Write server status json file
   delegate_to: localhost
