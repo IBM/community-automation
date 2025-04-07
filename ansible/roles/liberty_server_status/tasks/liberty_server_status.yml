@@ -11,10 +11,6 @@
   register: cmdOutput1
   failed_when: ( cmdOutput1.rc not in [ 0, 1, 2 ] )
 
-- name: Server status output
-  ansible.builtin.debug:
-    msg: '{{ cmdOutput1.stdout | trim }}'
-
 - name: Set status facts
   ansible.builtin.set_fact:
     server_status: '{{ cmdOutput1.stdout | trim }}'
@@ -26,9 +22,17 @@
     state: directory
     mode: '0755'
 
-- name: Write Liberty status to json file
+- name: Create list with server name / status
+  ansible.builtin.set_fact:
+    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": {{ wl_server }}, "status": server_status } ] }}'
+
+- name: New dict server status
+  ansible.builtin.set_fact:
+    versions: "{{{ ansible_fqdn : liberty_server_name_status }}}"
+
+- name: Write server status json file
   delegate_to: localhost
-  ansible.builtin.template:
-    src: server_status.json.j2
+  ansible.builtin.copy:
+    content: "{{ versions | to_nice_json( sort_keys=false ) }}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
     mode: '0444'
