@@ -24,7 +24,7 @@
 
 - name: Create list with server name / status
   ansible.builtin.set_fact:
-    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": {{ wl_server }}, "status": server_status } ] }}'
+    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": wl_server, "status": server_status } ] }}'
 
 - name: New dict server status
   ansible.builtin.set_fact:
