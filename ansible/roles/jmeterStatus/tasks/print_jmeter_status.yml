@@ -24,11 +24,12 @@
         mode: '0444'
 
     - name: Jmeter container is running
-      when: container_info.containers[0] is defined
+      when: 
+        - container_info.containers[0] is defined
+        - containers[0].State.Status == 'running'
       block:
 
       - name: Get the Jmeter container status
-        when: container_info.containers[0] is defined
         containers.podman.podman_container_exec:
           name: "{{ svt_jmeter_container_name }}"
           command: "jmeter_json_payload.sh"
