@@ -26,7 +26,7 @@
     - name: Jmeter container is running
       when: 
         - container_info.containers[0] is defined
-        - containers[0].State.Status == 'running'
+        - container_info.containers[0].State.Status == 'running'
       block:
 
       - name: Get the Jmeter container status
