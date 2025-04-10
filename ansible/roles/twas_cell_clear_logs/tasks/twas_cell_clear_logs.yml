@@ -56,3 +56,22 @@
         state: directory
         mode: 0755
       when: islog.stat.exists == True
+
+- name: Any extra logs?
+  when: extra_logs is defined
+  block:
+
+  - name: Remove Liberty extra_logs dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - extra_logs
+
+  - name: Create Liberty extra_logs dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0755'
+    with_items:
+      - extra_logs
