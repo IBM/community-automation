@@ -13,7 +13,7 @@
       path: "{{ item }}"
       state: absent
     with_items:
-      - extra_logs
+      - "{{ extra_logs }}"
 
   - name: Create Liberty extra_logs dir
     ansible.builtin.file:
@@ -21,5 +21,5 @@
       state: directory
       mode: '0755'
     with_items:
-      - extra_logs
+      - "{{ extra_logs }}"
 
