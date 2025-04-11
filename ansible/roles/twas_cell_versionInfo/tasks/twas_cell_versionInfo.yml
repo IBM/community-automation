@@ -1,7 +1,7 @@
 ---
 - name: Check if tWAS installed
   ansible.builtin.stat:
-    path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }}"
+    path: "{{ install_base }}/{{ target_dir }}/properties/version/WAS.product"
   register: istwas
 
 - name: tWAS versions
@@ -50,7 +50,7 @@
   
 - name: Check if AppClient installed
   ansible.builtin.stat:
-    path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }}"
+    path: "{{ install_base }}/{{ target_dir }}/properties/version/APPCLIENT.product"
   register: isapp
 
 - name: AppClient versions
