@@ -1,5 +1,12 @@
 ---
+- name: Check if tWAS properties/version/{{ twas_product }}.product
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"
+  register: istwas
 
+- name: Is tWAS properties/version/{{ twas_product }}.product
+  when: istwas.stat.exists
+  block:
   - name: Fetch properties/version/{{ twas_product }}.product
     ansible.builtin.fetch:
       src: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"

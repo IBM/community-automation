@@ -1,5 +1,5 @@
 ---
-- name: check if tWAS installed
+- name: Check if tWAS installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }}"
   register: istwas
@@ -48,7 +48,7 @@
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0444'
   
-- name: check if AppClient installed
+- name: Check if AppClient installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }}"
   register: isapp
