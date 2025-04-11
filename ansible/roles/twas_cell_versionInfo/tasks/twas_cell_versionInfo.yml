@@ -1,4 +1,12 @@
 ---
+
+- name: Create version dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+    mode: '0755'
+
 - name: Check if tWAS installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
@@ -7,13 +15,6 @@
 - name: tWAS versions
   when: istwas.stat.exists
   block:
-
-  - name: Create version dir
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
-      state: directory
-      mode: '0755'
 
   - name: Read the WAS.product xml file
     ansible.builtin.include_role:
@@ -67,11 +68,23 @@
 
   - name: No tWAS rename the app_{{ version_level_json_file }}
     delegate_to: localhost
-    when: not istwas.stat.exists
+    when: ! istwas.stat.exists
+    ansible.builtin.copy:
+      remote_src: false
+      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+      mode: "0644"
+
+  - name: Remove the app_{{ version_level_json_file }}
+    delegate_to: localhost
+    when: ! istwas.stat.exists
     ansible.builtin.file:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      state: file
+      state: absent
+
+  - name: Merge the Server / Appclient json ( combined )
+    delegate_to: localhost
+    when: istwas.stat.exists 
 
   - name: Merge the Server / Appclient json ( combined )
     delegate_to: localhost

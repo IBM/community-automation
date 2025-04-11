@@ -1,41 +1,49 @@
 ---
+- name: Check if tWAS installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+  register: istwas
 
-- name: Summary of tWAS server status
-  ansible.builtin.shell:
-    cmd: |
-      set -o pipefail
-      {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
-    executable: /bin/bash
-  register: twasstatus
+- name: tWAS versions
+  when: istwas.stat.exists
+  block:
+    
+  - name: Summary of tWAS server status
+    ansible.builtin.shell:
+      cmd: |
+        set -o pipefail
+        {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }}|egrep 'ADMU0508I:|ADMU0509I:' || true
+      executable: /bin/bash
+    register: twasstatus
 
-- name: Create status dir
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
-    state: directory
-    mode: '0755'
+  - name: Create status dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      state: directory
+      mode: '0755'
 
-- name: Size of stdout_lines
-  ansible.builtin.set_fact:
-    max_counter: "{{ twasstatus.stdout_lines | length }}"
+  - name: Size of stdout_lines
+    ansible.builtin.set_fact:
+      max_counter: "{{ twasstatus.stdout_lines | length }}"
 
-- name: Create list with server name / status
-  ansible.builtin.set_fact:
-    # NOTE: the get_twas_server_status -> plugins/filter/get_twas_server_status
-    twas_server_name_status: '{{ twas_server_name_status | default([]) + [ { "server": twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_name, "status": twasstatus.stdout_lines[item | int] } ] }}'
-  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+  - name: Create list with server name / status
+    ansible.builtin.set_fact:
+      # NOTE: the get_twas_server_status -> plugins/filter/get_twas_server_status
+      twas_server_name_status: '{{ twas_server_name_status | default([]) + [ { "server": twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_name, "status": twasstatus.stdout_lines[item | int] } ] }}'
+    with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
-- name: Debug twas_server_name_status list
-  ansible.builtin.debug:
-    msg: "{{ twas_server_name_status }}"
+  - name: Debug twas_server_name_status list
+    ansible.builtin.debug:
+      msg: "{{ twas_server_name_status }}"
 
-- name: New dict server status
-  ansible.builtin.set_fact:
-    versions: "{{{ ansible_fqdn : twas_server_name_status }}}"
+  - name: New dict server status
+    ansible.builtin.set_fact:
+      versions: "{{{ ansible_fqdn : twas_server_name_status }}}"
 
-- name: Write server status json file
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ versions | to_nice_json( sort_keys=false ) }}"
-    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
-    mode: '0444'
+  - name: Write server status json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+      mode: '0444'
