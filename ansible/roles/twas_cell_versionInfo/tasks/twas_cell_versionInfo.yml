@@ -68,7 +68,7 @@
 
   - name: No tWAS rename the app_{{ version_level_json_file }}
     delegate_to: localhost
-    when: ! istwas.stat.exists
+    when: not istwas.stat.exists
     ansible.builtin.copy:
       remote_src: false
       src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
@@ -77,7 +77,7 @@
 
   - name: Remove the app_{{ version_level_json_file }}
     delegate_to: localhost
-    when: ! istwas.stat.exists
+    when: not istwas.stat.exists
     ansible.builtin.file:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
       state: absent
