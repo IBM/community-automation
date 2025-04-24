@@ -16,10 +16,11 @@
       - "{{ extra_logs }}"
 
   - name: Create Liberty extra_logs dir
+    become: true
     ansible.builtin.file:
       path: "{{ item }}"
       state: directory
-      mode: '0755'
+      mode: '0777'
     with_items:
       - "{{ extra_logs }}"
 
