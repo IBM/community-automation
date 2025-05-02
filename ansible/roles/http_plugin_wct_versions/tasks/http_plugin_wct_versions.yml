@@ -17,6 +17,11 @@
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
 
+- name: Set http status ( unknown )
+  when: ( isIHSup.status not in [ 200, -1 ] )
+  ansible.builtin.set_fact:
+    http_status: "{{ { ansible_fqdn : { 'status': 'unknown' } } }}"
+
 - name: Set http status ( started )
   when: isIHSup.status == 200
   ansible.builtin.set_fact:
