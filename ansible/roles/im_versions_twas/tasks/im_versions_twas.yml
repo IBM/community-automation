@@ -12,6 +12,8 @@
   ansible.builtin.file:
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
     state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
     mode: '0755'
 
 - name: Size of stdout_lines
