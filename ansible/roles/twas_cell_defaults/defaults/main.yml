@@ -13,6 +13,7 @@ ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
 #twas_release: 'WAS855'
 twas_release: 'WAS90'
+twas_more_release: 'v10'
 cell_trust: 'CellDefaultTrustStore'
 verbosegc_file_template: 'verbosegc*'
 env_name: mytWASEnv
