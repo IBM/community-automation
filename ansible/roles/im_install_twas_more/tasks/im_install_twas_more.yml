@@ -1,6 +1,6 @@
 ---
-- name: Install
-  tags: install 
+- name: Install MoRe
+  tags: install
   block:
   - name: Check if imcl installed as a prereq
     ansible.builtin.stat:
@@ -10,8 +10,9 @@
 
   - name: Copy im_twas.xml template
     ansible.builtin.template:
-      src: "im_twas_{{ twas_release }}.xml.j2"
-      dest: "im_twas.xml"
+      src: "im_twas_more_{{ twas_release }}.xml.j2"
+      dest: "im_twas_more.xml"
+      mode: '0755'
 
     #  - name:  stop any running servers
     #    ignore_errors: true
@@ -29,7 +30,7 @@
     #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager
     #  which works on rtp hosts
   - name:  generate external ibm secureStorageFile.store
-    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
   - name: Remove previous twas dir
     ansible.builtin.file:
@@ -39,17 +40,17 @@
       - "{{ cygwin }}{{ install_base }}/{{ twas_dir }}"
 
   - name: Install tWAS
-    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: InstallOutput
-    ansible.builtin.debug: 
+    ansible.builtin.debug:
       msg: "{{ installOutput.stdout_lines }}"
 
   - name: ListInstalledPackages
     ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
-  
+
   - name: PackageOutput
     ansible.builtin.debug: 
       msg: "{{ packageOutput.stdout_lines }}"

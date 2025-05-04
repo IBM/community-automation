@@ -42,6 +42,9 @@ im_appclient_package:
   WAS90: 'com.ibm.websphere.APPCLIENT.v90'
   WAS855: 'com.ibm.websphere.APPCLIENT{{le_package_extension[ansible_architecture]}}.v85'
 im_twas_java_package: 'com.ibm.java.jdk.v8'
+im_twas_more_package:
+  v10: com.ibm.websphere.MORE.v10
+  v20: com.ibm.websphere.MORE.v20
 
 verboseGC: true
 linux_process_to_kill: 'java'

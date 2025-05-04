@@ -1,0 +1,3 @@
+---
+- name: Install tWAS MoRE
+  ansible.builtin.include_tasks: im_install_twas_more.yml
