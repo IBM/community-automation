@@ -1,3 +1,3 @@
 svt_jmeter_image: someimage
-hyc_user: user
-hyc_token: token
+svt_registry_user: user
+svt_registry_password: pass

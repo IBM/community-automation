@@ -66,8 +66,8 @@
 - name: Pull the svt db2 image
   containers.podman.podman_image:
     name: "{{ svt_db2_image }}"
-    username: "{{ hyc_user }}"
-    password: "{{ hyc_token }}"
+    username: "{{ svt_registry_user }}"
+    password: "{{ svt_registry_password }}"
     force: yes
     state: present
   register: svtop

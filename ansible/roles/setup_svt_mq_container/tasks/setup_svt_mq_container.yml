@@ -47,8 +47,8 @@
 - name: Pull the svt mq image
   containers.podman.podman_image:
     name: "{{ svt_mq_image }}"
-    username: "{{ hyc_user }}"
-    password: "{{ hyc_token }}"
+    username: "{{ svt_registry_user }}"
+    password: "{{ svt_registry_password }}"
     force: true
     state: present
   register: svtop
