@@ -1,6 +1,6 @@
 ---
 - name: Stop tWAS Managed Liberty servers
-  when: profile_type == 'dmgr'
+  when: profile_type == 'managed' or profile_type == 'default'
   block:
     - name: Retrieve signers
       ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }} {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
@@ -14,8 +14,13 @@
 # WASX7209I: Connected to process "dmgr" on node dmgr using SOAP connector;  The type of process is: DeploymentManager
 # u'lib11(cells/ndcell/nodes/node1/servers/lib11|server.xml)\nlib1(cells/ndcell/nodes/node1/servers/lib1|server.xml)'
 
+    - name: Copy list_mls.jy
+      ansible.builtin.template:
+        src: list_mls.jy.j2
+        dest: list_mls.jy
+
     - name: List the running ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -c 'AdminTask.listServers('[-serverType MANAGED_LIBERTY_SERVER -nodeName node1]')'"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -f list_mls.jy"
       register: serverListOutput
 
     - name: Find ManagedLibertyServers
@@ -26,8 +31,13 @@
       debug:
         var: mls
 
+    - name: Copy stop_mls.jy
+      ansible.builtin.template:
+        src: stop_mls.jy.j2
+        dest: stop_mls.jy
+
     - name: Stop ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -c 'AdminControl.stopServer("lib1", "{{ item }}")'"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -f stop_mls.jy"
       register: stopMlsOutput
       failed_when: ( stopMlsOutput.rc not in [ 0,246 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
