@@ -28,7 +28,7 @@
 
 - name: Pull the svt jmeter image
   containers.podman.podman_image:
-    name: "{{ svt_registry_user }}"
+    name: "{{ svt_jmeter_image }}"
     username: "{{ svt_registry_user }}"
     password: "{{ svt_registry_password }}"
     force: yes
