@@ -20,7 +20,7 @@
         dest: list_mls.jy
 
     - name: List the running ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -f list_mls.jy"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f list_mls.jy"
       register: serverListOutput
 
     - name: Find ManagedLibertyServers
@@ -37,7 +37,7 @@
         dest: stop_mls.jy
 
     - name: Stop ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -f stop_mls.jy"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f stop_mls.jy"
       register: stopMlsOutput
       failed_when: ( stopMlsOutput.rc not in [ 0,246 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'
