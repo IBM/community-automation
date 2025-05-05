@@ -11,11 +11,11 @@
         msg: "{{ retrieveSignersOutput.stdout_lines }}"
 
     - name: List the running servers minus the nodeagent
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }} |grep -i started|grep -v nodeagent|awk -F'\"' '{print $2}'"
       register: serverListOutput
 
     - name: Stop the application servers
-      ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer{{ ext }} {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/stopServer{{ ext }} {{ item }} -username {{ twas_username }} -password {{ twas_password }}"
       register: stopDefaultOutput
       failed_when: ( stopDefaultOutput.rc not in [ 0,246 ] )
       with_items: '{{ serverListOutput.stdout_lines }}'

@@ -1,0 +1,64 @@
+---
+
+- name: Install
+  tags: install
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: Copy im_liberty_more.xml template
+    when: ansible_system != 'OS400'
+    ansible.builtin.template:
+     src: im_liberty_more.xml.j2
+     dest: "im_liberty_more.xml"
+  - name: Copy OS400 im_liberty.xml template
+    when: ansible_system == 'OS400'
+    ansible.builtin.template:
+     src: im_liberty.OS400_more.xml.j2
+     dest: "im_liberty_more.xml"
+
+  - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+    ansible.builtin.file:
+      path: "{{ install_base }}/IM/secureStorageFile.store"
+      state: absent
+
+  - name: Generate secureStorageFile.store
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  Generate external ibm secureStorageFile.store
+    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name: Install Liberty MoRE
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: installOutput
+
+  - name: InstallOutput
+    ansible.builtin.debug:
+     msg: "{{ installOutput.stdout_lines }}"
+
+  - name: ListInstalledPackages
+    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+    register: packageOutput
+
+  - name: IM PackageOutput
+    ansible.builtin.debug: 
+     msg: "{{ packageOutput.stdout_lines }}"
+
+    - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
+      ansible.builtin.template:
+       src: server.env.j2
+       dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
+
+- name: Versions
+  tags: version 
+  block:
+  - name: Liberty version
+    ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version"
+    register: libertyVersionOutput
+
+  - name: LibertyVersionOutput
+    ansible.builtin.debug: 
+     msg: "{{ libertyVersionOutput.stdout_lines }}"

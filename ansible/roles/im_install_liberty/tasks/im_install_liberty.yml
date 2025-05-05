@@ -3,114 +3,82 @@
 - name: Install
   tags: install 
   block:
-  - name: check if imcl installed as a prereq
-    stat:
+  - name: Check if imcl installed as a prereq
+    ansible.buitin.stat:
       path: "{{ install_base }}/IM/eclipse/tools/imcl"
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: copy im_liberty.xml template
+  - name: Copy im_liberty.xml template
     when: ansible_system != 'OS400'
-    template:
+    ansible.buitin.template:
      src: im_liberty.xml.j2
      dest: "im_liberty.xml"
-  - name: copy OS400 im_liberty.xml template
+  - name: Copy OS400 im_liberty.xml template
     when: ansible_system == 'OS400'
-    template:
+    ansible.buitin.template:
      src: im_liberty.OS400.xml.j2
      dest: "im_liberty.xml"
-
-  - name:  stop any running servers
-    ignore_errors: true
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-    register: stopOutput
-    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-    with_items:
-    - "{{ wl_server }}"
-    - "{{ cc_server }}"
-
-   # blindly try fuser ( linux )
-  - name:  blindly try fuser ( linux )
-    ignore_errors: true
-    shell: "fuser -k {{install_base }}/{{ liberty_dir }}"
-    register: killOutput
-    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
-
-  - name:  uninstall liberty and java
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
-    register: uninstallOutput
-    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-    
-  - name: uninstall liberty and java output
-    debug: 
-     msg: "{{ uninstallOutput.stdout_lines }}"
-
-  - name: Remove previous liberty dir
-    file:
-      path: "{{ item }}"
-      state: absent
-    with_items:
-    - "{{ install_base }}/{{ liberty_dir }}"
 
   - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
     ansible.builtin.file:
       path: "{{ install_base }}/IM/secureStorageFile.store"
       state: absent
 
-  - name:  generate secureStorageFile.store
-    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+  - name: Generate secureStorageFile.store
+    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
-  - name:  generate external ibm secureStorageFile.store
-    shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+  - name: Fenerate external ibm secureStorageFile.store
+    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
-  - name:  install liberty
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+  - name: Install liberty
+    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
-  - name: installOutput
-    debug: 
+  - name: InstallOutput
+    ansible.builtin.debug: 
      msg: "{{ installOutput.stdout_lines }}"
 
-  - name:  listInstalledPackages
-    shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+  - name: ListInstalledPackages
+    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
   
-  - name: packageOutput
-    debug: 
+  - name: PackageOutput
+    ansible.builtin.debug: 
      msg: "{{ packageOutput.stdout_lines }}"
 
-  - name: copy server.env template to override default wlp_user_dir and wlp_output_dir
+  - name: Copy server.env template to override default wlp_user_dir and wlp_output_dir
     when: ansible_system == 'OS400'
-    template:
+    ansible.buitin.template:
      src: server.env.os400.j2
      dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
  
-  - name: java17+ on distributed
+  - name: Java17+ on distributed
     when: ansible_system != 'OS400'
     block:
-    - name: create ~/wlp/etc directory
-      file:
+    - name: Create ~/wlp/etc directory
+      ansible.buitin.file:
        path: '{{ item }}'
        state: directory
       with_items:
-      - "{{install_base }}/{{ liberty_dir }}/etc"
+      - "{{ install_base }}/{{ liberty_dir }}/etc"
       - "{{ wlp_usr_dir }}/shared/apps"
       - "{{ wlp_usr_dir }}/shared/config"
       - "{{ wlp_usr_dir }}/shared/resources"
 
-    - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
-      template:
+    - name: Copy server.env template to set JAVA_HOME ( requirement for java17+ )
+      ansible.buitin.template:
        src: server.env.j2
-       dest: "{{install_base }}/{{ liberty_dir }}/etc/server.env"
+       dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
 
 - name: Versions
   tags: version 
   block:
   - name: Liberty version
-    shell: "{{install_base }}/{{ liberty_dir }}/bin/server version" 
+    ansible.buitin.shell: "{{install_base }}/{{ liberty_dir }}/bin/server version" 
     register: libertyVersionOutput
 
-  - name: libertyVersionOutput
-    debug: 
+  - name: LibertyVersionOutput
+    ansible.builtin.debug: 
      msg: "{{ libertyVersionOutput.stdout_lines }}"
 
