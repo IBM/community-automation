@@ -1,75 +1,31 @@
 ---
 
-- name: Check if previous Liberty MoRE installed
+- name: Check if IM installed
   ansible.builtin.stat:
-    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
-  register: islib
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isim
 
-- name: Uninstall Liberty
+- name: Uninstall MoRE Liberty
   when:
-    - islib.stat is defined
-    - islib.stat.exists == True
+    - isim.stat is defined
+    - isim.stat.exists == True
   block:
-  # TODO: need the tWAS version of the operation
-  - name: Stop any running servers
-    ignore_errors: true
-    ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
-    register: stopOutput
-    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
-    with_items:
-      - "{{ wl_server }}"
-      - "{{ cc_server }}"
 
-  # blindly try fuser ( linux )
-  - name: Blindly try fuser ( linux )
-    when: ansible_system is not search('CYG')
-    ignore_errors: true
-    ansible.builtin.shell: "fuser -k {{ item }}"
-    register: killOutput
-    failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
-    changed_when: false
-    with_items:
-      - "{{ install_base }}/{{ liberty_dir }}"
+  - name: Check if previous MoRE installed
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages | grep  {{ im_twas_more_package[twas_more_release] }}"
+    register: checkMoREOutput
+    failed_when: ( checkMoREOutput.rc not in [ 0, 1 ] )
 
-  # Windoze uninstallAll seems to be hanging, try to flush the hosts brain
-  # - name: Windoze reboot to flush brain
-  #   when: ansible_system == 'Windows' or 'CYG' in ansible_system
-  #   block:
-  #     - name: Restart windoze
-  #       ansible.builtin.shell: 'shutdown /r'
-  #       become: true
-  #     - name: Wait for the reboot and reconnect 
-  #       wait_for:
-  #         port: 22
-  #         host: '{{ (ansible_ssh_host|default(ansible_host))|default(inventory_hostname) }}'
-  #         search_regex: OpenSSH
-  #         delay: 60
-  #         timeout: 60
-  #         retries: 10
-  #       connection: local
+  - name: Uninstall MoRE Liberty
+    when: checkMoREOutput.rc == 0
+    block:
 
-  - name: Blindly try kill ( windoze )
-    when: ansible_system == 'Windows' or 'CYG' in ansible_system
-    ignore_errors: true
-    ansible.builtin.shell: "ps -W|grep java|awk '{print $1}'|xargs kill -f"
-    register: killOutput
-    failed_when: ( killOutput.rc not in [ 0, 123 ] )
-    changed_when: false
+    - name: Uninstall MoRE
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_more_package[twas_more_release] }}"
+      register: uninstallOutput
+      failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
 
-  - name: Uninstall liberty and java
-    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_liberty_package }} com.ibm.java.jdk.v{{ im_java_short_version }}"
-    register: uninstallOutput
-    failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-
-  - name: UninstallAll output
-    ansible.builtin.debug:
-      msg: "{{ uninstallOutput.stdout_lines }}"
-    when: uninstallOutput.stdout_line is defined
-
-- name: Remove previous liberty dir
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
-  with_items:
-    - "{{ install_base }}/{{ liberty_dir }}"
-    - "{{ wlp_usr_dir }}"
+    - name: UninstallAll output
+      ansible.builtin.debug:
+        msg: "{{ uninstallOutput.stdout_lines }}"
+      when: uninstallOutput.stdout_line is defined

@@ -1,0 +1,30 @@
+---
+- name: Start tWAS Managed Liberty servers
+  when: profile_type == 'managed' or profile_type == 'default'
+  block:
+    - name: Retrieve signers
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }} {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      register: retrieveSignersOutput
+      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+    - name: retrieveSignersOutput
+      debug:
+        msg: "{{ retrieveSignersOutput.stdout_lines }}"
+
+    # bin/wsadmin.sh -username persona1 -password ppersona1 -c "AdminTask.listServers('[-serverType MANAGED_LIBERTY_SERVER -nodeName node1]')"
+    # WASX7209I: Connected to process "dmgr" on node dmgr using SOAP connector;  The type of process is: DeploymentManager
+    # u'lib11(cells/ndcell/nodes/node1/servers/lib11|server.xml)\nlib1(cells/ndcell/nodes/node1/servers/lib1|server.xml)'
+
+    - name: Copy delete_mls.jy
+      ansible.builtin.template:
+        src: delete_mls.jy.j2
+        dest: delete_mls.jy
+        mode: '0755'
+
+    - name: Delete the ManagedLibertyServer
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -conntype none -f delete_mls.jy {{ item }}"
+      register: serverDeleteOutput
+
+    - name: Debug serverDeleteOutput
+      ansible.builtin.debug:
+        var: serverDeleteOutput.stdout_lines
+

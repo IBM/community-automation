@@ -14,6 +14,7 @@
     ansible.builtin.template:
      src: im_liberty_more.xml.j2
      dest: "im_liberty_more.xml"
+     
   - name: Copy OS400 im_liberty.xml template
     when: ansible_system == 'OS400'
     ansible.builtin.template:
@@ -46,19 +47,3 @@
   - name: IM PackageOutput
     ansible.builtin.debug: 
      msg: "{{ packageOutput.stdout_lines }}"
-
-    - name: copy server.env template to set JAVA_HOME ( requirement for java17+ )
-      ansible.builtin.template:
-       src: server.env.j2
-       dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
-
-- name: Versions
-  tags: version 
-  block:
-  - name: Liberty version
-    ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version"
-    register: libertyVersionOutput
-
-  - name: LibertyVersionOutput
-    ansible.builtin.debug: 
-     msg: "{{ libertyVersionOutput.stdout_lines }}"

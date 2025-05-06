@@ -1,0 +1,5 @@
+if len(sys.argv) == 1:
+    AdminTask.createManagedLibertyServer('{{ profile_name }}', '[-name str(sys.argv[0]) -templateName default -genUniquePorts true ]')
+    AdminConfig.save()
+    AdminNodeManagement.syncNode('{{ profile_name }}')
+    print(mls_create)
