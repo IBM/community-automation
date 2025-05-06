@@ -23,7 +23,7 @@
       failed_when: serverDeleteOutput.rc not in [0,105]
 
     - name: Debug serverDeleteOutput
+      when: serverDeleteOutput.stdout_lines is defined
       ansible.builtin.debug:
         var: serverDeleteOutput.stdout_lines
-      failed_when: serverDeleteOutput.rc not in [0,105]
 
