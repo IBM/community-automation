@@ -1,5 +1,5 @@
 ---
-- name: Stop tWAS Managed Liberty servers
+- name: Start tWAS Managed Liberty servers
   when: profile_type == 'managed' or profile_type == 'default'
   block:
     - name: Retrieve signers
@@ -20,7 +20,7 @@
         dest: list_mls.jy
         mode: '0755'
 
-    - name: List the running ManagedLibertyServer
+    - name: List the ManagedLibertyServer
       ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -conntype none -f list_mls.jy"
       register: serverListOutput
 
@@ -40,28 +40,23 @@
     #   ansible.builtin.debug:
     #     var: mls
 
-    - name: Copy stop_mls.jy
+    - name: Copy start_mls.jy
       ansible.builtin.template:
-        src: stop_mls.jy.j2
-        dest: stop_mls.jy
+        src: start_mls.jy.j2
+        dest: start_mls.jy
         mode: '0755'
 
-    - name: Stop ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f stop_mls.jy {{ item }}"
-      register: stopMlsOutput
-      failed_when: ( stopMlsOutput.rc not in [ 0,105 ] )
+    - name: Start ManagedLibertyServer
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f start_mls.jy {{ item }}"
+      register: startMlsOutput
+      failed_when: ( startMlsOutput.rc not in [ 0,105 ] )
       with_items: '{{ mls }}'
 
-    - name: ManagedLibertyServer stop output
+    - name: ManagedLibertyServer start output
       ansible.builtin.debug:
         msg: "rc={{ item.rc }}"
-      with_items: "{{ stopMlsOutput.results }}"
+      with_items: "{{ startMlsOutput.results }}"
       loop_control:
         label: "{{ item.stdout }}"
       failed_when: 
       - '" Error " in item.stdout'
-  rescue:
-    - ansible.builtin.include_role:
-        name: linux_kill_process
-      vars:
-        linux_kill_process: "{{ linux_kill_process }}"
