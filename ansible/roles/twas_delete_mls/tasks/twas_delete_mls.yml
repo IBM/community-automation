@@ -23,6 +23,7 @@
     - name: Delete the ManagedLibertyServer
       ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -conntype none -f delete_mls.jy {{ item }}"
       register: serverDeleteOutput
+      with_items: '{{ mls_servers }}'
 
     - name: Debug serverDeleteOutput
       ansible.builtin.debug:
