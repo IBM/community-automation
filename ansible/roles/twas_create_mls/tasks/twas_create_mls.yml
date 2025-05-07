@@ -20,7 +20,7 @@
       ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f create_mls.jy {{ item }}"
       register: serverCreateOutput
       with_items: '{{ mls_servers }}'
-      failed_when: serverDeleteOutput.rc not in [0,105]
+      failed_when: serverCreateOutput.rc not in [0,105]
 
     - name: Debug serverListOutput
       ansible.builtin.debug:
