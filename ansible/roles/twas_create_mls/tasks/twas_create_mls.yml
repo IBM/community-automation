@@ -17,7 +17,7 @@
         mode: '0755'
 
     - name: Create the ManagedLibertyServer
-      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -conntype none -f create_mls.jy"
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f create_mls.jy"
       register: serverCreateOutput
 
     - name: Debug serverListOutput
