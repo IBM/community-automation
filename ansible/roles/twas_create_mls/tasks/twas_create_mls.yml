@@ -21,7 +21,3 @@
       register: serverCreateOutput
       with_items: '{{ mls_servers }}'
       failed_when: serverCreateOutput.rc not in [0,105]
-
-    - name: Debug serverListOutput
-      ansible.builtin.debug:
-        var: serverCreateOutput.stdout_lines
