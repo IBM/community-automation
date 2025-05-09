@@ -283,7 +283,7 @@
 
   - name: Check server-status
     ansible.builtin.uri:
-      url: "https://localhost:{{ ihs_https_port }}"
+      url: "https://localhost:{{ ihs_https_port }}/server-status"
       return_content: no
       validate_certs: false
     register: isIHSup
