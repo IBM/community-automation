@@ -61,5 +61,6 @@
       - "{{ cygwin }}{{ install_base }}/im_install"
       - "{{ cygwin }}{{ install_base }}/IM"
       - "{{ cygwin }}{{ install_base }}/javasharedresources"
+      - "{{ cygwin }}/users/{{ ansible_user }}/AppData/Roaming/IBM"
       - "~/var/"
       - "~/etc/"
