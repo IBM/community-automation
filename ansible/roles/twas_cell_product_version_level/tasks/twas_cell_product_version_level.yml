@@ -1,19 +1,19 @@
 ---
-- name: Check if tWAS properties/version/{{ twas_product }}.product
+- name: Check if tWAS properties/version/XXX.product
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"
   register: isproduct
 
-- name: Is tWAS properties/version/{{ twas_product }}.product
+- name: Is tWAS properties/version/XXX.product
   when: isproduct.stat.exists
   block:
-  - name: Fetch properties/version/{{ twas_product }}.product
+  - name: Fetch properties/version/XXX.product
     ansible.builtin.fetch:
       src: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
-      flat: yes
+      flat: true
 
-  - name: Read the product name from properties/version/{{ twas_product }}.product
+  - name: Read the product name from properties/version/XXX.product
     delegate_to: localhost
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
@@ -29,7 +29,7 @@
     ansible.builtin.debug:
       var: "{{ twas_Product }}"
 
-  - name: Read the product version from properties/version/{{ twas_product }}.product
+  - name: Read the product version from properties/version/XXX.product
     delegate_to: localhost
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
@@ -45,7 +45,7 @@
     ansible.builtin.debug:
       var: "{{ twas_Version }}"
 
-  - name: Read the level from properties/version/{{ twas_product }}.product
+  - name: Read the level from properties/version/XXX.product
     delegate_to: localhost
     community.general.xml:
       path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ twas_product }}.product"
@@ -61,7 +61,7 @@
     ansible.builtin.debug:
       var: "{{ twas_Build_Level }}"
 
-  - name: Write {{ twas_product }} version_level to staging json file
+  - name: Write tWAS prooduct version_level to staging json file
     delegate_to: localhost
     ansible.builtin.template:
       src: version_level.json.j2
