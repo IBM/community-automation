@@ -196,3 +196,13 @@
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
+
+- name: Remove local source json after combine
+  with_items: 
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
+    - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
+  delegate_to: localhost
+  ansible.builtin.file:
+    state: absent
+    path: "{{ item }}"
