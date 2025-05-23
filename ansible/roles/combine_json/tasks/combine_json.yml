@@ -37,4 +37,5 @@
   when: foundem.matched > 0
   delegate_to: localhost
   ansible.builtin.file:
+    path: "{{ item }}"
     state: absent
