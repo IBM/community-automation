@@ -49,6 +49,8 @@
         ansible.builtin.shell: "ps -fe | grep -i imcl | grep -v grep"
         register: imclRunning
         until: imclRunning.rc == 1
+        ignore_errors: true
+        no_log: true
         retries: 30
         delay: 5
 
