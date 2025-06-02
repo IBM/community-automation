@@ -33,7 +33,7 @@
     shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
   - name: Install tWAS MoRE
-    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "time {{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: InstallOutput

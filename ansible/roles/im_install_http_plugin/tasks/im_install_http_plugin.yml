@@ -19,7 +19,7 @@
   ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword {{ gsa_pass }} -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
 
 - name:  install http plugins wct
-  ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
+  ansible.builtin.shell: "time {{ install_ihs_base }}/IM/eclipse/tools/imcl input ./im_http_plugin.xml -acceptLicense -secureStorageFile {{ install_ihs_base }}/IM/secureStorageFile.store"
   register: installOutput
 
 - name: InstallOutput

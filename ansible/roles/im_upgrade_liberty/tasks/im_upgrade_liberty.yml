@@ -55,7 +55,7 @@
         delay: 5
 
       - name: Upgrade liberty
-        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
+        ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
           -repositories https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/ \
           -installationDirectory {{ cygwin }}{{ install_base }}/{{ liberty_dir }} \
           -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store \
