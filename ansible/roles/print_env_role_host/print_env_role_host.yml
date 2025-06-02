@@ -37,6 +37,15 @@
   with_items:
         - { 'key': 'ulb' , 'value': '{{ groups.ulb }}'}
 
+- name: Add ldap
+  delegate_to: localhost
+  when:
+    - groups.ldap is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+        - { 'key': 'ldap' , 'value': '{{ groups.ldap }}'}
+
 - name: Add WebServer
   delegate_to: localhost
   when:
