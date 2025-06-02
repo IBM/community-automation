@@ -44,13 +44,28 @@
         ansible.builtin.debug:
           msg: "{{ saveCredentialOutput.stdout_lines }}"
 
+      - name: Check if previous liberty installed
+        ansible.builtin.stat:
+          path: "/cygdrive/c/Users/nest/AppData/Roaming/IBM"
+        register: isWindoze
+
+      - name: Perform Windoze debug operations
+        when: isWindoze.stat.exists
+        block:
+        - name: Windoze debug only
+          ansible.builtin.shell: "ls -la /cygdrive/c/Users/nest/AppData/Roaming/IBM/Installation\ Manager/"
+          register: imWindozeDebug
+        - name: Windoze ls -l /cygdrive/c/Users/nest/AppData/Roaming/IBM
+          ansible.builtin.debug:
+            msg: "{{ imWindozeDebug.stdout_lines }}"
+
       # during the upgrade, numerous times I'm seeing an error that another imncl process ( on windoze ) is running. Add another check to see if thats true
       - name: Check if imcl is running
         ansible.builtin.shell: "ps -fe | grep -i imcl | grep -v grep"
         register: imclRunning
         until: imclRunning.rc == 1
         ignore_errors: true
-        no_log: true
+        no_log: false
         retries: 30
         delay: 5
 
