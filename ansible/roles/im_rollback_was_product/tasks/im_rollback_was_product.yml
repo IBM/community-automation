@@ -13,7 +13,8 @@
       msg: "time {{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
 
   - name:  Rollback WebSphere Product
-    ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
+    ansible.builtin.command: 
+      cmd: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
     register: rollbackOutput
     failed_when: ( rollbackOutput.rc not in [ 0, 1 ] )
 
