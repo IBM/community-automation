@@ -53,9 +53,9 @@
         when: isWindoze.stat.exists
         block:
         - name: Windoze debug only
-          ansible.builtin.shell: "ls -la /cygdrive/c/Users/nest/AppData/Roaming/IBM/Installation\ Manager/"
+          ansible.builtin.shell: "find /cygdrive/c/Users/nest/AppData/Roaming/IBM -name .imlock -ls"
           register: imWindozeDebug
-        - name: Windoze ls -l /cygdrive/c/Users/nest/AppData/Roaming/IBM
+        - name: Windoze find /cygdrive/c/Users/nest/AppData/Roaming/IBM -name .imlock -ls
           ansible.builtin.debug:
             msg: "{{ imWindozeDebug.stdout_lines }}"
 
