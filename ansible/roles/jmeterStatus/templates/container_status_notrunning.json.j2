@@ -1,6 +1,7 @@
 {
     "{{ ansible_fqdn }}": {
-        "name": "{{ svt_jmeter_container_name }}",
-        "Status": "not running"
+        "{{ jmeter_script_id }}" : {
+            "isRunning": "not running"
+        }
     }
 }
