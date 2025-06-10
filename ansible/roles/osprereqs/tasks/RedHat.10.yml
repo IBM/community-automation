@@ -1,0 +1,63 @@
+---
+# specific OS supports wildcards, if preceded with @ its a group
+# if the db is corrupt, this can fix it: rpm --rebuilddb
+- name: Remove extraneous packages
+  become: true
+  ignore_errors: true
+  dnf:
+   name: "{{ packages }}"
+   state: absent
+   autoremove: yes
+  vars:
+   packages:
+   - "adobe*"
+   - "java*"
+   - "samba*"
+   - "valgrind*"
+   - "git*"
+   - "tignervnc"
+   - '@workstation'
+   - 'tigervnc-server'
+   - 'xorg-x11-fonts-Type1'
+
+- name: dnf update
+  become: true
+  dnf:
+   name: '*'
+   state: latest
+
+- name: Install packages
+  become: true
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'xorg-x11-xauth'
+   - 'gtk2'
+   - 'libXtst'
+   - 'xorg-x11-fonts-Type1'
+   - 'zip'
+   - 'unzip'
+   - 'python3'
+   - 'jq'
+
+- name: Install packages tWAS 855x 32 bit packages
+  when: 
+    - twas855x|bool 
+    - ansible_architecture == 'x86_64'
+  become: true
+  dnf:
+   name: "{{ packages }}"
+   state: present
+   skip_broken: yes
+  vars:
+   packages:
+   - 'glibc.i686' 
+   - 'gtk2.i686'
+   - 'libXtst.i686'
+   - 'libXft.i686'
+   - 'libnsl.i686'
+
+ 

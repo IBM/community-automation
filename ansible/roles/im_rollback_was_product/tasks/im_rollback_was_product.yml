@@ -10,7 +10,7 @@
 
   - name: Rollback WebSphere Product output command
     ansible.builtin.debug: 
-      msg: "time {{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
+      msg: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
 
   - name:  Rollback WebSphere Product
     ansible.builtin.command: 

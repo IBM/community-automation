@@ -60,14 +60,15 @@
             msg: "{{ imWindozeDebug.stdout_lines }}"
 
       # during the upgrade, numerous times I'm seeing an error that another imncl process ( on windoze ) is running. Add another check to see if thats true
-      - name: Check if imcl is running
-        ansible.builtin.shell: "ps -fe | grep -i imcl | grep -v grep"
-        register: imclRunning
-        until: imclRunning.rc == 1
-        ignore_errors: true
-        no_log: false
-        retries: 30
-        delay: 5
+      # this did not catch the issue, so leaving it commented out for now
+      # - name: Check if imcl is running
+      #   ansible.builtin.shell: "ps -fe | grep -i imcl | grep -v grep"
+      #   register: imclRunning
+      #   until: imclRunning.rc == 1
+      #   ignore_errors: true
+      #   no_log: false
+      #   retries: 30
+      #   delay: 5
 
       - name: Upgrade liberty
         ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
