@@ -10,6 +10,6 @@
   failed_when: ( ldapOutput.rc not in [ 1 ] )
 
 - name: ping ldapOutput
-  dnsible.builtin.ebug:
+  ansible.builtin.debug:
    msg: "{{ ldapOutput.stdout_lines }}"
   failed_when: '"CONNECTED" not in ldapOutput.stdout'
