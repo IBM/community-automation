@@ -51,6 +51,7 @@
     password: "{{ svt_registry_password }}"
     force: true
     state: present
+    validate_certs: false
   register: svtop
 
 - name: Output svtop
