@@ -2,7 +2,7 @@
 - name: Does command timeout exist? set it not aix
   when: ansible_architecture != 'chrp'
   ansible.builtin.set_fact:
-    timeout_cmd: 'timeout'
+    timeout_cmd: 'timeout 2'
 
 - name: Does command timeout exist? dont set it aix
   when: ansible_architecture == 'chrp'
@@ -10,7 +10,7 @@
     timeout_cmd: ''
 
 - name: test ldap connectivity
-  ansible.builtin.shell: '{{ timeout_cmd }} 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
+  ansible.builtin.shell: '{{ timeout_cmd }} openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
   register: ldapOutput
   failed_when: ( ldapOutput.rc not in [ 1 ] )
 
