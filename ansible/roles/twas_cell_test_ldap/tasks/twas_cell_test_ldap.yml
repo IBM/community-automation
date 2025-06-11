@@ -5,7 +5,7 @@
     timeout_command: 'timeout'
     
 - name: test ldap connectivity
-  nsible.builtin.shell: '{{ timeout_cmd }} 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
+  ansible.builtin.shell: '{{ timeout_cmd }} 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
   register: ldapOutput
   failed_when: ( ldapOutput.rc not in [ 1 ] )
 
