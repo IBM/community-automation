@@ -1,11 +1,15 @@
 ---
-
+- name: Does command timeout exist?
+  when: ansible_architecture != 'chrp'
+  ansible.builtin.set_fact:
+    timeout_command: 'timeout'
+    
 - name: test ldap connectivity
-  shell: 'timeout 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
+  nsible.builtin.shell: '{{ timeout_cmd }} 2 openssl s_client -connect {{ ldapServer }}:{{ ldapPort }} -tls1_2'
   register: ldapOutput
   failed_when: ( ldapOutput.rc not in [ 1 ] )
 
 - name: ping ldapOutput
-  debug:
+  dnsible.builtin.ebug:
    msg: "{{ ldapOutput.stdout_lines }}"
   failed_when: '"CONNECTED" not in ldapOutput.stdout'
