@@ -52,6 +52,8 @@
     force: true
     state: present
     validate_certs: false
+    pull_extra_args:
+      - '--tls-verify=false'
   register: svtop
 
 - name: Output svtop

@@ -71,6 +71,8 @@
     force: yes
     state: present
     validate_certs: false
+    pull_extra_args:
+      - '--tls-verify=false'
   register: svtop
 
 - debug:
