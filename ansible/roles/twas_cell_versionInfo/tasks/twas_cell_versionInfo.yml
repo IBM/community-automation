@@ -51,7 +51,7 @@
   
 - name: Check if AppClient installed
   ansible.builtin.stat:
-    path: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
+    path: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product1"
   register: isapp
 
 - name: AppClient versions
