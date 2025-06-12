@@ -49,14 +49,6 @@
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0444'
 
-  - name: Write tWAS version_level_json_file to json file ( twas debug )
-    delegate_to: localhost
-    ansible.builtin.copy:
-      remote_src: false
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}.twas_debug"
-      mode: "0644"
-
 - name: Check if AppClient installed
   ansible.builtin.stat:
     path: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
@@ -98,14 +90,6 @@
       content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}') | from_json, recursive=True, list_merge='append' )}}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
       mode: '0444'
-
-  - name: Write tWAS version_level_json_file to json file ( appclient debug )
-    delegate_to: localhost
-    ansible.builtin.copy:
-      remote_src: false
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}.appclient_debug"
-      mode: "0644"
 
   - name: AppClient version details
     ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
