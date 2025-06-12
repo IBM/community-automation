@@ -1,11 +1,11 @@
 ---
-- name: Check if tWAS installed
+- name: Check if tWAS serverStatus
   ansible.builtin.stat:
-    path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
-  register: istwas
+    path: "{{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }}"
+  register: isServerStatus
 
 - name: tWAS versions
-  when: istwas.stat.exists
+  when: isServerStatus.stat.exists
   block:
     
   - name: Summary of tWAS server status
