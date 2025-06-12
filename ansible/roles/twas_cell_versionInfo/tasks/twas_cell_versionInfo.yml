@@ -48,11 +48,11 @@
       content: "{{ versions | to_nice_json( sort_keys=false ) }}"
       dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
       mode: '0444'
-  - name: Write tWAS versionInfo to json file ( debug )
+  - name: Write tWAS version_level_json_file to json file ( debug )
     delegate_to: localhost
     ansible.builtin.copy:
       content: "{{ versions | to_nice_json( sort_keys=false ) }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}.debug"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}.debug"
       mode: '0444'
 
 - name: Check if AppClient installed
