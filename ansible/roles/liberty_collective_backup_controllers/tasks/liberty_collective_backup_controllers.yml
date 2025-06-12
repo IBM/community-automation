@@ -1,6 +1,8 @@
 ---
 - name: Configure
-  when: controller_role == 'backup'
+  when: 
+    - controller_role is defined
+    - controller_role == 'backup'
   tags: configure
   block:
     - name: Check if liberty is installed
@@ -14,13 +16,13 @@
         path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}"
       register: iscc
 
-    - name:  Stop existing controller process
+    - name: Stop existing controller process
       ignore_errors: true
       ansible.builtin.shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ cc_server }}"
       when: iscc.stat.exists == True
       register: op
 
-    - name:  Stop existing controller process output
+    - name: Stop existing controller process output
       ansible.builtin.debug:
         msg: '{{ op }}'
 
