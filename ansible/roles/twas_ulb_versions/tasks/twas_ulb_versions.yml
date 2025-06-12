@@ -67,12 +67,12 @@
       when: not isjson.stat.exists
       block:
 
-        - name: Inialize combined dict
+        - name: Inialize combined dict ( twas_ulb )
           delegate_to: localhost
           ansible.builtin.set_fact:
             combined_dict: {}
 
-        - name: Save ( seed combined )
+        - name: Save ( seed combined )( twas_ulb )
           delegate_to: localhost
           ansible.builtin.copy:
             content: "{{ combined_dict }}"

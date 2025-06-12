@@ -12,7 +12,7 @@
     patterns: "{{ json_file }}"
   register: foundem
 
-- name: Inialize combined dict
+- name: Inialize combined dict ( combined )
   delegate_to: localhost
   ansible.builtin.set_fact:
     combined_dict: {}
