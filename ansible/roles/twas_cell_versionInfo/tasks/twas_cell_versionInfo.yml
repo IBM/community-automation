@@ -28,7 +28,7 @@
     ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
     register: tversions
 
-  - name: Size of stdout_lines
+  - name: Size of versionInfo stdout_lines
     delegate_to: localhost
     ansible.builtin.set_fact:
       max_counter: "{{ tversions.stdout_lines | length }}"
@@ -66,21 +66,22 @@
       target_dir: "{{ app_dir }}"
       staging_json_file: "app_{{ version_level_json_file }}"
 
-  - name: No tWAS rename the app_{{ version_level_json_file }}
-    delegate_to: localhost
+  - name: Rename the app_{{ version_level_json_file }}
     when: not istwas.stat.exists
-    ansible.builtin.copy:
-      remote_src: false
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
-      mode: "0644"
+    block:
+      - name: No tWAS rename the app_{{ version_level_json_file }}
+        delegate_to: localhost
+        ansible.builtin.copy:
+          remote_src: false
+          src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+          dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+          mode: "0644"
 
-  - name: Remove the app_{{ version_level_json_file }}
-    delegate_to: localhost
-    when: not istwas.stat.exists
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
-      state: absent
+      - name: Remove the app_{{ version_level_json_file }}
+        delegate_to: localhost
+        ansible.builtin.file:
+          path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+          state: absent
 
   - name: Merge the Server / Appclient json ( combined )
     delegate_to: localhost

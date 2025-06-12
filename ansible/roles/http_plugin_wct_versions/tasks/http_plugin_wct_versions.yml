@@ -166,7 +166,7 @@
     mode: '0444'
 
 - name: Check if version_level exists
-  stat:
+  ansible.builtin.stat:
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
   register: isjson
 
@@ -192,13 +192,13 @@
     content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json, recursive=True, list_merge='append' )}}"
     dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
     mode: '0444'
-  with_items: 
+  with_items:
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
 
 - name: Remove local source json after combine
-  with_items: 
+  with_items:
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
     - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
