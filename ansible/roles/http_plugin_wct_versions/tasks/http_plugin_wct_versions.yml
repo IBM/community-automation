@@ -171,7 +171,7 @@
   register: isjson
 
 - name: Block to init the seed version_level.json
-  when: not isjson.stat.exists
+  when: isjson.stat.exists == False
   block:
 
     - name: Inialize combined dict ( http_plugin_wct )

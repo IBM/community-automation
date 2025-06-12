@@ -67,7 +67,7 @@
       staging_json_file: "app_{{ version_level_json_file }}"
 
   - name: Rename the app_{{ version_level_json_file }}
-    when: not istwas.stat.exists
+    when: istwas.stat.exists == False
     block:
       - name: No tWAS rename the app_{{ version_level_json_file }}
         delegate_to: localhost

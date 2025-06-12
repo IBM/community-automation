@@ -6,7 +6,7 @@
       ansible.builtin.stat:
         path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
       register: isliberty
-      failed_when: not isliberty.stat.exists
+      failed_when: isliberty.stat.exists == False
 
     - name: Status Liberty Server
       ansible.builtin.command:

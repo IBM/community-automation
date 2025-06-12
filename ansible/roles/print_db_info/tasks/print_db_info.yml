@@ -50,7 +50,7 @@
 
     - name: Default the db version db2ls file not found
       delegate_to: localhost
-      when: (not isdb2ls.stat.exists or isdb2ls.stat.size == 0)
+      when: (isdb2ls.stat.exists == False or isdb2ls.stat.size == 0)
       ansible.builtin.set_fact:
         db_Version: "V12.1.1.0"
         db_Fixpack: "0"

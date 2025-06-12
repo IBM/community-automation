@@ -20,7 +20,7 @@
         ansible.builtin.stat:
           path: "{{ install_base }}/IM/eclipse/tools/imcl"
         register: isimcl
-        failed_when: not isimcl.stat.exists
+        failed_when: isimcl.stat.exists == False
 
       - name: Generate secureStorageFile.store
         ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
