@@ -166,6 +166,7 @@
     mode: '0444'
 
 - name: Check if version_level exists
+  delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
   register: isjson
