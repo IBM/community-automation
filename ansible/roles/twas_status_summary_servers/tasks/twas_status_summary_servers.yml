@@ -1,7 +1,7 @@
 ---
 - name: Check if tWAS serverStatus
   ansible.builtin.stat:
-    path: "{{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }}"
+    path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }}"
   register: isServerStatus
 
 - name: tWAS versions
