@@ -4,19 +4,19 @@
   tags: install 
   block:
   - name: Check if imcl installed as a prereq
-    ansible.buitin.stat:
+    ansible.builtin.stat:
       path: "{{ install_base }}/IM/eclipse/tools/imcl"
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
   - name: Copy im_liberty.xml template
     when: ansible_system != 'OS400'
-    ansible.buitin.template:
+    ansible.builtin.template:
      src: im_liberty.xml.j2
      dest: "im_liberty.xml"
   - name: Copy OS400 im_liberty.xml template
     when: ansible_system == 'OS400'
-    ansible.buitin.template:
+    ansible.builtin.template:
      src: im_liberty.OS400.xml.j2
      dest: "im_liberty.xml"
 
@@ -26,13 +26,13 @@
       state: absent
 
   - name: Generate secureStorageFile.store
-    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
   - name: Fenerate external ibm secureStorageFile.store
-    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
 
   - name: Install liberty
-    ansible.buitin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl input ./im_liberty.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
     register: installOutput
 
   - name: InstallOutput
@@ -40,7 +40,7 @@
      msg: "{{ installOutput.stdout_lines }}"
 
   - name: ListInstalledPackages
-    ansible.buitin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
     register: packageOutput
   
   - name: PackageOutput
@@ -49,7 +49,7 @@
 
   - name: Copy server.env template to override default wlp_user_dir and wlp_output_dir
     when: ansible_system == 'OS400'
-    ansible.buitin.template:
+    ansible.builtin.template:
      src: server.env.os400.j2
      dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
  
@@ -57,7 +57,7 @@
     when: ansible_system != 'OS400'
     block:
     - name: Create ~/wlp/etc directory
-      ansible.buitin.file:
+      ansible.builtin.file:
        path: '{{ item }}'
        state: directory
       with_items:
@@ -67,7 +67,7 @@
       - "{{ wlp_usr_dir }}/shared/resources"
 
     - name: Copy server.env template to set JAVA_HOME ( requirement for java17+ )
-      ansible.buitin.template:
+      ansible.builtin.template:
        src: server.env.j2
        dest: "{{ install_base }}/{{ liberty_dir }}/etc/server.env"
 
@@ -75,7 +75,7 @@
   tags: version 
   block:
   - name: Liberty version
-    ansible.buitin.shell: "{{install_base }}/{{ liberty_dir }}/bin/server version" 
+    ansible.builtin.shell: "{{install_base }}/{{ liberty_dir }}/bin/server version" 
     register: libertyVersionOutput
 
   - name: LibertyVersionOutput
