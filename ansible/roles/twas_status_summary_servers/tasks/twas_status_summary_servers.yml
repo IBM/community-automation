@@ -7,7 +7,7 @@
 - name: tWAS versions
   when: isServerStatus.stat.exists
   block:
-    
+
   - name: Summary of tWAS server status
     ansible.builtin.shell:
       cmd: |
