@@ -33,6 +33,13 @@
     - ansible_architecture == 's390x'
     - twas_release == 'WAS855'
 
+# pure hack to get linux RHEL10 WCT 32bit java to use 64bit java
+- name: Hack tWAS855 linux RHEL10 WCT super hack
+  ansible.builtin.shell: "rm -rf {{ install_ihs_base }}/{{ wct_dir }}/java/jre ; ln -s {{ install_ihs_base }}/{{ plugin_dir }}/java/jre {{ install_ihs_base }}/WCT/java/jre"
+  when:
+    - ansible_distribution == "RedHat"
+    - ansible_distribution_major_version == 10
+
 - name: New install configuration
   when:
     - ihs_upgrade_only is not defined
