@@ -6,7 +6,7 @@ There if RFE to provide support for image registry redirection https://issues.re
 
 The procedure consists of two steps:
 - creating an image pull secret for the registry mirror to use
-- create a (privileged) `DaemonSet` which updates the worker node's container runtime configuration file, `/var/lib/kubelet/config.json`
+- create a (privileged) `DaemonSet` which updates the worker node's container runtime configuration file `/var/lib/kubelet/config.json`
 
 ## Step 1 - create a secret for the additional config.json.
 
