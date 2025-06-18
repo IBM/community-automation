@@ -105,6 +105,8 @@
         hardware_meminfo: '{ "meminfo" : {{ hardware_meminfo }}}'
 
     - name: Combine hardware_info and hardware_cpus
+      when: 
+        - cpus.stdout_lines is defined 
       ansible.builtin.set_fact:
         hardware_info: "{{ hardware_info | default({}) | combine(hardware_cpus, recursive=True) }}"
 
