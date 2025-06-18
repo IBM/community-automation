@@ -34,7 +34,7 @@
 
     - name: Run lsdev |grep proc
       ansible.builtin.command: 
-        cmd: lsdev |grep proc
+        cmd: 'lsdev |grep proc'
       register: cpus
     - name: Run lsattr -El proc0
       ansible.builtin.command: 
