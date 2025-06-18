@@ -94,12 +94,12 @@
       ansible.builtin.set_fact:
         hardware_info: "{{ { ansible_fqdn : hardware_info } }}"
 
-    - name: Debug hardware_info
-      delegate_to: localhost
-      ansible.builtin.debug:
-        msg: "{{ hardware_info }}"
+    # - name: Debug hardware_info
+    #   delegate_to: localhost
+    #   ansible.builtin.debug:
+    #     msg: "{{ hardware_info }}"
 
-    - name: write var to file
+    - name: Write var to file
       delegate_to: localhost
       ansible.builtin.copy:
         content: "{{ hardware_info | to_nice_json( sort_keys=false ) }}"
