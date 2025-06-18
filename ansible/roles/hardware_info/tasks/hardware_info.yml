@@ -33,7 +33,7 @@
   block:
 
     - name: Run lsdev |grep proc
-      ansible.builtin.command: 
+      ansible.builtin.shell: 
         cmd: 'lsdev |grep proc'
       register: cpus
     - name: Run lsattr -El proc0
