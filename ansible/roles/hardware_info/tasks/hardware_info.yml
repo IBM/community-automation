@@ -1,7 +1,7 @@
 ---
 - name: Windoze logic
   when:
-    - ansible_system == 'Windows' or 'CYG' in ansible_system
+    - ansible_system in ['Windows', 'CYGWIN_NT', 'CYGWIN']
   block:
 
     - name: Cat /proc/cpuinfo
@@ -11,20 +11,6 @@
     - name: Cat /proc/meminfo
       ansible.builtin.command: 
         cmd: cat /proc/meminfo
-      register: meminfo
-
-- name: Linux logic
-  when:
-    - ansible_system == 'Linux'
-  block:
-
-    - name: Run lscpu
-      ansible.builtin.command: 
-        cmd: lscpu
-      register: cpuinfo
-    - name: Run lsmem
-      ansible.builtin.command: 
-        cmd: lsmem
       register: meminfo
 
 - name: AIX logic
@@ -44,6 +30,22 @@
       ansible.builtin.command: 
         cmd: lsattr -El mem0
       register: meminfo
+      
+- name: Linux logic
+  when:
+    - ansible_system == 'Linux'
+  block:
+
+    - name: Run lscpu
+      ansible.builtin.command: 
+        cmd: lscpu
+      register: cpuinfo
+    - name: Run lsmem
+      ansible.builtin.command: 
+        cmd: lsmem
+      register: meminfo
+
+
 
 - name: Create the hardware_info facts
   when: 
