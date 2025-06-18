@@ -57,6 +57,25 @@
         path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
 
+    - name: Create the hardware_info if cpus defined
+      when: 
+        - cpus.stdout_lines is defined 
+      block:
+
+      - name: Size of cpus
+        delegate_to: localhost
+        set_fact:
+          max_counter: "{{ cpus.stdout_lines | length }}"
+
+      - name: Create dict with cpus
+        ansible.builtin.set_fact:
+          hardware_info: "{{ hardware_info | default({}) | combine( { item: cpus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+        with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+      - name: Add the cpus to hardware_info
+        ansible.builtin.set_fact:
+          hardware_info: '{ "cpus" : {{ hardware_info }}}'
+
     - name: Size of cpuinfo
       delegate_to: localhost
       set_fact:
