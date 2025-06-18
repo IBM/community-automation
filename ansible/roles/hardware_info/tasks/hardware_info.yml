@@ -71,6 +71,20 @@
       ansible.builtin.set_fact:
         hardware_info: '{ "cpuinfo" : {{ hardware_info }}}'
 
+    - name: Size of meminfo
+      delegate_to: localhost
+      set_fact:
+        max_counter: "{{ meminfo.stdout_lines | length }}"
+
+    - name: Create dict with meminfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine( { item: meminfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+    - name: Add the meminfo to hardware_info
+      ansible.builtin.set_fact:
+        hardware_info: '{ "meminfo" : {{ hardware_info }}}'
+
     - name: Add the fqdn to hardware_info
       ansible.builtin.set_fact:
         hardware_info: "{{{ ansible_fqdn : hardware_info }}}"
