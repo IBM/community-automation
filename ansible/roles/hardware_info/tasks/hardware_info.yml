@@ -69,11 +69,11 @@
 
     - name: Add the cpuinfo to hardware_info
       ansible.builtin.set_fact:
-        hardware_info: "{ cpuinfo : {{ hardware_info }}}"
+        hardware_info: '{ "cpuinfo" : {{ hardware_info }}}'
 
     - name: Add the fqdn to hardware_info
       ansible.builtin.set_fact:
-        hardware: "{{{ ansible_fqdn : hardware_info }}}"
+        hardware_info: "{{{ ansible_fqdn : hardware_info }}}"
 
     - name: Debug hardware_info
       delegate_to: localhost
@@ -83,5 +83,5 @@
     - name: write var to file
       delegate_to: localhost
       copy:
-        content: "{{ hardware | to_nice_json }}"
+        content: "{{ hardware_info | to_nice_json }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ hardware_info_json_file }}"
