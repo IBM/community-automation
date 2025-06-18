@@ -1,8 +1,8 @@
 ---
 - name: Run on all linux targets
-  ansible.builtin.include_tasks: anylinux.yml 
+  ansible.builtin.include_tasks: anylinux.yml
   when:
-  - ansible_system == 'Linux'
+    - ansible_system == 'Linux'
 
 - name: Run on specific OS targets
   ansible.builtin.include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.yml"
