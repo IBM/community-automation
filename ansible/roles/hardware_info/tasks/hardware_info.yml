@@ -1,0 +1,87 @@
+---
+- name: Windoze logic
+  when:
+    - ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+
+    - name: Cat /proc/cpuinfo
+      ansible.builtin.command: 
+        cmd: cat /proc/cpuinfo
+      register: cpuinfo
+    - name: Cat /proc/meminfo
+      ansible.builtin.command: 
+        cmd: cat /proc/meminfo
+      register: meminfo
+
+- name: Linux logic
+  when:
+    - ansible_system == 'Linux'
+  block:
+
+    - name: Run lscpu
+      ansible.builtin.command: 
+        cmd: lscpu
+      register: cpuinfo
+    - name: Run lsmem
+      ansible.builtin.command: 
+        cmd: lsmem
+      register: meminfo
+
+- name: AIX logic
+  when:
+    - ansible_architecture == 'chrp'
+  block:
+
+    - name: Run lsdev |grep proc
+      ansible.builtin.command: 
+        cmd: lsdev |grep proc
+      register: cpus
+    - name: Run lsattr -El proc0
+      ansible.builtin.command: 
+        cmd: lsattr -El proc0
+      register: cpuinfo
+    - name: Run lsattr -El mem0
+      ansible.builtin.command: 
+        cmd: lsattr -El mem0
+      register: meminfo
+
+- name: Create the hardware_info facts
+  when: 
+    - cpuinfo.stdout_lines is defined 
+    - meminfo.stdout_lines is defined
+  block:
+
+    - name: Create hardware_info dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+
+    - name: Size of cpuinfo
+      delegate_to: localhost
+      set_fact:
+        max_counter: "{{ cpuinfo.stdout_lines | length }}"
+
+    - name: Create dict with cpuinfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine( { item: cpuinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+    - name: Add the cpuinfo to hardware_info
+      ansible.builtin.set_fact:
+        hardware_info: "{ cpuinfo : {{ hardware_info }}}"
+
+    - name: Add the fqdn to hardware_info
+      ansible.builtin.set_fact:
+        hardware: "{{{ ansible_fqdn : hardware_info }}}"
+
+    - name: Debug hardware_info
+      delegate_to: localhost
+      ansible.builtin.debug:
+        msg: "{{ hardware_info }}"
+
+    - name: write var to file
+      delegate_to: localhost
+      copy:
+        content: "{{ hardware | to_nice_json }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ hardware_info_json_file }}"
