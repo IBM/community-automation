@@ -10,25 +10,26 @@
       ansible.builtin.file:
         path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
         state: directory
+        mode: '0755'
 
     - name: Create the hardware_info if cpus defined
       when:
         - cpus.stdout_lines is defined
       block:
 
-      - name: Size of cpus
-        delegate_to: localhost
-        ansible.builtin.set_fact:
-          max_counter: "{{ cpus.stdout_lines | length }}"
+        - name: Size of cpus
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            max_counter: "{{ cpus.stdout_lines | length }}"
 
-      - name: Create dict with cpus
-        ansible.builtin.set_fact:
-          hardware_cpus: "{{ hardware_cpus | default({}) | combine( { item: cpus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-        with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+        - name: Create dict with cpus
+          ansible.builtin.set_fact:
+            hardware_cpus: "{{ hardware_cpus | default({}) | combine( { item: cpus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+          with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
 
-      - name: Add the cpus to hardware_cpus
-        ansible.builtin.set_fact:
-          hardware_cpus: '{ "cpus" : {{ hardware_cpus }}}'
+        - name: Add the cpus to hardware_cpus
+          ansible.builtin.set_fact:
+            hardware_cpus: '{ "cpus" : {{ hardware_cpus }}}'
 
     - name: Size of kernelinfo
       delegate_to: localhost
