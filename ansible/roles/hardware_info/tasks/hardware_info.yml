@@ -74,8 +74,9 @@
         hardware_meminfo: '{ "meminfo" : {{ hardware_meminfo }}}'
 
     - name: Add the os name to hardware_osname
-      ansible.builtin.set_fact:
-        hardware_osname: '{ "osname" : {{ ansible_distribution }}-{{ ansible_distribution_major_version }} }'
+      set_fact:
+        hardware_osname:
+          osname: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}"
 
     - name: Combine hardware_info and hardware_osname
       ansible.builtin.set_fact:
