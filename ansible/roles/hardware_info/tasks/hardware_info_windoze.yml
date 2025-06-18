@@ -9,5 +9,5 @@
   register: meminfo
 - name: Run uname -a
   ansible.builtin.command:
-    cmd:uname -a
+    cmd: uname -a
   register: kernelinfo
