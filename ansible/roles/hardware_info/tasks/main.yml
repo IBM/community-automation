@@ -1,4 +1,5 @@
 ---
+# each type has its own file due the way the registered variables are handled when the tasks are skipped
 - name: Hardware AIX
   when: ansible_architecture == 'chrp'
   ansible.builtin.include_tasks: hardware_info_aix.yml
