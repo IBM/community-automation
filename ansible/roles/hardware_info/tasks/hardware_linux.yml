@@ -1,0 +1,9 @@
+---
+- name: Run lscpu
+  ansible.builtin.command:
+    cmd: lscpu
+  register: cpuinfo
+- name: Run lsmem
+  ansible.builtin.command:
+    cmd: lsmem
+  register: meminfo

@@ -1,55 +1,7 @@
 ---
-- name: Windoze logic
-  when:
-    - ansible_system in ['Windows', 'CYGWIN_NT', 'CYGWIN']
-  block:
-
-    - name: Cat /proc/cpuinfo
-      ansible.builtin.command: 
-        cmd: cat /proc/cpuinfo
-      register: cpuinfo
-    - name: Cat /proc/meminfo
-      ansible.builtin.command: 
-        cmd: cat /proc/meminfo
-      register: meminfo
-
-- name: AIX logic
-  when:
-    - ansible_architecture == 'chrp'
-  block:
-
-    - name: Run lsdev |grep proc
-      ansible.builtin.shell: 
-        cmd: 'lsdev |grep proc'
-      register: cpus
-    - name: Run lsattr -El proc0
-      ansible.builtin.command: 
-        cmd: lsattr -El proc0
-      register: cpuinfo
-    - name: Run lsattr -El mem0
-      ansible.builtin.command: 
-        cmd: lsattr -El mem0
-      register: meminfo
-      
-- name: Linux logic
-  when:
-    - ansible_system == 'Linux'
-  block:
-
-    - name: Run lscpu
-      ansible.builtin.command: 
-        cmd: lscpu
-      register: cpuinfo
-    - name: Run lsmem
-      ansible.builtin.command: 
-        cmd: lsmem
-      register: meminfo
-
-
-
 - name: Create the hardware_info facts
-  when: 
-    - cpuinfo.stdout_lines is defined 
+  when:
+    - cpuinfo.stdout_lines is defined
     - meminfo.stdout_lines is defined
   block:
 
@@ -60,13 +12,13 @@
         state: directory
 
     - name: Create the hardware_info if cpus defined
-      when: 
-        - cpus.stdout_lines is defined 
+      when:
+        - cpus.stdout_lines is defined
       block:
 
       - name: Size of cpus
         delegate_to: localhost
-        set_fact:
+        ansible.builtin.set_fact:
           max_counter: "{{ cpus.stdout_lines | length }}"
 
       - name: Create dict with cpus
@@ -80,7 +32,7 @@
 
     - name: Size of cpuinfo
       delegate_to: localhost
-      set_fact:
+      ansible.builtin.set_fact:
         max_counter: "{{ cpuinfo.stdout_lines | length }}"
 
     - name: Create dict with cpuinfo
@@ -94,7 +46,7 @@
 
     - name: Size of meminfo
       delegate_to: localhost
-      set_fact:
+      ansible.builtin.set_fact:
         max_counter: "{{ meminfo.stdout_lines | length }}"
 
     - name: Create dict with meminfo
@@ -107,8 +59,8 @@
         hardware_meminfo: '{ "meminfo" : {{ hardware_meminfo }}}'
 
     - name: Combine hardware_info and hardware_cpus
-      when: 
-        - cpus.stdout_lines is defined 
+      when:
+        - cpus.stdout_lines is defined
       ansible.builtin.set_fact:
         hardware_info: "{{ hardware_info | default({}) | combine(hardware_cpus, recursive=True) }}"
 
@@ -122,7 +74,7 @@
 
     - name: Add the fqdn to hardware_info
       ansible.builtin.set_fact:
-        hardware_info: "{{{ ansible_fqdn : hardware_info }}}"
+        hardware_info: "{{ { ansible_fqdn : hardware_info } }}"
 
     - name: Debug hardware_info
       delegate_to: localhost
@@ -131,6 +83,7 @@
 
     - name: write var to file
       delegate_to: localhost
-      copy:
-        content: "{{ hardware_info | to_nice_json }}"
+      ansible.builtin.copy:
+        content: "{{ hardware_info | to_nice_json( sort_keys=false ) }}"
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ hardware_info_json_file }}"
+        mode: '0644'

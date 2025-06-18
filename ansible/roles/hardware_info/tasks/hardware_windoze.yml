@@ -1,0 +1,9 @@
+---
+- name: Cat /proc/cpuinfo
+  ansible.builtin.command:
+    cmd: cat /proc/cpuinfo
+  register: cpuinfo
+- name: Cat /proc/meminfo
+  ansible.builtin.command:
+    cmd: cat /proc/meminfo
+  register: meminfo
