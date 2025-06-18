@@ -46,6 +46,9 @@
       register: meminfo
 
 - name: Create the hardware_info facts
+  when: 
+    - cpuinfo.stdout_lines is defined 
+    - meminfo.stdout_lines is defined
   block:
 
     - name: Create hardware_info dir
