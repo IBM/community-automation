@@ -30,6 +30,20 @@
         ansible.builtin.set_fact:
           hardware_cpus: '{ "cpus" : {{ hardware_cpus }}}'
 
+    - name: Size of kernelinfo
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        max_counter: "{{ kernelinfo.stdout_lines | length }}"
+
+    - name: Create dict with kernelinfo
+      ansible.builtin.set_fact:
+        hardware_kernelinfo: "{{ hardware_kernelinfo | default({}) | combine( { item: kernelinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+
+    - name: Add the cpuinfo to hardware_kernelinfo
+      ansible.builtin.set_fact:
+        hardware_kernelinfo: '{ "kernelinfo" : {{ hardware_kernelinfo }}}'
+
     - name: Size of cpuinfo
       delegate_to: localhost
       ansible.builtin.set_fact:
@@ -57,6 +71,10 @@
     - name: Add the meminfo to hardware_meminfo
       ansible.builtin.set_fact:
         hardware_meminfo: '{ "meminfo" : {{ hardware_meminfo }}}'
+
+    - name: Combine hardware_info and hardware_kernelinfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_kernelinfo, recursive=True) }}"
 
     - name: Combine hardware_info and hardware_cpus
       when:

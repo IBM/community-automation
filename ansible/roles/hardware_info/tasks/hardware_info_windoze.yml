@@ -7,3 +7,7 @@
   ansible.builtin.command:
     cmd: cat /proc/meminfo
   register: meminfo
+- name: Run uname -a
+  ansible.builtin.command:
+    cmd:uname -a
+  register: kernelinfo

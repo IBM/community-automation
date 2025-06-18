@@ -11,3 +11,7 @@
   ansible.builtin.command:
     cmd: lsattr -El mem0
   register: meminfo
+- name: Run oslevel -g
+  ansible.builtin.command:
+    cmd: oslevel -g
+  register: kernelinfo
