@@ -42,3 +42,4 @@
       - 'unzip'
       - 'python3'
       - 'jq'
+      - 'libxcrypt-compat'
