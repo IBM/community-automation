@@ -1,18 +1,18 @@
 ---
 
 - name: check for RedHat distribution
-  fail:
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
 - name: create jmeter.log
-  file:
+  ansible.builtin.file:
     path: '{{ item }}'
     state: touch
     mode: '0755'
   with_items:
-  - jmeter.log
-  - jmeter.error
+    - jmeter.log
+    - jmeter.error
 
 - name: kill rm any existing jmeter container
   containers.podman.podman_container:
@@ -25,8 +25,8 @@
     state: absent # started created absent stopped present
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
 - name: Get the timezone string
   ansible.builtin.shell: "timedatectl show|grep Timezone|awk -F= '{print $2}'"
@@ -38,11 +38,11 @@
     log_level: info
     name: jmeter
     hostname: jmeter_container
-    privileged: no
+    privileged: false
     userns: keep-id
     image: "{{ svt_jmeter_image }}"
     state: "{{ jmeter_state }}" # started created absent stopped present
-    restart: yes  
+    restart: true
     # timezone: '{{ jmeter_tz }}'
     user: '0:0'
     env:
@@ -65,11 +65,11 @@
               -report {{ jmeter_report }}"
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
 - name: Gather facts for all containers
   containers.podman.podman_container_info:
   register: svtop
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'

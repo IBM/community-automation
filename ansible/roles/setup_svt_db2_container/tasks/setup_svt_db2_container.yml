@@ -1,7 +1,7 @@
 ---
 
 - name: check for RedHat distribution
-  fail:
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
@@ -12,16 +12,16 @@
    state: latest
   vars:
    packages:
-   - podman
+    - podman
 
 - name: Check if user is lingering
-  stat:
+  ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
   when: ansible_user != 'root'
 
 - name: Enable lingering is needed
-  command: "loginctl enable-linger {{ ansible_user }}"
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
   when:
     - ansible_user != 'root'
     - not user_lingering.stat.exists
@@ -74,11 +74,11 @@
     pull: true
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
 - name: create dbdir directory
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
   with_items:
@@ -93,8 +93,8 @@
     state: absent # started created absent stopped present
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
 - name: Run svtdb container
@@ -106,16 +106,16 @@
     state: started
     restart: true
     ports:
-     - "50000:50000"
+      - "50000:50000"
     volume:
-     - "/home/{{ ansible_user }}/dbdir:/database"
+      - "/home/{{ ansible_user }}/dbdir:/database"
     cmd_args:
-     - "-e LICENSE=accept"
-     - "-e DB2INST1_PASSWORD={{ db_pass }}"
-     - "-e DBNAME={{ db_name }}"
-     - "-e APP={{ svt_db_app }}"
+      - "-e LICENSE=accept"
+      - "-e DB2INST1_PASSWORD={{ db_pass }}"
+      - "-e DBNAME={{ db_name }}"
+      - "-e APP={{ svt_db_app }}"
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 

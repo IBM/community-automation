@@ -55,9 +55,9 @@
     pull: true
   register: svtop
 
-- name: Output svtop
-  ansible.builtin.debug:
-    msg: '{{ svtop }}'
+# - name: Output svtop
+#   ansible.builtin.debug:
+#     msg: '{{ svtop }}'
 
 - name: Kill rm any existing mq container
   containers.podman.podman_container:
@@ -68,9 +68,9 @@
     state: absent # started created absent stopped present
   register: svtop
 
-- name: Output svtop
-  ansible.builtin.debug:
-    msg: '{{ svtop }}'
+# - name: Output svtop
+#   ansible.builtin.debug:
+#     msg: '{{ svtop }}'
 
 - name: Purge existing mqdata volume
   containers.podman.podman_volume:
@@ -104,6 +104,6 @@
       - "-e MQ_ADMIN_PASSWORD={{ mq_admin_pass }}"
   register: svtop
 
-- name: Output svtop
-  ansible.builtin.debug:
-    msg: '{{ svtop }}'
+# - name: Output svtop
+#   ansible.builtin.debug:
+#     msg: '{{ svtop }}'

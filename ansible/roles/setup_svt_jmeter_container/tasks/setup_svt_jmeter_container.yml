@@ -1,7 +1,7 @@
 ---
 
 - name: check for RedHat distribution
-  fail:
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
@@ -15,13 +15,13 @@
    - podman
 
 - name: Check if user is lingering
-  stat:
+  ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
   when: ansible_user != 'root'
 
 - name: Enable lingering is needed
-  command: "loginctl enable-linger {{ ansible_user }}"
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
   when:
     - ansible_user != 'root'
     - not user_lingering.stat.exists
@@ -37,6 +37,6 @@
     pull: true
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
