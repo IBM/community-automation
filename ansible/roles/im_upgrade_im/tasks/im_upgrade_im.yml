@@ -31,6 +31,20 @@
         path: "{{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
         state: absent
 
+    - name: Check if windoze imlock exists
+      ansible.builtin.stat:
+        ignore_errors: true
+        path: 'C:\Users\nest\AppData\Roaming\IBM\INSTAL~1\.imlock'
+      register: isimlock
+
+    - name: Block windoze imlock processing
+      when: isimlock.stat.exists
+      block:
+
+      - name: Windoze debug imlock
+        ansible.builtin.debug:
+          msg: '{{ isimlock }}'
+
     - name: Upgrade IM to the latest level
       ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
       register: updateOutput
