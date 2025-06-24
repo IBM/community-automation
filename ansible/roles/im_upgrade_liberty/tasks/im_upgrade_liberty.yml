@@ -1,9 +1,23 @@
 ---
 - name: Zip up the current folder
   community.general.archive:
-    path: "{{ wlp_usr_dir }}"
+    path: "{{ wlp_usr_dir }}/*"
     dest: "{{ install_base }}/{{ ansible_hostname }}.liberty_usr.save.zip"
     mode: '0755'
+    exclude_path:
+      - "{{ wlp_usr_dir }}/shared/stackGroups"
+    exclusion_patterns:
+      - '*.jar'
+      - '*.zip'
+      - '*.tar'
+      - '*.tgz'
+      - '*.gz'
+      - 'javacore*'
+      - 'core*'
+      - 'heapdump*'
+      - 'Snap*'
+      - 'tranlog'
+      - 'messaging'
     format: zip
 
 - name: Check if previous liberty installed
