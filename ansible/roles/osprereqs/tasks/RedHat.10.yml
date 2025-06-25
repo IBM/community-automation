@@ -43,4 +43,4 @@
       - 'python3'
       - 'jq'
       - 'libxcrypt-compat'
-      - 'libnsl
+      - 'libnsl'
