@@ -51,17 +51,18 @@
     state: directory
     mode: '0755'
     
-- name: Override podman 5.x pasta networking with slirp4netns
-  ansible.builtin.blockinfile:
-    path: ".config/containers/containers.conf"
-    create: true
-    mode: '0755'
-    marker: "# {mark} Revert to slirp4netns ANSIBLE MANAGED BLOCK"
-    block: |
-      [network]
-      # default_rootless_network_cmd = ""
-      # change to.
-      default_rootless_network_cmd = "slirp4netns"
+# RHEL10 does not have slirp4netns installation packages, so we cannot override the podman 5.x pasta networking with slirp4netns
+# - name: Override podman 5.x pasta networking with slirp4netns
+#   ansible.builtin.blockinfile:
+#     path: ".config/containers/containers.conf"
+#     create: true
+#     mode: '0755'
+#     marker: "# {mark} Revert to slirp4netns ANSIBLE MANAGED BLOCK"
+#     block: |
+#       [network]
+#       # default_rootless_network_cmd = ""
+#       # change to.
+#       default_rootless_network_cmd = "slirp4netns"
       
 - name: Pull the svt db2 image
   containers.podman.podman_image:
