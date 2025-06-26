@@ -13,10 +13,10 @@
 
 - name: Copy the gcmv.genheap.epf config file to working dir
   delegate_to: localhost
-  copy: 
+  copy:
     src: files/gcmv.genheap.epf
     dest: "{{ vbgc_dir }}"
-    mode: 0755
+    mode: '0755'
 
 - name: Run the IBM GCMV script
   delegate_to: localhost
@@ -30,6 +30,7 @@
     msg: "{{ vbgcoutput.stdout_lines }}"
 
 - name: Clean up gcmv.genheap.epf
+  delegate_to: localhost
   ansible.builtin.file:
     path: "{{ vbgc_dir }}/gcmv.genheap.epf"
     state: absent

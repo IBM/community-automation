@@ -2,7 +2,7 @@
 
 - name: Find all the verbosegc line plots ( indicates data )
   delegate_to: localhost
-  ansible.builtin.shell: 'find . -name "Line plot.png"'
+  ansible.builtin.shell: 'find . -name "Line plot.*"'
   args:
     chdir: "{{ vbgc_report_dir }}"
   register: lineplotoutput
