@@ -33,7 +33,7 @@
 
     - name: Check if windoze imlock exists
       ansible.builtin.stat:
-        path: 'C:\Users\nest\AppData\Roaming\IBM\INSTAL~1\.imlock'
+        path: '/cygdrive/c/Users/nest/AppData/Roaming/IBM/INSTAL~1/.imlock'
       register: isimlock
 
     - name: Block windoze imlock processing
