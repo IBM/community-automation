@@ -19,6 +19,7 @@
         - '*.zip'
         - '*.tar'
         - '*.gz'
+        - 'trace*.log'
       format: zip
 
   - name: Create local logs dir
