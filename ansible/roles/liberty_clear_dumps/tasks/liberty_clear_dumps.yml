@@ -20,3 +20,14 @@
     path: "{{ item }}"
     state: absent
   with_items: '{{ isjavacore.stdout_lines }}'
+
+- name: Any cores?
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'core*"
+  register: iscore
+  changed_when: false
+
+- name: Remove Liberty cores  
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items: '{{ iscore.stdout_lines }}'
