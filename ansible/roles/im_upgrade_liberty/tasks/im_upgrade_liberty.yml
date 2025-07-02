@@ -58,34 +58,13 @@
         ansible.builtin.debug:
           msg: "{{ saveCredentialOutput.stdout_lines }}"
 
-      - name: Check if previous liberty installed
-        ansible.builtin.stat:
-          path: "/cygdrive/c/Users/nest/AppData/Roaming/IBM"
-        register: isWindoze
-
-      - name: Perform Windoze debug operations
-        when: isWindoze.stat.exists
-        block:
-        - name: Windoze debug only
-          ansible.builtin.shell: "find /cygdrive/c/Users/nest/AppData/Roaming/IBM -name .imlock -ls"
-          register: imWindozeDebug
-        - name: Windoze find /cygdrive/c/Users/nest/AppData/Roaming/IBM -name .imlock -ls
-          ansible.builtin.debug:
-            msg: "{{ imWindozeDebug.stdout_lines }}"
-
-      # during the upgrade, numerous times I'm seeing an error that another imncl process ( on windoze ) is running. Add another check to see if thats true
-      # this did not catch the issue, so leaving it commented out for now
-      # - name: Check if imcl is running
-      #   ansible.builtin.shell: "ps -fe | grep -i imcl | grep -v grep"
-      #   register: imclRunning
-      #   until: imclRunning.rc == 1
-      #   ignore_errors: true
-      #   no_log: false
-      #   retries: 30
-      #   delay: 5
+      - name: Check if windoze and implement .imlock timing hack ( pause 2 minutes )
+        when: ansible_system == 'Windows' or 'CYG' in ansible_system
+        ansible.builtin.pause:
+          seconds: 120
 
       - name: Upgrade liberty
-        ansible.builtin.shell: "time {{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
+        ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl install {{ im_liberty_package }} \
           -repositories https://rtpgsa.ibm.com/gsa/rtpgsa/projects/l/liberty.build/liberty/WASX.LIBERTY/{{ liberty_daily_or_test }}/{{ liberty_im_driver }}/linux/zipper/externals/installables/repository/ \
           -installationDirectory {{ cygwin }}{{ install_base }}/{{ liberty_dir }} \
           -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store \
