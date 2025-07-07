@@ -2,66 +2,76 @@
 - name: Print MQ info
   when: groups.mq is defined
   block:
-    - name: Get the MQ container version info
-      containers.podman.podman_container_exec:
-        name: "{{ svt_mq_container_name }}"
-        command: "dspmqver"
-      register: mqinfo
-  #   "Name:        IBM MQ",
-  #   "Version:     9.4.1.1",
-  #   "Level:       p941-001-241129",
-  #   "BuildType:   IKAP - (Production)",
-  #   "Platform:    IBM MQ for Linux (x86-64 platform)",
-  #   "Mode:        64-bit",
-  #   "O/S:         Linux 5.14.0-503.26.1.el9_5.x86_64",
-  #   "O/S Details: Red Hat Enterprise Linux 9.5 (Plow)",
-  #   "InstName:    Installation1",
-  #   "InstDesc:    IBM MQ V9.4.1.1 (Unzipped)",
-  #   "Primary:     N/A",
-  #   "InstPath:    /opt/mqm",
-  #   "DataPath:    /mnt/mqm/data",
-  #   "MaxCmdLevel: 941",
-  #   "LicenseType: Developer",
-  #   "ReleaseType: Continuous Delivery (CD)"
 
-    # temp hard code info ?? some tricky regex
-    - name: Do some regex
-      ansible.builtin.set_fact:
-        content: "{{ mqinfo.stdout_lines | map('regex_findall','(?<=:)[^\"]+') | flatten }}"
-        
-    # - name: Print out content
-    #   ansible.builtin.debug:
-    #     msg: "{{ content }}"
+    - name: Gather info for container
+      containers.podman.podman_container_info:
+        name: '{{ svt_mq_container_name }}'
+      register: container_info
 
-    - name: Set MQ info fact
-      ansible.builtin.set_fact:
-        mq_Name: "{{content[0] | trim}}"
-        mq_Version: "{{content[1] | trim}}"
-        mq_Level: "{{content[2] | trim}}"
-        mq_BuildType: "{{content[3] | trim}}"
-        mq_Platform: "{{content[4] | trim}}"
-        mq_Mode: "{{content[5] | trim}}"
-        mq_os: "{{content[6] | trim}}"
-        mq_osDetails: "{{content[7] | trim}}"
-        mq_InstName: "{{content[8] | trim}}"
-        mq_InstDesc: "{{content[9] | trim}}"
-        mq_Primary: "{{content[10] | trim}}"
-        mq_InstPath: "{{content[11] | trim}}"
-        mq_DataPath: "{{content[12] | trim}}"
-        mq_MaxCmdLevel: "{{content[13] | trim}}"
-        mq_LicenseType: "{{content[14] | trim}}"
-        mq_ReleaseType: "{{content[15] | trim}}"
+    - name: MQ is running in container
+      when: container_info.containers[0] is defined
+      block:
 
-    - name: Create local logs dir
-      delegate_to: localhost
-      ansible.builtin.file:
-        path: "{{ logs_dir }}/{{ env_name }}"
-        state: directory
-        mode: '0755'
+        - name: Get the MQ container version info
+          containers.podman.podman_container_exec:
+            name: "{{ svt_mq_container_name }}"
+            command: "dspmqver"
+          register: mqinfo
+      #   "Name:        IBM MQ",
+      #   "Version:     9.4.1.1",
+      #   "Level:       p941-001-241129",
+      #   "BuildType:   IKAP - (Production)",
+      #   "Platform:    IBM MQ for Linux (x86-64 platform)",
+      #   "Mode:        64-bit",
+      #   "O/S:         Linux 5.14.0-503.26.1.el9_5.x86_64",
+      #   "O/S Details: Red Hat Enterprise Linux 9.5 (Plow)",
+      #   "InstName:    Installation1",
+      #   "InstDesc:    IBM MQ V9.4.1.1 (Unzipped)",
+      #   "Primary:     N/A",
+      #   "InstPath:    /opt/mqm",
+      #   "DataPath:    /mnt/mqm/data",
+      #   "MaxCmdLevel: 941",
+      #   "LicenseType: Developer",
+      #   "ReleaseType: Continuous Delivery (CD)"
 
-    - name: Save mqinfo to mq_info.json
-      delegate_to: localhost
-      ansible.builtin.template:
-        src: mq_info.json.j2
-        dest: "{{ logs_dir }}/{{ env_name }}/mq_info.json"
-        mode: '0444'
+        # temp hard code info ?? some tricky regex
+        - name: Do some regex
+          ansible.builtin.set_fact:
+            content: "{{ mqinfo.stdout_lines | map('regex_findall','(?<=:)[^\"]+') | flatten }}"
+            
+        # - name: Print out content
+        #   ansible.builtin.debug:
+        #     msg: "{{ content }}"
+
+        - name: Set MQ info fact
+          ansible.builtin.set_fact:
+            mq_Name: "{{content[0] | trim}}"
+            mq_Version: "{{content[1] | trim}}"
+            mq_Level: "{{content[2] | trim}}"
+            mq_BuildType: "{{content[3] | trim}}"
+            mq_Platform: "{{content[4] | trim}}"
+            mq_Mode: "{{content[5] | trim}}"
+            mq_os: "{{content[6] | trim}}"
+            mq_osDetails: "{{content[7] | trim}}"
+            mq_InstName: "{{content[8] | trim}}"
+            mq_InstDesc: "{{content[9] | trim}}"
+            mq_Primary: "{{content[10] | trim}}"
+            mq_InstPath: "{{content[11] | trim}}"
+            mq_DataPath: "{{content[12] | trim}}"
+            mq_MaxCmdLevel: "{{content[13] | trim}}"
+            mq_LicenseType: "{{content[14] | trim}}"
+            mq_ReleaseType: "{{content[15] | trim}}"
+
+        - name: Create local logs dir
+          delegate_to: localhost
+          ansible.builtin.file:
+            path: "{{ logs_dir }}/{{ env_name }}"
+            state: directory
+            mode: '0755'
+
+        - name: Save mqinfo to mq_info.json
+          delegate_to: localhost
+          ansible.builtin.template:
+            src: mq_info.json.j2
+            dest: "{{ logs_dir }}/{{ env_name }}/mq_info.json"
+            mode: '0444'
