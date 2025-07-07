@@ -7,6 +7,14 @@
 - name: Is tWAS properties/version/XXX.product
   when: isproduct.stat.exists
   block:
+
+  - name: Create target output dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      state: directory
+      mode: '0755'
+
   - name: Fetch properties/version/XXX.product
     ansible.builtin.fetch:
       src: "{{ install_base }}/{{ target_dir }}/properties/version/{{ twas_product }}.product"
