@@ -1,6 +1,6 @@
 ---
 - name: Any heapdumps?
-  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'heapdump*"
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'heapdump*'"
   register: isheap
   changed_when: false
 
@@ -11,7 +11,7 @@
   with_items: '{{ isheap.stdout_lines }}'
 
 - name: Any javacores?
-  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'javacore*"
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'javacore*'"
   register: isjavacore
   changed_when: false
 
@@ -22,7 +22,7 @@
   with_items: '{{ isjavacore.stdout_lines }}'
 
 - name: Any cores?
-  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'core*"
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'core*'"
   register: iscore
   changed_when: false
 
@@ -33,7 +33,7 @@
   with_items: '{{ iscore.stdout_lines }}'
 
 - name: Any Snaps?
-  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'Snap*"
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'Snap*'"
   register: issnap
   changed_when: false
 
@@ -44,7 +44,7 @@
   with_items: '{{ issnap.stdout_lines }}'
 
 - name: Any jitdumps?
-  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'jitdump*"
+  ansible.builtin.shell: "find {{ wlp_usr_dir }}/servers/{{ wl_server }} -name 'jitdump*'"
   register: isjitdump
   changed_when: false
 
