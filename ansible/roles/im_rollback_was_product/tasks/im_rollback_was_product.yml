@@ -8,7 +8,7 @@
     register: isimcl
     failed_when: isimcl.stat.exists == False
 
-  - name: Rollback WebSphere Product output command
+  - name: Rollback WebSphere Product command
     ansible.builtin.debug: 
       msg: "{{ install_base }}/IM/eclipse/tools/imcl rollback {{ rollback_version }} -installationDirectory {{ cygwin }}{{ was_product_dir }}"
 
