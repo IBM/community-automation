@@ -31,10 +31,10 @@
         path: "{{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
         state: absent
 
-    - name: Check if windoze and implement .imlock timing hack ( pause 2 minutes )
+    - name: Check if windoze and implement .imlock timing hack ( pause 4 minutes )
       when: ansible_system == 'Windows' or 'CYG' in ansible_system
       ansible.builtin.pause:
-        seconds: 120
+        seconds: 240
 
     - name: Upgrade IM to the latest level
       ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
