@@ -19,6 +19,9 @@
         - '*.tar'
         - '*.gz'
         - '*.lck'
+        - 'SystemErr*.log'
+        - 'btrace*'
+        - 'objects*'
       dest: logs.zip
       format: zip
 
