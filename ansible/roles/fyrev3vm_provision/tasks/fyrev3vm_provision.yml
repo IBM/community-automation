@@ -1,0 +1,83 @@
+---
+# Fyre does not provide a nice way to find out if a VM exists, so we
+# check if its deployable, and if not check the reason
+- name: Test Fyre VM
+  uri:
+    url: "{{ fyre_apiurl }}/v1/vm/"
+    method: "POST"
+    user: "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    force_basic_auth: True
+    validate_certs: False
+    return_content: yes
+    body_format: "json"
+    body: "{{ lookup('template', 'vm_request_check.json.j2') }}" 
+  register: checkstatus
+
+- name: Check if VM already exists
+  set_fact:
+     vm_already_exists: yes
+  when: checkstatus.json.errors is defined and checkstatus.json.errors[0] is match(".*is currently in use in domain.*")
+
+- name: Create Fyre VM
+  when: vm_already_exists is not defined  
+  block:
+  - name: Fail if check failed
+    fail:
+      msg: "Cluster cannot be deployed: {{ checkstatus }}"
+    when: checkstatus.json.deployable is not defined or not checkstatus.json.deployable
+
+  - name: Create Fyre VM
+    uri:
+      url: "{{ fyre_apiurl }}/v1/vm/"
+      method: "POST"
+      user: "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      force_basic_auth: True
+      validate_certs: False
+      return_content: yes
+      body_format: "json"
+      body: "{{ lookup('template', 'vm_request.json.j2') }}" 
+    register: buildstatus
+
+  - name: wait
+    pause:
+      seconds: 10
+
+  - name: Get Fyre request status
+    uri:
+      url: "{{ fyre_apiurl }}/v1/vm/request/{{ buildstatus.json.request_id }}"
+      method: "GET"
+      user: "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      force_basic_auth: True
+      validate_certs: False
+      return_content: yes
+    retries: "{{ fyre_requestRetries }}"
+    delay: 5
+    register: fyreStatus
+    until: fyreStatus.json.request.completion_percent == 100
+
+  - name: check that fyre cluster have a deployed status
+    uri:
+      url: "{{ fyre_apiurl }}/v1/vm/{{ fyre_fqdn }}/status"
+      method: GET
+      user:  "{{ fyreuser }}"
+      password: "{{ fyreapikey }}"
+      force_basic_auth: True
+      validate_certs: False
+      return_content: yes
+    changed_when: false
+    register: clusterStatus
+
+  - name: check for error status after loop check
+    fail:
+      msg: "{{ clusterStatus }}"
+    when: clusterStatus.json is not defined or clusterStatus.json.last_os_state != "running"
+
+  - name: check the host for a active ssh
+    command: 'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no root@{{ fyre_fqdn }} /usr/bin/true'
+    retries: "{{ fyre_sshRetries }}"
+    delay: 5
+    register: result
+    until: result.rc == 0
