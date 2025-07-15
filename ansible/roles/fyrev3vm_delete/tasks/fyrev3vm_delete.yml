@@ -1,0 +1,31 @@
+---
+# Check if the VM exists before attempting to delete it, otherwise fyre will block the requesting
+# id after a handful of attempts
+# status=success means the host does not exist
+# status=warning means it exists, or was recently deleted
+#    if details says "is currently in use in domain" ten it exists
+- name: check hostname availability
+  uri:
+    force_basic_auth: true
+    method: "GET"
+    return_content: true
+    url: "{{ fyre_apiurl }}/v1/vm/check_hostname/{{ fyre_vmName }}"
+    user: "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    validate_certs: false
+  register: hostname
+
+# This will fail if the delete fails
+- name: delete the vm
+  uri:
+    force_basic_auth: true
+    method: "DELETE"
+    return_content: true
+    timeout: 120
+    url: "{{ fyre_apiurl }}/v1/vm/{{ fyre_fqdn }}"
+    user: "{{ fyreuser }}"
+    password: "{{ fyreapikey }}"
+    validate_certs: false
+  when: hostname.json.status == "warning" and hostname.json.details is match(".*is currently in use in domain.*")
+
+# There is no need to check the status, as fyre v3 deletes immediately release the quota

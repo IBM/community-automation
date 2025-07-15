@@ -1,0 +1,22 @@
+{
+   "hostname": "{{ fyre_vmName }}",
+   "product_group_id": "{{ fyre_product_group_id }}",
+   "site": "{{ fyre_site }}",
+   "public_network": "{{ fyre_public_network }}",
+   "dns": "y",
+   "ssh_key": "{{ fyre_ssh_public_key }}",
+   {% if fyre_expiration is defined and fyre_expiration != "none" %}
+   "expiration": "{{ fyre_expiration }}",
+   {% endif %}
+   "os": "{{ fyre_os }}",
+   "platform": "{{ fyre_platform }}",
+   "memory": "{{ fyre_memory }}",
+   "cpu": "{{ fyre_cpu }}",
+   {% if fyre_additional_disk is defined %}
+   "additional_disk": [ "{{ fyre_additional_disk }}" ],
+   {% endif %}
+   {% if fyre_ceph_storage is defined %}
+   "ceph_storage": "{{ fyre_ceph_storage }}",
+   {% endif %}
+   "description": "{{ fyre_description }}"
+}
