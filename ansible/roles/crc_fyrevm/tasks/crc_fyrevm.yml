@@ -1,41 +1,41 @@
 ---
 
 - name: Create FyreVM with appropriate spec
-  include_role: 
-   name: fyrevm_provision
+  ansible.builtin.include_role: 
+    name: fyrev3vm_provision
   vars:
-   fyre_platform: x
-   fyre_cpu: 6
-   fyre_memory: 32  
-   fyre_os: 'Redhat 8.2'
-   fyre_site: "{{ site }}"
-   fyre_comment: 'RH OpenShift crc'
-   clusterName_prefix: crc
-   target_group: crc
-   target_user: "{{ crc_username }}"
-   crc_username: "{{ crc_username }}"
-   vnc: "{{ vnc }}"
+    fyre_platform: x
+    fyre_cpu: 6
+    fyre_memory: 32  
+    fyre_os: 'Redhat 10.0'
+    fyre_site: "{{ site }}"
+    fyre_comment: 'RH OpenShift crc'
+    clusterName_prefix: crc
+    target_group: crc
+    target_user: "{{ crc_username }}"
+    crc_username: "{{ crc_username }}"
+    vnc: "{{ vnc }}"
 
 - block:
   - name: check the host for cpu type
-    command: 'ssh -o StrictHostKeyChecking=no root@{{ emberFQDN }} lscpu -J'
+    ansible.builtin.command: 'ssh -o StrictHostKeyChecking=no root@{{ emberFQDN }} lscpu -J'
     register: cpuType
 
   - set_fact: 
-     isAMDchip: "{{ (cpuType.stdout|from_json).lscpu[9].get('data') }}"
+      isAMDchip: "{{ (cpuType.stdout|from_json).lscpu[9].get('data') }}"
 
-  - debug: 
+  - ansible.builtin.debug: 
       msg: "{{ isAMDchip }}"
  
   - block:
     - name: is AMD?
       vars: 
-      - fyreRetryVM: True
+        fyreRetryVM: True
       include_role:
-        name: fyrevm_delete
+        name: fyrev3vm_delete
 
     - name: is AMD retry
-      include_role:
+      ansible.builtin.include_role:
         name: crc_fyrevm
     when: (isAMDchip).find('AMD') >= 1 
 
