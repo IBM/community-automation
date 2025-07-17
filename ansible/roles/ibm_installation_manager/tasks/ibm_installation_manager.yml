@@ -4,7 +4,7 @@
 ### "ansible_architecture": "x86_64",
 ### "ansible_architecture": "chrp", --- AIX
 
-- name: check if imcl installed as a prereq
+- name: Check if imcl installed as a prereq
   stat:
     path: "{{ install_base }}/IM/eclipse/tools/imcl"
   changed_when: false
@@ -22,9 +22,8 @@
   - ansible_system == 'Linux'
 - set_fact:
     archive_name_match: 'agent.installer.win32.win32.x86_64_{{ im_archive_driver }}.zip'
-    install_base_win: 'c:\cygwin'
+    cygwin: 'c:/cygwin64'
   when:
-  - ansible_architecture == 'x86_64'
   - ansible_system == 'Windows' or 'CYG' in ansible_system
 - set_fact:
     archive_name_match: 'agent.installer.linux.gtk.s390x_{{ im_archive_driver }}.zip'
@@ -32,7 +31,7 @@
   - ansible_architecture == 's390x'
   - ansible_system == 'Linux'
 - set_fact:
-    archive_name_match: 'agent.installer.aix.gtk.ppc_{{ im_archive_driver }}.zip'
+    archive_name_match: 'agent.installer.aix.gtk.ppc64_{{ im_archive_driver }}.zip'
   when:
   - ansible_architecture == 'chrp'
 - set_fact:
@@ -54,36 +53,58 @@
       ln -s /QOpenSys/pkgs/bin/zip /QOpenSys/usr/bin/zip 
       ln -s /QOpenSys/pkgs/bin/unzip /QOpenSys/usr/bin/unzip
 
-- name: temp im install dir
+- name: Temp im install dir
   file:
    path: "{{ install_base }}/im_install"
    state: directory
-- name: copy ibm_im_responsefile.xml template
+
+- name: Clean up previous ibm_im_responsefile.xml 
+  ansible.builtin.file:
+    path: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
+    state: absent
+
+- name: Copy ibm_im_responsefile.xml template
   template:
    src: ibm_im_responsefile.xml.j2
    dest: "{{ install_base }}/im_install/ibm_im_responsefile.xml"
 
-- name: get im archive
-  get_url:
+- name: What is install_base set to
+  debug: 
+   msg: "{{ install_base }}"
+
+- name: Get im archive
+  ansible.builtin.get_url:
    url: "{{ im_archive }}/{{ archive_name_match }}"
-   dest: "{{ install_base }}/im_install/im.zip"
+   dest: /tmp/im.zip
    url_username: "{{ gsa_user }}"
    url_password: "{{ gsa_pass }}"
+   mode: '0755'
+   validate_certs: false
 
-- name: unarchive im.zip
+- name: Unarchive im.zip
   unarchive:
-   src: "{{ install_base }}/im_install/im.zip"
+   src: /tmp/im.zip
    dest: "{{ install_base }}/im_install"
    remote_src: True
 
+- name: Clean up im.zip
+  ansible.builtin.file:
+    path: /tmp/im.zip
+    state: absent
+
 # default install location: ~/IBM/InstallationManager/eclipse/tools
 # tools command: ~/IBM/InstallationManager/eclipse/tools/imcl
-- name: ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
+- name: Run the install ./userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml
   shell: './userinstc -acceptLicense -accessRights nonAdmin -input ibm_im_responsefile.xml'
   args:
-    chdir: '{{ install_base }}/im_install'
+    chdir: "{{ install_base }}/im_install"
   register: userinstcOutput
     
-- name: userinstc output
+- name: Userinstc output
   debug: 
    msg: "{{ userinstcOutput.stdout_lines }}"
+
+- name: Clean up im_install temp repo
+  ansible.builtin.file:
+    path: "{{ install_base }}/im_install"
+    state: absent

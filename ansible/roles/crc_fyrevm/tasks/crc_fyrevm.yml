@@ -7,7 +7,7 @@
    fyre_platform: x
    fyre_cpu: 6
    fyre_memory: 32  
-   fyre_os: 'Redhat 8.2'
+   # fyre_os: 'Redhat 8.2'
    fyre_site: "{{ site }}"
    fyre_comment: 'RH OpenShift crc'
    clusterName_prefix: crc

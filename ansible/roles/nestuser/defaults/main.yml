@@ -1,3 +1,5 @@
 ---
 user_passfile: password.hash
 user_shell: '/bin/bash'
+user_id: 1000
+group_id: 1000

@@ -1,0 +1,60 @@
+---
+- name: Install MoRe
+  tags: install
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: Copy im_twas.xml template
+    ansible.builtin.template:
+      src: "im_twas_more_{{ twas_release }}.xml.j2"
+      dest: "im_twas_more.xml"
+      mode: '0755'
+
+    #  - name:  stop any running servers
+    #    ignore_errors: true
+    #    shell: "{{install_base }}/{{ liberty_dir }}/bin/server stop {{ item }}"
+    #    register: stopOutput
+    #    failed_when: ( stopOutput.rc not in [ 0, 2, 23, 127 ] )
+    #    with_items:
+    #    - "{{ wl_server }}"
+    #    - "{{ cc_server }}"
+
+  - name: Generate secureStorageFile.store
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+    #  this command is hanging on the pok zlinux boxes for some crazy networking reason
+    #  this hangs too: curl -Lk http://www.ibm.com/software/repositorymanager
+    #  which works on rtp hosts
+  - name:  generate external ibm secureStorageFile.store
+    shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name: Install tWAS MoRE
+    ansible.builtin.shell: "time {{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_twas_more.xml -acceptLicense -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+    register: installOutput
+
+  - name: InstallOutput
+    ansible.builtin.debug:
+      msg: "{{ installOutput.stdout_lines }}"
+
+  - name: ListInstalledPackages
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+    register: packageOutput
+
+  - name: PackageOutput
+    ansible.builtin.debug: 
+      msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Versions
+  tags: version
+  block:
+  - name: tWAS version
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: twasVersionOutput
+
+  - name: Output twasVersionOutput
+    ansible.builtin.debug:
+      msg: "{{ twasVersionOutput.stdout_lines }}"

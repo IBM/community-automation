@@ -10,7 +10,7 @@
     <ssl id="meteringSSL"
           keyStoreRef="meteringKeyStore"
           trustStoreRef="meteringKeyStore"
-	  sslProtocol="TLSv1.2"/>
+	  sslProtocol="TLSv1.2,TLSv1.3"/>
     <usageMetering url="{{ wa_url }}"
 	    apiKey="{{ api_key }}"
 	    sslRef="meteringSSL"/>

@@ -5,9 +5,9 @@
    dest: ~/
    mode: '0755'
 
-- name: find owner of wsadmin.sh
+- name: find owner of wsadmin{{ ext }}
   ansible.builtin.stat:
-    path: "{{ wa_target_path }}/bin/wsadmin.sh"
+    path: "{{ wa_target_path }}/bin/wsadmin{{ ext }}"
   register: wasowner
 
 - name: set become of file owners are non-root
@@ -29,7 +29,7 @@
    replace: 'com.ibm.ws.scripting.echoparams=false'
 
   # check the status of the dmgr 
-  # [nest@nest-wa-twas855 ~]$ /opt/WAS/profiles/dmgr/bin/serverStatus.sh dmgr
+  # [nest@nest-wa-twas855 ~]$ /opt/WAS/profiles/dmgr/bin/serverStatus{{ ext }} dmgr
   #ADMU0116I: Tool information is being logged in file
   #           /opt/WAS/profiles/dmgr/logs/dmgr/serverStatus.log
   #ADMU0128I: Starting tool with the dmgr profile
@@ -40,7 +40,7 @@
 - name: check the dmgr status
   become: '{{ was_become }}'
   no_log: true
-  shell: "bin/serverStatus.sh dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
+  shell: "bin/serverStatus{{ ext }} dmgr -username {{ wsadmin_username }} -password {{ wsadmin_password }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: dmgr_status
@@ -77,9 +77,9 @@
   - trustStorePassword is defined
   - trustStorePassword | length > 1
 
-- name: run wsadmin.sh
+- name: run wsadmin{{ ext }}
   become: '{{ was_become }}'
-  shell: "bin/wsadmin.sh -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} {{ key1 }}={{ value1 }} startServers={{ startServers }}"
+  shell: "bin/wsadmin{{ ext }} -lang jython -username {{ wsadmin_username }} -password {{ wsadmin_password }} -f ~/configuretWasUsageMetering.py url={{ wa_url }} apikey={{ api_key }} {{ key1 }}={{ value1 }} startServers={{ startServers }}"
   args:
    chdir: "{{ wa_target_path }}"
   register: wsadmin

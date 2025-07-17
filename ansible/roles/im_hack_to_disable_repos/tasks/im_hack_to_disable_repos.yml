@@ -1,0 +1,39 @@
+---
+- name: Set the file to adjust (*nix)
+  when: ansible_system is not search('CYG')
+  ansible.builtin.set_fact:
+    pref_file: "{{ ansible_user_dir }}/var/ibm/InstallationManager/.settings/com.ibm.cic.agent.core.prefs"
+
+- name: Set the file to adjust (windoze)
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  ansible.builtin.set_fact:
+    pref_file: "/cygdrive/c/Users/{{ user_username }}/AppData/Roaming/IBM/Installation Manager/.settings/com.ibm.cic.agent.core.prefs"
+
+- name: Check if com.ibm.cic.agent.core.prefs exists
+  ansible.builtin.stat:
+    path: "{{ pref_file }}"
+  register: isprefs
+
+- name: IM repo hack
+  when: isprefs.stat.exists
+  block:
+    - name: IM hack to remove current gsa repos
+      ansible.builtin.lineinfile:
+        path: "{{ pref_file }}"
+        regexp: "^com.ibm.cic.common.core.preferences.repositoryLocations*"
+        state: absent
+        backup: true
+
+    - name: IM disable offering.service.repositories.areUsed
+      ansible.builtin.lineinfile:
+        path: "{{ pref_file }}"
+        search_string: "offering.service.repositories.areUsed=false"
+        line: "offering.service.repositories.areUsed=false"
+        state: present
+
+    - name: IM disable com.ibm.cic.common.core.preferences.searchForUpdates
+      ansible.builtin.lineinfile:
+        path: "{{ pref_file }}"
+        search_string: "com.ibm.cic.common.core.preferences.searchForUpdates=false"
+        line: "com.ibm.cic.common.core.preferences.searchForUpdates=false"
+        state: present

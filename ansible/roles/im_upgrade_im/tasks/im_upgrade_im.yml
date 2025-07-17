@@ -1,0 +1,46 @@
+---
+- name: Upgrade IM repo
+  ansible.builtin.debug:
+   msg: "IM repo->{{ im_upgrade_repo }}"
+
+- name: Test connection to repo since this does fail test commit
+  get_url:
+    url: "{{ im_upgrade_repo }}"
+    dest: /tmp/test_im_upgrade_repo.html
+    mode: '0755'
+    validate_certs: false
+    timeout: 2
+  register: repoexists
+  ignore_errors: true
+
+- name: Delete temp file
+  file:
+    state: absent
+    path: /tmp/test_im_upgrade_repo.html
+
+- name: Repo is not reachable
+  ansible.builtin.debug:
+   msg: "IM repo->{{ im_upgrade_repo }} is not reachable, skipping im upgrade"
+  when: repoexists.msg is search('Request failed')
+
+- name: Repo is alive
+  when: repoexists.msg is search('OK')
+  block:
+    - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+      ansible.builtin.file:
+        path: "{{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+        state: absent
+
+    - name: Check if windoze and implement .imlock timing hack ( pause 4 minutes )
+      when: ansible_system == 'Windows' or 'CYG' in ansible_system
+      ansible.builtin.pause:
+        seconds: 240
+
+    - name: Upgrade IM to the latest level
+      ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl install com.ibm.cic.agent  -repositories {{ im_upgrade_repo }}"
+      register: updateOutput
+
+    - name: Upgrade output
+      ansible.builtin.debug:
+        msg: "{{ updateOutput.stdout_lines }}"
+      failed_when: ( updateOutput.rc not in [ 0, 1 ] )

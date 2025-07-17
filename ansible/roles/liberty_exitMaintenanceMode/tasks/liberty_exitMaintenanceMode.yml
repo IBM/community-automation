@@ -1,0 +1,51 @@
+---
+- name: Liberty exitMaintenanceMode
+  tags: exitMaintenanceMode
+  block:
+  - name: Check if liberty is installed
+    ansible.builtin.stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/collective"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: Test connection to controller
+    get_url:
+      url: "https://{{ cc_hostname }}:{{ liberty_admin_ports }}/adminCenter"
+      dest: "/tmp/cc_alive_{{ cc_hostname }}"
+      mode: '0755'
+      validate_certs: false
+      timeout: 2
+    register: ccalive
+    ignore_errors: true
+
+  - name: Delete temp file
+    file:
+      state: absent
+      path: "/tmp/cc_alive_{{ cc_hostname }}"
+
+  - name: Controller is not reachable
+    ansible.builtin.debug:
+      msg: "Controller->{{ cc_hostname }}:{{ liberty_admin_ports }} is not reachable, skipping maint op"
+    when: ccalive.msg is search('Request failed') or ccalive.status_code is not defined
+
+  - name: Controller is alive
+    when: 
+      - ccalive.status_code is defined 
+      - ccalive.status_code == 200
+    block:
+    - name: Liberty exitMaintenanceMode
+      ansible.builtin.shell:
+        "{{ install_base }}/{{ liberty_dir }}/bin/collective exitMaintenanceMode \
+        --host={{ cc_hostname }} \
+        --port={{ liberty_admin_ports }} \
+        --user={{ liberty_admin_user }} \
+        --password={{ liberty_admin_pass }} \
+        --hostName={{ ansible_fqdn }} \
+        --usrDir={{ cygwin }}{{ wlp_usr_dir }} \
+        --server={{ wl_server }} \
+        --autoAcceptCertificates"
+      register: exitMaintenanceModeOutput
+
+    - name: Liberty exitMaintenanceModeModeOutput
+      ansible.builtin.debug:
+        msg: "{{ exitMaintenanceModeOutput.stdout_lines }}"

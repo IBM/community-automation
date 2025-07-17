@@ -1,7 +1,7 @@
 ---
 # https://docs.docker.com/engine/install/centos/
 - name: remove conflicting packages
-  become: yes
+  become: true
   ignore_errors: yes
   ansible.builtin.dnf:
    name: "{{ packages }}"

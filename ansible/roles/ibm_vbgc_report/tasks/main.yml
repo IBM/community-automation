@@ -1,0 +1,3 @@
+---
+- name: IBM VerboseGC report logic
+  ansible.builtin.include_tasks: ibm_vbgc_report.yml

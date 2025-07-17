@@ -1,21 +1,27 @@
 ---
 
-- name: enable /etc/ssh/sshd_config X11Forwarding yes
-  lineinfile:
-   path: '/etc/ssh/sshd_config'
-   state: present
-   regexp: 'X11Forwarding no'
-   line: 'X11Forwarding yes'
-  become: yes
+- name: Enable /etc/ssh/sshd_config X11Forwarding yes
+  ansible.builtin.lineinfile:
+    path: '/etc/ssh/sshd_config'
+    state: present
+    regexp: 'X11Forwarding no'
+    line: 'X11Forwarding yes'
+  become: true
 
-- name: enable /etc/ssh/sshd_config X11UseLocalhost no
-  lineinfile:
-   path: '/etc/ssh/sshd_config'
-   state: present
-   regexp: 'X11UseLocalhost yes'
-   line: 'X11UseLocalhost no'
-  become: yes
+- name: Enable /etc/ssh/sshd_config X11UseLocalhost no
+  ansible.builtin.lineinfile:
+    path: '/etc/ssh/sshd_config'
+    state: present
+    regexp: 'X11UseLocalhost yes'
+    line: 'X11UseLocalhost no'
+  become: true
 
-- name: restart sshd
-  command: "systemctl restart sshd"
-  become: yes
+- name: Restart sshd on RedHat
+  ansible.builtin.command: "systemctl restart sshd"
+  become: true
+  when: ansible_facts['distribution'] == "RedHat"
+
+- name: Restart ssh on Ubuntu
+  ansible.builtin.command: "systemctl restart ssh"
+  become: true
+  when: ansible_facts['distribution'] == "Ubuntu"

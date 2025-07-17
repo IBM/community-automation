@@ -1,0 +1,50 @@
+---
+- name: Start the apache http server
+  tags: apache_start
+  block:
+  - name: check if apachectl is installed
+    stat:
+      path: "{{ install_ihs_base }}/{{ http_dir }}/bin"
+    register: ishttp
+    failed_when: ishttp.stat.exists == False
+
+  - name: Unix HTTPServer operations
+    when: ansible_system is not search('CYG')
+    block:
+      - name: HTTPServer start to  load new / updated config
+        failed_when: false
+        shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+        register: ihsOutput
+
+      - name: HTTPServer apachectl start Output
+        debug: 
+          msg: "{{ ihsOutput.stdout_lines }}"
+
+      - name: Disable admin.config User otherwise must run as root
+        ansible.builtin.replace:
+          path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+          regexp: '^User'
+          replace: '#User'
+
+      - name: Disable admin.config Group otherwise must run as root
+        ansible.builtin.replace:
+          path: "{{ install_ihs_base }}/{{ http_dir }}/conf/admin.conf"
+          regexp: '^Group'
+          replace: '#Group'
+
+      - name: HTTPServer adminctl start to  load new / updated config
+        failed_when: false
+        shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl start"
+        register: adminctl
+
+      - name: HTTPServer adminctl start Output
+        debug: 
+          msg: "{{ adminctl.stdout_lines }}"
+    
+  - name: Windoze HTTPServer operations
+    when: ansible_system == 'Windows' or 'CYG' in ansible_system
+    block:
+      - name: Apache start
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k restart -n 'IBMHTTPServer'"
+      - name: Apache start admin
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apache -k restart -n 'IBMAdminHTTPServer'"

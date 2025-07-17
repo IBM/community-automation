@@ -1,7 +1,7 @@
 ---
 # specific OS supports wildcards
 - name: remove extraneous packages
-  become: yes
+  become: true
   ignore_errors: yes
   apt:
    name: "{{ packages }}"
@@ -16,13 +16,13 @@
    - "tignervnc"
 
 - name: apt update
-  become: yes
+  become: true
   apt:
    name: '*'
    state: latest
 
 - name: install packages
-  become: yes
+  become: true
   apt:
    name: "{{ packages }}"
    state: present

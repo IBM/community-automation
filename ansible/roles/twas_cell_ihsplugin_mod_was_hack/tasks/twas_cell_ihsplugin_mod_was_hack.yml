@@ -1,0 +1,14 @@
+---
+
+- name: Windoze hack due to some path issues for propogate - copy
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+    # the wct configure plugin on windoze pretends to work , but actually fails, most likely due to path issues
+    # manually configure the httpd.conf with:
+    - name: Insert/Update windoze WebSpherePluginConfig hack
+      ansible.builtin.blockinfile:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/conf/httpd.conf"
+        marker: "# {mark} WebSpherePluginConfig ANSIBLE MANAGED BLOCK"
+        block: |
+          LoadModule was_{{ mod_was }}_module {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/bin/{{ dll_bits }}/mod_was_{{ mod_was }}_http.dll
+          WebSpherePluginConfig {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}/config/{{ webServerName }}/plugin-cfg.xml

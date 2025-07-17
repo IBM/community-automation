@@ -1,12 +1,12 @@
 ---
 
 - name: check for RedHat distribution
-  fail:
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
-  become: yes
+  become: true
   dnf:
    name: "{{ packages }}"
    state: latest
@@ -15,13 +15,13 @@
    - podman
 
 - name: Check if user is lingering
-  stat:
+  ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
   when: ansible_user != 'root'
 
 - name: Enable lingering is needed
-  command: "loginctl enable-linger {{ ansible_user }}"
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
   when:
     - ansible_user != 'root'
     - not user_lingering.stat.exists
@@ -29,12 +29,14 @@
 - name: Pull the svt jmeter image
   containers.podman.podman_image:
     name: "{{ svt_jmeter_image }}"
-    username: "{{ hyc_user }}"
-    password: "{{ hyc_token }}"
+    username: "{{ svt_registry_user }}"
+    password: "{{ svt_registry_password }}"
     force: yes
     state: present
+    validate_certs: false
+    pull: true
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 

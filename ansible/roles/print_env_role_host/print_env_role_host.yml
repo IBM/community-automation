@@ -1,0 +1,104 @@
+---
+- name: Add tWAS
+  delegate_to: localhost
+  when: env_name is search('tWAS')
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'tWAS Dmgr' , 'value': '{{ groups.dmgr }}'}
+    - { 'key': 'tWAS Server' , 'value': '{{ groups.ts }}'}
+
+- name: Add Liberty Server
+  delegate_to: localhost
+  when:
+    - env_name is not search('tWAS')
+    - groups.ls is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Liberty Server' , 'value': '{{ groups.ls }}'}
+
+- name: Add Controller
+  delegate_to: localhost
+  when:
+    - env_name is not search('tWAS')
+    - groups.cc is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'Controller' , 'value': '{{ groups.cc }}'}
+
+- name: Add ULB
+  delegate_to: localhost
+  when:
+    - groups.ulb is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+        - { 'key': 'ulb' , 'value': '{{ groups.ulb }}'}
+
+- name: Add ldap
+  delegate_to: localhost
+  when:
+    - groups.ldap is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+        - { 'key': 'ldap' , 'value': '{{ groups.ldap }}'}
+
+- name: Add WebServer
+  delegate_to: localhost
+  when:
+    - groups.ihs is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+        - { 'key': 'webserver' , 'value': '{{ groups.ihs }}'}
+
+- name: Add Stress
+  delegate_to: localhost
+  when:
+    - groups.stress is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'stress' , 'value': '{{ groups.stress }}'}
+
+- name: Add database
+  delegate_to: localhost
+  when:
+    - groups.db is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'database' , 'value': '{{ groups.db }}'}
+
+- name: Add email
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'email' , 'value': '{{ env_owner }}'}
+
+- name: Add mq
+  when: groups.mq is defined
+  ansible.builtin.set_fact:
+      envroles: "{{ envroles | default({}) | combine ({ item.key : item.value }) }}"
+  with_items:
+    - { 'key': 'mq' , 'value': '{{ groups.mq }}'}
+
+# - name: Display the Dictionary
+#   ansible.builtin.debug: var=envroles
+
+- name: Create local logs dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}"
+    state: directory
+
+- name: Write the env_role_host.json
+  ansible.builtin.copy:
+    content: "{{ envroles | to_nice_json }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/env_role_host.json"
+    mode: '0444'
+  delegate_to: localhost

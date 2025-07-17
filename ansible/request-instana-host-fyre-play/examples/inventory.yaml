@@ -1,0 +1,20 @@
+all:
+ hosts:   
+ vars:
+  download_key: yourDownloadKey 
+  agent_key: yourAgentKey 
+  sales_key: yourSaleKey 
+  instana_tenet: nest 
+  instana_unit: was   
+  STANCTL_CORE_SMTP_FROM: 'owner@instanaHost'
+  STANCTL_CORE_SMTP_HOST: 'your.email.relay.com'   
+  STANCTL_CORE_SMTP_PORT: 'port'
+ children:
+  fyreApi:
+   hosts:
+    localhost:
+   vars:
+    ansible_connection: local 
+    fyreuser: you 
+    fyreapikey: yourFyreApiKey 
+    site: rtp

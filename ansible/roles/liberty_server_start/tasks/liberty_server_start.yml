@@ -1,0 +1,39 @@
+---
+- name: Liberty Server Start
+  tags: StartServers 
+  block:
+  - name: Check if liberty is installed
+    ansible.builtin.stat:
+      path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+    register: isliberty
+    failed_when: isliberty.stat.exists == False
+
+  - name: Status Liberty Server
+    ansible.builtin.command:
+      cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+    register: cmdOutput
+    failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+  - name: Start Liberty Server block
+    when: cmdOutput.rc != 0
+    block:
+    # must use nohup else the server stops after the controlling process exits
+    - name: Start Liberty server 
+      ansible.builtin.command:
+        cmd: "{{ wlp_nohup }} {{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server start {{ wl_server }} --clean"
+      register: cmdOutput1
+      failed_when: ( cmdOutput1.rc not in [ 0 ] )
+
+    - name: Start Liberty server output
+      ansible.builtin.debug:
+        msg: '{{ cmdOutput1.stdout_lines }}'
+
+    - name: Check server status 
+      ansible.builtin.command:
+        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+      register: cmdOutput1
+      failed_when: ( cmdOutput1.rc not in [ 0 ] )
+
+    - name: Server status output
+      ansible.builtin.debug:
+        msg: '{{ cmdOutput1.stdout_lines }}'

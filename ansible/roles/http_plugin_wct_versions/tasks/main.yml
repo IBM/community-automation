@@ -1,0 +1,3 @@
+---
+- name: VersionInfo http/plugin/wct
+  ansible.builtin.include_tasks: http_plugin_wct_versions.yml

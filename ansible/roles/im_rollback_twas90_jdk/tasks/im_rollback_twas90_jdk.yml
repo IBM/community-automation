@@ -1,0 +1,18 @@
+---
+- name: Find tWAS WAS90 JDK Rollback version
+  block:
+  - name: Find tWAS WAS90 JDK Rollback version
+    ansible.builtin.include_role:
+      name: im_rollback_find_version
+    vars:
+      was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+      im_package_id: "{{ im_twas_java_package }}"
+
+  - name: Rollback tWAS WAS90 JDK
+    ansible.builtin.include_role:
+      name: im_rollback_was_product
+    vars:
+      was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+      im_package_id: "{{ im_twas_java_package }}"
+    when: rollback_version is defined
+  when: twas_release == 'WAS90'
