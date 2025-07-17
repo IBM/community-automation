@@ -4,7 +4,7 @@
     path: "{{ json_path }}/{{ json_file }}"
     state: absent
 
-- name: " Find {{ json_path }}/{{ json_file }}"
+- name: "Find {{ json_path }}/{{ json_file }}"
   delegate_to: localhost
   ansible.builtin.find:
     paths: "{{ json_path }}"
@@ -12,30 +12,34 @@
     patterns: "{{ json_file }}"
   register: foundem
 
-- name: Inialize combined dict ( combined )
-  delegate_to: localhost
-  ansible.builtin.set_fact:
-    combined_dict: {}
-
-- name: Save ( seed combined )
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ combined_dict }}"
-    dest: "{{ json_path }}/{{ json_file }}"
-    mode: '0444'
-
-- name: Save ( combined )
-  delegate_to: localhost
-  ansible.builtin.copy:
-    content: "{{ lookup('ansible.builtin.file', '{{ json_path }}/{{ json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json )}}"
-    dest: "{{ json_path }}/{{ json_file }}"
-    mode: '0444'
-  with_items: "{{ foundem.files | map(attribute='path') | list }}"
-
-- name: Remove local source json after combine
-  with_items: "{{ foundem.files | map(attribute='path') | list }}"
+- name: Any json files found?
   when: foundem.matched > 0
-  delegate_to: localhost
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: absent
+  block:
+
+    - name: Inialize combined dict ( combined )
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        combined_dict: {}
+
+    - name: Save ( seed combined )
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ combined_dict }}"
+        dest: "{{ json_path }}/{{ json_file }}"
+        mode: '0444'
+
+    - name: Save ( combined )
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.file', '{{ json_path }}/{{ json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json )}}"
+        dest: "{{ json_path }}/{{ json_file }}"
+        mode: '0444'
+      with_items: "{{ foundem.files | map(attribute='path') | list }}"
+
+    - name: Remove local source json after combine
+      with_items: "{{ foundem.files | map(attribute='path') | list }}"
+      when: foundem.matched > 0
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
