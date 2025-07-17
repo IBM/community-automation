@@ -75,6 +75,10 @@
       msg: "{{ clusterStatus }}"
     when: clusterStatus.json is not defined or clusterStatus.json.last_os_state != "running"
 
+  - name: Allow time for dns to propogate
+    pause:
+      seconds: 180
+
   - name: check the host for a active ssh
     command: 'ssh -o PasswordAuthentication=no -o StrictHostKeyChecking=no root@{{ fyre_fqdn }} /usr/bin/true'
     retries: "{{ fyre_sshRetries }}"
