@@ -1,17 +1,17 @@
 ---
 
 - name: Create FyreVM with appropriate spec
-  include_role: 
-   name: fyrevm_provision
+  ansible.builtin.include_role: 
+    name: fyrev3vm_provision
   vars:
-   fyre_platform: x
-   fyre_cpu: 2
-   fyre_memory: 2  
-   fyre_os: 'Redhat 9.0'
-   fyre_site: "{{ site }}"
-   fyre_comment: 'RH Jmeter'
-   clusterName_prefix: crc
-   target_group: jmeter
-   target_user: "{{ jmeterUser }}"
-   jmeterUser: "{{ jmeterUser }}"
-   vnc: "{{ vnc }}"
+    fyre_platform: x
+    fyre_cpu: 2
+    fyre_memory: 2  
+    fyre_os: 'Redhat 10.0'
+    fyre_site: "{{ site }}"
+    fyre_comment: 'RH Jmeter'
+    clusterName_prefix: crc
+    target_group: jmeter
+    target_user: "{{ jmeterUser }}"
+    jmeterUser: "{{ jmeterUser }}"
+    vnc: "{{ vnc }}"
