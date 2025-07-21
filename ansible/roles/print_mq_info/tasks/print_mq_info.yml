@@ -38,7 +38,7 @@
         - name: Do some regex
           ansible.builtin.set_fact:
             content: "{{ mqinfo.stdout_lines | map('regex_findall','(?<=:)[^\"]+') | flatten }}"
-            
+
         # - name: Print out content
         #   ansible.builtin.debug:
         #     msg: "{{ content }}"

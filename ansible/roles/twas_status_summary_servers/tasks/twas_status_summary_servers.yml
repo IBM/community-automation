@@ -32,6 +32,7 @@
       # NOTE: the get_twas_server_status -> plugins/filter/get_twas_server_status
       twas_server_name_status: '{{ twas_server_name_status | default([]) + [ { "server": twasstatus.stdout_lines[item | int] | ibm_community_automation.ibm_community_automation.get_twas_server_name, "status": twasstatus.stdout_lines[item | int] } ] }}'
     with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    no_log: true
 
   - name: Debug twas_server_name_status list
     ansible.builtin.debug:

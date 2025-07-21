@@ -26,6 +26,7 @@
           ansible.builtin.set_fact:
             hardware_cpus: "{{ hardware_cpus | default({}) | combine( { item: cpus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
           with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+          no_log: true
 
         - name: Add the cpus to hardware_cpus
           ansible.builtin.set_fact:
@@ -40,6 +41,7 @@
       ansible.builtin.set_fact:
         hardware_kernelinfo: "{{ hardware_kernelinfo | default({}) | combine( { item: kernelinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
 
     - name: Add the cpuinfo to hardware_kernelinfo
       ansible.builtin.set_fact:
@@ -54,6 +56,7 @@
       ansible.builtin.set_fact:
         hardware_cpuinfo: "{{ hardware_cpuinfo | default({}) | combine( { item: cpuinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
 
     - name: Add the cpuinfo to hardware_cpuinfo
       ansible.builtin.set_fact:
@@ -68,6 +71,7 @@
       ansible.builtin.set_fact:
         hardware_meminfo: "{{ hardware_meminfo | default({}) | combine( { item: meminfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
 
     - name: Add the meminfo to hardware_meminfo
       ansible.builtin.set_fact:

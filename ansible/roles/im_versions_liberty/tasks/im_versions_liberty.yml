@@ -26,6 +26,7 @@
       ansible.builtin.set_fact:
         list_package: "{{ list_package | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
 
     - name: New dict list_package
       ansible.builtin.set_fact:

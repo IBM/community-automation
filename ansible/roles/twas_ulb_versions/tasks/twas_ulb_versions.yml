@@ -41,6 +41,7 @@
       ansible.builtin.set_fact:
         plugin_version: "{{ plugin_version | default({}) | combine( { item: PluginVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
       with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
 
     - name: New dict plugin_version
       ansible.builtin.set_fact:

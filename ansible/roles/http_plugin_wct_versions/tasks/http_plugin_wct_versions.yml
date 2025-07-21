@@ -64,6 +64,7 @@
   ansible.builtin.set_fact:
     http_version: "{{ http_version | default({}) | combine( { item: HTTPServerVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+  no_log: true
 
 - name: New dict http_version
   ansible.builtin.set_fact:
@@ -106,6 +107,7 @@
   ansible.builtin.set_fact:
     plugin_version: "{{ plugin_version | default({}) | combine( { item: PluginVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+  no_log: true
 
 - name: New dict plugin_version
   ansible.builtin.set_fact:
@@ -148,6 +150,7 @@
   ansible.builtin.set_fact:
     wct_version: "{{ wct_version | default({}) | combine( { item: WCTVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
   with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+  no_log: true
 
 - name: New dict wct_version
   ansible.builtin.set_fact:

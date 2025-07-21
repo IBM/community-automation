@@ -37,6 +37,7 @@
     ansible.builtin.set_fact:
       twas_version: "{{ twas_version | default({}) | combine( { item: tversions.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
     with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    no_log: true
 
   - name: New dict twas_version
     ansible.builtin.set_fact:
@@ -104,6 +105,7 @@
     ansible.builtin.set_fact:
       app_version: "{{ app_version | default({}) | combine( { item: appVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
     with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    no_log: true
 
   - name: New dict app_version
     ansible.builtin.set_fact:
