@@ -65,6 +65,7 @@
 
       - name: Run the IBM verbosegc report logic
         run_once: true
+        delegate_to: localhost
         ansible.builtin.include_role:
           name: ibm_vbgc_report
         vars:

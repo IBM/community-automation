@@ -1,12 +1,13 @@
 ---
 
 - name: Check if env logs directory exists
+  delegate_to: localhost
   ansible.builtin.stat:
     path: "{{ vbgc_report_dir }}"
   register: isvbgc
 
 - name: Find the verbosegc report directory line plots
-  when: isvbgc.stat.exists == True
+  when: isvbgc.stat.exists
   block:
 
     - name: Find all the verbosegc line plots ( indicates data )
@@ -15,6 +16,7 @@
       args:
         chdir: "{{ vbgc_report_dir }}"
       register: lineplotoutput
+      changed_when: false
 
     - name: Verbose gc line plot files output
       ansible.builtin.debug:
@@ -26,6 +28,7 @@
       args:
         chdir: "{{ vbgc_report_dir }}"
       register: indexhtmloutput
+      changed_when: false
 
     - name: Verbose gc index.html files output
       ansible.builtin.debug:
@@ -42,6 +45,7 @@
           ansible.builtin.template:
             src: gcmv_single_report.html.j2
             dest: "{{ vbgc_report_dir }}/gcmv_single_report.html"
+            mode: '0644'
 
         - name: Add line plot/ index.html url
           delegate_to: localhost
@@ -59,6 +63,7 @@
           ansible.builtin.template:
             src: gcmv_report.html.j2
             dest: "{{ vbgc_report_dir }}/gcmv_report.html"
+            mode: '0644'
 
         # disable the black until one can figure out how to check for errors in the reports
         # check for keywords indicative of problems
