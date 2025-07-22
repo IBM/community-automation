@@ -35,9 +35,11 @@
             src: ~/dbdir/backup/db2ls.info
           register: output
 
-        # - name: print out the value
-        #   ansible.builtin.debug:
-        #     msg: "{{ output }}"
+        # remove the db2ls.info file
+        - name: Remove the db2ls.info file
+          ansible.builtin.file:
+            path: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
+            state: absent
 
         - name: Do some regex
           ansible.builtin.set_fact:
