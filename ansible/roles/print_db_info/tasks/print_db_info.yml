@@ -21,25 +21,12 @@
     - name: Block for db2ls.info
       when: (isdb2ls.stat.exists and isdb2ls.stat.size != 0)
       block:
-        - name: Fetch the dbdir/backup/db2ls.info
-          ansible.builtin.fetch:
-            src: ~/dbdir/backup/db2ls.info
-            dest: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
-            flat: yes
         # #PATH:VRMF:FIXPACK:SPECIAL:INSTALLTIME:INSTALLERUID 
         # /opt/ibm/db2/V12.1:12.1.1.0:0 ::Tue Feb  4 22:54:29 2025 UTC :0 
-
-        # replace this clunky with some cool regex
-        - name: Print out value in a file
+        - name: Slurp the db2ls.info file
           ansible.builtin.slurp: 
             src: ~/dbdir/backup/db2ls.info
           register: output
-
-        # remove the db2ls.info file
-        - name: Remove the db2ls.info file
-          ansible.builtin.file:
-            path: "{{ logs_dir }}/{{ env_name }}/db2ls.info"
-            state: absent
 
         - name: Do some regex
           ansible.builtin.set_fact:
