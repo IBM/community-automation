@@ -6,66 +6,68 @@
   register: islogs
 
 - name: Log archive logic
-  when: islogs.stat.exists == True
+  when: islogs.stat.exists
   block:
-  - name: Archive the logs dir to fetch
-    community.general.archive:
-      path:
-        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
-      exclude_path:
-        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
-      exclusion_patterns:
-        - '*.zip'
-        - '*.tar'
-        - '*.gz'
-        - '*.lck'
-        - 'SystemErr*.log'
-        - 'btrace*'
-        - 'objects*'
-      dest: logs.zip
-      format: zip
+    - name: Archive the logs dir to fetch
+      community.general.archive:
+        path:
+          - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
+        exclude_path:
+          - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
+        exclusion_patterns:
+          - '*.zip'
+          - '*.tar'
+          - '*.gz'
+          - '*.lck'
+          - 'SystemErr*.log'
+          - 'btrace*'
+          - 'objects*'
+        dest: logs.zip
+        format: zip
+        mode: '0755'
 
-  - name: Create local logs dir
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
-      state: directory
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
+        state: directory
+        mode: '0755'
 
-  - name: Fetch the twas log archive
-    ansible.builtin.fetch:
-      flat: true
-      src: logs.zip
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/"
+    - name: Fetch the twas log archive
+      ansible.builtin.fetch:
+        flat: true
+        src: logs.zip
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/"
 
-  - name: Unarchive the twas logs
-    delegate_to: localhost
-    ansible.builtin.unarchive:
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
-      remote_src: false
+    - name: Unarchive the twas logs
+      delegate_to: localhost
+      ansible.builtin.unarchive:
+        src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
+        remote_src: false
 
-  - name: Remove logs.zip
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
-      state: absent
+    - name: Remove logs.zip
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
+        state: absent
 
-  - name: Print local log/error directory location
-    ansible.builtin.debug:
-      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
+    - name: Print local log/error directory location
+      ansible.builtin.debug:
+        msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
 
-  - name: Verbose GC log processing
-    when: verboseGC|bool
-    block:
-      - name: Run the IBM verbosegc logic
-        ansible.builtin.include_role:
-          name: ibm_vbgc
-        vars:
-          vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
+    - name: Verbose GC log processing
+      when: verboseGC|bool
+      block:
+        - name: Run the IBM verbosegc logic
+          ansible.builtin.include_role:
+            name: ibm_vbgc
+          vars:
+            vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
 
-      - name: Run the IBM verbosegc report logic
-        run_once: true
-        ansible.builtin.include_role:
-          name: ibm_vbgc_report
-        vars:
-          vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"
+        - name: Run the IBM verbosegc report logic
+          run_once: true
+          ansible.builtin.include_role:
+            name: ibm_vbgc_report
+          vars:
+            vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"

@@ -7,81 +7,83 @@
 - name: Log archive logic
   when: islogs.stat.exists == True
   block: 
-  - name: archive the liberty logs dir to fetch
-    community.general.archive:
-      path:
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
-      dest: logs.zip
-      exclude_path:
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
-        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/tracedata"
-      exclusion_patterns:
-        - '*.zip'
-        - '*.tar'
-        - '*.gz'
-        - 'trace*.log'
-      format: zip
+    - name: archive the liberty logs dir to fetch
+      community.general.archive:
+        path:
+          - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work
+        dest: logs.zip
+        exclude_path:
+          - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/state"
+          - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/tracedata"
+        exclusion_patterns:
+          - '*.zip'
+          - '*.tar'
+          - '*.gz'
+          - 'trace*.log'
+        format: zip
+        mode: '0755'
 
-  - name: Create local logs dir
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
-      state: directory
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
+        state: directory
+        mode: '0755'
 
-  - name: fetch the liberty log archive
-    ansible.builtin.fetch:
-      flat: true
-      src: logs.zip
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+    - name: fetch the liberty log archive
+      ansible.builtin.fetch:
+        flat: true
+        src: logs.zip
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
 
-  - name: Remove temp logs.zip
-    ansible.builtin.file:
-      path: logs.zip
-      state: absent
+    - name: Remove temp logs.zip
+      ansible.builtin.file:
+        path: logs.zip
+        state: absent
 
-  - name: Extract the liberty log archive
-    delegate_to: localhost
-    ansible.builtin.unarchive:
-      src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
-      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
-      remote_src: false
+    - name: Extract the liberty log archive
+      delegate_to: localhost
+      ansible.builtin.unarchive:
+        src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
+        remote_src: false
 
-  # - name: List the contents of the logs zip file ( debug )
-  #   delegate_to: localhost
-  #   ansible.builtin.shell: "unzip -l {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
-  #   register: zipcontents
+    # - name: List the contents of the logs zip file ( debug )
+    #   delegate_to: localhost
+    #   ansible.builtin.shell: "unzip -l {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
+    #   register: zipcontents
 
-  # - name: List the contents of the logs zip file output ( debug )
-  #   debug:
-  #     msg: "{{ zipcontents.stdout_lines }}"
+    # - name: List the contents of the logs zip file output ( debug )
+    #   debug:
+    #     msg: "{{ zipcontents.stdout_lines }}"
 
-  - name: Remove logs.zip
-    delegate_to: localhost
-    ansible.builtin.file:
-      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
-      state: absent
+    - name: Remove logs.zip
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"
+        state: absent
 
-  - name: Log/error directory location
-    ansible.builtin.debug:
-      msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
+    - name: Log/error directory location
+      ansible.builtin.debug:
+        msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
 
-  # - name: Is verboseGC set?
-  #   when: verboseGC is defined
-  #   ansible.builtin.debug:
-  #     msg: "{{ verboseGC }}"
+    # - name: Is verboseGC set?
+    #   when: verboseGC is defined
+    #   ansible.builtin.debug:
+    #     msg: "{{ verboseGC }}"
 
-  - name: Verbose GC log processing
-    when: verboseGC|bool
-    block: 
-      - name: Run the IBM verbosegc logic
-        ansible.builtin.include_role:
-          name: ibm_vbgc
-        vars:
-          vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers"
+    - name: Verbose GC log processing
+      when: verboseGC|bool
+      block: 
+        - name: Run the IBM verbosegc logic
+          ansible.builtin.include_role:
+            name: ibm_vbgc
+          vars:
+            vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers"
 
-      - name: Run the IBM verbosegc report logic
-        run_once: true
-        ansible.builtin.include_role:
-          name: ibm_vbgc_report
-        vars:
-          vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"
+        - name: Run the IBM verbosegc report logic
+          run_once: true
+          ansible.builtin.include_role:
+            name: ibm_vbgc_report
+          vars:
+            vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"
