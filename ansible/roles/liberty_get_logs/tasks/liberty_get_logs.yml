@@ -8,6 +8,7 @@
   when: islogs.stat.exists == True
   block: 
     - name: archive the liberty logs dir to fetch
+      ignore_errors: true # ignore errors, if there are a lot of errors the logs will rollover causing the archive to fail
       community.general.archive:
         path:
           - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs/*" # needs * to allow the exclude_path to work

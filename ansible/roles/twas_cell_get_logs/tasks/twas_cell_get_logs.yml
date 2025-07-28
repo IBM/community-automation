@@ -9,6 +9,7 @@
   when: islogs.stat.exists
   block:
     - name: Archive the logs dir to fetch
+      ignore_errors: true # ignore errors, if there are a lot of errors the logs will rollover causing the archive to fail
       community.general.archive:
         path:
           - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
