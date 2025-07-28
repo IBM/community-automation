@@ -49,6 +49,22 @@
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
         remote_src: false
 
+    - name: Find files with restricted permissions
+      ansible.builtin.find:
+        paths: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs/"
+        file_type: file
+        recurse: true
+      register: found_files
+      no_log: true
+
+    - name: Change permissions from to 0755
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        mode: '0755'
+      loop: "{{ found_files.files }}"
+      when: item.mode != '0755'
+      no_log: true
+
     # - name: List the contents of the logs zip file ( debug )
     #   delegate_to: localhost
     #   ansible.builtin.shell: "unzip -l {{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/logs.zip"

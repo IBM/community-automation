@@ -60,6 +60,22 @@
       dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
       remote_src: false
 
+  - name: Find files with restricted permissions
+    ansible.builtin.find:
+      paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      file_type: file
+      recurse: true
+    register: found_files
+    no_log: true
+
+  - name: Change permissions from to 0755
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      mode: '0755'
+    loop: "{{ found_files.files }}"
+    when: item.mode != '0755'
+    no_log: true
+
   - name: Remove dumps.zip
     delegate_to: localhost
     file:
