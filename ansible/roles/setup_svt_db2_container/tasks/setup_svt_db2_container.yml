@@ -1,17 +1,17 @@
 ---
 
-- name: check for RedHat distribution
+- name: Check for RedHat distribution
   ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
   become: true
-  dnf:
-   name: "{{ packages }}"
-   state: latest
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: latest
   vars:
-   packages:
+    packages:
     - podman
 
 - name: Check if user is lingering
@@ -63,13 +63,13 @@
 #       # default_rootless_network_cmd = ""
 #       # change to.
 #       default_rootless_network_cmd = "slirp4netns"
-      
+
 - name: Pull the svt db2 image
   containers.podman.podman_image:
     name: "{{ svt_db2_image }}"
     username: "{{ svt_registry_user }}"
     password: "{{ svt_registry_password }}"
-    force: yes
+    force: true
     state: present
     validate_certs: false
     pull: true
@@ -78,18 +78,26 @@
 # - ansible.builtin.debug:
 #    msg: '{{ svtop }}'
 
-- name: create dbdir directory
+- name: Create dbdir directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/home/{{ ansible_user }}/dbdir"
+
+- name: Create dbdir directory
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
   with_items:
-  - "/home/{{ ansible_user }}/dbdir"
+    - "/home/{{ ansible_user }}/dbdir"
 
 - name: kill rm any existing db2 container
   containers.podman.podman_container:
     log_level: info
     name: '{{ svt_db_container_name }}'
-    privileged: yes
+    privileged: true
     image: "{{ svt_db2_image }}"
     state: absent # started created absent stopped present
   register: svtop

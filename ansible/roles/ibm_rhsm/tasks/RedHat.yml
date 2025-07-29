@@ -32,9 +32,9 @@
   environment:
    FTP3USER: "{{ ftp3_username }}"
    FTP3PASS: "{{ ftp3_password }}"
-  shell: "~/ibm-rhsm.sh --register --force"
+  shell: "echo y | ~/ibm-rhsm.sh --register --force"
   register: rhel_register
 
 - name: rhel_register output
   debug:
-   msg: "{{ rhel_register.stdout_lines }}"
+    msg: "{{ rhel_register.stdout_lines }}"
