@@ -1,0 +1,92 @@
+---
+
+- name: Check if env logs directory exists
+  delegate_to: localhost
+  ansible.builtin.stat:
+    path: "{{ vbgc_report_dir }}"
+  register: isvbgc
+
+- name: Find the verbosegc report directory line plots
+  when: isvbgc.stat.exists
+  block:
+
+    - name: Find all the verbosegc line plots ( indicates data )
+      delegate_to: localhost
+      ansible.builtin.shell: 'find . -name "Line plot.*"'
+      args:
+        chdir: "{{ vbgc_report_dir }}"
+      register: lineplotoutput
+      changed_when: false
+
+    - name: Verbose gc line plot files output
+      ansible.builtin.debug:
+        msg: "{{ lineplotoutput.stdout_lines }}"
+
+    - name: Find all the verbosegc index.html ( indicates data )
+      delegate_to: localhost
+      ansible.builtin.shell: 'find . -name "index.html"|grep IBM_GCMV'
+      args:
+        chdir: "{{ vbgc_report_dir }}"
+      register: indexhtmloutput
+      changed_when: false
+
+    - name: Verbose gc index.html files output
+      ansible.builtin.debug:
+        msg: "{{ indexhtmloutput.stdout_lines }}"
+
+    - name: Any vbgc line plots?
+      when:
+        - lineplotoutput.stdout | length > 0
+        - indexhtmloutput.stdout | length > 0
+      block:
+
+        - name: Copy gcmv_single_report.html.j2
+          delegate_to: localhost
+          ansible.builtin.template:
+            src: gcmv_single_report.html.j2
+            dest: "{{ vbgc_report_dir }}/gcmv_single_report.html"
+            mode: '0644'
+
+        - name: Add line plot/ index.html url
+          delegate_to: localhost
+          ansible.builtin.lineinfile:
+            path: "{{ vbgc_report_dir }}/gcmv_single_report.html"
+            insertafter: '<!-- lineplots -->'
+            line: |
+              {{ item }}
+              <img src="{{ item }}" width=100% alt="{{ item }}">
+          with_items:
+            - "{{ lineplotoutput.stdout_lines }}"
+
+        - name: Copy gcmv_reports.html.j2
+          delegate_to: localhost
+          ansible.builtin.template:
+            src: gcmv_report.html.j2
+            dest: "{{ vbgc_report_dir }}/gcmv_report.html"
+            mode: '0644'
+
+        # disable the black until one can figure out how to check for errors in the reports
+        # check for keywords indicative of problems
+        # gcmvissues=$(egrep -c 'Excessive|Problem|Leak' $reportIndex/Report/index.html)
+        # [ $gcmvissues == 0 ] && vcolor="black" || vcolor="red"
+        # <a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a>
+
+        # below, the :1 is an error, the :0 is no error
+        # [nest@nest-dev Controllers]$ find . -name index.html| xargs egrep -c 'Excessive|Problem|Leak'
+        # ./nest-cc-1.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:1
+        # ./nest-cc-3.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:0
+        # ./nest-cc-2.fyre.ibm.com/servers/cc/logs/IBM_GCMV/Report/index.html:0
+
+        # some ideas
+        # debug: msg="{{ ansible_hostname | regex_replace('^ip-', '') }}"
+        - name: Add line plot gcmv_report
+          delegate_to: localhost
+          ansible.builtin.lineinfile:
+            path: "{{ vbgc_report_dir }}/gcmv_report.html"
+            insertafter: '<!-- reports -->'
+            line: |
+              <br>
+              <!-- <a href="{{ item }}" target=_blank><font color=black>{{ item }} Report</font></a> -->
+              <a href="{{ item }}" target=_blank>{{ item }}</font></a>
+          with_items:
+            - "{{ indexhtmloutput.stdout_lines }}"

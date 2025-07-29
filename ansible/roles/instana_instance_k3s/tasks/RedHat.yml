@@ -1,0 +1,50 @@
+---
+
+- name: remove Instana repository
+  become: true
+  ansible.builtin.yum_repository:
+    name: instana-product
+    state: absent
+
+- name: Add Instana repository
+  become: true
+  ansible.builtin.yum_repository:
+    name: instana-product
+    description: instana-product
+    baseurl: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/rel-rpm-public-virtual/"
+    gpgkey: "https://_:{{ download_key }}@artifact-public.instana.io/artifactory/api/security/keypair/public/repositories/rel-rpm-public-virtual"
+    gpgcheck: false
+    repo_gpgcheck: true
+    enabled: true
+
+- name: Upgrade all packages
+  become: true
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: install required OS packages
+  become: true
+  ansible.builtin.dnf:
+    state: latest
+    name: 
+    - jq
+    - stanctl
+    - container-selinux 
+
+- name: show the stanctl version
+  command: 'stanctl --version'
+  register: stanctlOutput
+
+- name: stanctl stdout_lines
+  debug: 
+    msg: "{{ stanctlOutput.stdout }}"
+
+- name: set transparent_hugepage
+  become: true
+  shell: 'grubby --args="transparent_hugepage=never" --update-kernel ALL'
+
+- name: Unconditionally reboot the machine with all defaults
+  ansible.builtin.reboot:
+
+

@@ -1,0 +1,87 @@
+---
+- name: Any Cores?
+  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+  register: iscore
+  failed_when: iscore.rc not in [0,2]
+  ignore_errors: True
+  #allows it to pass for z/OS
+- name: Any Heapdumps?
+  ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+  register: isheap
+  failed_when: isheap.rc not in [0,2]
+  ignore_errors: True
+
+- name: Dump archive logic
+  when: iscore.rc == 0 or isheap.rc == 0 
+  block: 
+  - name: Archive the liberty dump zip to fetch
+    ignore_errors: True
+    community.general.archive:
+      path:
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+        - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+      dest: dumps.zip
+      format: zip
+      exclusion_patterns:
+        - '*.zip'
+        - '*.tar'
+        - '*.gz'
+
+  - name: Create local server dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      state: directory
+
+  - name: Fetch the liberty dump archive
+    ansible.builtin.fetch:
+      flat: true
+      src: dumps.zip
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+
+  - name: Remove temp dumps.zip
+    ansible.builtin.file:
+      path: dumps.zip
+      state: absent
+
+  # - name: List the contents of the dump zip file ( debug )
+  #   delegate_to: localhost
+  #   ansible.builtin.shell: "unzip -l {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+  #   register: zipcontents
+
+  # - name: List the contents of the dump zip file output ( debug )
+  #   debug:
+  #     msg: "{{ zipcontents.stdout_lines }}"
+
+  - name: Extract the liberty dump archive
+    delegate_to: localhost
+    ansible.builtin.unarchive:
+      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      remote_src: false
+
+  - name: Find files with restricted permissions
+    ansible.builtin.find:
+      paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      file_type: file
+      recurse: true
+    register: found_files
+    no_log: true
+
+  - name: Change permissions from to 0755
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      mode: '0755'
+    loop: "{{ found_files.files }}"
+    when: item.mode != '0755'
+    no_log: true
+
+  - name: Remove dumps.zip
+    delegate_to: localhost
+    file:
+      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+      state: absent
+
+  - name: Dumps directory location
+    debug:
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"

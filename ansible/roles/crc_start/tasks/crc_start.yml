@@ -72,7 +72,7 @@
     groups:
      - 'libvirt'
     append: yes
-  become: yes
+  become: true
 
 - name: crc status stdout
   debug: 

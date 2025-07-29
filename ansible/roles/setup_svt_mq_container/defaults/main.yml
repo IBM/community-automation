@@ -1,0 +1,4 @@
+svt_mq_image: someimage
+svt_registry_user: user
+svt_registry_password: pass
+svt_mq_container_name: svtmq

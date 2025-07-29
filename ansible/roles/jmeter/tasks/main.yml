@@ -26,6 +26,7 @@
     get_url:
      url: "{{ jmeterArchive }}"
      dest: /tmp/jmeter.tgz
+     validate_certs: false
 
   - name: Remove previous Jmeter dir
     file:
@@ -65,10 +66,11 @@
      line: 'export PATH="$PATH:{{ jmeterDir }}/{{ jVersion.stdout }}/bin"'
      backup: yes
      mode: '0644'
-    become: yes
+    become: true
 
   - name: retrieve jmeter-plugin-manager.jar
     get_url:
      url: "{{ jmeterManagerPluginUrl }}"
      dest: "{{ jmeterDir }}/{{ jVersion.stdout }}/lib/ext/jmeter-plugin-manager.jar"
+     validate_certs: false
   when: isjmeter.stat.exists == False or forceReplace|bool == True

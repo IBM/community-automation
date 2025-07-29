@@ -1,0 +1,3 @@
+---
+- name: Combine json files
+  ansible.builtin.include_tasks: combine_json.yml

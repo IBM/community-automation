@@ -1,0 +1,59 @@
+---
+- name: Print DB info
+  when: groups.db is defined
+  block:
+    # if the db container is not running this will not work
+    # our container already exports this to a file on the mounted volume
+    # dbdir/backup/db2ls.info
+    #
+    # - name: Get the DB container version info
+    #   containers.podman.podman_container_exec:
+    #     name: "{{ svt_db_container_name }}"
+    #     command: "su - db2inst1 -c db2ls -c"
+    #   register: dbinfo
+
+    # the db2ls.info file is new, and prob not on all the target dbs yet
+    - name: Check if dbdir/backup/db2ls.info exists
+      ansible.builtin.stat:
+        path: dbdir/backup/db2ls.info
+      register: isdb2ls
+
+    - name: Block for db2ls.info
+      when: (isdb2ls.stat.exists and isdb2ls.stat.size != 0)
+      block:
+        # #PATH:VRMF:FIXPACK:SPECIAL:INSTALLTIME:INSTALLERUID 
+        # /opt/ibm/db2/V12.1:12.1.1.0:0 ::Tue Feb  4 22:54:29 2025 UTC :0 
+        - name: Slurp the db2ls.info file
+          ansible.builtin.slurp: 
+            src: ~/dbdir/backup/db2ls.info
+          register: output
+
+        - name: Do some regex
+          ansible.builtin.set_fact:
+            content: "{{ output.content | b64decode | regex_search('(?:\\d{1,3}\\.){3}\\d{1,3}\\:\\d+') | split(':') }}"
+
+        - name: Set the DB version / fixpack facts
+          ansible.builtin.set_fact:
+            db_Version: "{{ content[0] }}" # ?? some tricky regex
+            db_Fixpack: "{{ content[1] }}" # ?? some tricky regex
+
+    - name: Default the db version db2ls file not found
+      delegate_to: localhost
+      when: (isdb2ls.stat.exists == False or isdb2ls.stat.size == 0)
+      ansible.builtin.set_fact:
+        db_Version: "V12.1.1.0"
+        db_Fixpack: "0"
+
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+        mode: '0755'
+
+    - name: Save db_info to json
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: db_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ db_info_json_file }}"
+        mode: '0444'

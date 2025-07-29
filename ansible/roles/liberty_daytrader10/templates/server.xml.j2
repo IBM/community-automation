@@ -1,0 +1,119 @@
+<server>
+    <featureManager>
+        <feature>jakartaee-10.0</feature>
+        <feature>mpHealth-4.0</feature>
+        <feature>mpMetrics-5.1</feature>
+        <feature>clusterMember-1.0</feature>
+        <feature>monitor-1.0</feature>
+        <feature>sessionDatabase-1.0</feature>
+    </featureManager>
+        
+	<!-- allow reuse of 'busy' ports for fast server recycling on linux (where ports remain blocked for up to 2 mins after server stops) ${tradelite.http.port} set in bootstrap.properties --> 
+	<httpEndpoint host="*" httpPort="{{ liberty_http_port }}" httpsPort="{{ liberty_http_ports }}" id="defaultHttpEndpoint"> 
+		<tcpOptions soReuseAddr="true"/> 
+		<httpOptions maxKeepAliveRequests="-1"/>
+	</httpEndpoint>
+    <httpDispatcher enableWelcomePage="false" />
+    
+	<include location="${server.config.dir}/collectiveMember.xml" />
+	<include optional="true" location="${server.config.dir}/hostAuth.xml" />
+	<include optional="true" location="${shared.config.dir}/hostSingleton.xml" />
+	<clusterMember name="{{ cluster_name }}"/>
+   <applicationManager startTimeout="1m"/>
+	<webApplication id="daytrader10" location="io.openliberty.sample.daytrader10.war" name="daytrader10" context-root="daytrader10">
+        <application-bnd>
+                <security-role name="grp1">
+                        <user name="user1" />
+                        <special-subject type="ALL_AUTHENTICATED_USERS" />
+                </security-role>
+                <security-role name="webSecOnly">
+                        <user name="user1" />
+                        <special-subject type="ALL_AUTHENTICATED_USERS" />
+                </security-role>
+        </application-bnd>
+    </webApplication>
+
+    <logging traceSpecification="daytrader=info"/>
+
+    <basicRegistry id="basic" realm="ibm/api">
+        <group name="grp1">
+                <member name="user1"/>
+        </group>
+        <group name="webSecOnly">
+                <member name="user1"/>
+        </group>
+       <group name="adminGroup">
+                <member name="admin"/>
+        </group>
+        <group name="userGroup">
+                <member name="admin"/>
+                <member name="user1"/>
+        </group>
+        <user name="admin" password="adminpwd"/>
+        <user name="user1" password="user1"/>
+    </basicRegistry>
+
+    <administrator-role>
+      <user>admin</user>
+    </administrator-role>
+
+    <connectionManager id="conMgr1" agedTimeout="-1" connectionTimeout="0" maxIdleTime="-1" maxPoolSize="600" minPoolSize="100" purgePolicy="FailingConnectionOnly" reapTime="-1"/> 
+
+    <applicationMonitor dropinsEnabled="true" updateTrigger="mbean"/>
+    <config updateTrigger="mbean"/>
+
+    <jdbcDriver id="DB2JCC" libraryRef="DB2JCCLib"/>
+    <library id="DB2JCCLib" filesetRef="DB2JCCFileset"/>
+    <fileset id="DB2JCCFileset" dir="${shared.resource.dir}/db2jars" includes="db2jcc4.jar"/>
+
+    <authData id="TradeDataSourceAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
+    <authData id="TradeAdminAuthData" user="{{ db_user }}" password="{{ db_pass }}"/>
+
+    <dataSource jndiName="jdbc/TradeDataSource" jdbcDriverRef="DB2JCC" id="DefaultDataSource" connectionManagerRef="conMgr1" statementCacheSize="60" isolationLevel="TRANSACTION_READ_COMMITTED" type="javax.sql.ConnectionPoolDataSource">
+        <properties serverName="{{ db_host }}" portNumber="{{ db_port }}" databaseName="{{db_name }}" driverType="4" user="{{ db_user }}" password="{{ db_pass }}"/>
+    </dataSource>
+
+    <connectionManager id="Session" minPoolSize="20" maxPoolSize="400" connectionTimeout="60s"/>
+    <authData id="SessionSourceAuthData" user="{{ db_user }}" password="{{ db_pass }}" />
+    <dataSource id="SessionDS" jdbcDriverRef="DB2JCC" jndiName="jdbc/Sessions" connectionManagerRef="Session" containerAuthDataRef="SessionSourceAuthData">
+        <properties databaseName="{{ db_name }}" driverType="4" portNumber="{{ db_port }}" serverName="{{ db_host }}"/>
+    </dataSource>
+
+    <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions"/> 
+    <httpSession cloneId="{{ ansible_fqdn }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
+
+	<messagingEngine id="defaultME">
+		<queue id="TradeBrokerQueue"/>
+		<topicSpace id="TradeTopicSpace"/>
+	</messagingEngine>
+
+	<jmsQueueConnectionFactory connectionManagerRef="ConMgr3" jndiName="jms/TradeBrokerQCF">  
+		<properties.wasJms/>
+	</jmsQueueConnectionFactory> 
+	<connectionManager id="ConMgr3" maxPoolSize="20"/>
+
+	<jmsTopicConnectionFactory connectionManagerRef="ConMgr4" jndiName="jms/TradeStreamerTCF">
+		<properties.wasJms/>
+	</jmsTopicConnectionFactory>
+	<connectionManager id="ConMgr4" maxPoolSize="20"/>
+
+	<jmsQueue id="TradeBrokerQueue" jndiName="jms/TradeBrokerQueue">
+		<properties.wasJms deliveryMode="NonPersistent" queueName="TradeBrokerQueue"/>
+	</jmsQueue>
+
+	<jmsTopic id="TradeStreamerTopic" jndiName="jms/TradeStreamerTopic">
+		<properties.wasJms deliveryMode="NonPersistent" topicSpace="TradeTopicSpace"/>
+	</jmsTopic>
+
+	<jmsActivationSpec id="daytrader10/DTBroker3MDB">
+		<properties.wasJms destinationRef="TradeBrokerQueue"/>
+	</jmsActivationSpec>
+
+	<jmsActivationSpec id="daytrader10/DTStreamer3MDB">
+		<properties.wasJms destinationRef="TradeStreamerTopic" destinationType="jakarta.jms.Topic"/>
+	</jmsActivationSpec>
+
+        <remoteFileAccess>
+            <writeDir>${server.config.dir}</writeDir>
+        </remoteFileAccess>
+</server>

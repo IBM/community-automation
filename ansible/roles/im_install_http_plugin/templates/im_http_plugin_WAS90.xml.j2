@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <agent-input>
   <variables>
-   <variable name='sharedLocation' value='{{ install_ihs_base_win }}{{ install_ihs_base }}/{{ shared_dir }}'/>
+   <variable name='sharedLocation' value='{{ cygwin }}{{ install_ihs_base }}/{{ shared_dir }}'/>
   </variables>
   <server>
 	  <repository location='https://rtpgsa.ibm.com/gsa/rtpgsa/projects/w/was.build/botp/{{ twas_release }}.IM/{{ ihs_daily_or_test }}/{{ ihs_im_driver }}.linux/linux/zipper/repository/'/>
   </server>
-  <profile id='IBM HTTP Server' installLocation='{{ install_ihs_base_win }}{{ install_ihs_base }}/{{ http_dir }}'>
+  <profile id='IBM HTTP Server' installLocation='{{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
     <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>	  
     <data key='user.ihs.allowNonRootSilentInstall' value='true'/>
@@ -23,7 +23,7 @@
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
     <offering profile='IBM HTTP Server' id='{{ im_http_java_package }}' features='com.ibm.sdk.8'/>
   </install>
-  <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ install_ihs_base_win }}{{ install_ihs_base }}/{{ plugin_dir }}'>
+  <profile id='Web Server Plug-ins for IBM WebSphere Application Server' installLocation='{{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
     <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
   </profile>
@@ -33,7 +33,7 @@
     <!-- IBM SDK, Java Technology Edition, Version 8 8.0.7.0 -->
     <offering profile='Web Server Plug-ins for IBM WebSphere Application Server' id='{{ im_plugin_java_package }}' features='com.ibm.sdk.8'/>
   </install>
-  <profile id='WebSphere Customization Toolbox' installLocation='{{ install_ihs_base_win }}{{ install_ihs_base }}/{{ wct_dir }}'>
+  <profile id='WebSphere Customization Toolbox' installLocation='{{ cygwin }}{{ install_ihs_base }}/{{ wct_dir }}'>
     <data key='cic.selector.arch' value='{{ cic_selector_arch[ansible_architecture] }}'/>
     <data key='cic.selector.os' value='{{ cic_selector_os[ansible_system] }}'/>
   </profile>

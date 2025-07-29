@@ -1,0 +1,4 @@
+{
+    "ansible.python.interpreterPath": "/opt/homebrew/bin/python3",
+    "git.enableCommitSigning": true
+}

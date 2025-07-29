@@ -1,0 +1,33 @@
+---
+
+- name: Check if AppClient is installed
+  ansible.builtin.stat:
+    path: "{{ cygwin }}{{ install_base }}/{{ app_dir }}"
+  register: isappclient
+
+- name: Uninstall AppClient
+  when:
+    - isappclient.stat is defined
+    - isappclient.stat.exists
+  block:
+    - name: Check if imcl installed as a prereq
+      ansible.builtin.stat:
+        path: "{{ install_base }}/IM/eclipse/tools/imcl"
+      register: isimcl
+      failed_when: isimcl.stat.exists == False
+
+    - name: Uninstall AppClient
+      ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_appclient_package[twas_release] }} {{ im_twas_java_package }} -installationDirectory {{ cygwin }}{{ install_base }}/{{ app_dir }}"
+      register: uninstallOutput
+      failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+
+    - name: Uninstall AppClient output
+      ansible.builtin.debug:
+        msg: "{{ uninstallOutput.stdout_lines }}"
+
+    - name: Remove previous twas appclient dir
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ cygwin }}{{ install_base }}/{{ app_dir }}"

@@ -1,6 +1,6 @@
 ---
 - name: install utility packages
-  become: yes
+  become: true
   apt:
    name: "{{ packages }}"
    state: present
@@ -25,7 +25,7 @@
     update_cache: yes
 
 - name: install pre-req packages
-  become: yes
+  become: true
   apt:
     name: "instana-console"
     state: present

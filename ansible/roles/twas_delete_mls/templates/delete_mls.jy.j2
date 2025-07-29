@@ -1,0 +1,5 @@
+if len(sys.argv) == 1:
+   mls_delete=AdminTask.deleteServer('[-serverName %s -nodeName {{ profile_name }}]' % (str(sys.argv[0])))
+   AdminConfig.save()
+   AdminNodeManagement.syncNode('{{ profile_name }}')
+   print(mls_delete)

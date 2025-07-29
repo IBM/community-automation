@@ -1,0 +1,31 @@
+---
+
+- name: Check if IM installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isim
+
+- name: Uninstall MoRE Liberty
+  when:
+    - isim.stat is defined
+    - isim.stat.exists == True
+  block:
+
+  - name: Check if previous MoRE installed
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages | grep  {{ im_twas_more_package[twas_more_release] }}"
+    register: checkMoREOutput
+    failed_when: ( checkMoREOutput.rc not in [ 0, 1 ] )
+
+  - name: Uninstall MoRE Liberty
+    when: checkMoREOutput.rc == 0
+    block:
+
+    - name: Uninstall MoRE
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl uninstall {{ im_twas_more_package[twas_more_release] }}"
+      register: uninstallOutput
+      failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
+
+    - name: UninstallAll output
+      ansible.builtin.debug:
+        msg: "{{ uninstallOutput.stdout_lines }}"
+      when: uninstallOutput.stdout_line is defined

@@ -1,0 +1,14 @@
+---
+- name: Check for the existence ltpa.keys
+  stat:
+   path: /tmp/ltpa.keys
+  register: onprem
+
+- block:
+  - name: Copy the ltpa.keys
+    copy:
+      src: /tmp/ltpa.keys
+      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/resources/security/ltpa.keys"
+      mode: '0755'
+  when: onprem.stat.exists == True
+

@@ -5,14 +5,14 @@
   environment:
     PATH: ".:{{ ansible_env.PATH }}"
   register: oc_installed
-  ignore_errors: yes
+  ignore_errors: true
 
 - name: install oc client
   when: oc_installed.rc != 0
   block:
   - name: Download OCP CLI
     get_url:
-      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}-{{ ocp_client_version }}.tar.gz"
+      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}.tar.gz"
       dest: "./openshift-client.tar.gz"
       mode: '0755'
       validate_certs: false
@@ -31,7 +31,7 @@
       owner: root
       group: root
       mode: '0755'
-    become: yes
+    become: true
     become_user: root
 
   - name: Copy kubectl to local bin
@@ -41,5 +41,6 @@
       owner: root
       group: root
       mode: '0755'
-    become: yes
+    become: true
     become_user: root
+

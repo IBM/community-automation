@@ -16,10 +16,14 @@
     template:
      src: server.xml.j2
      dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/server.xml"
+  - name: copy bootstrap.properties template
+    template:
+     src: bootstrap.properties.j2
+     dest: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/bootstrap.properties"
 
   - name: copy application war
     copy:
-      src: files/io.openliberty.sample.daytrader8.war
+      src: "{{ appLoc }}" # files/io.openliberty.sample.daytrader8.war
       dest: "{{ wlp_usr_dir }}/shared/apps/io.openliberty.sample.daytrader8.war"
       mode: '0755'
 
@@ -35,11 +39,6 @@
     copy:
       src: /tmp/db2jcc4.jar
       dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc4.jar"
-      mode: '0755'
-  - name: copy db2jcc_license_cu.jar 
-    copy:
-      src: /tmp/db2jcc_license_cu.jar
-      dest: "{{ wlp_usr_dir }}/shared/resources/db2jars/db2jcc_license_cu.jar"
       mode: '0755'
 
   - name: autoAcceptCertificates

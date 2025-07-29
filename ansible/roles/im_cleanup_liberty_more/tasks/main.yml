@@ -1,0 +1,3 @@
+---
+- name: Unisntall the Liberty MoRe
+  ansible.builtin.include_tasks: im_cleanup_liberty_more.yml

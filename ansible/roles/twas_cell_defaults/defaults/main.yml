@@ -1,7 +1,9 @@
 ---
-twas_im_driver: 'cf212205.01'
+twas_im_driver: 'f5202422.01'
 twas_daily_or_test: 'test'
 install_base: '/home/nest'
+cygwin: ''
+ext: '.sh' # default to *nix shell extension
 twas_dir: 'was'
 app_dir: 'AppClient'
 shared_dir: 'IM-shared'
@@ -11,11 +13,18 @@ ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
 #twas_release: 'WAS855'
 twas_release: 'WAS90'
+twas_more_release: 'v10'
+cell_trust: 'CellDefaultTrustStore'
+verbosegc_file_template: 'verbosegc*'
+env_name: mytWASEnv
+logs_dir: "{{ playbook_dir }}" # location on the ansible controller
+
+enable_wmq: false # if set to true, use real MQ versus internal SIB/JMS
 
 profile_templatePath:
-  managed: '{{ install_base }}/{{ twas_dir }}/profileTemplates/managed'
-  dmgr: '{{ install_base }}/{{ twas_dir }}/profileTemplates/management'
-  default: '{{ install_base }}/{{ twas_dir }}/profileTemplates/default'
+  managed: managed
+  dmgr: management
+  default: default
 
 cellName: 'ndcell'
 clusterName: 'Cluster'
@@ -33,4 +42,10 @@ im_twas_package:
 im_appclient_package:
   WAS90: 'com.ibm.websphere.APPCLIENT.v90'
   WAS855: 'com.ibm.websphere.APPCLIENT{{le_package_extension[ansible_architecture]}}.v85'
-im_twas_java_package: 'com.ibm.sdk.v8'
+im_twas_java_package: 'com.ibm.java.jdk.v8'
+im_twas_more_package:
+  v10: com.ibm.websphere.MORE.v10
+  v20: com.ibm.websphere.MORE.v20
+
+verboseGC: true
+linux_process_to_kill: 'java'

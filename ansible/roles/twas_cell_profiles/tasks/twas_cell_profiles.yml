@@ -1,58 +1,39 @@
 ---
-
-# blindly try fuser ( linux )
-- name:  blindly try fuser ( linux )
+- name: Blindly try fuser ( linux )
   ignore_errors: true
-  shell: "fuser -k {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
+  ansible.builtin.shell: "fuser -k {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
   register: killOutput
   failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
 
-#[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -listProfiles
-#[dmgr]
-#[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -getName -profilePath /home/nest/was/profiles/dmgr
-#dmgr
-#if no profile
-#[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -getName -profilePath /home/nest/was/profiles/dmgr1
-#Cannot retrieve the profile name: The profile registry might be corrupt or the profile might not exist. For more information, consult /home/nest/was/logs/manageprofiles/getName.log.
-#[nest@oscert-twas855-dmgr ~]$ echo $?
-#1
-
-- name:  list current profile
+- name: List current profile
   ignore_errors: true
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -getName -profilePath {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
+  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles{{ ext }} -getName -profilePath {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
   register: listProfile
   failed_when: ( listProfile.rc not in [ 0, 1, 2 ] )
 
-- name: listProfileOutput
-  debug: 
-   msg: "{{ listProfile.stdout_lines }}"
+- name: ListProfileOutput
+  ansible.builtin.debug:
+    msg: "{{ listProfile.stdout_lines }}"
 
-#[nest@oscert-twas855-dmgr ~]$ was/bin/manageprofiles.sh -delete -profileName dmgr
-#INSTCONFPARTIALSUCCESS: The profile no longer exists, but errors occurred. For more information, consult /home/nest/was/logs/manageprofiles/dmgr_delete.log.
-#[nest@oscert-twas855-dmgr ~]$ echo $?
-#2
-
-- name:  delete current profile
+- name:  Delete current profile
   when: ( listProfile.rc in [ 0 ] )
   ignore_errors: true
-  shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -delete -profileName {{ profile_name }}"
+  ansible.builtin.shell: "{{install_base }}/{{ twas_dir }}/bin/manageprofiles{{ ext }} -delete -profileName {{ profile_name }}"
   register: deleteProfile
   failed_when: ( deleteProfile.rc not in [ 0, 1, 2 ] )
 
 - name: Remove previous twas profile dir
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
+    - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}"
 
 - name:  create profile
-  shell: "{{ install_base }}/{{ twas_dir }}/bin/manageprofiles.sh -create -profileName {{ profile_name }} -profilePath {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }} -templatePath {{ profile_templatePath[profile_type] }} -cellName {{ cellName }} -nodeName {{ profile_name }} -omitAction"
+  ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/manageprofiles{{ ext }} -create -profileName {{ profile_name }}  -templatePath {{ profile_type }} -cellName {{ cellName }} -nodeName {{ profile_name }} -omitAction"
   register: createProfile
   failed_when: ( createProfile.rc not in [ 0, 1, 2 ] )
 
 - name: createProfile
-  debug: 
-   msg: "{{ createProfile.stdout_lines }}"
-
-
+  ansible.builtin.debug: 
+    msg: "{{ createProfile.stdout_lines }}"

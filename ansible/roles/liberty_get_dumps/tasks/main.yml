@@ -1,0 +1,3 @@
+---
+- name: Get Liberty javacore / heapdumps
+  include_tasks: liberty_get_dumps.yml

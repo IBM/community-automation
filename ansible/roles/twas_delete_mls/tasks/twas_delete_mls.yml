@@ -1,0 +1,23 @@
+---
+- name: Start tWAS Managed Liberty servers
+  when: profile_type == 'managed' or profile_type == 'default'
+  block:
+    - name: Retrieve signers
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }} {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      register: retrieveSignersOutput
+      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+    - name: retrieveSignersOutput
+      debug:
+        msg: "{{ retrieveSignersOutput.stdout_lines }}"
+
+    - name: Copy delete_mls.jy
+      ansible.builtin.template:
+        src: delete_mls.jy.j2
+        dest: delete_mls.jy
+        mode: '0755'
+
+    - name: Delete the ManagedLibertyServer
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -username {{ twas_username }} -password {{ twas_password }} -lang jython -f delete_mls.jy {{ item }}"
+      register: serverDeleteOutput
+      with_items: '{{ mls_servers }}'
+      failed_when: serverDeleteOutput.rc not in [0,105]

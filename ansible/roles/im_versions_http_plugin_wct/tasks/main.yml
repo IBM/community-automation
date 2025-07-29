@@ -1,0 +1,3 @@
+---
+- name: IM versions http/plugin/wct
+  ansible.builtin.include_tasks: im_versions_http_plugin_wct.yml

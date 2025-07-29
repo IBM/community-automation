@@ -21,10 +21,10 @@ cellname="{{ cellName }}"
 webnode="{{ webNode }}"
 webservername="{{ webServerName }}"
 ihs_hostname="{{ groups.ihs[0] }}"
-os_type="{{ cic_selector_os[ansible_system] }}"
+os_type="{{ un_managed_node_os[ansible_system] }}"
 webPort="{{ ihs_http_port }}"
-webInstallRoot="{{ install_base }}/{{ http_dir }}"
-pluginInstallRoot="{{ install_base }}/{{ plugin_dir }}"
+webInstallRoot="{{ cygwin }}{{ install_base }}/{{ http_dir }}"
+pluginInstallRoot="{{ cygwin }}{{ install_base }}/{{ plugin_dir }}"
 configurationFile=""
 webAppMapping="ALL"
 adminPort="{{ ihs_admin_port }}"
@@ -43,8 +43,9 @@ if nodelist != '':
   for nodename in nodelist:
     print "--- checking  nodename: %s ---" % nodename
     if nodeIsUnmanaged( nodename ): 
-      print "--- Delete the unmanaged node ---"
-      AdminTask.removeUnmanagedNode('[-nodeName '+ webnode +']')
+      if webnode == nodename:
+         print "--- Delete the unmanaged node ---"
+         AdminTask.removeUnmanagedNode('[-nodeName '+ webnode +']')
 
 # [1/21/22 15:49:25:578 EST] Nodes > New...
 print "--- create the unmanaged node ---"

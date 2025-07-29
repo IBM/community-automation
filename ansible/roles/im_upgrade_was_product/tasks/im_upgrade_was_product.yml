@@ -1,0 +1,48 @@
+---
+- name: Upgrade
+  tags: upgrade
+  block:
+  - name: Check if imcl installed as a prereq
+    ansible.builtin.stat:
+      path: "{{ install_base }}/IM/eclipse/tools/imcl"
+    register: isimcl
+    failed_when: isimcl.stat.exists == False
+
+  - name: Remove previous secureStorageFile.store ( IM 1.9.x -> 1.10 java11 )
+    ansible.builtin.file:
+      path: "{{ install_base }}/IM/secureStorageFile.store"
+      state: absent
+
+  - name:  Generate secureStorageFile.store
+    ansible.builtin.shell: "{{ cygwin }}{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url https://rtpgsa.ibm.com -userName {{ gsa_user }} -userPassword '{{ gsa_pass }}' -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+
+  # - name:  generate external ibm secureStorageFile.store
+  #   ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imutilsc saveCredential -url http://www.ibm.com/software/repositorymanager  -userName {{ external_ibmuser }} -userPassword '{{ external_ibmpass }}' -secureStorageFile {{ install_base }}/IM/secureStorageFile.store"
+
+  - name:  Upgrade WAS product
+    ansible.builtin.shell: "time {{ cygwin }}{{ install_base }}/IM/eclipse/tools/imcl input ./im_was_upgrade.xml -acceptLicense -secureStorageFile {{ cygwin }}{{ install_base }}/IM/secureStorageFile.store"
+    register: upgradeOutput
+
+  - name: UpgradeOutput
+    ansible.builtin.debug: 
+      msg: "{{ upgradeOutput.stdout_lines }}"
+
+  - name:  ListInstalledPackages
+    ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+    register: packageOutput
+  
+  - name: packageOutput
+    ansible.builtin.debug: 
+      msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Versions
+  tags: version
+  block:
+  - name: WAS version
+    ansible.builtin.shell: "{{ was_product_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: wasVersionOutput
+
+  - name: WasVersionOutput
+    ansible.builtin.debug: 
+      msg: "{{ wasVersionOutput.stdout_lines }}"
+    failed_when: twas_im_driver not in wasVersionOutput.stdout

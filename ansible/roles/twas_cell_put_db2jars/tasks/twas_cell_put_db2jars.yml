@@ -13,8 +13,3 @@
     src: /tmp/db2jcc4.jar
     dest: "{{install_base }}/{{ twas_dir }}/db2jars/db2jcc4.jar"
     mode: '0755'
-- name: copy db2jcc_license_cu.jar ${WAS_INSTALL_ROOT}/db2jars
-  copy:
-    src: /tmp/db2jcc_license_cu.jar
-    dest: "{{install_base }}/{{ twas_dir }}/db2jars/db2jcc_license_cu.jar"
-    mode: '0755'

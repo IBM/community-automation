@@ -1,7 +1,7 @@
 ---
 
 - name: install packages
-  become: yes
+  become: true
   zypper:
    name: "{{ packages }}"
    state: present

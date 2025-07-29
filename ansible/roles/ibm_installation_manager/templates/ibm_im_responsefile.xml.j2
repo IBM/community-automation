@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <agent-input>
 <server>
-<repository location='{{ install_base_win}}{{ install_base }}/im_install' temporary='true'/>
+<repository location='{{ cygwin }}{{ install_base }}/im_install' temporary='true'/>
 </server>
-<profile kind='self' installLocation='{{ install_base_win}}{{ install_base }}/IM' id='IBM Installation Manager'>
-<data key='eclipseLocation' value='{{ install_base_win}}{{ install_base }}/IM'/>
+<profile kind='self' installLocation='{{ cygwin }}{{ install_base }}/IM' id='IBM Installation Manager'>
+<data key='eclipseLocation' value='{{ cygwin }}{{ install_base }}/IM'/>
 <data key='cic.selector.nl' value='ja,es,ru,en,fr,zh_TW,pl,el,de,cs,zh_HK,ko,hu,pt_BR,tr,it,da,zh'/>
 </profile>
 <install>
 <offering profile='IBM Installation Manager' features='agent_core,agent_jre' id='com.ibm.cic.agent'/>
 </install>
-<preference value='{{ install_base }}/IM-shared' name='com.ibm.cic.common.core.preferences.eclipseCache'/>
+<preference value='{{ cygwin }}{{ install_base }}/IM-shared' name='com.ibm.cic.common.core.preferences.eclipseCache'/>
 </agent-input>

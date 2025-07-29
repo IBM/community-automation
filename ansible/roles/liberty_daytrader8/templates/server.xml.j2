@@ -20,6 +20,7 @@
         <feature>scalingMember-1.0</feature>
         <feature>requestTiming-1.0</feature>
         <feature>monitor-1.0</feature>
+        <feature>mpHealth-3.1</feature>
     </featureManager>
         
 	<!-- allow reuse of 'busy' ports for fast server recycling on linux (where ports remain blocked for up to 2 mins after server stops) ${tradelite.http.port} set in bootstrap.properties --> 
@@ -27,7 +28,8 @@
 		<tcpOptions soReuseAddr="true"/> 
 		<httpOptions maxKeepAliveRequests="-1"/>
 	</httpEndpoint>
-
+        <httpDispatcher enableWelcomePage="false" />
+        
 	<include location="${server.config.dir}/collectiveMember.xml" />
 	<include optional="true" location="${server.config.dir}/hostAuth.xml" />
 	<include optional="true" location="${shared.config.dir}/hostSingleton.xml" />
@@ -73,7 +75,7 @@
     <connectionManager id="conMgr1" agedTimeout="-1" connectionTimeout="0" maxIdleTime="-1" maxPoolSize="600" minPoolSize="100" purgePolicy="FailingConnectionOnly" reapTime="-1"/> 
 
     <applicationMonitor dropinsEnabled="true" updateTrigger="mbean"/>
-    <config updateTrigger="enabled"/>
+    <config updateTrigger="mbean"/>
 
     <jdbcDriver id="DB2JCC" libraryRef="DB2JCCLib"/>
     <library id="DB2JCCLib" filesetRef="DB2JCCFileset"/>
@@ -92,8 +94,8 @@
         <properties databaseName="{{ db_name }}" driverType="4" portNumber="{{ db_port }}" serverName="{{ db_host }}"/>
     </dataSource>
 <!--
-    <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions" writeContents="ALL_SESSION_ATTRIBUTES" writeFrequency="END_OF_SERVLET_SERVICE"/> 
-    <httpSession cloneId="{{ ansible_hostname }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="30s"/>
+    <httpSessionDatabase dataSourceRef="SessionDS" id="SessionDB" tableName="sessions"/> 
+    <httpSession cloneId="{{ ansible_fqdn }}" storageRef="SessionDB" invalidationTimeout="10m" reaperPollInterval="60s"/>
 -->
 
 	<messagingEngine id="defaultME">
@@ -126,4 +128,7 @@
 	<jmsActivationSpec id="daytrader8-1.0-SNAPSHOT/DTStreamer3MDB">
 		<properties.wasJms destinationRef="TradeStreamerTopic" destinationType="javax.jms.Topic"/>
 	</jmsActivationSpec>
+        <remoteFileAccess>
+            <writeDir>${server.config.dir}</writeDir>
+        </remoteFileAccess>
 </server>

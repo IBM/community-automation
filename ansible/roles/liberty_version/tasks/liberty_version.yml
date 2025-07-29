@@ -1,0 +1,28 @@
+---
+
+- name: Check if Liberty installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+  register: islib
+
+- name: Check if Liberty installed
+  when: islib.stat.exists
+  block:
+    - name: Liberty version
+      ansible.builtin.shell: "{{ install_base }}/{{ liberty_dir }}/bin/server version"
+      register: libertyVersionOutput
+
+    # - name: LibertyVersionOutput
+    #   ansible.builtin.debug:
+    #     msg: "{{ libertyVersionOutput.stdout | trim }}"
+
+    - name: Set Liberty version facts
+      ansible.builtin.set_fact:
+        libertyVersion: '{{ libertyVersionOutput.stdout | trim }}'
+
+    - name: Write Liberty version to json
+      delegate_to: localhost
+      ansible.builtin.template:
+        src: liberty_version_info.json.j2
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
+        mode: '0444'

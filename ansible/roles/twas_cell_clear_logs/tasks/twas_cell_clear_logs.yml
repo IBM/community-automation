@@ -1,6 +1,78 @@
 ---
+- name: Remove tWAS logs directory
+  when: 
+    - twas_dir is defined
+    - profile_name is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+      register: islog
+    - name: Remove tWAS logs directory
+      ansible.builtin.file:
+        path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+        state: absent
+      when: islog.stat.exists == True
 
-- name: remove logs directory
-  file:
-    path: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
-    state: absent
+- name: Remove IHS logs directory
+  when: 
+    - install_ihs_base is defined
+    - http_dir is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
+      register: islog
+    - name: Remove IHS logs directory
+      ansible.builtin.file:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
+        state: absent
+      when: islog.stat.exists == True
+    - name: ReCreate IHS logs directory
+      ansible.builtin.file:
+        path: "{{ install_ihs_base }}/{{ http_dir }}/logs"
+        state: directory
+        mode: 0755
+      when: islog.stat.exists == True
+
+- name: Remove Plugin logs directory
+  when: 
+    - install_ihs_base is defined
+    - plugin_dir is defined
+    - webServerName is defined
+  block:
+    - name: Does the log dir exist?
+      ansible.builtin.stat:
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+      register: islog
+    - name: Remove Plugin logs directory
+      ansible.builtin.file:
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        state: absent
+      when: islog.stat.exists == True
+    - name: ReCreate Plugin logs directory
+      ansible.builtin.file:
+        path: "{{ install_ihs_base }}/{{ plugin_dir }}/logs/{{ webServerName }}"
+        state: directory
+        mode: 0755
+      when: islog.stat.exists == True
+
+- name: Any extra logs?
+  when: extra_logs is defined
+  block:
+
+  - name: Remove Liberty extra_logs dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ extra_logs }}"
+
+  - name: Create Liberty extra_logs dir
+    become: true
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0777'
+    with_items:
+      - "{{ extra_logs }}"

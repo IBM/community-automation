@@ -1,0 +1,2 @@
+---
+- include_tasks: twas_status_summary_servers.yml

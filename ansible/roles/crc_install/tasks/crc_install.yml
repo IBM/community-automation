@@ -39,7 +39,7 @@
   when: iscrc.stat.exists == False
 
 - name: Install NetworkManager FireFox
-  become: yes
+  become: true
   dnf:
     name: "{{ packages }}"
     state: latest
@@ -51,7 +51,7 @@
     state: latest
 
 - name: enable and start NetworkManager
-  become: yes
+  become: true
   systemd:
     name: NetworkManager.service
     state: started

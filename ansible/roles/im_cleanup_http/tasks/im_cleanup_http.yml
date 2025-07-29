@@ -1,75 +1,161 @@
 ---
 
-# blindly try fuser ( linux )
-- name:  blindly try fuser ( linux )
-  ignore_errors: true
-  shell: "fuser -k {{ item }}"
-  register: killOutput
-  failed_when: ( killOutput.rc not in [ 0, 1, 2, 127 ] )
-  with_items:
-  - "{{ install_ihs_base }}/{{ http_dir }}"
-
-- name: check if previous ihs installed
-  stat:
-   path: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl"
+- name: Check if previous ihs installed
+  ansible.builtin.stat:
+    path: "{{ install_ihs_base }}/{{ http_dir }}bin"
   register: isihs
 
-- name:  stop httpd
-  ignore_errors: true
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+- name: Windoze http operations
+  when: ansible_system == 'Windows' or 'CYG' in ansible_system
+  block:
+  - name: Does IBMHTTPServer service exist?
+    ansible.builtin.shell: "sc query IBMHTTPServer"
+    register: isIBMHTTPServer
+    failed_when: isIBMHTTPServer.rc not in [0,36]
+  - name: IBMHTTPServer is enabled
+    when: isIBMHTTPServer.rc == 0
+    block:
+      - name: Stop http
+        when: isIBMHTTPServer.stdout is search('RUNNING')
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMHTTPServer'"
+      - name: Uninstall httpd Windoze service
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMHTTPServer'"
+
+  - name: Does IBMAdminHTTPServer service exist?
+    ansible.builtin.shell: "sc query IBMAdminHTTPServer"
+    register: isIBMAdminHTTPServer
+    failed_when: isIBMAdminHTTPServer.rc not in [0,36]
+  - name: IBMAdminHTTPServer is enabled
+    when: isIBMAdminHTTPServer.rc == 0
+    block:
+      - name: Stop http admin
+        when: isIBMAdminHTTPServer.stdout is search('RUNNING')
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k stop  -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+      - name: Uninstall httpd Windoze service
+        ignore_errors: true
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apache -k uninstall -n 'IBMAdminHTTPServer' -f conf/admin.conf"
+
+- name: Unix http operations
+  when: ansible_system is not search('CYG')
+  block:
+  - name: Stop any httpd proccess gracefully
+    when: isihs.stat.exists == True
+    block: 
+    - name:  stop httpd
+      ignore_errors: true
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl stop"
+    - name: Stop adminctl
+      ignore_errors: true
+      ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
+  - name: Force pkill httpd  ( linux )
+    ignore_errors: true
+    ansible.builtin.shell: "pkill httpd"
+    register: killOutput
+    failed_when: ( killOutput.rc not in [ 0, 1 ] )
+    when:
+      - ansible_architecture != 'chrp'
+
+- name: Check if previous WCT installed
+  ansible.builtin.stat:
+    path: "{{ install_ihs_base }}/{{ wct_dir }}/bin/versionInfo{{ ext }}"
+  register: iswct
+
+- name: Uninstall WCT WAS90
+  when: iswct.stat.exists == True
+  block:
+  - name:  uninstall wct WAS90
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} {{ im_wct_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ wct_dir }}"
+    register: uninstallWCTOutput
+    when: twas_release == 'WAS90'
+
+  - name: UninstallWCTOutput WAS90
+    ansible.builtin.debug:
+      msg: "{{ uninstallWCTOutput.stdout_lines }}"
+    failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS90'
+
+  - name:  Uninstall wct WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_wct_package[twas_release] }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ wct_dir }}"
+    register: uninstallWCTOutput
+    when: twas_release == 'WAS855'
+
+  - name: UninstallWCTOutput WAS855
+    ansible.builtin.debug:
+      msg: "{{ uninstallWCTOutput.stdout_lines }}"
+    failed_when: ( uninstallWCTOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
+
+- name: Check if previous Plugin installed 
+  ansible.builtin.stat:
+    path: "{{ install_ihs_base }}/{{ plugin_dir }}/bin/versionInfo{{ ext }}"
+  register: isplg
+
+- name: Uninstall plugin
+  when: isplg.stat.exists == True
+  block:
+  - name:  uninstall plugin WAS90
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} {{ im_plugin_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}"
+    register: uninstallPLGOutput
+    when: twas_release == 'WAS90'
+
+  - name: UninstallPLGOutput WAS90
+    ansible.builtin.debug:
+      msg: "{{ uninstallPLGOutput.stdout_lines }}"
+    failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS890'
+
+  - name:  Uninstall plugin WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_plugin_package[twas_release] }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ plugin_dir }}"
+    register: uninstallPLGOutput
+    when: twas_release == 'WAS855'
+    
+  - name: uninstallPLGOutput WAS855
+    ansible.builtin.debug:
+      msg: "{{ uninstallPLGOutput.stdout_lines }}"
+    failed_when: ( uninstallPLGOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
+
+- name: Check if previous IHS installed
+  ansible.builtin.stat:
+    path: "{{ install_ihs_base }}/{{ http_dir }}/bin/versionInfo{{ ext }}"
+  register: isihs
+
+- name: Uninstall IHS WAS90
   when: isihs.stat.exists == True
+  block:
+  - name:  Uninstall http WAS90
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} {{ im_http_java_package }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}"
+    register: uninstallIHSOutput
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS90'
 
-- name:  stop adminctl
-  ignore_errors: true
-  shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl stop"
-  when: isihs.stat.exists == True
+  - name: UninstallIHSOutput WAS90
+    ansible.builtin.debug:
+      msg: "{{ uninstallIHSOutput.stdout_lines }}"
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS90'
 
-- name:  uninstall IM 
-  ignore_errors: true
-  shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstallAll"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
+  - name:  Uninstall http WAS855
+    ansible.builtin.shell: "{{ install_ihs_base }}/IM/eclipse/tools/imcl uninstall {{ im_http_package[twas_release] }} -installationDirectory {{ cygwin }}{{ install_ihs_base }}/{{ http_dir }}"
+    register: uninstallIHSOutput
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
+    
+  - name: UninstallIHSOutput WAS855
+    ansible.builtin.debug:
+      msg: "{{ uninstallIHSOutput.stdout_lines }}"
+    failed_when: ( uninstallIHSOutput.rc not in [ 0 ] )
+    when: twas_release == 'WAS855'
 
-# windoze /cygdrive/c/Users/Administrator/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc
-# ansible_user: Administrator
-- name:  uninstall Windoze ibm installation manager
-  ignore_errors: true
-  shell: "~/AppData/Roaming/IBM/Installation Manager/uninstall/userinstc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system == 'Windows' or 'CYG' in ansible_system
-
-- name:  uninstall *nix ibm installation manager
-  ignore_errors: true
-  shell: "~/var/ibm/InstallationManager/uninstall/uninstallc"
-  register: uninstallOutput
-  failed_when: ( uninstallOutput.rc not in [ 0, 1 ] )
-  when: 
-  - ansible_system != 'Windows' and 'CYG' not in ansible_system
-  
-- name: uninstallAll output
-  debug: 
-   msg: "{{ uninstallOutput.stdout_lines }}"
-
-- name: Remove previous http dir
-  file:
+- name: Remove previous http/plugin/wct/ dir
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
-  - "{{ install_ihs_base }}/{{ shared_dir }}"
-  - "{{ install_ihs_base }}/{{ http_dir }}"
-  - "{{ install_ihs_base }}/{{ plugin_dir }}"
-  - "{{ install_ihs_base }}/{{ wct_dir }}"
-  - "{{ install_ihs_base }}/im_install"
-  - "{{ install_ihs_base }}/IM"
-  - "{{ install_ihs_base }}/javasharedresources"
-  - "{{ install_ihs_base }}/im_http_plugin.xml"
-  - "{{ install_ihs_base }}/wct_definition.xml"
-  - "{{ install_ihs_base }}/https_conf"
-  - "~/var/"
-  - "~/etc/"
+    - "{{ install_ihs_base }}/{{ http_dir }}"
+    - "{{ install_ihs_base }}/{{ plugin_dir }}"
+    - "{{ install_ihs_base }}/{{ wct_dir }}"
+    - "{{ install_ihs_base }}/im_http_plugin.xml"
+    - "{{ install_ihs_base }}/wct_definition.xml"
+    - "{{ install_ihs_base }}/https_conf"
+    - "{{ install_ihs_base }}/.ibm" # WCT seems to be the only IBM WAS product that uses this"

@@ -2,7 +2,7 @@
 # specific OS supports wildcards, if preceded with @ its a group
 # if the db is corrupt, this can fix it: rpm --rebuilddb
 - name: remove extraneous packages
-  become: yes
+  become: true
   ignore_errors: yes
   yum:
    name: "{{ packages }}"
@@ -21,14 +21,14 @@
    - 'xorg-x11-fonts-Type1'
 
 - name: yum update
-  become: yes
+  become: true
   ignore_errors: yes
   yum:
    name: '*'
    state: latest
 
 - name: install packages
-  become: yes
+  become: true
   yum:
    name: "{{ packages }}"
    state: present

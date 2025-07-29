@@ -1,27 +1,27 @@
 ---
 
-- name: check for RedHat distribution
-  fail:
+- name: Check for RedHat distribution
+  ansible.builtin.fail:
     msg: Target OS is not RedHat
   when: ansible_distribution != "RedHat"
 
 - name: Install RHEL pre-reqs
-  become: yes
-  dnf:
-   name: "{{ packages }}"
-   state: latest
+  become: true
+  ansible.builtin.dnf:
+    name: "{{ packages }}"
+    state: latest
   vars:
-   packages:
-   - podman
+    packages:
+    - podman
 
 - name: Check if user is lingering
-  stat:
+  ansible.builtin.stat:
     path: "/var/lib/systemd/linger/{{ ansible_user }}"
   register: user_lingering
   when: ansible_user != 'root'
 
 - name: Enable lingering is needed
-  command: "loginctl enable-linger {{ ansible_user }}"
+  ansible.builtin.command: "loginctl enable-linger {{ ansible_user }}"
   when:
     - ansible_user != 'root'
     - not user_lingering.stat.exists
@@ -32,69 +32,99 @@
   #- name: get podman runRoot dir
   #  shell: 'podman info | grep runRoot'
   #  register: podman_runRoot
-- name: copy the podmand.conf template to /etc/tmpfiles.d/
-  become: yes
-  ansible.builtin.copy:
-    src: /usr/lib/tmpfiles.d/podman.conf
-    dest: /etc/tmpfiles.d/podman.conf
-    remote_src: yes
-- name: add podman nonRoot dir to systemd tmp
-  become: yes
-  lineinfile:
-    path: /etc/tmpfiles.d/podman.conf
-    line: "x /run/user/{{ ansible_user_uid }}"
+# is this needed any longer???
+# - name: Copy the podmand.conf template to /etc/tmpfiles.d/
+#   become: true
+#   ansible.builtin.copy:
+#     src: /usr/lib/tmpfiles.d/podman.conf
+#     dest: /etc/tmpfiles.d/podman.conf
+#     remote_src: yes
+# - name: Add podman nonRoot dir to systemd tmp
+#   become: true
+#   lineinfile:
+#     path: /etc/tmpfiles.d/podman.conf
+#     line: "x /run/user/{{ ansible_user_uid }}"
+
+- name: Create user containers.conf directory
+  ansible.builtin.file:
+    path: '.config/containers/'
+    state: directory
+    mode: '0755'
+    
+# RHEL10 does not have slirp4netns installation packages, so we cannot override the podman 5.x pasta networking with slirp4netns
+# - name: Override podman 5.x pasta networking with slirp4netns
+#   ansible.builtin.blockinfile:
+#     path: ".config/containers/containers.conf"
+#     create: true
+#     mode: '0755'
+#     marker: "# {mark} Revert to slirp4netns ANSIBLE MANAGED BLOCK"
+#     block: |
+#       [network]
+#       # default_rootless_network_cmd = ""
+#       # change to.
+#       default_rootless_network_cmd = "slirp4netns"
 
 - name: Pull the svt db2 image
   containers.podman.podman_image:
     name: "{{ svt_db2_image }}"
-    username: "{{ hyc_user }}"
-    password: "{{ hyc_token }}"
-    force: yes
+    username: "{{ svt_registry_user }}"
+    password: "{{ svt_registry_password }}"
+    force: true
     state: present
+    validate_certs: false
+    pull: true
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
-- name: create dbdir directory
-  file:
+- name: Create dbdir directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/home/{{ ansible_user }}/dbdir"
+
+- name: Create dbdir directory
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
   with_items:
-  - "/home/{{ ansible_user }}/dbdir"
+    - "/home/{{ ansible_user }}/dbdir"
 
 - name: kill rm any existing db2 container
   containers.podman.podman_container:
     log_level: info
-    name: svtdb
-    privileged: yes
+    name: '{{ svt_db_container_name }}'
+    privileged: true
     image: "{{ svt_db2_image }}"
     state: absent # started created absent stopped present
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 
 # https://docs.ansible.com/ansible/latest/collections/containers/podman/podman_container_module.html#ansible-collections-containers-podman-podman-container-module
 - name: Run svtdb container
   containers.podman.podman_container:
     log_level: info
-    name: svtdb
-    privileged: yes
+    name: '{{ svt_db_container_name }}'
+    privileged: true
     image: "{{ svt_db2_image }}"
     state: started
-    restart: yes
+    restart: true
     ports:
-     - "50000:50000"
+      - "50000:50000"
     volume:
-     - "/home/{{ ansible_user }}/dbdir:/database"
+      - "/home/{{ ansible_user }}/dbdir:/database"
     cmd_args:
-     - "-e LICENSE=accept"
-     - "-e DB2INST1_PASSWORD={{ db_pass }}"
-     - "-e DBNAME={{ db_name }}"
-     - "-e APP={{ svt_db_app }}"
+      - "-e LICENSE=accept"
+      - "-e DB2INST1_PASSWORD={{ db_pass }}"
+      - "-e DBNAME={{ db_name }}"
+      - "-e APP={{ svt_db_app }}"
   register: svtop
 
-- debug:
-   msg: '{{ svtop }}'
+# - ansible.builtin.debug:
+#    msg: '{{ svtop }}'
 

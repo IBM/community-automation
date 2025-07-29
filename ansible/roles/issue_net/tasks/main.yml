@@ -1,0 +1,11 @@
+- name: Check if issue.net exists
+  ansible.builtin.stat:
+    path: /etc/issue.net
+  register: isissue
+
+- name: Replace issue.net content
+  when: isissue.stat.exists
+  become: true
+  ansible.builtin.copy:
+    content: '{{ issueContent }}'
+    dest: /etc/issue.net

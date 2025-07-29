@@ -1,0 +1,3 @@
+---
+- name: Install tWAS AppClient
+  ansible.builtin.include_tasks: im_install_twas_app_client.yml

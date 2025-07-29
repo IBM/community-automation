@@ -1,0 +1,17 @@
+---
+- name: No 32bit support on ppc64le
+  delegate_to: localhost
+  ansible.builtin.debug:
+    msg: No 32bit support on ppc64le
+
+# - name: Install packages
+#   become: true
+#   zypper:
+#    name: "{{ packages }}"
+#    state: present
+#   vars:
+#    packages:
+#   #  - 'libgtk-3-0-32bit'
+#   #  - 'libgthread-2_0-0-32bit'
+#    - 'libXtst6-32bit'
+#    - 'libstdc++6-32bit'

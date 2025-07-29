@@ -39,7 +39,11 @@ defaultWebServerHostPort="{{ ihs_http_port }}"
 defaultWebServerHostPortS="{{ ihs_https_port }}"
 DefaultClusterName="{{ clusterName }}"
 
+TargetNodeName =   "{{ profile_name }}"
+TargetServerName = "{{ appServerName }}"
 
 DefaultEarFile = "{{ DefaultEarFile }}"
 DefaultTradeAppName = "{{ DefaultAppName }}"
+
+enableWMQ = "{{ enable_wmq }}"
 # END

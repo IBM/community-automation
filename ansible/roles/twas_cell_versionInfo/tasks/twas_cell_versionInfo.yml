@@ -1,0 +1,119 @@
+---
+
+- name: Create version dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+    mode: '0755'
+
+- name: Check if tWAS installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ twas_dir }}/properties/version/WAS.product"
+  register: istwas
+
+- name: tWAS versions
+  when: istwas.stat.exists
+  block:
+
+  - name: Read the WAS.product xml file
+    ansible.builtin.include_role:
+      name: twas_cell_product_version_level
+    vars:
+      twas_product: WAS
+      target_dir: "{{ twas_dir }}"
+      staging_json_file: "{{ version_level_json_file }}"
+
+  - name: WebSphere VersionInfo
+    ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: tversions
+
+  - name: Size of versionInfo stdout_lines
+    delegate_to: localhost
+    ansible.builtin.set_fact:
+      max_counter: "{{ tversions.stdout_lines | length }}"
+
+  - name: Create dict with tWAS version(s)
+    ansible.builtin.set_fact:
+      twas_version: "{{ twas_version | default({}) | combine( { item: tversions.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    no_log: true
+
+  - name: New dict twas_version
+    ansible.builtin.set_fact:
+      versions: "{{{ ansible_fqdn : twas_version }}}"
+
+  - name: Write tWAS versionInfo to json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ versioninfo_json_file }}"
+      mode: '0444'
+
+- name: Check if AppClient installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ app_dir }}/properties/version/APPCLIENT.product"
+  register: isapp
+
+- name: AppClient versions
+  when: isapp.stat.exists
+  block:
+
+  - name: Read the APPCLIENT.product xml file
+    ansible.builtin.include_role:
+      name: twas_cell_product_version_level
+    vars:
+      twas_product: APPCLIENT
+      target_dir: "{{ app_dir }}"
+      staging_json_file: "app_{{ version_level_json_file }}"
+
+  - name: Rename the app_{{ version_level_json_file }}
+    when: istwas.stat.exists == False
+    block:
+      - name: No tWAS rename the app_{{ version_level_json_file }}
+        delegate_to: localhost
+        ansible.builtin.copy:
+          remote_src: false
+          src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+          dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+          mode: "0644"
+
+      - name: Remove the app_{{ version_level_json_file }}
+        delegate_to: localhost
+        ansible.builtin.file:
+          path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}"
+          state: absent
+
+  - name: Merge the Server / Appclient json ( combined )
+    delegate_to: localhost
+    when: istwas.stat.exists
+    ansible.builtin.copy:
+      content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/app_{{ version_level_json_file }}') | from_json, recursive=True, list_merge='append' )}}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+      mode: '0444'
+
+  - name: AppClient version details
+    ansible.builtin.shell: "{{ install_base }}/{{ app_dir }}/bin/versionInfo{{ ext }} -ifixDetail"
+    register: appVersionOutput
+
+  - name: Size of stdout_lines
+    delegate_to: localhost
+    ansible.builtin.set_fact:
+      max_counter: "{{ appVersionOutput.stdout_lines | length }}"
+
+  - name: Create dict with tWAS version(s)
+    ansible.builtin.set_fact:
+      app_version: "{{ app_version | default({}) | combine( { item: appVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+    with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    no_log: true
+
+  - name: New dict app_version
+    ansible.builtin.set_fact:
+      versions: "{{ { ansible_fqdn : app_version } }}"
+
+  - name: Write AppClient versionInfo to json file
+    delegate_to: localhost
+    ansible.builtin.copy:
+      content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+      dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ app_versioninfo_json_file }}"
+      mode: '0444'

@@ -1,0 +1,36 @@
+---
+
+- name: Find all the verbosegc log files and concat into 1 file
+  delegate_to: localhost
+  ansible.builtin.script: scripts/merge_into_single_file.sh
+  args:
+    chdir: "{{ vbgc_dir }}"
+  register: gcfilesoutput
+
+- name: Verbose gc files concat output
+  ansible.builtin.debug:
+    msg: "{{ gcfilesoutput.stdout_lines }}"
+
+- name: Copy the gcmv.genheap.epf config file to working dir
+  delegate_to: localhost
+  copy:
+    src: files/gcmv.genheap.epf
+    dest: "{{ vbgc_dir }}"
+    mode: '0755'
+
+- name: Run the IBM GCMV script
+  delegate_to: localhost
+  ansible.builtin.script: "scripts/create_vbgc_chart.sh '{{ IBM_GCMV }}'"
+  args:
+    chdir: "{{ vbgc_dir }}"
+  register: vbgcoutput
+
+- name: IBM GCMV output
+  ansible.builtin.debug:
+    msg: "{{ vbgcoutput.stdout_lines }}"
+
+- name: Clean up gcmv.genheap.epf
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ vbgc_dir }}/gcmv.genheap.epf"
+    state: absent

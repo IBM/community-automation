@@ -1,0 +1,102 @@
+---
+- name: Check if install_base exists
+  ansible.builtin.stat:
+    path: "{{ install_base }}/IM/eclipse/tools/imcl"
+  register: isimcl
+
+- name: Check if install_base is a directory
+  when: isimcl.stat.exists
+  block:
+
+    - name: ULB imcl listInstalledPackages
+      ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+      register: imOutput
+
+# /opt/IM/eclipse : com.ibm.cic.agent_1.9.2003.20220917_1018 : IBM® Installation Manager : 1.9.2.3
+# /opt/IBM/WebSphere/Edge/ULB : com.ibm.java.jdk.v8_8.0.8040.20250328_0802 : IBM SDK, Java Technology Edition, Version 8 : 8.0.8.40
+# /opt/IBM/WebSphere/Edge/ULB : com.ibm.websphere.EDGELBIPV4IPV6.v90_9.0.5024.20250326_1821 : IBM WebSphere Edge Components: Load Balancer for IPV4 and IPV6 : 9.0.5.24
+
+    - name: Size of stdout_lines
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        max_counter: "{{ imOutput.stdout_lines | length }}"
+
+    - name: Extract parts from the string
+      set_fact:
+        parts: "{{ my_string | regex_search('^([^:]+):([^:]+):([^:]+):([^:]+)$', '\\1,\\2,\\3,\\4') | split(',') }}"
+      vars:
+        my_string: "alpha:beta:gamma:delta"
+
+    - name: Extract values from colon-separated string
+      set_fact:
+        values: "{{ (colon_separated_string|regex_replace('^.*:', ''))|split(':') }}"
+      vars:
+        colon_separated_string: "value1:value2:value3:value4"
+
+    - name: Debug values
+      debug:
+        var: values
+
+    - name: Create dict with plugin version(s)
+      ansible.builtin.set_fact:
+        plugin_version: "{{ plugin_version | default({}) | combine( { item: PluginVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
+
+    - name: New dict plugin_version
+      ansible.builtin.set_fact:
+        versions: "{{{ ansible_fqdn : plugin_version }}}"
+
+    # - name: New dict append_this
+    #   delegate_to: localhost
+    #   ansible.builtin.debug:
+    #     msg: "{{ versions }}"
+
+    - name: Write plugin versionInfo to json file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ plugin_versioninfo_json_file }}"
+        mode: '0444'
+
+    - name: Check if version_level exists
+      ansible.builtin.stat:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+      register: isjson
+
+    - name: Block to init the seed version_level.json
+      when: isjson.stat.exists == False
+      block:
+
+        - name: Inialize combined dict ( twas_ulb )
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            combined_dict: {}
+
+        - name: Save ( seed combined )( twas_ulb )
+          delegate_to: localhost
+          ansible.builtin.copy:
+            content: "{{ combined_dict }}"
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+            mode: '0444'
+
+    - name: Save IHS/PLG/WCT to version_level json ( combined )
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.file', '{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}') | from_json | ansible.builtin.combine(lookup('ansible.builtin.file', '{{ item }}') | from_json, recursive=True, list_merge='append' )}}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ version_level_json_file }}"
+        mode: '0444'
+      with_items: 
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
+
+    - name: Remove local source json after combine
+      with_items: 
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/ihs_{{ version_level_json_file }}"
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/plg_{{ version_level_json_file }}"
+        - "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/wct_{{ version_level_json_file }}"
+      delegate_to: localhost
+      ansible.builtin.file:
+        state: absent
+        path: "{{ item }}"

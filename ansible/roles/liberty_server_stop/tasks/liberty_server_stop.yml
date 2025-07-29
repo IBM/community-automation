@@ -1,0 +1,29 @@
+---
+- name: Liberty Server Stop
+  tags: stop
+  block:
+    - name: Check if liberty is installed
+      ansible.builtin.stat:
+        path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+      register: isliberty
+      failed_when: isliberty.stat.exists == False
+
+    - name: Status Liberty Server
+      ansible.builtin.command:
+        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+      register: cmdOutput
+      failed_when: ( cmdOutput.rc not in [ 0, 1 ] )
+
+    - name: Stop Liberty Server block
+      when: cmdOutput.rc == 0
+      block:
+        - name: Stop Liberty Server
+          ansible.builtin.command:
+            cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
+          register: cmdOutput1
+          failed_when: ( cmdOutput1.rc not in [ 0, 1, 21 ] ) # GPF rc=21, which kills the server, mission accomplished
+
+        - name: Stop output
+          ansible.builtin.debug:
+            msg: '{{ cmdOutput1.stdout_lines }}'
+          failed_when: ( cmdOutput1.rc not in [ 0, 1, 21 ] )

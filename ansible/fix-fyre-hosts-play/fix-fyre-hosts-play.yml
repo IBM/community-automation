@@ -2,6 +2,6 @@
 
 - hosts: all
   gather_facts: true
-  become: yes
+  become: true
   roles:
   - role: fix_fyre_hosts_file

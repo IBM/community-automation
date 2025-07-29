@@ -1,4 +1,6 @@
 ---
+cygwin: ''
+ext: '.sh'
 install_base: '/home/nest'
 liberty_dir: 'wlp'
 liberty_admin_user: 'admin'
@@ -7,5 +9,12 @@ liberty_admin_port: '9080'
 liberty_admin_ports: '9443'
 liberty_http_port: '9080'
 liberty_http_ports: '9443'
+controller_role: primary
+cc_primary_port: '{{ liberty_http_ports }}'
 cc_server: 'cc'
 wl_server: 'server'
+shared_dir: 'IM-shared'
+im_liberty_package: 'com.ibm.websphere.liberty.ND'
+im_liberty_jdk_package: 'com.ibm.java.jdk.v' # no java version since we are using this to rollback / upgrade
+im_java_short_version: '21' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8
+verboseGC: true

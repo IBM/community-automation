@@ -1,0 +1,161 @@
+---
+
+### schader@us.ibm.com 
+### https://www.ibm.com/docs/en/instana-observability/current?topic=premises-installing-instana-backend-docker#prerequisites
+- name: check /dev/vdb1
+  shell: 'fdisk -l /dev/vdb1'
+  ignore_errors: true
+  register: vdb1
+
+- name: setup vdb1
+  when: vdb1.rc != 0
+  block:
+  #START BLOCK
+  ### umount for re-run testing
+  - name: umount /dev/vdb1
+    mount: 
+      path: /mnt
+      src: /dev/vdb1
+      state: unmounted
+    ignore_errors: true
+
+  - name: copy fdisk.create
+    template:
+      src: fdisk.create.j2
+      dest: fdisk.create
+
+  - name: create the /dev/vdb partition
+    shell: 'fdisk /dev/vdb < fdisk.create'
+    register: fdisk_create
+    
+  - name: fdisk create stdout_lines
+    debug: 
+      msg: "{{ fdisk_create.stdout_lines }}"
+
+  - name: mkfs.xfs -f /dev/vdb1
+    command: 'mkfs.xfs -f /dev/vdb1'
+    register: mkfsOutput
+    
+  - name: mkfs create stdout_lines
+    debug: 
+      msg: "{{ mkfsOutput.stdout_lines }}"
+
+  - name: /mnt directory
+    file:
+      path: /mnt
+      state: directory
+
+  - name: mount /dev/vdb1
+    mount: 
+      path: /mnt
+      src: /dev/vdb1
+      state: mounted
+      fstype: xfs
+    register: mountOutput
+    
+  - name: mount output
+    debug: 
+      msg: "{{ mountOutput }}"
+
+  - name: prereq directories
+    file:
+      path: '{{ item }}'
+      state: directory
+      recurse: yes
+    with_items:
+    - '/mnt/instana/stanctl/data'
+    - '/mnt/instana/stanctl/metrics'
+    - '/mnt/instana/stanctl/analytics'
+    - '/mnt/instana/stanctl/objects'
+
+  - name: get the blkid /dev/vdb1
+    command: 'blkid -s UUID -o value /dev/vdb1'
+    register: blkidOutput
+    
+  - name: blkidOutput stdout_lines
+    debug: 
+      msg: "{{ blkidOutput.stdout }}"
+
+  - name: remove ( only needed for re-runs on existing host ) /mnt in /etc/fstab
+    lineinfile:
+      path: '/etc/fstab'
+      regexp: '^/mnt'
+      state: absent
+      backup: yes
+
+  - name: add new /mnt in /etc/fstab
+    lineinfile:
+      path: '/etc/fstab'
+      regexp: '^/mnt'
+      line: 'UUID="{{ blkidOutput.stdout }}" /mnt xfs defaults 1 1'
+      backup: yes
+#END BLOCK
+
+
+## https://www.ibm.com/docs/en/instana-observability/current?topic=edition-installing#installing-the-sitedatakeywordself_se_short-in-an-online-environment
+## --core-tls-crt
+## --core-tls-key
+
+- name: remove stanctl agent delete -q
+  shell: "stanctl agent delete -q"
+  ignore_errors: true
+  register: instanaOutput
+    
+- name: instana remove output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: remove stanctl cluster delete -q
+  shell: "stanctl cluster delete -q"
+  ignore_errors: true
+  register: instanaOutput
+    
+- name: instana remove output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: copy env file
+  template:
+    src: env.j2
+    dest: /root/.env
+
+- name: stanctl up with arguments
+  shell: "stanctl up --install-type demo --core-base-domain {{ ansible_facts['fqdn'] }} --download-key {{ download_key }} --sales-key {{ sales_key }} --unit-tenant-name {{ instana_tenet }} --unit-unit-name {{ instana_unit }} --unit-initial-admin-password {{ instanaAdminPassword }} --timeout 60m"
+  register: instanaOutput
+    
+- name: instana init output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: stanctl agent apply
+  shell: "stanctl agent apply"
+  register: instanaOutput
+    
+- name: stanctl agent apply output
+  debug: 
+    msg: "{{ instanaOutput.stdout_lines }}"
+
+- name: instana local agent monitoring
+  shell: 'stanctl license info'
+  register: licenseOutput
+  
+- name: instana license output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
+
+- name: instana license info
+  shell: 'stanctl license info'
+  register: licenseOutput
+  
+- name: instana license output
+  debug: 
+    msg: "{{ licenseOutput.stdout_lines }}"
+
+- name: instana version
+  shell: 'stanctl --version'
+  register: instanaVersion
+  changed_when: false
+  
+- name: instana version output
+  debug: 
+    msg: "{{ instanaVersion.stdout_lines }}"

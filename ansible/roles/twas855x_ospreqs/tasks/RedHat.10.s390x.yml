@@ -1,0 +1,5 @@
+---
+- name: No 32bit support on ppc64le
+  delegate_to: localhost
+  ansible.builtin.debug:
+    msg: No 32bit support on ppc64le

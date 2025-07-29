@@ -1,0 +1,395 @@
+import sys
+
+#-----------------------------------------------------------------
+# WARNING: Jython/Python is extremely sensitive to indentation
+# errors. Please ensure that tabs are configured appropriately
+# for your editor of choice.
+#-----------------------------------------------------------------
+
+#-----------------------------------------------------------------
+# daytrader_config_base.py - DayTrader Single Server Install Script
+#-----------------------------------------------------------------
+#
+# This script is designed to configure the JDBC and JMS resource required by
+# the DayTrader application. Both single server and clustered environments are
+# supported. A "silent install" option is also supported after manually setting
+# the default config options in this file.
+#  
+# To invoke the script type:
+#   wsadmin -f daytrader_config_base.py [all|configure|cleanup|install|uninstall] nodename servername
+#      where:   all        -  configures JDBC and JMS resources and installs the app
+#               configure  -  only configures the JDBC and JMS resource
+#               cleanup    -  removes the JDBC and JMS resources
+#               install    -  installs the DayTrader ear
+#               uninstall  -  uninstalls the DayTrader ear
+#
+# If no parameters are specified, "all" is assumed!
+#
+
+print ("daytrader_config_base.py")
+
+# Process the resource file containing all of the admin task definitions 
+resources = "resource_scripts.py"
+wsadminlib = "wsadminlib.py"
+execfile(wsadminlib)
+execfile(resources)
+
+# Edit this parameter to switch between Interactive and Silent installs
+SilentInstall = "true"
+
+#---------------------------------------------------------------------
+# Default Properties for Silent Install
+#
+# Edit the variables in this section to perform a silent install. 
+#---------------------------------------------------------------------
+
+# Silent install properties for Managed Node
+# - Modify these properties to specify the target node and server
+
+TargetNodeName =   "server1"
+TargetServerName = "server1"
+
+# Security options
+# Note: If global security is enabled or will be enabled at some point and
+#   time, the AdminAuthAlias should be updated with a valid administrative
+#   userid and password. In single-server configurations, this can be provided
+#   by role-based auth (default), local OS auth, LDAP, etc. For cluster 
+#   configurations, LDAP, Windows Active Directory or some other form of 
+#   centralized authentication mechanism must be used to validate the userid.
+SecurityEnabled = "true"
+DefaultAdminUser =   "persona1"
+DefaultAdminPasswd = "ppersona1"
+
+# JDBC provider options
+# JDBC provider types include:
+DefaultProviderType =   "DB2 Using IBM JCC Driver"
+DefaultNativePathName = ""
+implementationClassName="com.ibm.db2.jcc.DB2ConnectionPoolDataSource"
+
+# Datasource options
+# Note: For Oracle, default port is 1521. For DB2, 50000.
+DefaultDatabaseName = "TRADEDB"
+DefaultHostname =     "yourdb.rtp.raleigh.ibm.com"
+DefaultPort =         "50000"
+DefaultUser =         "db2inst1"
+DefaultPasswd =       "yourpass"
+
+# Additional defaults for vendor specific Datasources
+DefaultDB2DriverType = "4"
+
+# Deploy options
+# Deploy types include:
+#   "DB2UDB_V82","DB2UDBOS390_V8","DB2UDBISERIES_V54","DERBY_V10","MSSQLSERVER_2005","ORACLE_V10G","INFORMIX_V100"
+DefaultEJBDeployType = "DB2UDB_V95"
+
+# JMS Messaging Engine Datastore options
+# Note: true - file store will be used
+#       false - database data store will be used
+DefaultMEFileStore = "true"
+DefaultMEFileStoreLocation = "default" 
+
+
+#---------------------------------------------------------------------
+#  Misc options
+#---------------------------------------------------------------------
+
+CmdOptions =      ["all", "configure", "cleanup", "install", "uninstall"]
+DefaultOptions =  ["yes", "no"]
+BooleanOptions =  ["true", "false"]
+
+#---------------------------------------------------------------------
+# Application specific config information
+#
+# NOTE: This should NOT be modified!!!
+#---------------------------------------------------------------------
+DefaultTradeAppName = "{{ DefaultAppName }}"
+DefaultEarFile = "{{ DefaultEarFile }}"
+
+# Deployment options
+# Deployment options
+DefaultRunEJBDeploy = "false"
+DefaultRunWSDeploy =  "false"
+DefaultBindings =     "true"
+DefaultUseMetadata =  "true"
+
+# JDBC Driver and DataSource Config Parameters
+# Datasource properties
+DefaultDatasourceName = "TradeDataSource"
+DefaultDatasourceAuthAliasName =  "TradeDataSourceAuthData"
+DefaultNoTxDatasourceName = "NoTxTradeDataSource"
+
+DefaultStmtCacheSize =  100
+DefaultXA = "false"
+DefaultClusterMEDatasourceName = "MEDataSource"
+
+# JMS (Messaging) Config Parameters
+# Global Security properties for JMS
+DefaultAdminAuthAliasName = "TradeAdminAuthData"
+datasourceHelperClassname="com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper"
+
+#reliability = "ASSURED_PERSISTENT"
+reliability = "EXPRESS_NONPERSISTENT"
+
+#deliveryMode = "Persistent"
+deliveryMode = "NonPersistent"
+
+#durability = "Durable"
+durability = "NonDurable"
+
+# Queue/Topic Names
+brokerSIBDest =  "TradeBrokerJSD"
+topicSpace =     "Trade.Topic.Space"
+brokerJMSQCF =   "TradeBrokerQCF"
+streamerJMSTCF = "TradeStreamerTCF"
+brokerQueue =    "TradeBrokerQueue"
+streamerTopic =  "TradeStreamerTopic"
+brokerMDB =      "TradeBrokerMDB"
+streamerMDB =    "TradeStreamerMDB"
+
+WebbrokerJMSQCF =   "QueueConnectionFactory"
+WebstreamerJMSTCF = "TopicConnectionFactory"
+WebbrokerQueue =    "BrokerQueue"
+WebstreamerTopic =  "StreamerTopic"
+WebbrokerMDB =      "BrokerMDB"
+WebstreamerMDB =    "StreamerMDB"
+
+#---------------------------------------------------------------------
+# Common JDBC Driver Paths 
+#---------------------------------------------------------------------
+# Note: wsadmin parses the command line based on ";" regardless of platform type
+DB2WinJccPath =         "c:/sqllib/java/db2jcc.jar"
+DB2zSeriesNativePath =  "/usr/lpp/db2/db2810/jcc/lib"
+DB2CliPath =            "c:/sqllib/java/db2java.zip"
+DB2iSeriesNativePath =  "/QIBM/ProdData/Java400/ext/db2_classes.jar"
+DB2iSeriesToolboxPath = "/QIBM/ProdData/HTTP/Public/jt400/lib/jt400.jar"
+
+
+# NOTE: edit daytrader_vars.py for custom settings
+#       if any of the defaults in this script need changing, move to the daytrader_vars.py
+dtvars = "daytrader_vars.py"
+execfile(dtvars)
+
+# Deploy types include:
+DefaultPathName = "${WAS_INSTALL_ROOT}/db2jars/db2jcc4.jar"
+DefaultEJBDeployType = "DB2UDB_V82"
+#---------------------------------------------------------------------
+#  Basic App Administration Procedures
+#---------------------------------------------------------------------
+
+def printUsageAndExit ():
+	print ("")
+	print ("Usage: wsadmin -f daytrader_config.py [all|configure|cleanup] ")
+	print ("")
+	print ("   where:  all        -  configures JDBC and JMS resources and installs the app")
+	print ("           configure  -  only configures the JDBC and JMS resource")
+	print ("           cleanup    -  removes the JDBC and JMS resources")
+	print ("")
+	print ("   If no parameters are specified, \"all\" is assumed!")
+	print ("")
+	sys.exit()
+	sys.exit()
+#endDef 
+
+def createJDBC_DataSource( scope ):
+	provider = createJdbcProvider( scope, DefaultProviderType, DefaultPathName, DefaultNativePathName, implementationClassName, '', DefaultProviderType )
+
+	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultDatasourceName, '', "jdbc/"+DefaultDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	noTxDatasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultNoTxDatasourceName, '', "jdbc/"+DefaultNoTxDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+	AdminTask.setResourceProperty(noTxDatasource, ["-propertyName", "nonTransactionalDataSource", "-propertyValue", "true"])
+	
+	# Create the JMS config objects
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JMS Resources")
+	print (" Scope: "+scope)
+	print ("------------------------------------------------")
+	#creates ME datasource
+	datasource = createDataSource_ext ( 'cell', '', '', '', provider, DefaultClusterMEDatasourceName, '', "jdbc/"+DefaultClusterMEDatasourceName, DefaultStmtCacheSize, DefaultDatasourceAuthAliasName, datasourceHelperClassname, 'DB2', nonTransDS='', cmpDatasource='true', xaRecoveryAuthAlias=None, databaseName=DefaultDatabaseName, serverName=DefaultHostname, portNumber=DefaultPort, driverType=DefaultDB2DriverType, URL=None, informixLockModeWait=None, ifxIFXHOST=None )
+#endDef
+
+#---------------------------------------------------------------------
+#  Parse Command Line
+#---------------------------------------------------------------------
+
+if (len(sys.argv) == 0):
+	operation = "all"
+elif (sys.argv[0] in CmdOptions):
+	operation = sys.argv[0]
+else:
+	printUsageAndExit( )
+#endElse 
+
+#---------------------------------------------------------------------
+# Daytrader configuration procedures
+#---------------------------------------------------------------------
+
+scope = ""
+
+if (operation == "all" or operation == "configure"):
+	# Create the JDBC/Datasource config objects
+	
+	cell = getCellId()
+	#productVersion=AdminTask.getNodeBaseProductVersion(['-nodeName', 'dmgr'])
+	TargetCellName = getNameFromId(cell)
+	scope = cell
+
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JDBC/Datasource Resources")
+	print (" Scope: " + scope)
+	print ("------------------------------------------------")
+
+	createJAAS(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
+
+	# add webserver port 
+	ensureHostAlias('default_host', '*', defaultWebServerHostPort )
+	ensureHostAlias('default_host', '*', defaultWebServerHostPortS )
+	#endIf
+	print ("")
+	print ("------------------------------------------------")
+	print (" Configuring JDBC/Datasource Resources")
+	print (" Scope: " + scope)
+	print ("------------------------------------------------")
+
+	createJAAS(DefaultDatasourceAuthAliasName, DefaultUser, DefaultPasswd )
+	# create a cell level datasource for timers
+	createJDBC_DataSource( scope )
+
+	print ("")
+	print ("------------------------------------------------")
+	print (" JDBC Resource Configuration Completed!!!")
+	print ("------------------------------------------------")
+
+	# Create the JMS config objects
+	if ( enableWMQ == 'true' or enableWMQ == 'True' ):
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
+
+		# many of the hard coded values below are hard coded into the application, and the variables above cannot be changed.
+		# I have not used those variables here as it make no sense, and makes the command harder to understand
+		#
+		createJAAS(DefaultAdminAuthAliasName, '{{ mq_user }}',  '{{ mq_pass }}' )
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type QCF -name TradeBrokerQCF -jndiName jms/TradeBrokerQCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }}  -componentAuthAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQQueue('ndcell(cells/ndcell|cell.xml)', '[-name TradeBrokerQueue -jndiName jms/TradeBrokerQueue -queueName TradeBrokerQueue -qmgr -description ]')
+
+		AdminTask.createWMQConnectionFactory('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-type TCF -name TradeStreamerTCF -jndiName jms/TradeStreamerTCF -description -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -componentAuthAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQTopic('ndcell(cells/ndcell|cell.xml)', '[-name TradeStreamerTopic -jndiName jms/TradeStreamerTopic -topicName TradeStreamerTopic -description -brokerDurSubQueue -brokerCCDurSubQueue -brokerPubQmgr -brokerPubQueue ]')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeBrokerMDB -jndiName eis/TradeBrokerMDB -description -destinationJndiName TradeBrokerQueue -destinationType javax.jms.Queue -messageSelector -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
+
+		AdminTask.createWMQActivationSpec('"WebSphere MQ JMS Provider(cells/ndcell|resources.xml#builtin_mqprovider)"', '[-name TradeStreamerMDB -jndiName eis/TradeStreamerMDB -description -destinationJndiName TradeStreamerTopic -destinationType javax.jms.Topic -messageSelector -subscriptionDurability Nondurable -qmgrName QM1 -wmqTransportType CLIENT -qmgrSvrconnChannel DEV.APP.SVRCONN -qmgrHostname {{ mq_host }} -qmgrPortNumber {{ mq_port }} -authAlias TradeAdminAuthData]')
+
+		print ("")
+		print ("------------------------------------------------")
+		print (" IBM WMQ Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+	else:
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration started!!!")
+		print (" Scope: " + scope)
+		print ("------------------------------------------------")
+
+		createJAAS(DefaultAdminAuthAliasName, DefaultAdminUser, DefaultAdminPasswd )
+
+		sibus = createSIBusDT(DefaultClusterName,DefaultAdminAuthAliasName)
+		fileStore = [DefaultMEFileStore, DefaultMEFileStoreLocation]
+		target = [TargetNodeName, TargetServerName]
+		dsParms = ["true", "dummy"]
+		addSIBusMemberDT(sibus, fileStore, target, dsParms)
+
+		if (SecurityEnabled == "true"):
+			createSIBusSecurityRole(sibus, DefaultAdminUser )
+		#endIf 
+
+		# Create the Trade Broker Queue and Trade TopicSpace Destinations
+
+		createSIBDestination(sibus, brokerSIBDest, "Queue", reliability, target )
+		createSIBDestination(sibus, topicSpace, "TopicSpace", reliability, [] )
+
+		createJMSConnectionFactory(sibus, brokerJMSQCF, "Queue", "jms/"+brokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, streamerJMSTCF, "Topic", "jms/"+streamerJMSTCF, DefaultAdminAuthAliasName, scope )
+
+		createJMSConnectionFactory(sibus, WebbrokerJMSQCF, "Queue", "web/jms/"+WebbrokerJMSQCF, DefaultAdminAuthAliasName, scope )
+		createJMSConnectionFactory(sibus, WebstreamerJMSTCF, "Topic", "web/jms/"+WebstreamerJMSTCF, DefaultAdminAuthAliasName, scope )
+
+		createJMSQueue(brokerQueue, "jms/"+brokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(streamerTopic, "jms/"+streamerTopic, topicSpace, deliveryMode, scope )
+
+		createJMSQueue(WebbrokerQueue, "web/jms/"+WebbrokerQueue, brokerSIBDest, deliveryMode, scope )
+		createJMSTopic(WebstreamerTopic, "web/jms/"+WebstreamerTopic, topicSpace, deliveryMode, scope )
+
+		createMDBActivationSpec(brokerMDB, "eis/"+brokerMDB, sibus, "jms/"+brokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(streamerMDB, "eis/"+streamerMDB, sibus, "jms/"+streamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+
+		createMDBActivationSpec(WebbrokerMDB, "eis/"+WebbrokerMDB, sibus, "web/jms/"+WebbrokerQueue, "javax.jms.Queue", DefaultAdminAuthAliasName, scope, durability )
+		createMDBActivationSpec(WebstreamerMDB, "eis/"+WebstreamerMDB, sibus, "web/jms/"+WebstreamerTopic, "javax.jms.Topic", DefaultAdminAuthAliasName, scope, durability )
+
+		print ("")
+		print ("------------------------------------------------")
+		print (" JMS Resource Configuration Completed!!!")
+		print ("------------------------------------------------")
+		#endIf
+
+	print ("")
+	print ("Saving...")
+	AdminConfig.save( )
+#endIf 
+
+
+
+if (operation == "cleanup"):
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Uninstalling JMS Resources")
+	print ("------------------------------------------------")
+
+	deleteMDBActicationSpec(brokerMDB)
+	deleteMDBActicationSpec(streamerMDB)
+
+	deleteJMSQueue(brokerQueue)
+	deleteJMSTopic(streamerTopic)
+
+	deleteJMSQueue(WebbrokerQueue)
+	deleteJMSTopic(WebstreamerTopic)
+
+	deleteJMSConnectionFactory(brokerJMSQCF)
+	deleteJMSConnectionFactory(streamerJMSTCF)
+	deleteJMSConnectionFactory(WebbrokerJMSQCF)
+	deleteJMSConnectionFactory(WebstreamerJMSTCF)
+
+	deleteSIBDestination(brokerSIBDest)
+	deleteSIBDestination(topicSpace)
+
+	deleteSIBus(getName(getNodeIdDT("")))
+
+	removeJAASAuthData(DefaultAdminAuthAliasName)
+
+	print (" ")
+	print ("------------------------------------------------")
+	print (" Uninstalling JDBC Resources")
+	print ("------------------------------------------------")
+
+	removeDatasource(DefaultDatasourceName)
+	removeDatasource(DefaultNoTxDatasourceName)
+	removeJAASAuthData(DefaultDatasourceAuthAliasName)
+
+	print ("")
+	print ("------------------------------------------------")
+	print (" DayTrader Resource Cleanup Completed!!!")
+	print ("------------------------------------------------")
+
+	print ("")
+	print ("Saving...")
+	AdminConfig.save( )
+#endIf
+print ("")
+print ("Saving config...")
+AdminConfig.save( )
+
+

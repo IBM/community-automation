@@ -6,8 +6,9 @@
   - ansible_ssh_common_args: -o StrictHostKeyChecking=no
   - ansible_user: root
   roles:
-  - role: osprereqs
   - role: nestuser
   - role: fix_fyre_hosts_file
+  - role: osprereqs
   - role: timezone
   - role: authorized_keys
+  - role: issue_net

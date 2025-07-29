@@ -1,0 +1,17 @@
+---
+- name: Run lsdev |grep proc
+  ansible.builtin.shell:
+    cmd: 'lsdev |grep proc'
+  register: cpus
+- name: Run lsattr -El proc0
+  ansible.builtin.command:
+    cmd: lsattr -El proc0
+  register: cpuinfo
+- name: Run lsattr -El mem0
+  ansible.builtin.command:
+    cmd: lsattr -El mem0
+  register: meminfo
+- name: Run oslevel -s
+  ansible.builtin.command:
+    cmd: oslevel -s
+  register: kernelinfo

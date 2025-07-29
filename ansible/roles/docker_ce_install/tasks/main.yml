@@ -1,4 +1,5 @@
 ---
-- include_tasks: "{{ ansible_distribution }}.yml"
-  when: 
-  - ansible_system == 'Linux' 
+- name: Docker CE install
+  ansible.builtin.include_tasks: "{{ ansible_distribution }}.yml"
+  when:
+    - ansible_system == 'Linux'

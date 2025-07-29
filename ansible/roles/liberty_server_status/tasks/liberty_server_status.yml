@@ -1,0 +1,38 @@
+---
+- name: Check if liberty is installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+  register: islib
+  failed_when: islib.stat.exists == False
+
+- name: Check server status
+  ansible.builtin.command:
+    cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+  register: cmdOutput1
+  failed_when: ( cmdOutput1.rc not in [ 0, 1, 2 ] )
+
+- name: Set status facts
+  ansible.builtin.set_fact:
+    server_status: '{{ cmdOutput1.stdout | trim }}'
+
+- name: Create status dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+    state: directory
+    mode: '0755'
+
+- name: Create list with server name / status
+  ansible.builtin.set_fact:
+    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": wl_server, "status": server_status } ] }}'
+
+- name: New dict server status
+  ansible.builtin.set_fact:
+    versions: "{{{ ansible_fqdn : liberty_server_name_status }}}"
+
+- name: Write server status json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
+    mode: '0444'

@@ -1,2 +1,4 @@
 ---
-- include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.{{ ansible_architecture }}.yml"
+- name: Which arch OS?
+  when: ansible_system is not search('CYG')
+  ansible.builtin.include_tasks: "{{ ansible_distribution }}.{{ ansible_distribution_major_version }}.{{ ansible_architecture }}.yml"
