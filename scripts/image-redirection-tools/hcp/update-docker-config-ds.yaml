@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+   name: update-docker-config
+   namespace: kube-system
+   labels:
+     app: update-docker-config
+spec:
+   selector:
+     matchLabels:
+       name: update-docker-config
+   template:
+     metadata:
+       labels:
+         name: update-docker-config
+     spec:
+       initContainers:
+         - command: ["/bin/sh", "-c"]
+           args:
+             - >
+               echo "Backing up or restoring config.json";
+               [[ -s /docker-config/config.json ]] && cp /docker-config/config.json /docker-config/config.json.bak || cp /docker-config/config.json.bak /docker-config/config.json;
+               echo "Merging secret with config.json";
+               /host/usr/bin/jq -s '.[0] * .[1]' /docker-config/config.json /auth/.dockerconfigjson > /docker-config/config.tmp;
+               mv /docker-config/config.tmp /docker-config/config.json;
+               systemctl reload crio
+           image: registry.access.redhat.com/ubi9:latest
+           imagePullPolicy: IfNotPresent
+           name: updater
+           resources: {}
+           securityContext:
+             privileged: true
+           volumeMounts:
+             - name: docker-auth-secret
+               mountPath: /auth
+             - name: docker
+               mountPath: /docker-config
+             - name: bin
+               mountPath: /host/usr/bin
+             - name: lib64
+               mountPath: /lib64
+       containers:
+         - resources:
+             requests:
+                 cpu: "0.01"
+           image: registry.access.redhat.com/ubi9:latest
+           name: sleepforever
+           command: ["/bin/sh", "-c"]
+           args:
+             - >
+               while true; do
+                 sleep 100000;
+               done
+       hostPID: true
+       volumes:
+        - name: docker-auth-secret
+          secret:
+            secretName: docker-auth-secret
+        - name: docker
+          hostPath:
+            path: /var/lib/kubelet/
+        - name: bin
+          hostPath:
+            path: /usr/bin
+        - name: lib64
+          hostPath:
+            path: /lib64
+            hostPathType: Directory
