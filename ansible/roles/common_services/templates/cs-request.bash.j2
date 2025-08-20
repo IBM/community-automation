@@ -11,14 +11,14 @@ apiVersion: operator.ibm.com/v1alpha1
 kind: OperandRequest
 metadata:
   name: common-service
-  namespace: ibm-common-services
+  namespace: {{ cs_operator_project_name }}
 spec:
   requests:
   - registry: common-service
-    registryNamespace: ibm-common-services
+    registryNamespace: {{ cs_operator_project_name }}
     operands:
 ENDF
-   for operand in `oc -n ibm-common-services get operandregistry common-service -o jsonpath='{.spec.operators[?(@.sourceName=="opencloud-operators")].name}'`; do
+   for operand in `oc -n {{ cs_operator_project_name }} get operandregistry common-service -o jsonpath='{.spec.operators[*].name}'`; do
       if [ "X$OPERANDS_TO_DISABLE" != "X" ]; then
          if echo $operand | egrep -q "$OPERANDS_TO_DISABLE"; then
             echo "    # - name: $operand"

@@ -33,7 +33,7 @@
 
 - name: Get openshift projects
   debug:
-    msg: "{{ ocp_projects.stdout.find('ibm-common-services') }}"
+    msg: "{{ ocp_projects.stdout.find('{{ cs_operator_project_name }}') }}"
 
 - include_tasks: "uninstall.yml"
   when: cs_action == "uninstall"
