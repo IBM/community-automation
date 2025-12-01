@@ -1,0 +1,58 @@
+---
+
+- name: Provide informative message if python not present on remote host
+  ansible.builtin.debug:
+    msg: "ansible setup requires that {{ ansible_python_interpreter }} be installed for {{ _ssh_destination }}, will attempt to install it remotely."
+
+- name: Fetch contents of /etc/os-release
+  ansible.builtin.command: |
+    {{ _ssh_command }} cat /etc/os-release
+  register: _result_os_release
+  changed_when: _result_os_release.rc == 0
+  delegate_to: 'localhost-facts'
+
+- name: Set _install_package_command fact
+  ansible.builtin.set_fact:
+    _install_package_command: "{{ 'rpm-ostree install --idempotent --apply-live' if (one_line is match(fcos)) else 'dnf install' if (one_line is match(fedora)) else 'apt-get install' }}"
+  vars:
+    one_line: "{{ _result_os_release.stdout_lines | join(' ') }}"
+    fcos: '.*Fedora CoreOS.*'
+    fedora: '.*[Ff][Ee][Dd][Oo][Rr][Aa].*'
+
+- when: _install_package_command == 'rpm-ostree install --idempotent --apply-live'
+  name: May need to wait for current rpm-ostree install to complete
+  block:
+
+    - name: Get status of rpm-ostree
+      ansible.builtin.command: |
+        {{ _ssh_command }} sudo rpm-ostree status
+      register: _result
+      changed_when: _result.rc == 0
+      delegate_to: 'localhost-facts'
+      delay: 20
+      retries: 15
+      until: (_result.stdout_lines | join(space)) is match(zincati_running)
+      vars:
+        space: ' '
+        zincati_running: '.*AutomaticUpdatesDriver: Zincati.*'
+
+- name: Run python install
+  ansible.builtin.command: |
+    {{ _ssh_command }} sudo {{ _install_package_command }} -y {{ ansible_python_interpreter | regex_replace('.*/', '') }}
+  register: _result
+  failed_when: _result.rc not in [0,1]
+  changed_when: _result.rc == 0
+  delegate_to: 'localhost-facts'
+
+- name: Reconfirm that we can run ssh to inventory_hostname, sudo without a password, and the python interpreter is present
+  ansible.builtin.command: |
+    {{ _ssh_command }} sudo ls {{ ansible_python_interpreter }}
+  register: _result
+  failed_when: _result is not defined
+  changed_when: _result.rc == 0
+  delegate_to: 'localhost-facts'
+
+- name: Provide informative message if python not present on remote host
+  ansible.builtin.assert:
+    that: _result.stdout == ansible_python_interpreter
+    msg: "ansible setup requires that {{ ansible_python_interpreter }} be installed for {{ _ssh_destination }}"

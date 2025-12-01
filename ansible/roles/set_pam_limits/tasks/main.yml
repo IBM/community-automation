@@ -1,0 +1,10 @@
+---
+
+- name: Check for task completed marker
+  ansible.builtin.stat:
+    path: ~/.ansible/pam_limits_set
+  register: _result_stat
+
+- when: not _result_stat.stat.exists
+  name: Only perform tasks when requested or required
+  ansible.builtin.include_tasks: set_pam_limits.yml

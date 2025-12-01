@@ -1,0 +1,89 @@
+---
+
+- name: Fetch the cluster details
+  ansible.builtin.uri:
+    url: "{{ fyre_clusterdetailurl }}"
+    method: GET
+    user: "{{ _secrets.fyre_user }}"
+    password: "{{ _secrets.fyre_apikey }}"
+    validate_certs: false
+    force_basic_auth: "{{ options.fyre_force_basic_auth }}"
+  register: _result_cluster_details
+  changed_when: false
+  delay: 20
+  retries: 30
+  until: _result_cluster_details.status != -1
+
+- name: Set fact for _cluster_details_json
+  ansible.builtin.set_fact:
+    _cluster_details_json: "{{ _result_cluster_details.json[cluster_name] }}"
+
+- name: Set ssh related facts
+  ansible.builtin.set_fact:
+    _ssh_paths:
+      config: "{{ cluster_dir + '/.ssh/' + ssh_keypair_path_prefix + 'config' }}"
+      prvkey: "{{ cluster_ssh_dir + '/' + ssh_keypair_path_prefix + 'id_' + ssh_keytype }}"
+      pubkey: "{{ cluster_dir + '/.ssh/' + ssh_keypair_path_prefix + 'id_' + ssh_keytype + '.pub' }}"
+  vars:
+    clusters_basedir: "{{ hostvars['cluster-facts'].clusters_basedir }}"
+    clusters_ssh_basedir: "{{ hostvars['cluster-facts'].options.clusters_ssh_basedir if hostvars['cluster-facts'].options.clusters_ssh_basedir is defined else clusters_basedir }}"
+    cluster_ssh_dir: "{{ clusters_ssh_basedir + '/' + cluster_name + '/.ssh' }}"
+
+- name: Set distro_include_tasks fact
+  ansible.builtin.set_fact:
+    _distro_include_tasks: "{{ distro_tasks[kubernetes_distro].gather_facts | default('') }}"
+
+- name: Assert that we have a tasks file to include
+  ansible.builtin.assert:
+    that: _distro_include_tasks | length > 0
+    msg: "{{ 'Unable to find tasks to include for distro ' + kubernetes_distro }}"
+
+- name: Include the tasks to gather cluster facts
+  ansible.builtin.include_tasks: "{{ _distro_include_tasks }}"
+
+- name: Create folder for ssh config if absent
+  ansible.builtin.file:
+    path: "{{ _ssh_paths.config | dirname }}"
+    state: directory
+    mode: '0700'
+
+- name: Write cluster specific ssh config
+  ansible.builtin.copy:
+    content: |
+      {{ _ssh_config_content }}
+    dest: "{{ _ssh_paths.config }}"
+    mode: '0600'
+  vars:
+    remote_user: "{{ hostvars['playbook-facts'].options.remote_user }}"
+
+- name: Write cluster specific ssh private key
+  ansible.builtin.copy:
+    content: |
+      {{ hostvars['cluster-facts'].options.ssh_private_key | b64decode | trim }}
+    dest: "{{ _ssh_paths.prvkey }}"
+    mode: '0600'
+
+- name: Write cluster specific ssh public key
+  ansible.builtin.copy:
+    content: |
+      {{ hostvars['cluster-facts'].options.ssh_public_key | trim }}
+    dest: "{{ _ssh_paths.pubkey }}"
+    mode: '0644'
+
+- name: Clear register results
+  ansible.builtin.set_fact:
+    _result_show_requests: {}
+    _result_show_request: {}
+    _result_show_clusters: {}
+    _result_cluster_details: {}
+    _bastion_publicip: ''
+    _bastion_hostname: ''
+    _secrets: {}
+    _ssh_config_content: ''
+    _ssh_paths: {}
+    _cluster_details_json: {}
+    _distro_include_tasks: ''
+    _cluster_exists: false
+    _cluster_status: ''
+    _clusters_status_json: {}
+    _clusters_list: []

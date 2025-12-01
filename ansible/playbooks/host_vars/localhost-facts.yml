@@ -1,0 +1,20 @@
+---
+
+ansible_host: localhost
+ansible_connection: local
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+ssh_keypairs:
+  default:
+    path_prefix: ''
+    secret: 'ssh_key'
+
+vars_host:
+  certificate_country: 'US'
+  certificate_state: 'MyState'
+  certificate_locality: 'MyCity'
+  certificate_organization: 'MyCompany'
+  certificate_organizational_unit: 'MyDepartment'
+  network_cidr: ''
+  ssh_keytype: 'rsa'
+  ssh_keypair_name: default

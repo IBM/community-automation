@@ -1,0 +1,35 @@
+---
+
+- name: Confirm that we can run ssh to inventory_hostname
+  ansible.builtin.command: |
+    {{ _ssh_command }} test -f .ansible/python_interpreter \&\& cat .ansible/python_interpreter \|\| echo connected
+  register: _result
+  failed_when: _result is not defined
+  changed_when: false
+  delegate_to: 'localhost-facts'
+  delay: 15
+  retries: 40
+  until: _result.rc != 255
+
+- name: Set fact if ansible setup host has already been completed
+  ansible.builtin.set_fact:
+    setup_host_completed: "{{ _result.stdout is match('^ansible_python_interpreter=/.*') }}"
+
+- when: setup_host_completed
+  name: Set ansible_python_interpreter fact
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: "{{ _result.stdout | trim | regex_replace('^ansible_python_interpreter=', '') }}"
+
+- name: Provide informative message if ssh connect fails
+  ansible.builtin.assert:
+    that: setup_host_completed or _result.stdout is in ['connected']
+    msg: "ansible setup requires ssh remote access to {{ _ssh_destination }}"
+
+- when: not setup_host_completed
+  name: Gather host status
+  ansible.builtin.include_tasks: gather_host_status.yml
+
+- name: Set fact that we have completed this role
+  ansible.builtin.set_fact:
+    roles_completed: "{{ roles_completed | default([]) | union(['setup_ansible_host']) }}"
+    _result: {}

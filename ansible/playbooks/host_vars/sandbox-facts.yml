@@ -1,0 +1,30 @@
+---
+
+ansible_host: localhost
+ansible_connection: local
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+vars_host:
+  envvars_java_home: '/opt/scripts/regression/tools/java'
+  fe_ftp_list:
+    - server: 'rtpgsa.ibm.com'
+      path: '/gsa/rtpgsa/projects/w/was.build/botp'
+      userid: 'fe_ftp_userid'
+      password: 'fe_ftp_password'
+    - server: 'rtpgsa.ibm.com'
+      path: '/gsa/rtpgsa/projects/w/was.build/WS'
+      userid: 'fe_ftp_userid'
+      password: 'fe_ftp_password'
+    - server: 'rtpgsa.ibm.com'
+      path: '/gsa/rtpgsa/projects/w/was.build/github.ibm.com/IntelligentManagement'
+      userid: 'fe_ftp_userid'
+      password: 'fe_ftp_password'
+  gsa_server: 'rtpgsa.ibm.com'
+  gsa_build_path: '/projects/w/was.build/botp'
+  prereq_root: '/gsa/rtpgsa/projects/w/was.dev_tools/prereqs/'
+  sandbox_ssh_key: 'sandbox_ssh_key'
+  sandbox_ssh_prefix: 'sandbox_'
+  sandbox_ssh_hosts:
+    - rtpgsa.ibm.com
+    - github.ibm.com
+  test_or_daily: test

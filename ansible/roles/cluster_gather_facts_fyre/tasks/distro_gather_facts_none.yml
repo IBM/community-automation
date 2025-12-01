@@ -1,0 +1,42 @@
+---
+
+- name: Create node groups
+  ansible.builtin.add_host:
+    name: "{{ item.node }}"
+    groups:
+      - all_nodes
+    ansible_connection: ssh
+    ansible_host: "{{ item.node }}"
+    ansible_ssh_extra_args: "{{ '-F ' + _ssh_paths.config }}"
+    ansible_ssh_user: "{{ remote_user }}"
+    fqdn: "{{ item.node + '.' + fyre_cluster_domain }}"
+    privateip: "{{ item.privateip }}"
+    publicip: "{{ item.publicip }}"
+    short_hostname: "{{ item.node }}"
+  loop: "{{ _cluster_details_json }}"
+  vars:
+    remote_user: "{{ hostvars['playbook-facts'].options.remote_user }}"
+  changed_when: false
+
+- name: Wait until we can resolve all node hostnames using DNS
+  ansible.builtin.set_fact:
+    _ember_publicip: "{{ lookup('community.general.dig', item.fqdn, '@9.0.0.2') }}"
+  loop: "{{ groups['all_nodes'] | map('extract', hostvars) | selectattr('publicip', '!=', '') }}"
+  loop_control:
+    label: "{{ item.short_hostname }}"
+  delay: 20
+  retries: 30
+  until: lookup('community.general.dig', item.fqdn, '@9.0.0.2') == item.publicip
+
+- name: Create cluster specific ssh config
+  ansible.builtin.set_fact:
+    _ssh_config_content: |
+      {% for hostname in groups['all_nodes'] | default([]) %}
+
+      Host {{ hostname + ' ' + hostvars[hostname].fqdn }}
+          Hostname {{ hostvars[hostname].fqdn }}
+          IdentityFile {{ _ssh_paths.prvkey }}
+          IdentitiesOnly yes
+          UserKnownHostsFile /dev/null
+          StrictHostKeyChecking accept-new
+      {% endfor %}

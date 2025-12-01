@@ -1,0 +1,23 @@
+---
+
+ansible_host: localhost
+ansible_connection: local
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+vars_host:
+  autowas_archive_url: 'http://rtpgsa.ibm.com/gsa/rtpgsa/projects/m/moonstone/drivers/releases/latest.tar.gz'
+  autowas_basedir: '/opt/autowas'
+  autowas_cache_dir_suffix: '/.cache/autowas'
+  autowas_config_dir: '/opt/scripts'
+  autowas_config_file_suffix: '_ND.Liberty_SemeruPrereqsSdk.cfg'
+  autowas_cfg_ssh_user: 'root'
+  autowas_cfg_install_path_basedir: '/opt'
+  autowas_regression_config_dir: '/opt/autowas/data/regression_configs'
+  autowas_gsa_server: 'rtpgsa.ibm.com'
+  autowas_was_level: 'latest'
+  autowas_was_release: 'WAS90X'
+  autowas_liberty_level: ''
+  autowas_liberty_version: ''
+  autowas_aphid_name: ''
+  autowas_aphid_server: ''
+  autowas_aphid_path: ''

@@ -1,0 +1,68 @@
+---
+
+- name: Set vars needed in this role
+  block:
+
+    - when: params.ssh_key is defined
+      name: Process ssh keypair
+      block:
+
+        - name: Copy ssh key secret into ssh_path
+          ansible.builtin.copy:
+            content: |
+              {{ ssh_keypair_key }}
+            dest: "{{ ssh_path }}"
+            mode: '0600'
+          vars:
+            secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+            ssh_keypair_key_secret: "{{ secrets[params.ssh_key] }}"
+            ssh_keypair_key: "{{ lookup(ssh_keypair_key_secret.module, ssh_keypair_key_secret.param) | trim }}"
+          no_log: false
+          changed_when: false
+
+        - name: Generate a public key for the private key
+          community.crypto.openssh_keypair:
+            path: "{{ ssh_path }}"
+            type: "{{ ssh_keytype }}"
+            comment: "{{ ssh_comment }}"
+            regenerate: 'never'
+          vars:
+          register: _result
+
+        - name: Set facts from keypair
+          ansible.builtin.set_fact:
+            keypair_pubkey: "{{ _result.public_key }}"
+
+    - when: params.ssh_key is not defined
+      name: No ssh keypair provided
+      block:
+
+        - name: Generate an OpenSSH keypair
+          community.crypto.openssh_keypair:
+            path: "{{ ssh_path }}"
+            type: "{{ ssh_keytype }}"
+            comment: "{{ ssh_comment }}"
+            regenerate: 'never'
+          register: _result_keypair
+          changed_when: false
+
+        - name: Set facts from keypair
+          ansible.builtin.set_fact:
+            keypair_pubkey: "{{ _result_keypair.public_key }}"
+
+    - name: Add all authorized keys to all hosts
+      ansible.posix.authorized_key:
+        user: "{{ ssh_user }}"
+        key: "{{ keypair_pubkey }}"
+        comment: "{{ ssh_comment }}"
+        state: present
+      loop: "{{ hostvars[hostvars['cluster-facts'].options.cluster_provisioner].post_provisioning_hosts }}"
+      vars:
+        ssh_user: "{{ params.remote_user | default(hostvars['playbook-facts'].options.remote_user) }}"
+      delegate_to: "{{ item }}"
+      throttle: 1
+
+  vars:
+    ssh_keytype: "{{ params.ssh_keytype | default(hostvars['localhost-facts'].options.ssh_keytype) }}"
+    ssh_path: "{{ user_home + '/.ssh/id_' + ssh_keytype }}"
+    ssh_comment: "{{ params.ssh_comment | default('access to all vms in this cluster') }}"

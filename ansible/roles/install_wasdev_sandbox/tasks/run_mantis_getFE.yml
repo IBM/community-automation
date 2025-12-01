@@ -1,0 +1,69 @@
+---
+
+- name: Download the build_contents.xml to a temporary file
+  ansible.builtin.get_url:
+    url: "{{ zipper + '/build_contents.xml' }}"
+    dest: "{{ wasbld_folder + '/' + feonly + '/ws/build_contents.xml.tmp' }}"
+    force_basic_auth: true
+    url_username: "{{ gsa_username }}"
+    url_password: "{{ gsa_password }}"
+    validate_certs: false
+    mode: '0644'
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    gsa_username_secret: "{{ secrets.gsa_username }}"
+    gsa_password_secret: "{{ secrets.gsa_password }}"
+    gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+    gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+  register: _result
+
+- name: Move the temporary file to the correct name
+  ansible.builtin.command:
+    cmd: mv {{ feonly }}/ws/build_contents.xml.tmp {{ feonly }}/ws/build_contents.xml
+    chdir: "{{ wasbld_folder }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Locate the java on our path
+  ansible.builtin.command:
+    cmd: which java
+    chdir: "{{ wasbld_folder }}"
+  environment:
+    ANT_HOME: "{{ wasbld_folder + '/mantis' }}"
+    JAVA_HOME: "{{ wasbld_folder + '/java' }}"
+    PATH: "{{ wasbld_folder + '/mantis/bin:' + wasbld_folder + '/java/bin:' + user_path }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Print the context for java
+  ansible.builtin.debug:
+    msg: "{{ 'getFE using JAVA_HOME ' + wasbld_folder + '/java and java ' + _result.stdout }}"
+
+- name: Run mantis -version command
+  ansible.builtin.command:
+    cmd: mantis -version
+    chdir: "{{ wasbld_folder + '/' + feonly + '/ws' }}"
+  environment:
+    ANT_HOME: "{{ wasbld_folder + '/mantis' }}"
+    JAVA_HOME: "{{ wasbld_folder + '/java' }}"
+    PATH: "{{ wasbld_folder + '/mantis/bin:' + wasbld_folder + '/java/bin:' + user_path }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Run mantis getFE command
+  ansible.builtin.command:
+    cmd: mantis getFE
+    chdir: "{{ wasbld_folder + '/' + feonly + '/ws' }}"
+  environment:
+    ANT_HOME: "{{ wasbld_folder + '/mantis' }}"
+    JAVA_HOME: "{{ wasbld_folder + '/java' }}"
+    PATH: "{{ wasbld_folder + '/mantis/bin:' + wasbld_folder + '/java/bin:' + user_path }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Create the marker after mantis getFE has been run
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/' + feonly + '/ws/.gotfe' }}"
+    state: touch
+    mode: '0644'
+  register: _result

@@ -1,0 +1,281 @@
+---
+
+- name: Add keystore ssh access
+  ansible.builtin.include_tasks: add_keystore_ssh_access.yml
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Define the sandbox_ssh_keytype fact
+      ansible.builtin.set_fact:
+        sandbox_ssh_keytype: "{{ ssh_keytype }}"
+      vars:
+        ssh_keytype: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_keytype | default(hostvars['localhost-facts'].options.ssh_keytype) }}"
+
+    - when: hostvars['sandbox-facts'].options.sandbox_ssh_key is defined
+      name: Copy the sandbox_ssh_key contents into the remote ~/.ssh folder
+      block:
+
+        - name: Check for existing sandbox ssh keypair
+          ansible.builtin.stat:
+            path: "{{ ssh_keypair_path }}"
+          vars:
+            sandbox_ssh_prefix: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_prefix }}"
+            ssh_keypair_path: "{{ user_home + '/.ssh/' + sandbox_ssh_prefix + 'id_' + sandbox_ssh_keytype }}"
+          register: _result_stat
+
+        - when: not _result_stat.stat.exists
+          name: Copy the sandbox ssh key
+          ansible.builtin.include_tasks: copy_sandbox_ssh_key.yml
+
+    - name: Assert facts defined needed for this role
+      ansible.builtin.assert:
+        that: hostvars['sandbox-facts'].options.was_release is defined
+
+    - name: Check for a user.build.properties file
+      ansible.builtin.stat:
+        path: "{{ user_home + '/user.build.properties' }}"
+      register: _result_stat
+
+    - when: not _result_stat.stat.exists
+      name: Create the user_build_properties file
+      ansible.builtin.include_tasks: create_user_build_properties.yml
+
+    - when: not hostvars['sandbox-facts'].options.was_level is defined
+      name: Get the list of levels for the was_release
+      block:
+
+        - name: Fetch the list of files in component test folder
+          ansible.builtin.shell: |
+            set -eo pipefail
+            echo 'ls -1' | sftp -q -o LogLevel=ERROR -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new -o IdentityFile={{ ssh_keypair_path }} -b - {{ gsa_username }}@{{ gsa_server }}:{{ gsa_build_path }}/{{ was_release }}/{{ test_or_daily }}/
+          vars:
+            sandbox_ssh_prefix: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_prefix }}"
+            ssh_keypair_path: "{{ user_home + '/.ssh/' + sandbox_ssh_prefix + 'id_' + sandbox_ssh_keytype }}"
+            test_or_daily: "{{ hostvars['sandbox-facts'].options.test_or_daily | default('test') }}"
+            was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+            secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+            gsa_username_secret: "{{ secrets.gsa_username }}"
+            gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+            gsa_server: "{{ hostvars['sandbox-facts'].options.gsa_server }}"
+            gsa_build_path: "{{ hostvars['sandbox-facts'].options.gsa_build_path }}"
+          register: _result
+          changed_when: _result.rc == 0
+
+        - name: Add was_level fact to options
+          ansible.builtin.set_fact:
+            options: "{{ hostvars['sandbox-facts'].options | combine({'was_level':was_level}) }}"
+          vars:
+            was_level: "{{ _result.stdout_lines | last }}"
+          delegate_to: 'sandbox-facts'
+          delegate_facts: true
+
+    - when: hostvars['autowas-facts'].options.autowas_aphid_path | string | length == 0
+      name: Set level facts
+      ansible.builtin.set_fact:
+        wasbld_folder: "{{ wasbld_folder }}"
+        zipper: "{{ 'https://' + gsa_server + gsa_build_path + '/' + was_release + '/' + test_or_daily + '/' + was_level + '/linux/zipper' }}"
+      vars:
+        was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+        was_level: "{{ hostvars['sandbox-facts'].options.was_level }}"
+        wasbld_folder: "{{ user_home + '/wasbld/' + was_release + '-' + (was_level | regex_replace('\\.linux$', '')) }}"
+        test_or_daily: "{{ hostvars['sandbox-facts'].options.test_or_daily | default('test') }}"
+        gsa_server: "{{ hostvars['sandbox-facts'].options.gsa_server }}"
+        gsa_build_path: "{{ hostvars['sandbox-facts'].options.gsa_build_path }}"
+
+    - when: hostvars['autowas-facts'].options.autowas_aphid_path | string | length > 0
+      name: Set level facts
+      ansible.builtin.set_fact:
+        wasbld_folder: "{{ wasbld_folder }}"
+        zipper: "{{ 'https://' + autowas_aphid_server + '/buildserver/pbstorage/publish/ladybug/mantis_links/botp/' + was_release + '/daily/' + (autowas_aphid_path | string) + '.00.linux/linux/zipper' }}"
+      vars:
+        autowas_aphid_path: "{{ hostvars['autowas-facts'].options.autowas_aphid_path | string }}"
+        autowas_aphid_server: "{{ hostvars['autowas-facts'].options.autowas_aphid_server }}"
+        was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+        wasbld_folder: "{{ user_home + '/wasbld/' + was_release + '-' + (autowas_aphid_path | string) }}"
+        test_or_daily: "{{ hostvars['sandbox-facts'].options.test_or_daily | default('test') }}"
+
+    - name: Create the wasbld folder
+      ansible.builtin.file:
+        path: "{{ wasbld_folder }}"
+        state: directory
+        mode: '0755'
+      register: _result
+
+    - name: Check for the .javaunzipped marker file
+      ansible.builtin.stat:
+        path: "{{ wasbld_folder + '/.javaunzipped' }}"
+      register: _result_stat
+
+    - when: _result_stat.stat.exists
+      name: Print info
+      ansible.builtin.debug:
+        msg: "{{ 'Reusing java, zap ' + wasbld_folder + '/.javaunzipped if something changes' }}"
+
+    - when: not _result_stat.stat.exists
+      name: Download and unzip the java we need
+      ansible.builtin.include_tasks: download_and_unzip_java.yml
+
+    - name: Check for the .srcok marker file
+      ansible.builtin.stat:
+        path: "{{ wasbld_folder + '/.srcok' }}"
+      register: _result_stat
+
+    - name: Set _srcok_exists fact
+      ansible.builtin.set_fact:
+        _srcok_exists: "{{ _result_stat.stat.exists }}"
+
+    - when: _srcok_exists
+      name: Print info
+      ansible.builtin.debug:
+        msg:
+          - "{{ 'Reusing source and just setting up env, rm -rf ' + wasbld_folder + ' to start over' }}"
+          - "{{ 'if you want to keep your downloaded zips, rm -rf ' + wasbld_folder + '/.* to just remove the progress markers' }}"
+
+    - when: not _srcok_exists
+      name: Download and install more resources
+      block:
+
+        - name: Check for the mantis folder
+          ansible.builtin.stat:
+            path: "{{ wasbld_folder + '/mantis' }}"
+          register: _result_stat
+
+        - when: _result_stat.stat.exists
+          name: Print info
+          ansible.builtin.debug:
+            msg: "{{ 'Trying to resume in ' + wasbld_folder }}"
+
+        - when: not _result_stat.stat.exists
+          name: Download and unzip the mantis archive
+          ansible.builtin.include_tasks: download_and_unzip_mantis.yml
+
+        - name: Check for the .prebuildunzipped marker file
+          ansible.builtin.stat:
+            path: "{{ wasbld_folder + '/.prebuildunzipped' }}"
+          register: _result_stat
+
+        - when: not _result_stat.stat.exists
+          name: Download and unzip the prebuild archive
+          ansible.builtin.include_tasks: download_and_unzip_prebuild.yml
+
+        - name: Do not download and unzip the REGR FE
+          when: (was_release | split('.') | last) == 'REGR'
+          ansible.builtin.debug:
+            msg: "You're on your own with fe.zip in REGR"
+          vars:
+            was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+
+        - name: Only download and unzip fe.zip if FE is not REGR
+          when: (was_release | split('.') | last) != 'REGR'
+          block:
+
+            - name: Check for the .feunzipped marker file
+              ansible.builtin.stat:
+                path: "{{ wasbld_folder + '/.feunzipped' }}"
+              register: _result_stat
+
+            - when: not _result_stat.stat.exists
+              name: Download and unzip the fe archive
+              ansible.builtin.include_tasks: download_and_unzip_fe.yml
+              vars:
+                feonly: "{{ was_release | split('.') | last }}"
+          vars:
+            was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+
+        - name: Remove group and other write access to files and directories
+          ansible.builtin.command:
+            cmd: chmod -R go-w .
+            chdir: "{{ wasbld_folder }}"
+          register: _result
+          changed_when: _result.rc == 0
+
+        - name: Create the .srcok marker after all archive has been unzipped
+          ansible.builtin.file:
+            path: "{{ wasbld_folder + '/.srcok' }}"
+            state: touch
+            mode: '0644'
+          register: _result
+
+    - name: Create the sandbox envvars file
+      ansible.builtin.copy:
+        content: |
+          export ANT_HOME="{{ ant_home }}"
+          export JAVA_HOME="{{ java_home }}"
+          export PATH="{{ ant_home + '/bin:' + java_home + '/bin:' + user_path }}"
+        dest: "{{ wasbld_folder + '/envvars' }}"
+        mode: '0644'
+      vars:
+        ant_home: "{{ hostvars['sandbox-facts'].options.envvars_ant_home | default(wasbld_folder + '/mantis') }}"
+        java_home: "{{ hostvars['sandbox-facts'].options.envvars_java_home | default(wasbld_folder + '/java') }}"
+
+    - name: Create the sandbox envvars.docker file
+      ansible.builtin.copy:
+        src: "{{ wasbld_folder + '/envvars' }}"
+        dest: "{{ wasbld_folder + '/envvars.docker' }}"
+        remote_src: true
+        mode: '0644'
+
+    - name: Check if we have direnv installed
+      ansible.builtin.command: direnv version
+      changed_when: false
+      failed_when: false
+      register: _result
+
+    - when: _result.rc == 0
+      name: Perform direnv setup
+      block:
+
+        - name: Remove existing .envrc file
+          ansible.builtin.file:
+            path: "{{ wasbld_folder + '/.envrc' }}"
+            state: absent
+          changed_when: false
+
+        - name: Link the envvars to .envrc
+          ansible.builtin.command:
+            cmd: ln -s ./envvars ./.envrc
+            chdir: "{{ wasbld_folder }}"
+          changed_when: false
+
+        - name: Enable direnv to read .envrc in this location
+          ansible.builtin.command: direnv allow {{ wasbld_folder }}
+          changed_when: false
+
+    - name: Check for the .gotfe marker file
+      ansible.builtin.stat:
+        path: "{{ wasbld_folder + '/' + feonly + '/ws/.gotfe' }}"
+      vars:
+        was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+        feonly: "{{ was_release | split('.') | last }}"
+      register: _result_stat
+
+    - when: _result_stat.stat.exists
+      name: Print info
+      ansible.builtin.debug:
+        msg:
+          - "{{ 'It looks like ' + wasbld_folder + ' was already fully setup. If you wanted to start fresh, you will need to rm -rf it' }}"
+          - "{{ 'if you want to keep your downloaded zips, rm -rf ' + wasbld_folder + '/.* to just remove the progress markers' }}"
+
+    - when: not _result_stat.stat.exists
+      name: Run mantis getFE
+      ansible.builtin.include_tasks: run_mantis_getFE.yml
+      vars:
+        was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+        feonly: "{{ was_release | split('.') | last }}"
+
+    - name: Save the release to .release file
+      ansible.builtin.copy:
+        content: |
+          {{ was_release }}
+        dest: "{{ wasbld_folder + '/.release' }}"
+        mode: '0644'
+      vars:
+        was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+      changed_when: false
+
+    - when: _result_stat.stat.exists
+      name: Print info
+      ansible.builtin.debug:
+        msg: "{{ 'We did it!  Your new SB is in ' + wasbld_folder + '.  To get started run: source ' + wasbld_folder + '/envvars (or install direnv)' }}"

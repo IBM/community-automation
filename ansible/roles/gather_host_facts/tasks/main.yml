@@ -1,0 +1,5 @@
+---
+
+- when: "'gather_host_facts' not in (roles_completed | default([]))"
+  name: Gather host facts for ansible only once per execution
+  ansible.builtin.include_tasks: gather_host_facts.yml

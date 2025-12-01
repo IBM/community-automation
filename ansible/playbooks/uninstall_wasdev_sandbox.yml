@@ -1,0 +1,9 @@
+---
+
+- name: Uninstall tWAS development sandbox
+  hosts: all_nodes
+  become: false
+  gather_facts: false
+  tags: uninstall_sandbox
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.uninstall_wasdev_sandbox

@@ -1,0 +1,281 @@
+---
+
+- name: Set facts used in this role
+  ansible.builtin.set_fact:
+    ansible_env: "{{ hostvars['localhost-facts'].ansible_env }}"
+    cluster_dir: "{{ hostvars['cluster-facts'].cluster_dir }}"
+    cluster_hostnames: "{{ hostvars['cluster-facts'].cluster_hostnames | default([]) }}"
+    cluster_domain: "{{ hostvars['cluster-facts'].options.cluster_domain }}"
+    cluster_name: "{{ hostvars['cluster-facts'].options.cluster_name }}"
+    cluster_provisioner: "{{ hostvars['cluster-facts'].options.cluster_provisioner }}"
+    kubernetes_distro: "{{ hostvars['cluster-facts'].options.kubernetes_distro }}"
+    ssh_keypair_path_prefix: "{{ hostvars['localhost-facts'].ssh_keypair_path_prefix }}"
+    ssh_keytype: "{{ hostvars['localhost-facts'].options.ssh_keytype }}"
+
+- name: Set secret facts used in this role
+  ansible.builtin.set_fact:
+    _secrets:
+      fyre_user: "{{ fyre_user }}"
+      fyre_user_email: "{{ fyre_user_email }}"
+      fyre_apikey: "{{ fyre_apikey }}"
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    fyre_user_secret: "{{ secrets.fyre_user }}"
+    fyre_user_email_secret: "{{ secrets.fyre_user_email }}"
+    fyre_apikey_secret: "{{ secrets.fyre_apikey }}"
+    fyre_user: "{{ lookup(fyre_user_secret.module, fyre_user_secret.param) | trim }}"
+    fyre_user_email: "{{ lookup(fyre_user_email_secret.module, fyre_user_email_secret.param) | trim }}"
+    fyre_apikey: "{{ lookup(fyre_apikey_secret.module, fyre_apikey_secret.param) | trim }}"
+  no_log: true
+
+- name: Assert that we have a cluster_name fact
+  ansible.builtin.assert:
+    that: cluster_name is defined and cluster_name | length > 0
+    msg: "Provisioning a Fyre cluster requires a cluster_name fact"
+
+- name: Assert that we have a kubernetes_distro fact
+  ansible.builtin.assert:
+    that: kubernetes_distro is defined and kubernetes_distro | length > 0
+    msg: "Provisioning a Fyre cluster requires a kubernetes_distro fact"
+
+- name: Assert that the inventory_hostname is 'fyredev-provisioner'
+  ansible.builtin.assert:
+    that: inventory_hostname == 'fyredev-provisioner'
+    msg: "{{ 'The inventory_hostname for this role was \"' + inventory_hostname + '\" and not \"fyredev-provisioner\"' }}"
+
+- when: hostvars['cluster-facts'].cluster_hostnames | default([]) | length == 0
+  name: Collect the cluster hostnames
+  block:
+
+    - name: Set distro_include_tasks fact
+      ansible.builtin.set_fact:
+        _distro_include_tasks: "{{ distro_tasks[kubernetes_distro].get_hostnames | default('') }}"
+
+    - name: Assert that we have a get_hostnames tasks file to include
+      ansible.builtin.assert:
+        that: _distro_include_tasks | length > 0
+        msg: "{{ 'Unable to find get_hostnames tasks to include for distro ' + kubernetes_distro }}"
+
+    - name: Include the get_hostnames tasks to create the cluster_hostnames list
+      ansible.builtin.include_tasks: "{{ _distro_include_tasks }}"
+
+- name: Check to see if we have a response file
+  ansible.builtin.stat:
+    path: "{{ cluster_dir + '/fyredev_' + fyredev_operation + '_resp.json' }}"
+  register: _result_resp_stat
+  when: fyredev_operation is defined
+
+- when: _result_resp_stat.stat.exists | default(false)
+  name: Recover information from response file
+  block:
+
+    - when: request_ids | length > 0
+      name: Wait until the operation has completed
+      block:
+
+        - name: Wait until all requests in request_ids are completed
+          ansible.builtin.uri:
+            url: "{{ fyredev_request_status_url }}"
+            method: GET
+            user: "{{ _secrets.fyre_user }}"
+            password: "{{ _secrets.fyre_apikey }}"
+            validate_certs: false
+            force_basic_auth: "{{ options.fyredev_force_basic_auth }}"
+            timeout: 60
+          loop: "{{ request_ids }}"
+          vars:
+            fyredev_request_id: "{{ item }}"
+          register: _result_show_request
+          changed_when: false
+          delay: 20
+          retries: 600
+          until: (_result_show_request.status == 200) and (_result_show_request.json.status == 'success') and (_result_show_request.json.request.completion_percent == 100)
+
+        - name: Remove the cached response once the request has completed
+          ansible.builtin.file:
+            path: "{{ cluster_dir + '/fyredev_' + fyredev_operation + '_resp.json' }}"
+            state: absent
+
+  vars:
+    cluster_resp: "{{ lookup('file', cluster_dir + '/fyredev_' + fyredev_operation + '_resp.json', errors='ignore', split_lines=false) }}"
+    request_ids: "{{ [cluster_resp] | flatten | map(attribute='request_id', default=[]) | flatten }}"
+    details: "{{ [cluster_resp] | flatten | map(attribute='details', default=[]) | flatten }}"
+    status: "{{ [cluster_resp] | flatten | map(attribute='status', default=[]) | flatten }}"
+
+- name: Gather a list of all the clusters that currently exist
+  ansible.builtin.uri:
+    url: "{{ fyredev_clusters_list_url }}"
+    method: GET
+    user: "{{ _secrets.fyre_user }}"
+    password: "{{ _secrets.fyre_apikey }}"
+    validate_certs: false
+    force_basic_auth: "{{ options.fyredev_force_basic_auth }}"
+  register: _result_list_clusters
+  changed_when: false
+  delay: 15
+  retries: 20
+  until: _result_list_clusters.status != -1
+
+- when: _result_list_clusters.json.clusters is not defined
+  name: Handle errors
+  block:
+
+    - name: Check for no clusters found result
+      ansible.builtin.assert:
+        that: status == 'info' and details == expected_details
+      vars:
+        status: "{{ _result_list_clusters.json.status }}"
+        details: "{{ _result_list_clusters.json.details }}"
+        expected_details: "{{ 'No clusters found for user ' + _secrets.fyre_user }}"
+
+    - name: Indicate that the cluster does not exist
+      ansible.builtin.set_fact:
+        _cluster_exists: false
+
+- when: _result_list_clusters.json.clusters is defined
+  name: Check for our cluster name
+  block:
+
+    - name: Look for cluster name in clusters list
+      ansible.builtin.set_fact:
+        _cluster_exists: "{{ cluster_name in cluster_names }}"
+      vars:
+        cluster_names: "{{ _result_list_clusters.json.clusters | map(attribute='name') }}"
+
+- when: not _cluster_exists
+  name: Indicate that the cluster does not exist
+  ansible.builtin.set_fact:
+    _cluster_all_vms_exist: false
+    _cluster_all_vms_added: false
+    _cluster_missing_vm_ids: []
+
+- when: _cluster_exists
+  name: Use the API to get cluster details
+  block:
+
+    - name: Get details of current cluster if it exists
+      ansible.builtin.uri:
+        url: "{{ fyredev_cluster_details_url }}"
+        method: GET
+        user: "{{ _secrets.fyre_user }}"
+        password: "{{ _secrets.fyre_apikey }}"
+        validate_certs: false
+        force_basic_auth: "{{ options.fyredev_force_basic_auth }}"
+        status_code: [200, 400]
+      vars:
+        cluster_id: "{{ cluster_name }}"
+      register: _result_cluster_details
+      changed_when: false
+      delay: 15
+      retries: 20
+      until: _result_cluster_details.status != -1
+
+    - name: Set cluster details facts
+      ansible.builtin.set_fact:
+        _cluster_details_json: "{{ _result_cluster_details.json }}"
+
+    - when: _cluster_details_json.cluster is not defined
+      name: Handle errors
+      block:
+
+        - name: Check for cluster does not exist error
+          ansible.builtin.assert:
+            that: status == 'error' and details == expected_details
+          vars:
+            status: "{{ _cluster_details_json.status }}"
+            details: "{{ _cluster_details_json.details }}"
+            expected_details: "{{ 'cluster ' + cluster_name + ' not found for user ' + _secrets.fyre_user }}"
+
+        - name: It appears that the cluster went away after it was found in the list of clusters
+          ansible.builtin.set_fact:
+            _cluster_exists: false
+            _cluster_all_vms_exist: false
+            _cluster_all_vms_added: false
+
+    - when: _cluster_details_json.cluster is defined
+      name: Check information in the cluster details result
+      block:
+
+        - name: Check that we have the vm names that we are expecting
+          ansible.builtin.set_fact:
+            _cluster_all_vms_exist: "{{ all_vms_found }}"
+            _cluster_all_vms_added: "{{ all_vms_found }}"
+            _cluster_missing_vms: "{{ missing_vms }}"
+          vars:
+            vm_hostnames: "{{ cluster_vms | map(attribute='hostname') }}"
+            missing_vms: "{{ cluster_hostnames | difference(vm_hostnames) }}"
+            all_vms_found: "{{ missing_vms | length == 0 }}"
+
+        - when: _cluster_all_vms_exist
+          name: Get the list of cluster vm ids
+          ansible.builtin.set_fact:
+            _cluster_vm_ids: "{{ vm_ids }}"
+          vars:
+            vm_ids: "{{ cluster_vms | map(attribute='vm_id') }}"
+
+      vars:
+        cluster_vms: "{{ _cluster_details_json.cluster.vms | default([]) }}"
+
+- when: not _cluster_all_vms_exist
+  name: See if any VMs exists with a cluster_name prefix
+  block:
+
+    - name: Gather a list of all the vms that currently exist
+      ansible.builtin.uri:
+        url: "{{ fyredev_list_url }}"
+        method: GET
+        user: "{{ _secrets.fyre_user }}"
+        password: "{{ _secrets.fyre_apikey }}"
+        validate_certs: false
+        force_basic_auth: "{{ options.fyredev_force_basic_auth }}"
+      register: _result_list_vms
+      changed_when: false
+      delay: 15
+      retries: 20
+      until: _result_list_vms.status != -1
+
+    - name: Set vm list facts
+      ansible.builtin.set_fact:
+        _vms_list_json: "{{ _result_list_vms.json }}"
+
+    - when: _vms_list_json is mapping
+      name: The result was not a list of VMs
+      block:
+
+        - name: Check for error
+          ansible.builtin.assert:
+            that: _vms_list_json.status != 'error'
+
+    - when: _vms_list_json is not mapping
+      name: The result was a list of VMs
+      block:
+
+        - when: vm_hostnames | length > 0
+          name: Assert that all of the vm hostnames exist
+          ansible.builtin.assert:
+            that: host_diffs | length == 0
+            msg:
+              - "{{ 'Host(s) ' + (host_diffs | join(' ')) + ' not found.' }}"
+          vars:
+            host_diffs: "{{ vm_hostnames | symmetric_difference(cluster_hostnames) }}"
+
+        - name: Set _cluster_all_vms_exist fact
+          ansible.builtin.set_fact:
+            _cluster_all_vms_exist: "{{ vm_hostnames | length > 0 }}"
+            _cluster_vm_ids: "{{ cluster_vms | map(attribute='vm_id') }}"
+            _cluster_missing_vm_ids: "{{ missing_vm_ids }}"
+          vars:
+            missing_vm_ids: "{{ cluster_vms | selectattr('hostname', 'in', _cluster_missing_vms | default(cluster_hostnames)) | map(attribute='vm_id') }}"
+
+      vars:
+        cluster_vms: "{{ _vms_list_json | selectattr('hostname', 'in', cluster_hostnames) }}"
+        vm_hostnames: "{{ cluster_vms | map(attribute='hostname') }}"
+
+- name: Print a message about the state of the cluster
+  ansible.builtin.debug:
+    msg:
+      - "{{ 'Cluster ' + cluster_name + (' exists.' if _cluster_exists else ' does not exist.') }}"
+      - "{{ ('All' if _cluster_all_vms_exist else 'Not all') + ' VMs for cluster ' + cluster_name + ' exist.' }}"
+      - "{{ ('VM ids ' + (_cluster_vm_ids | join(','))) if _cluster_vm_ids | default([]) | length > 0 else 'No VM ids' }}"
+      - "{{ ('All' if _cluster_all_vms_added else 'Not all') + ' VMs were added to the cluster.' }}"
+      - "{{ ('VM ids ' + (_cluster_missing_vm_ids | join(',')) + ' missing from cluster.') if _cluster_missing_vm_ids | default([]) | length > 0 else 'No missing VM ids' }}"

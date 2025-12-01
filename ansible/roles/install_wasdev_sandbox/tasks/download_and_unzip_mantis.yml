@@ -1,0 +1,33 @@
+---
+
+- name: Download the archive
+  ansible.builtin.get_url:
+    url: "{{ zipper + '/mantis.zip' }}"
+    dest: "{{ wasbld_folder + '/' }}"
+    force_basic_auth: true
+    url_username: "{{ gsa_username }}"
+    url_password: "{{ gsa_password }}"
+    validate_certs: false
+    mode: '0644'
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    gsa_username_secret: "{{ secrets.gsa_username }}"
+    gsa_password_secret: "{{ secrets.gsa_password }}"
+    gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+    gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+  register: _result
+
+- name: Extract the mantis files
+  ansible.builtin.unarchive:
+    src: "{{ wasbld_folder + '/mantis.zip' }}"
+    dest: "{{ wasbld_folder }}"
+    extra_opts: ['-q']
+    remote_src: true
+  no_log: true
+  register: _result
+
+- name: Print out the result
+  ansible.builtin.debug: msg="{{ _result | combine(empty_diff) }}"
+  vars:
+    empty_diff:
+      diff: {}

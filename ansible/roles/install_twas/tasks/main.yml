@@ -1,0 +1,325 @@
+---
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Fetch remote autowas configuration
+      ansible.builtin.fetch:
+        dest: "{{ cluster_dir + '/' }}"
+        flat: true
+        src: "{{ autowas_regression_config_dir + '/' + autowas_config_file }}"
+        mode: '0600'
+      vars:
+        autowas_regression_config_dir: "{{ hostvars['autowas-facts'].options.autowas_regression_config_dir }}"
+
+    - name: Check that fetch produced a non-empty file
+      ansible.builtin.stat:
+        path: "{{ cluster_dir + '/' + autowas_config_file }}"
+      register: _result
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Assert that it is not empty
+      ansible.builtin.assert:
+        that: _result.stat.size > 0
+        msg: 'The autowas config file fetch returned an empty file.'
+
+    - name: Create a copy of the file with .j2 suffix
+      ansible.builtin.copy:
+        src: "{{ cluster_dir + '/' + autowas_config_file }}"
+        dest: "{{ template_path }}"
+        mode: '0600'
+      register: _result
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update LEVEL line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  LEVEL = latest'
+        line: '  LEVEL = "{% raw %}{{ autowas_was_level }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - when: autowas_aphid_name | length > 0
+      name: Update APHID_NAME line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  APHID_NAME = ""'
+        line: '  APHID_NAME = "{% raw %}{{ autowas_aphid_name }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - when: autowas_aphid_server | length > 0
+      name: Update APHID_SERVER line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  APHID_SERVER = ""'
+        line: '  APHID_SERVER = "{% raw %}{{ autowas_aphid_server }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - when: autowas_aphid_path | string | length > 0
+      name: Update APHID_PATH line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  APHID_PATH = ""'
+        line: '  APHID_PATH = "{% raw %}{{ autowas_aphid_path | string }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Assert that only one of autowas_liberty_level or autowas_liberty_version is non-empty
+      ansible.builtin.assert:
+        that: >
+          (autowas_liberty_level | length == 0 and autowas_liberty_version | length == 0) or
+          (autowas_liberty_level | length > 0 and autowas_liberty_version | length == 0) or
+          (autowas_liberty_version | length > 0 and autowas_liberty_level | length == 0)
+        msg: 'You can only specify autowas_liberty_level or autowas_liberty_version but not both.'
+
+    - when: autowas_liberty_level | length > 0
+      name: Update LIBERTY_LEVEL line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  LIBERTY_LEVEL = "latest"'
+        line: '  LIBERTY_LEVEL = "{% raw %}{{ autowas_liberty_level }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - when: autowas_liberty_version | length > 0
+      name: Update LIBERTY_VERSION line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  LIBERTY_VERSION=latest\(\$\(LIBERTY_RELEASE\)\)/\$\(LIBERTY_LEVEL\)'
+        line: '  LIBERTY_VERSION = "{% raw %}{{ autowas_liberty_version }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update HOST_NAME_1 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  HOST_NAME_1 = ""'
+        line: '  HOST_NAME_1 = "{% raw %}{{ first_server_fqdn }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update USER_1 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  USER_1 = ""'
+        line: '  USER_1 = "{% raw %}{{ autowas_cfg_ssh_user }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update INSTALL_DIR_1 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  INSTALL_DIR_1 = ""'
+        line: '  INSTALL_DIR_1 = "{% raw %}{{ autowas_cfg_install_path_basedir }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update HOST_NAME_2 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  HOST_NAME_2 = ""'
+        line: '  HOST_NAME_2 = "{% raw %}{{ second_server_fqdn }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update USER_2 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  USER_2 = ""'
+        line: '  USER_2 = "{% raw %}{{ autowas_cfg_ssh_user }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update INSTALL_DIR_2 line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: '^  INSTALL_DIR_2 = ""'
+        line: '  INSTALL_DIR_2 = "{% raw %}{{ autowas_cfg_install_path_basedir }}{% endraw %}"'
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update serverPassword line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: "{{ '^  serverPassword = ' + autowas_ldap_password }}"
+        line: '  serverPassword = "{% raw %}{{ autowas_ldap_password }}{% endraw %}"'
+      vars:
+        secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+        autowas_ldap_password_secret: "{{ secrets.autowas_ldap_password }}"
+        autowas_ldap_password: "{{ lookup(autowas_ldap_password_secret.module, autowas_ldap_password_secret.param) | trim }}"
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Update admin_password line
+      ansible.builtin.lineinfile:
+        path: "{{ template_path }}"
+        regexp: "{{ '^  admin_password = ' + autowas_ihs_password }}"
+        line: '  admin_password = "{% raw %}{{ autowas_ihs_password }}{% endraw %}"'
+      vars:
+        secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+        autowas_ihs_password_secret: "{{ secrets.autowas_ihs_password }}"
+        autowas_ihs_password: "{{ lookup(autowas_ihs_password_secret.module, autowas_ihs_password_secret.param) | trim }}"
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Check for empty template source
+      ansible.builtin.stat:
+        path: "{{ template_path }}"
+      register: _result
+      delegate_to: 'autowas-facts'
+      delegate_facts: true
+
+    - name: Assert that it is not empty
+      ansible.builtin.assert:
+        that: _result.stat.size > 0
+        msg: 'The autowas config file template is an empty file.'
+
+    - name: Create autowas_config_dir folder
+      ansible.builtin.file:
+        path: "{{ autowas_config_dir }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create default.cfg from template
+      ansible.builtin.template:
+        src: "{{ template_path }}"
+        dest: "{{ autowas_config_dir + '/default.cfg' }}"
+        mode: '0644'
+      vars:
+        first_server_fqdn: "{{ hostvars[groups['all_nodes'][0]].fqdn }}"
+        second_server_fqdn: "{{ hostvars[groups['all_nodes'][1]].fqdn }}"
+        autowas_cfg_ssh_user: "{{ hostvars['autowas-facts'].options.autowas_cfg_ssh_user }}"
+        autowas_cfg_install_path_basedir: "{{ hostvars['autowas-facts'].options.autowas_cfg_install_path_basedir }}"
+        autowas_was_level: "{{ hostvars['autowas-facts'].options.autowas_was_level }}"
+        secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+        autowas_ldap_password_secret: "{{ secrets.autowas_ldap_password }}"
+        autowas_ihs_password_secret: "{{ secrets.autowas_ihs_password }}"
+        autowas_ldap_password: "{{ lookup(autowas_ldap_password_secret.module, autowas_ldap_password_secret.param) | trim }}"
+        autowas_ihs_password: "{{ lookup(autowas_ihs_password_secret.module, autowas_ihs_password_secret.param) | trim }}"
+
+    - name: Install tWAS server
+      ansible.builtin.shell:
+        chdir: "{{ autowas_config_dir }}"
+        cmd: source {{ autowas_env_script }} && cfg install && touch {{ install_marker }}
+        creates: "{{ install_marker }}"
+        executable: /bin/bash
+      register: _result
+      changed_when: _result.start != None
+
+    - name: Create tWAS server topology
+      ansible.builtin.shell:
+        chdir: "{{ autowas_config_dir }}"
+        cmd: source {{ autowas_env_script }} && cfg createTopology && touch {{ topology_marker }}
+        creates: "{{ topology_marker }}"
+        executable: /bin/bash
+      register: _result
+      changed_when: _result.start != None
+
+    - name: Generate bootstrap config
+      ansible.builtin.shell:
+        chdir: "{{ autowas_config_dir }}"
+        cmd: source {{ autowas_env_script }} && cfg generateBootstrap && touch {{ bootstrap_marker }}
+        creates: "{{ bootstrap_marker }}"
+        executable: /bin/bash
+      register: _result
+      changed_when: _result.start != None
+
+    - when: autowas_wxs_level | length > 0
+      name: Install WXS
+      block:
+
+        - name: Remove secure store files
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - '/tmp/secureStore'
+            - '/tmp/secureStorePwd'
+
+        - name: Create secure store password
+          ansible.builtin.copy:
+            content: |
+              your_secureStore_password
+            dest: '/tmp/secureStorePwd'
+            mode: '0644'
+
+        - name: Save WXS GSA credentials
+          ansible.builtin.command: |
+            /opt/IM/eclipse/tools/imutilsc saveCredential -userName "{{ gsa_username }}" -userPassword "{{ gsa_password }}" -secureStorageFile /tmp/secureStore -masterPasswordFile /tmp/secureStorePwd -url "{{ zipper + '/repository/' }}" -verbose
+          vars:
+            secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+            gsa_username_secret: "{{ secrets.gsa_username }}"
+            gsa_password_secret: "{{ secrets.gsa_password }}"
+            gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+            gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+          changed_when: false
+
+        - name: Install WXS standalone server
+          ansible.builtin.command: |
+            /opt/IM/eclipse/tools/imcl install {{ server_install_target }} -repositories "{{ zipper + '/repository/' }}" -installationDirectory {{ wxs_install_root }} -sharedResourcesDirectory /opt/IM-shared -acceptLicense -prompt -secureStorageFile /tmp/secureStore -masterPasswordFile /tmp/secureStorePwd
+          vars:
+            server_install_target: "{{ hostvars['autowas-facts'].options.autowas_wxs_server_install_target }}"
+          changed_when: false
+
+        - name: Install WXS client
+          ansible.builtin.command: |
+            /opt/IM/eclipse/tools/imcl install {{ client_install_target }} -repositories "{{ zipper + '/repository/' }}" -installationDirectory /opt/liberty/wlp -sharedResourcesDirectory /opt/IM-shared -acceptLicense -prompt -secureStorageFile /tmp/secureStore -masterPasswordFile /tmp/secureStorePwd
+          vars:
+            client_install_target: "{{ hostvars['autowas-facts'].options.autowas_wxs_client_install_target }}"
+          changed_when: false
+
+        - name: Starting Standalone WXS Catalog Service
+          ansible.builtin.command: |
+            {{ start_server }} cs -listenerPort 2810
+          environment:
+            JAVA_HOME: '/opt/WAS/java/8.0'
+          changed_when: false
+
+        - name: Starting Standalone WXS Container Services
+          ansible.builtin.command: |
+            {{ start_server }} {{ item }} -objectGridFile {{ object_grid_file }} -deploymentPolicyFile {{ policy_file }} -catalogServiceEndPoints {{ hostvars[inventory_hostname].fqdn }}:2810
+          environment:
+            JAVA_HOME: '/opt/WAS/java/8.0'
+          loop:
+            - 'c1'
+            - 'c2'
+          vars:
+            object_grid_file: "{{ object_grid_path + '/gettingstarted/server/config/objectgrid.xml' }}"
+            policy_file: "{{ object_grid_path + '/gettingstarted/server/config/deployment.xml' }}"
+          changed_when: false
+
+      vars:
+        gsa_server: "{{ hostvars['autowas-facts'].options.autowas_wxs_gsa_server }}"
+        gsa_build_path: "{{ hostvars['autowas-facts'].options.autowas_wxs_gsa_build_path }}"
+        wxs_release: "{{ hostvars['autowas-facts'].options.autowas_wxs_release + '.XSIM' }}"
+        wxs_level: "{{ hostvars['autowas-facts'].options.autowas_wxs_level + '.linux' }}"
+        test_or_daily: "{{ hostvars['autowas-facts'].options.autowas_wxs_test_or_daily | default('daily') }}"
+        shipped_test_or_daily: "{{ hostvars['autowas-facts'].options.autowas_wxs_shipped_test_or_daily | default(test_or_daily) }}"
+        zipper: "{{ 'https://' + gsa_server + gsa_build_path + '/' + wxs_release + '/' + shipped_test_or_daily + '/' + wxs_level + '/linux/zipper' }}"
+        wxs_install_root: "{{ hostvars['autowas-facts'].options.autowas_wxs_install_root | default('') }}"
+        object_grid_path: "{{ wxs_install_root + '/ObjectGrid' }}"
+        start_server: "{{ object_grid_path + '/bin/startXsServer.sh' }}"
+
+  vars:
+    cluster_dir: "{{ hostvars['cluster-facts'].cluster_dir }}"
+    autowas_basedir: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+    autowas_config_dir: "{{ hostvars['autowas-facts'].options.autowas_config_dir }}"
+    autowas_config_file_suffix: "{{ hostvars['autowas-facts'].options.autowas_config_file_suffix }}"
+    autowas_was_release: "{{ hostvars['autowas-facts'].options.autowas_was_release }}"
+    autowas_liberty_level: "{{ hostvars['autowas-facts'].options.autowas_liberty_level }}"
+    autowas_liberty_version: "{{ hostvars['autowas-facts'].options.autowas_liberty_version }}"
+    autowas_aphid_name: "{{ hostvars['autowas-facts'].options.autowas_aphid_name }}"
+    autowas_aphid_server: "{{ hostvars['autowas-facts'].options.autowas_aphid_server }}"
+    autowas_aphid_path: "{{ hostvars['autowas-facts'].options.autowas_aphid_path }}"
+    autowas_wxs_level: "{{ hostvars['autowas-facts'].options.autowas_wxs_level | default('') }}"
+    autowas_config_file: "{{ autowas_was_release + autowas_config_file_suffix }}"
+    template_path: "{{ cluster_dir + '/' + autowas_config_file + '.j2' }}"
+    autowas_env_script: "{{ autowas_basedir + '/bin/AutoWASEnv.sh' }}"
+    install_marker: "{{ autowas_config_dir + '/.install_completed' }}"
+    topology_marker: "{{ autowas_config_dir + '/.createTopology_completed' }}"
+    bootstrap_marker: "{{ autowas_config_dir + '/.generateBootstrap_completed' }}"

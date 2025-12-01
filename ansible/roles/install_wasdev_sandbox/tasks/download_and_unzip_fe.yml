@@ -1,0 +1,54 @@
+---
+
+- name: Download the archive to a temporary file
+  ansible.builtin.get_url:
+    url: "{{ zipper + '/fe.zip' }}"
+    dest: "{{ wasbld_folder + '/fe.zip.tmp' }}"
+    force_basic_auth: true
+    url_username: "{{ gsa_username }}"
+    url_password: "{{ gsa_password }}"
+    validate_certs: false
+    mode: '0644'
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    gsa_username_secret: "{{ secrets.gsa_username }}"
+    gsa_password_secret: "{{ secrets.gsa_password }}"
+    gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+    gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+  register: _result
+
+- name: Move the temporary file to the correct name
+  ansible.builtin.command:
+    cmd: mv fe.zip.tmp fe.zip
+    chdir: "{{ wasbld_folder }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Create the wasbld feonly folder
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/' + feonly }}"
+    state: directory
+    mode: '0755'
+  register: _result
+
+- name: Extract the fe files
+  ansible.builtin.unarchive:
+    src: "{{ wasbld_folder + '/fe.zip' }}"
+    dest: "{{ wasbld_folder + '/' + feonly }}"
+    extra_opts: ['-q']
+    remote_src: true
+  no_log: true
+  register: _result
+
+- name: Print out the result
+  ansible.builtin.debug: msg="{{ _result | combine(empty_diff) }}"
+  vars:
+    empty_diff:
+      diff: {}
+
+- name: Create the marker after fe archive has been unzipped
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/.feunzipped' }}"
+    state: touch
+    mode: '0644'
+  register: _result

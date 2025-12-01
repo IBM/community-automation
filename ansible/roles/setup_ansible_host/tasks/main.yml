@@ -1,0 +1,15 @@
+---
+
+- name: Set _ssh_destination fact
+  ansible.builtin.set_fact:
+    _ssh_destination: "{{ ansible_ssh_user + '@' + ansible_host }}"
+
+- when: "'setup_ansible_host' not in (roles_completed | default([]))"
+  name: Setup host for ansible only once per execution
+  ansible.builtin.include_tasks: setup_ansible_host.yml
+  vars:
+    _ssh_command: "ssh -q {{ ansible_ssh_common_args }} {{ ansible_ssh_extra_args | default() }} {{ _ssh_destination }}"
+
+- name: Clear temporary facts
+  ansible.builtin.set_fact:
+    _ssh_destination: ''

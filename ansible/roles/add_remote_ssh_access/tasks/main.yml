@@ -1,0 +1,15 @@
+---
+
+- name: Add keypair to authorized_keys on inventory_hostname
+  ansible.posix.authorized_key:
+    user: "{{ ssh_user }}"
+    key: "{{ ssh_key }}"
+    comment: "{{ ssh_comment }}"
+    state: present
+  become: "{{ ssh_become_user | default('') | length > 0 }}"
+  become_user: "{{ ssh_become_user | default(omit) }}"
+  vars:
+    ssh_user: "{{ params.remote_user | default(hostvars['playbook-facts'].options.remote_user) }}"
+    ssh_key: "{{ params.ssh_key | default(hostvars['cluster-facts'].options.ssh_public_key) }}"
+    ssh_comment: "{{ params.ssh_comment | default(hostvars['cluster-facts'].options.ssh_public_key_comment) }}"
+    ssh_become_user: "{{ params.become_user | default('root') }}"

@@ -1,0 +1,121 @@
+---
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - when: wxs_install_root | length > 0
+      name: Uninstall WXS
+      block:
+
+        - name: Check to see if install folder exists
+          ansible.builtin.stat:
+            path: "{{ wxs_install_root }}"
+          register: _result_stat
+
+        - when: _result_stat.stat.exists
+          name: Stop and uninstall the WXS services
+          block:
+
+            - name: Stopping Standalone WXS Container Services
+              ansible.builtin.command: |
+                {{ stop_server }} {{ item }} -catalogServiceEndPoints {{ hostvars[inventory_hostname].fqdn }}:2810
+              environment:
+                JAVA_HOME: '/opt/WAS/java/8.0'
+              loop:
+                - 'c2'
+                - 'c1'
+              changed_when: false
+
+            - name: Stopping Standalone WXS Catalog Service
+              ansible.builtin.command: |
+                {{ stop_server }} cs -catalogServiceEndPoints {{ hostvars[inventory_hostname].fqdn }}:2810
+              environment:
+                JAVA_HOME: '/opt/WAS/java/8.0'
+              changed_when: false
+
+            - name: Uninstall WXS client
+              ansible.builtin.command: |
+                /opt/IM/eclipse/tools/imcl uninstall {{ client_install_target }}
+              vars:
+                client_install_target: "{{ hostvars['autowas-facts'].options.autowas_wxs_client_install_target }}"
+              changed_when: false
+
+            - name: Uninstall WXS standalone server
+              ansible.builtin.command: |
+                /opt/IM/eclipse/tools/imcl uninstall {{ server_install_target }}
+              vars:
+                server_install_target: "{{ hostvars['autowas-facts'].options.autowas_wxs_server_install_target }}"
+              changed_when: false
+
+            - name: Remove the wxs_install_root folder
+              ansible.builtin.file:
+                path: "{{ wxs_install_root }}"
+                state: absent
+              register: _result
+
+          vars:
+            object_grid_path: "{{ wxs_install_root + '/ObjectGrid' }}"
+            stop_server: "{{ object_grid_path + '/bin/stopXsServer.sh' }}"
+
+      vars:
+        wxs_install_root: "{{ hostvars['autowas-facts'].options.autowas_wxs_install_root | default('') }}"
+
+    - name: Nuke tWAS server processes
+      ansible.builtin.shell:
+        chdir: "{{ autowas_config_dir }}"
+        cmd: source {{ autowas_env_script }} && cfg nuke
+        executable: /bin/bash
+      register: _result
+      changed_when: _result.start != None
+
+    - name: Uninstall tWAS server
+      ansible.builtin.shell:
+        chdir: "{{ autowas_config_dir }}"
+        cmd: source {{ autowas_env_script }} && cfg force_uninstall && rm -f {{ install_marker }} {{ topology_marker }} {{ bootstrap_marker }}
+        executable: /bin/bash
+      register: _result
+      changed_when: _result.start != None
+
+    - name: Create the AutoWAS cache folder
+      ansible.builtin.file:
+        path: "{{ autowas_cache_dir }}"
+        state: directory
+        mode: '0755'
+      register: _result
+
+    - name: Archive the contents of the autowas_config_dir
+      community.general.archive:
+        dest: "{{ autowas_cache_dir + '/saved-' + now(fmt='%Y-%m-%dT%H:%M:%S') + '.tar.gz' }}"
+        mode: '0644'
+        path: "{{ autowas_config_dir }}"
+        exclusion_patterns:
+          - 'scripts/regression/tools/*'
+
+    - name: Remove the autowas_config_dir folder
+      ansible.builtin.file:
+        path: "{{ autowas_config_dir }}"
+        state: absent
+      register: _result
+
+  vars:
+    autowas_basedir: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+    autowas_cache_dir: "{{ user_home + hostvars['autowas-facts'].options.autowas_cache_dir_suffix }}"
+    autowas_config_dir: "{{ hostvars['autowas-facts'].options.autowas_config_dir }}"
+    autowas_wxs_level: "{{ hostvars['autowas-facts'].options.autowas_wxs_level | default('') }}"
+    autowas_env_script: "{{ autowas_basedir + '/bin/AutoWASEnv.sh' }}"
+    install_marker: "{{ autowas_config_dir + '/.install_completed' }}"
+    topology_marker: "{{ autowas_config_dir + '/.createTopology_completed' }}"
+    bootstrap_marker: "{{ autowas_config_dir + '/.generateBootstrap_completed' }}"
+
+- name: Remove other folders created by install_twas role
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - "{{ autowas_cfg_install_path_basedir + '/.ibm' }}"
+    - '/etc/.ibm'
+    - '/tmp/autowas/buildcache'
+  register: _result
+  vars:
+    autowas_cfg_install_path_basedir: "{{ hostvars['autowas-facts'].options.autowas_cfg_install_path_basedir }}"

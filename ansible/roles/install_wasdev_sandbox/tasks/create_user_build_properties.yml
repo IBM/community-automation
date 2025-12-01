@@ -1,0 +1,55 @@
+---
+
+- when: hostvars['autowas-facts'].options.autowas_aphid_path | string | length > 0
+  name: Fetch remote autowas global config
+  ansible.builtin.fetch:
+    dest: "{{ cluster_dir + '/' }}"
+    src: "{{ global_config_path }}"
+    flat: true
+    mode: '0600'
+  vars:
+    cluster_dir: "{{ hostvars['cluster-facts'].cluster_dir }}"
+    autowas_basedir: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+    global_config_path: "{{ autowas_basedir + '/etc/config.global' }}"
+
+- when: hostvars['autowas-facts'].options.autowas_aphid_path | string | length > 0
+  name: Set aphid credentials
+  ansible.builtin.set_fact:
+    aphid_username: "{{ aphid_username }}"
+    aphid_password: "{{ aphid_password }}"
+  no_log: true
+  vars:
+    cluster_dir: "{{ hostvars['cluster-facts'].cluster_dir }}"
+    global_config_path: "{{ cluster_dir + '/config.global' }}"
+    aphid_username: "{{ lookup('ini', 'user', section='personal_build', file=global_config_path) }}"
+    aphid_password: "{{ lookup('ini', 'password', section='personal_build', file=global_config_path) }}"
+
+- name: Set facts for GSA creds
+  ansible.builtin.set_fact:
+    fe_ftp_userid: "{{ gsa_username }}"
+    fe_ftp_password: "{{ gsa_password }}"
+    prereq_ftp_userid: "{{ gsa_username }}"
+    prereq_ftp_password: "{{ gsa_password }}"
+  no_log: true
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    gsa_username_secret: "{{ secrets.gsa_username }}"
+    gsa_password_secret: "{{ secrets.gsa_password }}"
+    gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+    gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+
+- name: Place GSA creds and ftp server configuration into ~/user.build.properties
+  ansible.builtin.template:
+    src: 'user.build.properties.j2'
+    dest: "{{ user_home + '/user.build.properties' }}"
+    mode: '0600'
+  vars:
+    fe_ftp_list: "{{ hostvars['sandbox-facts'].options.fe_ftp_list }}"
+    fe_ftp_servers: "{{ fe_ftp_list | map(attribute='server') }}"
+    fe_ftp_download_dirs: "{{ fe_ftp_list | map(attribute='path') }}"
+    userid_vars: "{{ fe_ftp_list | map(attribute='userid') }}"
+    password_vars: "{{ fe_ftp_list | map(attribute='password') }}"
+    fe_ftp_userids: "{{ userid_vars | map('extract', vars) }}"
+    fe_ftp_passwords: "{{ password_vars | map('extract', vars) }}"
+    prereq_ftp_server: "{{ hostvars['sandbox-facts'].options.gsa_server }}"
+    prereq_root: "{{ hostvars['sandbox-facts'].options.prereq_root }}"

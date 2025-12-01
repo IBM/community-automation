@@ -1,0 +1,87 @@
+---
+
+- name: Gather facts
+  ansible.builtin.setup:
+    filter:
+    - 'ansible_all_ipv4_addresses'
+    - 'ansible_architecture'
+    - 'ansible_default_ipv4'
+    - 'ansible_distribution'
+    - 'ansible_env'
+    - 'ansible_os_family'
+    - 'ansible_pkg_mgr'
+    - 'ansible_ssh_host_key_ed25519_public'
+    - 'ansible_ssh_host_key_ed25519_public_keytype'
+    - 'ansible_user_uid'
+    gather_subset:
+    - '!all'
+    - 'network'
+
+- name: Clear redundant ansible_facts result
+  ansible.builtin.set_fact:
+    ansible_facts: {}
+
+- name: Set distribution_family for CentOS
+  ansible.builtin.set_fact:
+    distribution_family: "CentOS"
+    host_os: "centos"
+    libvirt_qemu_user: "qemu"
+    package_manager: auto
+  when: ansible_distribution == 'CentOS'
+
+- name: Set distribution_family for RedHat
+  ansible.builtin.set_fact:
+    distribution_family: "CentOS"
+    host_os: "redhat"
+    libvirt_qemu_user: "qemu"
+    package_manager: auto
+  when: ansible_distribution == 'RedHat'
+
+- name: Set distribution_family for Fedora
+  ansible.builtin.set_fact:
+    distribution_family: "Fedora"
+    host_os: "fedora"
+    libvirt_qemu_user: "qemu"
+    package_manager: "{{ 'community.general.rpm_ostree_pkg' if (ansible_pkg_mgr == 'atomic_container') else 'auto' }}"
+  when: ansible_distribution == 'Fedora'
+
+- name: Set distribution_family for Debian
+  ansible.builtin.set_fact:
+    distribution_family: "Debian"
+    host_os: "debian"
+    libvirt_qemu_user: "libvirt-qemu"
+    package_manager: apt
+  when: ansible_distribution == 'Debian'
+
+- name: Set distribution_family for Ubuntu
+  ansible.builtin.set_fact:
+    distribution_family: "Debian"
+    host_os: "ubuntu"
+    libvirt_qemu_user: "libvirt-qemu"
+    package_manager: apt
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Fails if OS is not supported
+  ansible.builtin.assert:
+    msg: "The host \"{{ inventory_hostname }}\" needs to be CentOS/RHEL, Fedora, or Debian/Ubuntu"
+    that: hostvars[inventory_hostname]['distribution_family'] is defined
+
+- name: Set facts from setup to hostvars
+  ansible.builtin.set_fact:
+    ansible_all_ipv4_address: "{{ ansible_all_ipv4.addresses | default(omit) }}"
+    ansible_default_ipv4_address: "{{ ansible_default_ipv4.address | default(omit) }}"
+    ansible_host: "{{ hostvars[inventory_hostname].ansible_host | default(inventory_hostname) }}"
+    cpu_arch: "{{ 'amd64' if (ansible_architecture == 'x86_64') else ansible_architecture }}"
+    os_family: "{{ 'mac' if (ansible_os_family == 'Darwin') else ('windows' if (ansible_os_family == 'Windows') else 'linux') }}"
+    os: "{{ hostvars[inventory_hostname].os if (hostvars[inventory_hostname].os is defined) else hostvars[inventory_hostname]['host_os'] }}"
+    user_home: "{{ ansible_env['HOME'] }}"
+    user_name: "{{ ansible_env['USER'] }}"
+    user_path: "{{ ansible_env['PATH'] }}"
+    user_uid: "{{ ansible_user_uid }}"
+    runtime_path: "{{ omit if (ansible_env['XDG_RUNTIME_DIR'] is not defined) else ansible_env['XDG_RUNTIME_DIR'] }}"
+    ssh_connection_address: "{{ omit if (ansible_env['SSH_CONNECTION'] is not defined) else ansible_env['SSH_CONNECTION'].split(' ')[2] }}"
+    ssh_host_key_public: "{{ ansible_ssh_host_key_ed25519_public_keytype + ' ' + ansible_ssh_host_key_ed25519_public }}"
+
+- name: Set fact that we have completed this role
+  ansible.builtin.set_fact:
+    roles_completed: "{{ roles_completed | default([]) | union(['gather_host_facts']) }}"

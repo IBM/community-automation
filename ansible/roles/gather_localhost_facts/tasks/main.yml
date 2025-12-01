@@ -1,0 +1,50 @@
+---
+
+- name: Gather facts
+  ansible.builtin.setup:
+    filter:
+      - 'ansible_architecture'
+      - 'ansible_distribution'
+      - 'ansible_env'
+      - 'ansible_os_family'
+      - 'ansible_user_dir'
+      - 'ansible_user_id'
+    gather_subset:
+      - '!all'
+      - 'network'
+
+- name: Clear ansible_facts
+  ansible.builtin.set_fact:
+    ansible_facts: {}
+
+- name: Set derived localhost facts
+  ansible.builtin.set_fact:
+    cpu_arch: "{{ 'amd64' if (ansible_architecture == 'x86_64') else ansible_architecture }}"
+    os_family: "{{ 'mac' if (ansible_os_family == 'Darwin') else ('windows' if (ansible_os_family == 'Windows') else 'linux') }}"
+    local_path: "{{ ansible_env['PATH'] }}"
+    local_home: "{{ ansible_user_dir }}"
+    local_user: "{{ ansible_user_id }}"
+
+- when: localhost_spec is defined
+  name: Set facts from localhost_spec
+  ansible.builtin.set_fact:
+    "{{ item }}": "{{ localhost_spec[item] }}"
+  loop: "{{ localhost_spec.keys() | default([]) }}"
+
+- when: options.ssh_keypair_name is defined
+  name: Search for keypairs in all groups
+  block:
+
+    - name: Set ssh_keypair_name derived facts
+      ansible.builtin.set_fact:
+        ssh_keypair_path: "{{ ssh_keypair_path }}"
+        ssh_keypair_path_prefix: "{{ ssh_keypair.path_prefix }}"
+        ssh_keypair_secret: "{{ ssh_keypair.secret }}"
+        ssh_extra_args: "{{ '-F /dev/null -i ' + ssh_keypair_path }}"
+      vars:
+        hostvars_with_ssh_keypairs: "{{ hostvars.keys() | map('extract', hostvars) | selectattr('ssh_keypairs', 'defined') }}"
+        ssh_keypair_name: "{{ options.ssh_keypair_name }}"
+        ssh_keypairs: "{{ hostvars_with_ssh_keypairs | map(attribute='ssh_keypairs') | selectattr(ssh_keypair_name, 'defined') | map(attribute=ssh_keypair_name) }}"
+        ssh_keypair: "{{ ssh_keypairs | first | default({}) }}"
+        ssh_keypair_path: "{{ local_home + '/.ssh/' + ssh_keypair.path_prefix + 'id_' + options.ssh_keytype }}"
+      when: ssh_keypairs | length == 1

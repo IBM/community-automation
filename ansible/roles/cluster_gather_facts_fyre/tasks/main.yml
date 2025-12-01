@@ -1,0 +1,16 @@
+---
+
+- name: Get the cluster status
+  ansible.builtin.include_role:
+    name: ibm_community_automation.ibm_community_automation.cluster_gather_facts_fyre
+    tasks_from: gather_cluster_status.yml
+
+- name: Assert that the cluster exists
+  ansible.builtin.assert:
+    that: _cluster_exists
+    msg: "{{ 'Cluster with name ' + cluster_name + ' does not exist' }}"
+
+- name: Get the cluster details
+  ansible.builtin.include_role:
+    name: ibm_community_automation.ibm_community_automation.cluster_gather_facts_fyre
+    tasks_from: gather_cluster_details.yml

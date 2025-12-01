@@ -1,0 +1,17 @@
+---
+
+- name: Update pam limits
+  community.general.pam_limits:
+    domain: "{{ limit.domain }}"
+    limit_type: "{{ limit.type }}"
+    limit_item: "{{ limit.item }}"
+    value: "{{ limit.value }}"
+  loop: "{{ params.pam_limits }}"
+  loop_control:
+    loop_var: limit
+
+- name: Create marker file
+  ansible.builtin.file:
+    path: ~/.ansible/pam_limits_set
+    state: touch
+    mode: '0644'

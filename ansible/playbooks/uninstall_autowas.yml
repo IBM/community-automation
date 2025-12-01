@@ -1,0 +1,9 @@
+---
+
+- name: Uninstall AutoWAS
+  hosts: all_nodes
+  become: false
+  gather_facts: false
+  tags: uninstall_autowas
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.uninstall_autowas

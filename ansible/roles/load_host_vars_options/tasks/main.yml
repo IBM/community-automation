@@ -1,0 +1,130 @@
+---
+
+- name: Set vars_static to defaults from host_vars and overrides from inventory
+  ansible.builtin.set_fact:
+    _vars_static: "{{ hostvars[inventory_hostname].vars_host | combine(hostvars[inventory_hostname].vars_inventory | default({})) }}"
+
+- name: Gather facts
+  ansible.builtin.setup:
+    filter:
+      - 'ansible_env'
+      - 'ansible_user_dir'
+    gather_subset:
+      - '!all'
+  when: inventory_hostname == 'localhost-facts' and ansible_env is not defined
+
+- name: Clear ansible_facts
+  ansible.builtin.set_fact:
+    ansible_facts: {}
+
+- name: Set vars_env to empty
+  ansible.builtin.set_fact:
+    _vars_env: {}
+
+- name: Add values to vars_env for all vars_static keys
+  ansible.builtin.set_fact:
+    _vars_env: "{{ _vars_env | combine({key: value}) }}"
+  no_log: "{{ noLog }}"
+  loop: "{{ matching_vars }}"
+  loop_control:
+    label: "{{ item }}"
+  vars:
+    local_home: "{{ ansible_user_dir | default(hostvars['localhost-facts'].ansible_user_dir) }}"
+    environment_vars: "{{ ansible_env | default(hostvars['localhost-facts'].ansible_env) }}"
+    matching_keys: "{{ _vars_static.keys() | list | map('upper') }}"
+    matching_vars: "{{ environment_vars | dict2items | selectattr('key', 'in', matching_keys) }}"
+    key: "{{ item.key.lower() }}"
+    value: "{{ item.value }}"
+  when: value | string | length > 0
+
+- name: Set vars_cli to empty
+  ansible.builtin.set_fact:
+    _vars_cli: {}
+
+- name: Add values to vars_cli for all vars_static keys
+  ansible.builtin.set_fact:
+    _vars_cli: "{{ _vars_cli | combine({key: value}) }}"
+  no_log: "{{ noLog }}"
+  loop: "{{ matching_vars }}"
+  loop_control:
+    label: "{{ item }}"
+  vars:
+    local_home: "{{ ansible_user_dir | default(hostvars['localhost-facts'].ansible_user_dir) }}"
+    matching_keys: "{{ _vars_static.keys() | list }}"
+    matching_vars: "{{ hostvars[inventory_hostname] | dict2items | selectattr('key', 'in', matching_keys) }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+  when: value | string | length > 0
+
+- name: Copy all variables into options map
+  ansible.builtin.set_fact:
+    options: "{{ _vars_static | combine(_vars_env | combine(_vars_cli)) }}"
+  vars:
+    local_home: "{{ ansible_user_dir | default(hostvars['localhost-facts'].ansible_user_dir) }}"
+  no_log: "{{ noLog }}"
+
+- when: options.load_ssh_keypair | default(false)
+  name: Prepare credentials to connect to remote hosts
+  block:
+
+    - when: hostvars['playbook-facts'].container_run | bool
+      name: Create ssh keypairs when running in a container
+      block:
+
+        - name: Create parent folder for ssh_keypair_path if needed
+          ansible.builtin.file:
+            path: "{{ ssh_keypair_path | dirname }}"
+            state: directory
+            mode: '0700'
+          changed_when: false
+
+        - name: Copy ssh key secret into ssh_keypair_path
+          ansible.builtin.copy:
+            content: |
+              {{ ssh_keypair_key }}
+            dest: "{{ ssh_keypair_path }}"
+            mode: '0600'
+          vars:
+            secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+            ssh_keypair_secret: "{{ hostvars['localhost-facts'].ssh_keypair_secret }}"
+            ssh_keypair_key_secret: "{{ secrets[ssh_keypair_secret] }}"
+            ssh_keypair_key: "{{ lookup(ssh_keypair_key_secret.module, ssh_keypair_key_secret.param) | trim }}"
+          no_log: false
+          changed_when: false
+
+        - name: Generate a public key for the private key
+          community.crypto.openssh_keypair:
+            path: "{{ ssh_keypair_path }}"
+            type: "{{ hostvars['localhost-facts'].options.ssh_keytype }}"
+            regenerate: 'never'
+          register: _result
+          changed_when: false
+
+      vars:
+        ssh_keypair_path: "{{ hostvars['localhost-facts'].ssh_keypair_path }}"
+        ssh_keypair_secret: "{{ hostvars['localhost-facts'].ssh_keypair_secret }}"
+
+    - name: Update options map with ssh_keypair
+      ansible.builtin.set_fact:
+        options: "{{ options | combine(ssh_keypair) }}"
+      vars:
+        ssh_keypair_path: "{{ hostvars['localhost-facts'].ssh_keypair_path }}"
+        prvkey: "{{ lookup('file', ssh_keypair_path, errors='ignore') | default('') }}"
+        pubkey: "{{ lookup('file', ssh_keypair_path + '.pub', errors='ignore') | default('') }}"
+        ssh_keypair:
+          ssh_private_key: "{{ prvkey | b64encode }}"
+          ssh_public_key: "{{ (pubkey | split(' '))[:2] | join(' ') }}"
+          ssh_public_key_comment: "{{ (pubkey | split(' '))[2:] | join(' ') }}"
+      no_log: "{{ noLog }}"
+
+- name: Clear register results and temporary facts
+  ansible.builtin.set_fact:
+    _vars_cli: {}
+    _vars_env: {}
+    _vars_static: {}
+    vars_inventory: {}
+    vars_host: {}
+
+- name: Set options_loaded fact
+  ansible.builtin.set_fact:
+    options_loaded: true

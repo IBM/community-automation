@@ -1,0 +1,138 @@
+---
+
+- name: Download automation to populate /opt/scripts/regression/tools/java
+  ansible.builtin.shell:
+    chdir: "{{ autowas_config_dir }}"
+    cmd: source {{ autowas_env_script }} && {{ env_cmd }} cfg downloadAutomation && touch {{ download_automation_marker }}
+    creates: "{{ download_automation_marker }}"
+    executable: /bin/bash
+  register: _result
+  changed_when: _result.start != None
+  vars:
+    autowas_basedir: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+    autowas_config_dir: "{{ hostvars['autowas-facts'].options.autowas_config_dir }}"
+    sandbox_was_release: "{{ hostvars['sandbox-facts'].options.was_release }}"
+    autowas_env_script: "{{ autowas_basedir + '/bin/AutoWASEnv.sh' }}"
+    download_automation_marker: "{{ autowas_config_dir + '/.downloadAutomation_completed' }}"
+    env_cmd: "{{ 'env FAT_SPECIFIC_TARGET=' + sandbox_was_release + ':fatTemplate.basic:*' }}"
+
+- name: Copy bootstrapping.properties to wasbld_folder
+  ansible.builtin.copy:
+    src: "{{ autowas_config_dir + '/regression/bootstrapping.properties' }}"
+    dest: "{{ wasbld_folder + '/bootstrapping.properties' }}"
+    remote_src: true
+    mode: '0644'
+  register: _result
+  vars:
+    autowas_config_dir: "{{ hostvars['autowas-facts'].options.autowas_config_dir }}"
+
+- name: Update keystore line
+  ansible.builtin.lineinfile:
+    path: "{{ wasbld_folder + '/bootstrapping.properties' }}"
+    regexp: '^keystore=/root/.ssh/id_rsa'
+    line: "{{ 'keystore=' + autowas_cache_dir + '/.keystore/id_rsa' }}"
+  vars:
+    autowas_cache_dir: "{{ user_home + hostvars['autowas-facts'].options.autowas_cache_dir_suffix }}"
+
+- name: Add/Remove WXS install root property when option is defined or undefined
+  ansible.builtin.lineinfile:
+    path: "{{ wasbld_folder + '/bootstrapping.properties' }}"
+    regexp: '^wxs.install.1.installRoot=.*'
+    line: "{{ 'wxs.install.1.installRoot=' + wxs_install_root }}"
+    state: "{{ 'present' if (wxs_install_root | length > 0) else 'absent' }}"
+  vars:
+    wxs_install_root: "{{ hostvars['autowas-facts'].options.autowas_wxs_install_root | default('') }}"
+
+- name: Download the archive to a temporary file
+  ansible.builtin.get_url:
+    url: "{{ java_url }}"
+    dest: "{{ wasbld_folder + '/linux_java.zip.tmp' }}"
+    force_basic_auth: true
+    url_username: "{{ gsa_username }}"
+    url_password: "{{ gsa_password }}"
+    validate_certs: false
+    mode: '0644'
+  vars:
+    is_ladybug: "{{ hostvars['autowas-facts'].options.autowas_aphid_path | string | length > 0 }}"
+    java_url: "{{ zipper + ('/java.zip' if is_ladybug else '/linux_java.zip') }}"
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    gsa_username_secret: "{{ secrets.gsa_username }}"
+    gsa_password_secret: "{{ secrets.gsa_password }}"
+    gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+    gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+  register: _result
+
+- name: Move the temporary file to the correct name
+  ansible.builtin.command:
+    cmd: mv linux_java.zip.tmp linux_java.zip
+    chdir: "{{ wasbld_folder }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Create the temporary folder to extract java files into
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/java-tmp' }}"
+    state: directory
+    mode: '0755'
+  register: _result
+
+- name: Extract the java files
+  ansible.builtin.unarchive:
+    src: "{{ wasbld_folder + '/linux_java.zip' }}"
+    dest: "{{ wasbld_folder + '/java-tmp' }}"
+    extra_opts: ['-q']
+    include:
+      - 'java/linuxamd64/*'
+      - 'java/java17/*'
+    remote_src: true
+  no_log: true
+  register: _result
+
+- name: Print out the result
+  ansible.builtin.debug: msg="{{ _result | combine(empty_diff) }}"
+  vars:
+    empty_diff:
+      diff: {}
+
+- name: Remove the target java folder
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/java' }}"
+    state: absent
+  register: _result
+
+- name: Move the extracted files to where we really want them
+  ansible.builtin.command:
+    cmd: mv java-tmp/java/linuxamd64 java
+    chdir: "{{ wasbld_folder }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Move the extracted files to where we really want them
+  ansible.builtin.command:
+    cmd: mv java-tmp/java/java17 java/java17
+    chdir: "{{ wasbld_folder }}"
+  register: _result
+  changed_when: _result.rc == 0
+
+- name: Remove the temporary java download folder
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/java-tmp' }}"
+    state: absent
+  register: _result
+
+- name: Create symlink for java17 in regression/tools/java
+  ansible.builtin.file:
+    path: "{{ java_home + '/java17' }}"
+    src: "{{ wasbld_folder + '/java/java17' }}"
+    state: link
+  register: _result
+  vars:
+    java_home: "{{ hostvars['sandbox-facts'].options.envvars_java_home | default(wasbld_folder + '/java') }}"
+  when: java_home != (wasbld_folder + '/java')
+
+- name: Create the marker after Java has been unzipped
+  ansible.builtin.file:
+    path: "{{ wasbld_folder + '/.javaunzipped' }}"
+    state: touch
+    mode: '0644'
+  register: _result

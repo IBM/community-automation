@@ -1,0 +1,18 @@
+---
+
+- name: "Run any sandbox_prepare_roles when requested"
+  hosts: "{{ hostvars['sandbox-facts'].sandbox_prepare_hosts | default('all_nodes') }}"
+  become: false
+  gather_facts: false
+  tags: install_sandbox
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.loop_over_roles
+    role_loop: "{{ hostvars['sandbox-facts'].sandbox_prepare_roles or omit }}"
+
+- name: Install tWAS development sandbox
+  hosts: all_nodes
+  become: false
+  gather_facts: false
+  tags: install_sandbox
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.install_wasdev_sandbox

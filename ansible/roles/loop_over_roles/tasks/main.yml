@@ -1,0 +1,12 @@
+---
+
+- name: "Iterate over roles for {{ inventory_hostname }}"
+  ansible.builtin.include_role:
+    name: "{{ loop_role.keys() | first if (loop_role is mapping) else loop_role }}"
+  loop: "{{ role_loop | default([]) }}"
+  loop_control:
+    loop_var: 'loop_role'
+  vars:
+    params: "{{ loop_role[loop_role.keys() | first] if (loop_role is mapping) else {} }}"
+    role_hosts: "{{ ([params.role_hosts] | flatten) if params.role_hosts is defined else [] }}"
+  when: (role_hosts | length == 0) or (inventory_hostname is in role_hosts)

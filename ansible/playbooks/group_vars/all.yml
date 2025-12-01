@@ -1,0 +1,8 @@
+---
+
+# when debugging set -e noLog=false
+noLog: true
+
+ansible_ssh_pipelining: true
+ansible_ssh_common_args: '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=accept-new'
+ansible_ssh_retries: 10

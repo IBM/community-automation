@@ -1,0 +1,24 @@
+---
+
+- name: Load all playbook secrets
+  ansible.builtin.include_vars:
+    name: _loaded_secrets
+    dir: "{{ secrets_vars_dir }}"
+    depth: 1
+    ignore_unknown_extensions: true
+  vars:
+    local_home: "{{ hostvars['localhost-facts'].local_home }}"
+    secrets_vars_dir: "{{ options.container_secrets_vars_dir if (hostvars['playbook-facts'].container_run) else options.secrets_vars_dir }}"
+  no_log: "{{ noLog }}"
+
+- name: Set secrets fact
+  ansible.builtin.set_fact:
+    secrets: "{{ _loaded_secrets }}"
+  vars:
+    local_home: "{{ hostvars['localhost-facts'].local_home }}"
+    secrets_dir: "{{ options.container_secrets_dir if (hostvars['playbook-facts'].container_run) else options.secrets_dir }}"
+  no_log: "{{ noLog }}"
+
+- name: Clear temporary vars
+  ansible.builtin.set_fact:
+    _loaded_secrets: {}

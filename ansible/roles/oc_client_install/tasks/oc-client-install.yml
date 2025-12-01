@@ -1,45 +1,48 @@
 ---
 
 - name: check for oc client
-  command: ./oc version
-  environment:
-    PATH: ".:{{ ansible_env.PATH }}"
+  command: oc version
   register: oc_installed
-  ignore_errors: yes
+  failed_when: false
 
 - name: install oc client
   when: oc_installed.rc != 0
   block:
   - name: Download OCP CLI
     get_url:
-      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/{{ ocp_client_version }}/openshift-client-{{ client_os }}-{{ ocp_client_version }}.tar.gz"
+      url: "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/latest/openshift-client-{{ client_os }}{{ client_arch }}.tar.gz"
       dest: "./openshift-client.tar.gz"
       mode: '0755'
       validate_certs: false
     vars:
       client_os: "{{ 'mac' if ansible_distribution == 'MacOSX' else 'linux' }}"
+      client_arch: "{{ '-arm64' if ansible_architecture == 'aarch64' else ('' if ansible_architecture in ['amd64', 'x86_64'] else ('-' + ansible_architecture)) }}"
 
   - name: Unpack OCP CLI
     shell: |
       tar xf "openshift-client.tar.gz" oc kubectl
       chmod 0755 oc kubectl
 
-  - name: Copy oc command to local bin
-    copy:
-      src: oc
-      dest: /usr/local/bin/oc
-      owner: root
-      group: root
+  - name: Create .local bin folder
+    file:
+      path: "{{ ansible_user_dir + '/.local/bin' }}"
+      state: directory
       mode: '0755'
-    become: yes
-    become_user: root
 
-  - name: Copy kubectl to local bin
+  - name: Copy commands to .local bin
     copy:
-      src: kubectl
-      dest: /usr/local/bin/kubectl
-      owner: root
-      group: root
+      src: "{{ item }}"
+      dest: "{{ ansible_user_dir + '/.local/bin/' }}"
       mode: '0755'
-    become: yes
-    become_user: root
+    loop:
+    - oc
+    - kubectl
+
+  - name: Cleanup
+    file:
+      path: "{{ item }}"
+      state: absent
+    loop:
+    - openshift-client.tar.gz
+    - oc
+    - kubectl

@@ -1,0 +1,14 @@
+---
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Remove folders created by install_autowas role
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+        - "{{ user_home + '/autowas' }}"
+      register: _result

@@ -1,0 +1,25 @@
+---
+
+- name: Set of assertions for non kubernetes clusters
+  ansible.builtin.assert:
+    that: options.fyredev_ember_count >= 1
+
+- when: options.fyredev_ember_count | int == 1
+  name: Set single ember cluster_hostnames fact
+  ansible.builtin.set_fact:
+    cluster_hostnames:
+      - "{{ cluster_name + '-' + options.fyredev_ember_name | lower }}"
+
+- when: options.fyredev_ember_count | int > 1
+  name: Set multiple embers cluster_hostnames fact
+  ansible.builtin.set_fact:
+    cluster_hostnames: "{{ cluster_hostnames | default([]) + [ember_hostname] }}"
+  loop: "{{ range(options.fyredev_ember_count | int) | list }}"
+  vars:
+    ember_hostname: "{{ (cluster_name + '-' + options.fyredev_ember_name) | format(item + 1) | lower }}"
+
+- name: Set cluster_hostnames fact in cluster-facts
+  ansible.builtin.set_fact:
+    cluster_hostnames: "{{ cluster_hostnames }}"
+  delegate_to: 'cluster-facts'
+  delegate_facts: true

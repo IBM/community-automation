@@ -1,0 +1,197 @@
+---
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Collect all of the ssh_host_keys for all nodes
+      ansible.builtin.set_fact:
+        _all_host_keys: "{{ _all_host_keys | default([]) | union(ssh_known_hostnames | product([hostvars[item].ssh_host_key_public])) }}"
+      loop: "{{ groups['all_nodes'] }}"
+      vars:
+        ssh_known_hostnames:
+          - "{{ item }}"
+          - "{{ hostvars[item].fqdn }}"
+          - "{{ hostvars[item].publicip }}"
+          - "{{ hostvars[item].privateip }}"
+      delegate_to: 'cluster-facts'
+      delegate_facts: true
+
+- name: Add all nodes to each node known_hosts file
+  ansible.builtin.known_hosts:
+    name: "{{ item[0] }}"
+    key: "{{ item[0] + ' ' + item[1] }}"
+    state: present
+  loop: "{{ hostvars['cluster-facts']._all_host_keys }}"
+  when: item[0] | length > 0
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Clear temporary facts
+      ansible.builtin.set_fact:
+        _all_host_keys: []
+      delegate_to: 'cluster-facts'
+      delegate_facts: true
+
+    - name: Disable firewalld
+      ansible.builtin.systemd_service:
+        name: firewalld
+        enabled: false
+        state: stopped
+      register: _result
+      no_log: "{{ noLog }}"
+
+    - name: Print result from systemd
+      ansible.builtin.debug:
+        msg: "{{ _result | combine({'status':status}) }}"
+      vars:
+        status:
+          Result: "{{ _result.status.Result }}"
+
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - expect
+          - python3-pip
+        state: present
+      register: _result
+
+    - name: Install latest python modules with pip
+      ansible.builtin.pip:
+        name:
+          - pip
+          - setuptools
+          - wheel
+          - future
+          - packaging
+          - six
+        state: latest
+        extra_args: --user
+      register: _result
+
+    - name: Install paramiko python module with pip
+      ansible.builtin.pip:
+        name:
+          - paramiko
+        state: latest
+        extra_args: --user
+      register: _result
+
+    - name: Create the autowas_basedir folder
+      ansible.builtin.file:
+        path: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+        state: directory
+        mode: '0755'
+      register: _result
+
+    - name: Download the archive and extract into autowas_basedir folder
+      ansible.builtin.unarchive:
+        src: "{{ hostvars['autowas-facts'].options.autowas_archive_url }}"
+        dest: "{{ hostvars['autowas-facts'].options.autowas_basedir + '/' }}"
+        remote_src: true
+        validate_certs: false
+        creates: "{{ hostvars['autowas-facts'].options.autowas_basedir + '/versionInfo' }}"
+      register: _result
+
+    - name: List contents of versionInfo folder
+      ansible.builtin.find:
+        paths: "{{ hostvars['autowas-facts'].options.autowas_basedir + '/versionInfo' }}"
+      register: _result
+      no_log: "{{ noLog }}"
+
+    - name: Print out the file names
+      ansible.builtin.debug:
+        msg: "{{ _result.files | map(attribute='path') | map('basename') }}"
+
+    - name: Run the configure script
+      ansible.builtin.command:
+        cmd: './bin/configure'
+        chdir: "{{ hostvars['autowas-facts'].options.autowas_basedir }}"
+      register: _result
+      changed_when: false
+
+    - name: Check if we already have a config.user file
+      ansible.builtin.stat:
+        path: "{{ user_home + '/autowas/etc/config.user' }}"
+      register: _result_stat
+
+    - when: not _result_stat.stat.exists
+      name: Create config.user file
+      block:
+
+        - name: Create folder in home directory for config.user
+          ansible.builtin.file:
+            path: "{{ user_home + '/autowas/etc/' }}"
+            state: directory
+            mode: '0700'
+
+        - name: Copy template for config.user
+          ansible.builtin.copy:
+            src: "{{ hostvars['autowas-facts'].options.autowas_basedir + '/etc/DO_NOT_EDIT_config.user' }}"
+            dest: "{{ user_home + '/autowas/etc/config.user' }}"
+            remote_src: true
+            mode: '0600'
+
+    - name: Remove existing placeholders
+      ansible.builtin.lineinfile:
+        path: "{{ user_home + '/autowas/etc/config.user' }}"
+        regexp: '^(user|pass)=FILL_IN_.*'
+        state: absent
+
+    - name: Replace placeholders with GSA credentials
+      ansible.builtin.blockinfile:
+        path: "{{ user_home + '/autowas/etc/config.user' }}"
+        insertafter: '.* If your GSA password contains the following characters .*'
+        block: |
+          user={{ gsa_username }}
+          pass={{ gsa_password }}
+      vars:
+        secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+        gsa_username_secret: "{{ secrets.gsa_username }}"
+        gsa_password_secret: "{{ secrets.gsa_password }}"
+        gsa_username: "{{ lookup(gsa_username_secret.module, gsa_username_secret.param) | trim }}"
+        gsa_password: "{{ lookup(gsa_password_secret.module, gsa_password_secret.param) | trim }}"
+      register: _result
+      no_log: "{{ noLog }}"
+
+    - name: Print result of previous task
+      ansible.builtin.debug:
+        msg: "{{ _result }}"
+
+- when: false
+  name: Skipping these until there is an issue that needs them
+  block:
+
+    - name: Replace ntp server
+      ansible.builtin.lineinfile:
+        path: '/etc/chrony.conf'
+        regexp: '^pool 2.rhel.pool.ntp.org iburst'
+        line: "{{ 'server ' + autowas_gsa_server + ' iburst' }}"
+        backup: true
+      vars:
+        autowas_gsa_server: "{{ hostvars['autowas-facts'].options.autowas_gsa_server }}"
+
+    - name: Restart chronyd service
+      ansible.builtin.systemd_service:
+        name: chronyd
+        state: restarted
+      register: _result
+      no_log: "{{ noLog }}"
+
+    - name: Print result from systemd
+      ansible.builtin.debug:
+        msg: "{{ _result | combine({'status':status}) }}"
+      vars:
+        status:
+          Result: "{{ _result.status.Result }}"
+
+- name: Install required packages
+  ansible.builtin.package:
+    name:
+      - chkconfig
+      - libnsl
+      - xorg-x11-fonts-Type1
+    state: present
+  register: _result

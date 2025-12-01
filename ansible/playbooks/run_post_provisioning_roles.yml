@@ -1,0 +1,9 @@
+---
+
+- name: "Run any post_provisioning_roles when requested"
+  hosts: "{{ hostvars[hostvars['cluster-facts'].options.cluster_provisioner].post_provisioning_hosts | default('cluster-facts') }}"
+  gather_facts: false
+  tags: request_cluster
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.loop_over_roles
+    role_loop: "{{ hostvars[hostvars['cluster-facts'].options.cluster_provisioner].post_provisioning_roles or omit }}"

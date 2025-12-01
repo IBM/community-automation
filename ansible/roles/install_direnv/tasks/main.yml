@@ -1,0 +1,42 @@
+---
+
+- when: inventory_hostname == (groups['all_nodes'] | first)
+  name: Tasks which are only performed on the first VM
+  block:
+
+    - name: Create the ~/.local/bin folder
+      ansible.builtin.file:
+        path: "{{ user_home + '/.local/bin' }}"
+        state: directory
+        mode: '0755'
+      register: _result
+
+    - name: Find the tag for the latest version
+      ansible.builtin.command: |
+        curl -sL "https://api.github.com/repos/direnv/direnv/releases/latest"
+      register: _result_direnv
+      changed_when: false
+      no_log: true
+      until: (_result_direnv.stdout | from_json)['tag_name'] is defined
+
+    - name: Get tag_name
+      ansible.builtin.set_fact:
+        tag_name: "{{ (_result_direnv.stdout | from_json)['tag_name'] }}"
+
+    - name: Download the application
+      ansible.builtin.get_url:
+        url: "{{ 'https://github.com/direnv/direnv/releases/download/' + tag_name + '/direnv.' + os_family + '-' + cpu_arch }}"
+        dest: "{{ user_home + '/.local/bin/direnv' }}"
+        mode: '0755'
+      register: _result
+      until: (_result is defined) and (_result.status_code in [200,304])
+
+    - name: Add eval for direnv to ~/.bashrc
+      ansible.builtin.lineinfile:
+        path: "{{ user_home + '/.bashrc' }}"
+        regexp: '^eval "$(direnv hook bash)"$'
+        line: 'eval "$(direnv hook bash)"'
+
+    - name: Clear temporary facts
+      ansible.builtin.set_fact:
+        _result_direnv: {}

@@ -1,0 +1,13 @@
+---
+
+- name: Create new user account on inventory_hostname
+  ansible.builtin.user:
+    name: "{{ _user_name }}"
+    groups: "{{ _user_groups if (_user_groups is defined) else omit }}"
+    append: "{{ true if (_user_groups is defined) else omit }}"
+    umask: '0022'
+  become: true
+  become_user: root
+  vars:
+    _user_name: "{{ params.user_name }}"
+    _user_groups: "{{ params.user_groups or omit }}"

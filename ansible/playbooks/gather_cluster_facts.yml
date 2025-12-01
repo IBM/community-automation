@@ -1,0 +1,39 @@
+---
+
+- name: Set cluster-facts dependent upon localhost-facts
+  hosts: cluster-facts
+  gather_facts: false
+  tags: cluster_facts
+  tasks:
+    - name: Set facts based on local_home
+      ansible.builtin.set_fact:
+        clusters_basedir: "{{ options.clusters_basedir if clusters_basedir_option_set else (local_home + '/.kube/clusters') }}"
+      vars:
+        local_home: "{{ hostvars['localhost-facts'].local_home }}"
+        clusters_basedir_option_set: "{{ options.clusters_basedir | default('') | length > 0 }}"
+    - when: options.cluster_name is defined
+      name: Set facts based on cluster_name
+      ansible.builtin.set_fact:
+        cluster_dir: "{{ _cluster_dir }}"
+        cluster_bin_dir: "{{ _cluster_dir + '/bin' }}"
+      vars:
+        _cluster_dir: "{{ clusters_basedir + '/' + options.cluster_name }}"
+
+- name: "{{ 'Gather cluster facts from ' + hostvars['cluster-facts'].options.cluster_provisioner | default('undefined cluster provisioner') }}"
+  hosts: "{{ hostvars['cluster-facts'].options.cluster_provisioner | default('cluster-facts') }}"
+  become: false
+  gather_facts: false
+  tags: cluster_facts
+  tasks:
+    - name: "Dynamic include_role: {{ cluster_facts_role | default('skipped') }}"
+      ansible.builtin.include_role:
+        name: "{{ cluster_facts_role }}"
+      when: cluster_facts_role | default('') | length > 0
+
+- name: Gather host facts from all nodes
+  hosts: "{{ groups['all_nodes'] | default('cluster-facts') }}"
+  gather_facts: false
+  tags: cluster_facts
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.setup_ansible_host
+  - role: ibm_community_automation.ibm_community_automation.gather_host_facts

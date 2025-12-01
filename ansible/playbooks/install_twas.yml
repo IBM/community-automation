@@ -1,0 +1,9 @@
+---
+
+- name: Install tWAS using AutoWAS
+  hosts: all_nodes
+  become: false
+  gather_facts: false
+  tags: install_twas
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.install_twas

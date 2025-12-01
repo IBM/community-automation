@@ -1,0 +1,50 @@
+---
+
+- name: Confirm that we can run ssh to inventory_hostname, and sudo without a password
+  ansible.builtin.command: |
+    {{ _ssh_command }} sudo echo sudoer
+  register: _result
+  failed_when: _result is not defined
+  changed_when: false
+  delegate_to: 'localhost-facts'
+
+- name: Provide informative message if sudo on ssh connect fails
+  ansible.builtin.assert:
+    that: _result.stdout == 'sudoer'
+    msg: "ansible setup requires being able to run sudo for {{ _ssh_destination }}"
+
+- name: Set ansible_python_interpreter
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: "{{ ansible_python.executable | default('/usr/bin/python3') }}"
+  when: not hostvars[inventory_hostname].ansible_python_interpreter is defined
+
+- name: Confirm that we can run ssh to inventory_hostname, sudo without a password, and the python interpreter is present
+  ansible.builtin.command: |
+    {{ _ssh_command }} sudo ls {{ ansible_python_interpreter }}
+  register: _result
+  failed_when: _result is not defined
+  changed_when: false
+  delegate_to: 'localhost-facts'
+
+- name: Set fact when python is present
+  ansible.builtin.set_fact:
+    python_present: "{{ _result.stdout == ansible_python_interpreter }}"
+
+- when: not python_present
+  name: Install python when missing
+  ansible.builtin.include_tasks: install_python.yml
+
+- name: Confirm that we have ansible host connectivity
+  ansible.builtin.ping:
+
+- name: Ensure .ansible folder exists
+  ansible.builtin.file:
+    path: .ansible
+    state: directory
+    mode: '0755'
+
+- name: Create .ansible/python_interpreter
+  ansible.builtin.copy:
+    content: "{{ 'ansible_python_interpreter=' + ansible_python_interpreter }}"
+    dest: .ansible/python_interpreter
+    mode: '0644'

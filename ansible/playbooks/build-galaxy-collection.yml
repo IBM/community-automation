@@ -1,0 +1,32 @@
+---
+- name: Install prereqs
+  hosts: localhost
+  tasks:
+    - name: Install ansible-galaxy requirements
+      community.general.ansible_galaxy_install:
+        type: collection
+        requirements_file: ~/ansible/prereq-play/requirements.yml
+        force: true
+    - name: Remove any existing ibm_community_automation/ibm_community_automation galaxy collection
+      ansible.builtin.file:
+        path: ~/.ansible/collections/ansible_collections/ibm_community_automation/ibm_community_automation
+        state: absent
+    - name: Build the ibm_community_automation/ibm_community_automation galaxy collection
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection build . --verbose --force --output-path ~/ansible/releases/
+        chdir: '~/ansible'
+      register: _result
+    - name: Load the galaxy.yml file
+      ansible.builtin.include_vars:
+        name: galaxy_facts
+        file: '~/ansible/galaxy.yml'
+    - name: Install the ibm_community_automation/ibm_community_automation galaxy collection
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection install --force --force-with-deps ~/ansible/releases/ibm_community_automation-ibm_community_automation-{{ galaxy_facts.version }}.tar.gz
+        chdir: '~/ansible'
+      register: _result
+      failed_when: _result is not defined
+    - name: Clean up releases folder after installing the collection
+      ansible.builtin.file:
+        path: '~/ansible/releases'
+        state: absent

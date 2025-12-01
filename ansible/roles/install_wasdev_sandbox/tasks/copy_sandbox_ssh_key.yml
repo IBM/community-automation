@@ -1,0 +1,50 @@
+---
+
+- name: Copy ssh key secret into ssh_keypair_path
+  ansible.builtin.copy:
+    content: |
+      {{ ssh_keypair_key }}
+    dest: "{{ ssh_keypair_path }}"
+    mode: '0600'
+  vars:
+    sandbox_ssh_key: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_key }}"
+    sandbox_ssh_prefix: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_prefix }}"
+    ssh_keypair_path: "{{ user_home + '/.ssh/' + sandbox_ssh_prefix + 'id_' + sandbox_ssh_keytype }}"
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    ssh_keypair_key_secret: "{{ secrets[sandbox_ssh_key] }}"
+    ssh_keypair_key: "{{ lookup(ssh_keypair_key_secret.module, ssh_keypair_key_secret.param) | trim }}"
+  no_log: false
+  changed_when: false
+
+- name: Generate a public key for the private key
+  community.crypto.openssh_keypair:
+    path: "{{ ssh_keypair_path }}"
+    type: "{{ ssh_keypair_type }}"
+    regenerate: 'never'
+  vars:
+    sandbox_ssh_prefix: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_prefix }}"
+    ssh_keypair_path: "{{ user_home + '/.ssh/' + sandbox_ssh_prefix + 'id_' + sandbox_ssh_keytype }}"
+    ssh_keypair_type: "{{ sandbox_ssh_keytype }}"
+  register: _result
+  when: sandbox_ssh_keytype not in ['rsa']
+
+- name: Generate an ssh config
+  ansible.builtin.blockinfile:
+    block: |
+
+      Host {{ sandbox_ssh_hosts | join(' ') }}
+          IdentityFile {{ ssh_keypair_path }}
+          IdentitiesOnly yes
+          UserKnownHostsFile /dev/null
+          StrictHostKeyChecking accept-new
+          ServerAliveInterval 300
+          ServerAliveCountMax 2
+          PasswordAuthentication no
+    path: "{{ user_home + '/.ssh/config' }}"
+    marker: '# {mark} sandbox ssh hosts config'
+    create: true
+    mode: '0600'
+  vars:
+    sandbox_ssh_prefix: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_prefix }}"
+    ssh_keypair_path: "{{ user_home + '/.ssh/' + sandbox_ssh_prefix + 'id_' + sandbox_ssh_keytype }}"
+    sandbox_ssh_hosts: "{{ hostvars['sandbox-facts'].options.sandbox_ssh_hosts }}"

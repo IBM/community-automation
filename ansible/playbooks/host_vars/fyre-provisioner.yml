@@ -1,0 +1,65 @@
+---
+
+ansible_host: localhost
+ansible_connection: local
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+cluster_facts_role: 'cluster_gather_facts_fyre'
+
+ssh_keypairs:
+  fyre:
+    path_prefix: 'fyre_'
+    secret: 'fyre_ssh_key'
+
+distro_tasks:
+  none:
+    gather_facts: distro_gather_facts_none.yml
+    provision: distro_provision_none.yml
+
+# Fyre constants
+
+fyre_cluster_domain: 'fyre.ibm.com'
+
+fyre_apiurl: 'https://api.fyre.ibm.com/rest/v1/'
+fyre_clusterbuildurl: "{{ fyre_apiurl + '?operation=build' }}"
+fyre_clusterdeleteurl: "{{ fyre_apiurl + '?operation=delete' }}"
+fyre_getquotaurl: "{{ fyre_apiurl + '?operation=getuserproductgroupquota&product_group_id=' + (fyre_group_id | string) + '&user_email=' + fyre_user_email }}"
+fyre_clusterdetailurl: "{{ fyre_apiurl + '?operation=query&request=showclusterdetails&cluster_name=' + cluster_name }}"
+fyre_showallclustersurl: "{{ fyre_apiurl + '?operation=query&request=showclusters' }}"
+fyre_showallrequestsurl: "{{ fyre_apiurl + '?operation=query&request=showrequests' }}"
+fyre_showrequesturl: "{{ fyre_apiurl + '?operation=query&request=showrequests&request_id=' + (request_id | string) }}"
+
+# We are using an ocpapi call to get quota just to determine the default product group id
+fyreocp_quotaurl: 'https://ocpapi.svl.ibm.com/v1/quota'
+
+# Fyre parameters
+
+vars_host:
+  fyre_remote_user: 'root'
+  fyre_site: 'rtp'
+  fyre_platform: 'x'
+  fyre_group_id: 0
+  fyre_force_basic_auth: true
+  fyre_ember_count: 1
+  fyre_ember_name: 'ember'
+  fyre_ember_os: 'CentOS Stream 9'
+  fyre_ember_cpu: 4
+  fyre_ember_mem: 8
+  fyre_ember_additional_disks: []
+  fyre_bastion_count: 1
+  fyre_bastion_name: 'inf'
+  fyre_bastion_os: 'CentOS Stream 9'
+  fyre_bastion_cpu: 4
+  fyre_bastion_mem: 8
+  fyre_bastion_additional_disks: []
+  fyre_node_os: 'CentOS Stream 9'
+  fyre_master_count: 3
+  fyre_master_cpu: 8
+  fyre_master_mem: 16
+  fyre_master_additional_disks: []
+  fyre_worker_count: 3
+  fyre_worker_cpu: 8
+  fyre_worker_mem: 16
+  fyre_worker_additional_disks: [{"size": 200}]
+  fyre_quickburn_size: 'medium'
+  fyre_quickburn_ttl: 12

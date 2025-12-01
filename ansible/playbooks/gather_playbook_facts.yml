@@ -1,0 +1,28 @@
+---
+
+- name: Gather localhost facts for this playbook
+  hosts: localhost-facts
+  become: false
+  gather_facts: false
+  tags: playbook_facts
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.load_host_vars_options
+  - role: ibm_community_automation.ibm_community_automation.gather_localhost_facts
+
+- name: Load playbook secrets we will use during this playbook
+  hosts: playbook-secrets
+  become: false
+  gather_facts: false
+  tags: playbook_facts
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.load_host_vars_options
+  - role: ibm_community_automation.ibm_community_automation.load_playbook_secrets
+
+- name: Load options from host_vars, inventory, command line and environment
+  hosts: all
+  become: false
+  gather_facts: false
+  tags: playbook_facts
+  roles:
+  - role: ibm_community_automation.ibm_community_automation.load_host_vars_options
+    when: not (options_loaded | default(false)) and (vars_host is defined or vars_inventory is defined)

@@ -14,12 +14,18 @@ authors:
     - "Thomas Aley"
     - "Steve Martinelli"
     - "Afzal Chishti"
+    - "Glenn Marcy"
 #    - "Author2 (https://author2.example.com)"
 #    - "Author3 <author3@example.com>"
 #dependencies:
 #    "other_namespace.collection1": ">=1.0.0"
 #    "other_namespace.collection2": ">=2.0.0,<3.0.0"
 #    "anderson55.my_collection": "*"    # note: "*" selects the highest version available
+dependencies:
+    community.general: '==10.7.6'
+    community.aws: '==9.3.0'
+    amazon.aws: '==9.5.2'
+    google.cloud: '==1.3.0'
 license:
     - "Apache-2.0"
 #tags:
@@ -30,6 +36,11 @@ build_ignore:
     - "*/roles" #Avoid cloning the roles symlinks
     - "*-play"
     - "*_play"
+    - "Dockerfile"
+    - "Jenkinsfile-example"
     - "install_instana_agent"
+    - "install_instana_agent_k3s"
+    - "playbooks/build-galaxy-collection.yml"
+    - "releases"
     - "request-ocs-local-storage-vmware"
     - "was-automation-register"

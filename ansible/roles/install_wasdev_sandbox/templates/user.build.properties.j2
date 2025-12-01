@@ -1,0 +1,12 @@
+fe.ftp.server={{ fe_ftp_servers | join(',') }}
+fe.ftp.userid={{ fe_ftp_userids | join(',') }}
+fe.ftp.password={{ fe_ftp_passwords | join(',') }}
+fe.download.dir={{ fe_ftp_download_dirs | join(',') }}
+fe.ftp.port=21
+
+prereq.source.type=ftp
+prereq.ftp.server={{ prereq_ftp_server }}
+prereq.ftp.userid={{ prereq_ftp_userid }}
+prereq.ftp.password={{ prereq_ftp_password }}
+prereq.root={{ prereq_root }}
+prereq.ftp.port=21

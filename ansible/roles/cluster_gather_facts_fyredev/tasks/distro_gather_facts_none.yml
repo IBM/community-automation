@@ -1,0 +1,115 @@
+---
+
+- name: Create node groups
+  ansible.builtin.add_host:
+    name: "{{ item.hostname }}"
+    groups:
+      - all_nodes
+    ansible_connection: ssh
+    ansible_host: "{{ item.hostname }}"
+    ansible_ssh_extra_args: "{{ '-F ' + _ssh_paths.config }}"
+    ansible_ssh_user: "{{ remote_user }}"
+    fqdn: "{{ item.hostname + '.' + fyredev_dev_domain }}"
+    privateip: "{{ private_ips | first | default('') }}"
+    publicip: "{{ public_ips | first | default('') }}"
+    short_hostname: "{{ item.hostname }}"
+  loop: "{{ _cluster_details_json }}"
+  loop_control:
+    label: "{{ item.hostname }}"
+  vars:
+    remote_user: "{{ hostvars['playbook-facts'].options.remote_user }}"
+    public_ips: "{{ item.ips | selectattr('type', 'equalto', 'public') | map(attribute='ip') }}"
+    private_ips: "{{ item.ips | selectattr('type', 'equalto', 'private') | map(attribute='ip') }}"
+  changed_when: false
+
+- name: Wait until we can resolve all node hostnames using DNS
+  ansible.builtin.set_fact:
+    _ember_publicip: "{{ lookup('community.general.dig', item.fqdn, '@9.0.0.2') }}"
+  loop: "{{ groups['all_nodes'] | map('extract', hostvars) | selectattr('publicip', '!=', '') }}"
+  loop_control:
+    label: "{{ item.short_hostname }}"
+  delay: 20
+  retries: 30
+  until: lookup('community.general.dig', item.fqdn, '@9.0.0.2') == item.publicip
+
+- when: groups['bastion_node'] | default([]) | length > 0
+  name: Tasks to configure bastion node
+  block:
+
+    - name: Create folder for bastion ssh keypair
+      ansible.builtin.file:
+        path: "{{ cluster_dir + '/.ssh' }}"
+        state: directory
+        mode: '0700'
+
+    - name: Copy bastion ssh key secret into ssh_keypair_path
+      ansible.builtin.copy:
+        content: |
+          {{ ssh_keypair_key }}
+        dest: "{{ bastion_ssh_prvkey }}"
+        mode: '0600'
+      vars:
+        bastion_ssh_key: "{{ hostvars[bastion_hostname].ssh_key }}"
+        secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+        ssh_keypair_key_secret: "{{ secrets[bastion_ssh_key] }}"
+        ssh_keypair_key: "{{ lookup(ssh_keypair_key_secret.module, ssh_keypair_key_secret.param) | trim }}"
+      no_log: false
+      changed_when: false
+
+    - name: Generate a public key for the private key
+      community.crypto.openssh_keypair:
+        path: "{{ bastion_ssh_prvkey }}"
+        type: "{{ bastion_ssh_keytype }}"
+        regenerate: 'never'
+      register: _result
+
+    - name: Generate an ssh config
+      ansible.builtin.copy:
+        content: |
+
+          Host {{ bastion_hostname }} {{ bastion_fqdn }}
+              Hostname {{ bastion_fqdn }}
+              IdentityFile {{ bastion_ssh_prvkey }}
+              IdentitiesOnly yes
+              UserKnownHostsFile /dev/null
+              StrictHostKeyChecking accept-new
+              ServerAliveInterval 300
+              ServerAliveCountMax 2
+              PasswordAuthentication no
+        dest: "{{ bastion_ssh_config }}"
+        mode: '0600'
+
+    - name: Set facts for bastion_node
+      ansible.builtin.set_fact:
+        ansible_ssh_extra_args: "{{ '-F ' + bastion_ssh_config }}"
+      delegate_to: "{{ bastion_hostname }}"
+      delegate_facts: true
+
+  vars:
+    bastion_hostname: "{{ groups['bastion_node'] | first }}"
+    bastion_fqdn: "{{ hostvars[bastion_hostname].fqdn }}"
+    bastion_ssh_config: "{{ cluster_dir + '/.ssh/bastion_config' }}"
+    bastion_ssh_keytype: "{{ hostvars[bastion_hostname].ssh_keytype }}"
+    bastion_ssh_prvkey: "{{ cluster_dir + '/.ssh/bastion_id_' + bastion_ssh_keytype }}"
+
+- name: Create cluster specific ssh config
+  ansible.builtin.set_fact:
+    _ssh_config_content: |
+      {% for hostname in groups['all_nodes'] | default([]) %}
+
+      Host {{ hostname + ' ' + hostvars[hostname].fqdn }}
+          Hostname {{ hostvars[hostname].fqdn }}
+          IdentityFile {{ _ssh_paths.prvkey }}
+          IdentitiesOnly yes
+          UserKnownHostsFile /dev/null
+          StrictHostKeyChecking accept-new
+          ServerAliveInterval 300
+          ServerAliveCountMax 2
+          PasswordAuthentication no
+      {% for bastion in groups['bastion_node'] | default([]) %}
+          ProxyCommand ssh -q {{ hostvars[bastion].ansible_ssh_extra_args }} root@{{ bastion }} -W %h:%p
+      {% endfor %}
+      {% if options.fyredev_ssh_proxy_command is defined %}
+          ProxyCommand {{ options.fyredev_ssh_proxy_command }}
+      {% endif %}
+      {% endfor %}

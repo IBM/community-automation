@@ -1,0 +1,113 @@
+---
+
+- name: Set facts used in this role
+  ansible.builtin.set_fact:
+    ansible_env: "{{ hostvars['localhost-facts'].ansible_env }}"
+    cluster_dir: "{{ hostvars['cluster-facts'].cluster_dir }}"
+    cluster_domain: "{{ hostvars['cluster-facts'].options.cluster_domain }}"
+    cluster_name: "{{ hostvars['cluster-facts'].options.cluster_name }}"
+    cluster_provisioner: "{{ hostvars['cluster-facts'].options.cluster_provisioner }}"
+    kubernetes_distro: "{{ hostvars['cluster-facts'].options.kubernetes_distro }}"
+    ssh_keypair_path_prefix: "{{ hostvars['localhost-facts'].ssh_keypair_path_prefix }}"
+    ssh_keytype: "{{ hostvars['localhost-facts'].options.ssh_keytype }}"
+
+- name: Set secret facts used in this role
+  ansible.builtin.set_fact:
+    _secrets:
+      fyre_user: "{{ fyre_user }}"
+      fyre_user_email: "{{ fyre_user_email }}"
+      fyre_apikey: "{{ fyre_apikey }}"
+  vars:
+    secrets: "{{ hostvars['playbook-secrets'].secrets }}"
+    fyre_user_secret: "{{ secrets.fyre_user }}"
+    fyre_user_email_secret: "{{ secrets.fyre_user_email }}"
+    fyre_apikey_secret: "{{ secrets.fyre_apikey }}"
+    fyre_user: "{{ lookup(fyre_user_secret.module, fyre_user_secret.param) | trim }}"
+    fyre_user_email: "{{ lookup(fyre_user_email_secret.module, fyre_user_email_secret.param) | trim }}"
+    fyre_apikey: "{{ lookup(fyre_apikey_secret.module, fyre_apikey_secret.param) | trim }}"
+  no_log: true
+
+- name: Assert that we have a cluster_name fact
+  ansible.builtin.assert:
+    that: cluster_name is defined and cluster_name | length > 0
+    msg: "Provisioning a Fyre cluster requires a cluster_name fact"
+
+- name: Assert that we have a kubernetes_distro fact
+  ansible.builtin.assert:
+    that: kubernetes_distro is defined and kubernetes_distro | length > 0
+    msg: "Provisioning a Fyre cluster requires a kubernetes_distro fact"
+
+- name: Assert that the inventory_hostname is 'fyre-provisioner'
+  ansible.builtin.assert:
+    that: inventory_hostname == 'fyre-provisioner'
+    msg: "{{ 'The inventory_hostname for this role was \"' + inventory_hostname + '\" and not \"fyre-provisioner\"' }}"
+
+- name: Look for any requests in progress for cluster_name
+  ansible.builtin.uri:
+    url: "{{ fyre_showallrequestsurl }}"
+    method: GET
+    user: "{{ _secrets.fyre_user }}"
+    password: "{{ _secrets.fyre_apikey }}"
+    validate_certs: false
+    force_basic_auth: "{{ options.fyre_force_basic_auth }}"
+  register: _result_show_requests
+  no_log: "{{ noLog }}"
+  changed_when: false
+
+- when: request_ids | length > 0
+  name: Wait until cluster has completed operation
+  ansible.builtin.uri:
+    url: "{{ fyre_showrequesturl }}"
+    method: GET
+    user: "{{ _secrets.fyre_user }}"
+    password: "{{ _secrets.fyre_apikey }}"
+    validate_certs: false
+    force_basic_auth: "{{ options.fyre_force_basic_auth }}"
+  register: _result_show_request
+  changed_when: false
+  loop: "{{ request_ids }}"
+  vars:
+    matching_requests: "{{ _result_show_requests.json.request | default([]) | selectattr('cluster_name', '==', cluster_name) }}"
+    request_ids: "{{ matching_requests | map(attribute='id') }}"
+    request_id: "{{ item }}"
+  delay: 20
+  retries: 600
+  until: (_result_show_request.status == 200) and (_result_show_request.json.request | length > 0) and not (_result_show_request.json.request[0].status in ['building', 'deleting', 'pending delete'])
+
+- name: Gather a list of all the clusters that currently exist
+  ansible.builtin.uri:
+    url: "{{ fyre_showallclustersurl }}"
+    method: GET
+    user: "{{ _secrets.fyre_user }}"
+    password: "{{ _secrets.fyre_apikey }}"
+    validate_certs: false
+    force_basic_auth: "{{ options.fyre_force_basic_auth }}"
+  register: _result_show_clusters
+  changed_when: false
+  delay: 15
+  retries: 20
+  until: _result_show_clusters.status != -1
+
+- name: Set clusters_status_json fact
+  ansible.builtin.set_fact:
+    _clusters_status_json: "{{ _result_show_clusters.json.clusters }}"
+    _clusters_list: []
+
+- when: _clusters_status_json | length > 0
+  name: Set _clusters_list fact
+  ansible.builtin.set_fact:
+    _clusters_list: "{{ _clusters_status_json | map(attribute='name') }}"
+
+- name: Set fact for check that cluster already exists
+  ansible.builtin.set_fact:
+    _cluster_exists: "{{ cluster_name in _clusters_list }}"
+    _cluster_status: "{{ _clusters_status_json | selectattr('name', '==', cluster_name) | map(attribute='status') | first | default('') }}"
+
+- name: Check for error
+  ansible.builtin.assert:
+    that: _cluster_status != 'error'
+  when: _cluster_exists
+
+- name: Print a message about the state of the cluster
+  ansible.builtin.debug:
+    msg: "{{ 'Cluster ' + cluster_name + ((' exists (' + _cluster_status + ').') if _cluster_exists else ' does not exist.') }}"

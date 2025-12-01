@@ -1,0 +1,89 @@
+---
+
+ansible_host: localhost
+ansible_connection: local
+ansible_python_interpreter: "{{ ansible_playbook_python }}"
+
+cluster_facts_role: 'cluster_gather_facts_fyredev'
+
+ssh_keypairs:
+  fyre:
+    path_prefix: 'fyre_'
+    secret: 'fyre_ssh_key'
+
+distro_tasks:
+  none:
+    get_hostnames: distro_get_hostnames_none.yml
+    gather_facts: distro_gather_facts_none.yml
+
+# Fyre Development API constants
+
+fyredev_dev_domain: 'dev.fyre.ibm.com'
+fyredev_vm_domain: 'vm.fyre.ibm.com'
+
+fyredev_v1_url: 'https://ocpapi.svl.ibm.com/v1'
+fyredev_quota_url: "{{ fyredev_v1_url + '/quota' }}"
+fyredev_vm_url: "{{ fyredev_v1_url + '/vm' }}"
+fyredev_list_url: "{{ fyredev_vm_url + '/' }}"
+fyredev_details_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/details' }}"
+fyredev_status_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/status' }}"
+fyredev_os_available_url: "{{ fyredev_vm_url + '/os_available/' + fyredev_platform }}"
+fyredev_check_hostname_url: "{{ fyredev_vm_url + '/check_hostname/' + fyredev_hostname }}"
+fyredev_request_status_url: "{{ fyredev_vm_url + '/request/' + fyredev_request_id }}"
+fyredev_get_user_list_url: "{{ fyredev_vm_url + '/get_user_list/' + fyredev_user }}"
+fyredev_build_url: "{{ fyredev_vm_url + '/' }}"
+fyredev_resources_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/resources' }}"
+fyredev_disk_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/disk' }}"
+fyredev_description_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/description' }}"
+fyredev_password_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/password' }}"
+fyredev_boot_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/boot' }}"
+fyredev_shutdown_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/shutdown' }}"
+fyredev_reboot_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/reboot' }}"
+fyredev_delete_url: "{{ fyredev_vm_url + '/' + fyredev_id }}"
+fyredev_floating_ip_url: "{{ fyredev_v1_url + '/floating_ip/' + fyredev_id }}"
+fyredev_expiration_url: "{{ fyredev_vm_url + '/' + fyredev_id + '/expiration' }}"
+fyredev_clusters_url: "{{ fyredev_v1_url + '/clusters' }}"
+fyredev_clusters_list_url: "{{ fyredev_clusters_url + '/' }}"
+fyredev_cluster_create_url: "{{ fyredev_clusters_url + '/' }}"
+fyredev_cluster_info_url: "{{ fyredev_clusters_url + '/' + cluster_id }}"
+fyredev_cluster_details_url: "{{ fyredev_clusters_url + '/' + cluster_id + '/include_vms' }}"
+fyredev_cluster_update_url: "{{ fyredev_clusters_url + '/' + cluster_id }}"
+fyredev_cluster_add_vms_url: "{{ fyredev_clusters_url + '/' + cluster_id + '/add_vm/' }}"
+fyredev_cluster_remove_vms_url: "{{ fyredev_clusters_url + '/' + cluster_id + '/remove_vm/' }}"
+fyredev_cluster_delete_url: "{{ fyredev_clusters_url + '/' + cluster_id }}"
+
+# Fyre parameters
+
+vars_host:
+  fyredev_remote_user: 'root'
+  fyredev_site: 'rtp'
+  fyredev_platform: 'x'
+  fyredev_group_id: 0
+  fyredev_force_basic_auth: true
+  fyredev_check_config: false
+  fyredev_dns: false
+  fyredev_public_network: false
+  fyredev_ember_count: 1
+  fyredev_ember_name: 'ember'
+  fyredev_ember_os: 'CentOS Stream 9'
+  fyredev_ember_cpu: 4
+  fyredev_ember_mem: 8
+  fyredev_ember_additional_disk: []
+  fyredev_bastion_count: 1
+  fyredev_bastion_name: 'inf'
+  fyredev_bastion_os: 'CentOS Stream 9'
+  fyredev_bastion_cpu: 4
+  fyredev_bastion_mem: 8
+  fyredev_bastion_additional_disk: []
+  fyredev_node_os: 'CentOS Stream 9'
+  fyredev_master_count: 3
+  fyredev_master_cpu: 8
+  fyredev_master_mem: 16
+  fyredev_master_additional_disk: []
+  fyredev_worker_count: 3
+  fyredev_worker_cpu: 8
+  fyredev_worker_mem: 16
+  fyredev_worker_additional_disk: ["200"]
+  fyredev_quota_type: 'product_group'
+  fyredev_quickburn_size: 'medium'
+  fyredev_quickburn_ttl: 12
