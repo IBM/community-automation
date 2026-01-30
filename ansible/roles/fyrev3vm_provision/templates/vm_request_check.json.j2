@@ -16,6 +16,9 @@
    {% if fyre_additional_disk is defined %}
    "additional_disk": [ "{{ fyre_additional_disk }}" ],
    {% endif %}
+   {% if fyre_additional_disks is defined and fyre_additional_disks != [] %}
+   "additional_disk": {{ fyre_additional_disks }},
+   {% endif %}
    {% if fyre_ceph_storage is defined %}
    "ceph_storage": "{{ fyre_ceph_storage }}",
    {% endif %}
