@@ -1,0 +1,3 @@
+fyre_vmName: "{{ ansible_host|default(omit) }}"
+fyre_apiurl: https://ocpapi.svl.ibm.com
+fyre_fqdn: "{{ fyre_vmName }}.dev.fyre.ibm.com"
