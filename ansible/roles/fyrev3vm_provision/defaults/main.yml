@@ -1,0 +1,24 @@
+# fyre_vmName: No default, this must be set
+# fyre_product_group_id: No defualt, this must be set
+fyre_ssh_public_key: "{{ lookup('file', lookup('env','HOME') + '/.ssh/id_rsa.pub') }}"
+
+# How many times to retry waiting for an ssh connection after provisioning
+# The check is performed every 5 seconds, so the default is 30 minutes
+fyre_sshRetries: 360
+# How many times to wait for a fyre request to complete
+# The check is performed every 5 seconds, so the default is 1 hour
+fyre_requestRetries: 720
+
+#Default Specs
+fyre_platform: "x"
+fyre_os: "Ubuntu 24.04"
+fyre_memory: 8
+fyre_cpu: 4
+fyre_site: "svl"
+fyre_public_network: "y"
+fyre_description: "Created By Community Automation Ansible"
+# Optionally add fyre_expiration, fyre_additional_disk
+
+# Fyre urls and api
+fyre_apiurl: https://ocpapi.svl.ibm.com
+fyre_fqdn: "{{ fyre_vmName }}.dev.fyre.ibm.com"
