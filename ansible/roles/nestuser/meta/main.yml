@@ -2,3 +2,4 @@
 
 dependencies:
 - role: load_secrets
+  tags: debug

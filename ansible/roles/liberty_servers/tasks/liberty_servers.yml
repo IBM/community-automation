@@ -16,7 +16,7 @@
   - name:  stop existing server process
     ignore_errors: true
     shell: "{{ wlp_cmd }} {{install_base }}/{{ liberty_dir }}/bin/server stop {{ wl_server }}"
-    when: iscc.stat.exists == True
+    when: iscc.stat.exists
     register: op
 
   - debug:

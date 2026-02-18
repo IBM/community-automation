@@ -1,0 +1,4 @@
+---
+# can override with local mirror
+#im_upgrade_repo_jdk: 'https://nest-ci-agent-1.fyre.ibm.com/binaries/semeru_mirrored_repo/'
+im_upgrade_repo_jdk: 'https://www.ibm.com/software/repositorymanager/'

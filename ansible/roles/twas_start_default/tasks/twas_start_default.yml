@@ -1,18 +1,38 @@
 ---
-
-- name: default
-  when: profile_type == 'default'
+- name: Start tWAS Server
+  when: 
+    - profile_type == 'managed' or profile_type == 'default'
+    - dynamic_cluster_only is not defined
   block:
-   - name: start the default
-     shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer.sh server1" 
-     register: startDefaultOutput
-     failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
-   - name: startDefaultOutput
-     debug:
-      msg: "{{ startDefaultOutput.stdout_lines }}"
-   - name: cat AboutThisProfile.txt
-     shell: "cat {{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/AboutThisProfile.txt"
-     register: AboutThisProfile
-   - name: AboutThisProfile
-     debug:
-      msg: "{{ AboutThisProfile.stdout_lines }}"
+    - name: retrieve signers
+      shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/retrieveSigners{{ ext }} {{ cell_trust }} ClientDefaultTrustStore -autoAcceptBootstrapSigner -username {{ twas_username }} -password {{ twas_password }}"
+      register: retrieveSignersOutput
+      failed_when: ( retrieveSignersOutput.rc not in [ 0, 3 ] )
+    - name: retrieveSignersOutput
+      debug:
+        msg: "{{ retrieveSignersOutput.stdout_lines }}"
+
+    # If the target servers are part of a dynamic cluster which starts automtcally, pause xx mins
+    - name: Pause for dynamic cluster startup
+      pause:
+        minutes: "{{ dynamic_cluster_pause }}"
+      when: dynamic_cluster_pause is defined
+
+    - name: List the stopped servers minus the nodeagent
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/serverStatus{{ ext }} -all -username {{ twas_username }} -password {{ twas_password }} |grep -i ADMU0509I|grep -v nodeagent|awk -F'\"' '{print $2}'"
+      register: serverListOutput
+
+    - name: Start the default tWAS Server
+      ansible.builtin.shell: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/startServer{{ ext }} {{ item }}"
+      register: startDefaultOutput
+      failed_when: ( startDefaultOutput.rc not in [ 0, 255 ] )
+      with_items: '{{ serverListOutput.stdout_lines }}'
+
+    - name: startDefaultOutput
+      ansible.builtin.debug:
+        msg: "rc={{ item.rc }}"
+      with_items: "{{ startDefaultOutput.results }}"
+      loop_control:
+        label: "{{ item.stdout }}"
+      failed_when:
+        - '" Error " in item.stdout'

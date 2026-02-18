@@ -1,0 +1,56 @@
+---
+
+- name: Any Cores?
+  ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
+  register: iscore
+  failed_when: iscore.rc not in [0,2]
+
+- name: Any Heapdumps?
+  ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
+  register: isheap
+  failed_when: isheap.rc not in [0,2]
+
+- name: Dump archive logic
+  when: iscore.rc == 0 or isheap.rc == 0 
+  block: 
+  - name: Archive the tWAS dump zip to fetch
+    ignore_errors: True
+    community.general.archive:
+      path:
+        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/javacore*"
+        - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/heapdump*"
+      dest: dumps.zip
+      format: zip
+      exclusion_patterns:
+        - '*.zip'
+        - '*.tar'
+        - '*.gz'
+      mode: '0755'
+
+  - name: Fetch the tWAS dump archive
+    ansible.builtin.fetch:
+      src: dumps.zip
+      dest: "{{ dumps_dir }}/{{ env_name }}"
+
+  - name: Remove temp dumps.zip
+    ansible.builtin.file:
+      path: dumps.zip
+      state: absent
+
+    # unarchive fails to find handler
+  - name: Extract the tWAS dump archive
+    delegate_to: localhost
+    ansible.builtin.unarchive:
+      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+      remote_src: false
+
+  - name: Remove dumps.zip
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/dumps.zip"
+      state: absent
+
+  - name: Dumps directory location
+    ansible.builtin.debug:
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}"

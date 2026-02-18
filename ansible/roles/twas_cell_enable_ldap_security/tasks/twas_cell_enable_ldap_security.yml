@@ -6,7 +6,7 @@
    dest: "99_twas_enable_ldap_security.py"
 
 - name: run the enable ldap jython script
-  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin.sh -lang jython -username {{ twas_username }} -password {{ twas_password }} -f 99_twas_enable_ldap_security.py"
+  shell: "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -username {{ twas_username }} -password {{ twas_password }} -f 99_twas_enable_ldap_security.py"
   register: enableLdapOutput
   failed_when: ( enableLdapOutput.rc not in [ 0, 255 ] )
 - name: enableLdapOutput

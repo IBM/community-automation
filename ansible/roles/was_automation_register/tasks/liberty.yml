@@ -110,8 +110,8 @@
   - name: stop liberty servers ( if server not running an error will be produced - ignore and no_log )
     command: "{{ wa_target_path }}/bin/server stop {{ item }}"
     register: stop_server_servers
-    ignore_errors: yes
-    no_log: yes
+    ignore_errors: true
+    no_log: true
     with_items:
     - "{{ liberty_servers }}"
 

@@ -1,0 +1,35 @@
+---
+- name: Remove Liberty logs dir
+  when: 
+    - not (more_enabled | default(false))
+  ansible.builtin.file:
+    path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/logs"
+    state: absent
+
+- name: Remove Liberty logs dir ( MoRE)
+  when: 
+    - more_enabled | default(false)
+  ansible.builtin.file:
+    path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/"
+    state: absent
+
+- name: Any extra logs?
+  when: extra_logs is defined
+  block:
+
+  - name: Remove Liberty extra_logs dir
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ extra_logs }}"
+
+  - name: Create Liberty extra_logs dir
+    become: true
+    ansible.builtin.file:
+      path: "{{ item }}"
+      state: directory
+      mode: '0777'
+    with_items:
+      - "{{ extra_logs }}"
+

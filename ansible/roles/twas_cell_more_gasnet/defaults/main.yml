@@ -1,0 +1,10 @@
+---
+# Default variables for WebSphere administration
+
+DefaultAppName: 'GasNet_ATM_Module'
+DefaultAppFile: '{{ DefaultAppName }}.war'
+
+# DB2 connection settings
+db2_jdbc_path: "${WAS_INSTALL_ROOT}/db2jars/"
+
+MLSClusterName: 'MLSCluster1'

@@ -1,7 +1,7 @@
 ---
 # https://docs.docker.com/engine/install/ubuntu/
 - name: remove conflicting packages
-  become: yes
+  become: true
   ignore_errors: yes
   apt:
    name: "{{ packages }}"
@@ -20,7 +20,7 @@
     update_cache: yes
 
 - name: install pre-req packages
-  become: yes
+  become: true
   apt:
    name: "{{ packages }}"
    state: present
@@ -33,7 +33,7 @@
    - 'lsb-release'
 
 - name: apt update
-  become: yes
+  become: true
   apt:
    name: '*'
    state: latest
@@ -50,7 +50,7 @@
    state: present
 
 - name: install docker packages
-  become: yes
+  become: true
   apt:
    name: "{{ packages }}"
    state: present

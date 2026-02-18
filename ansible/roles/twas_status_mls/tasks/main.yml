@@ -1,0 +1,3 @@
+---
+- name: Get status tWAS Managed Liberty Server
+  ansible.builtin.include_tasks: twas_status_mls.yml

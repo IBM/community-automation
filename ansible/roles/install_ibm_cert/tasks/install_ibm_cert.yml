@@ -1,0 +1,107 @@
+---
+
+- name: Check if JRE directory exists
+  ansible.builtin.stat:
+    path: "{{ ibm_cert_jre_path }}"
+  register: jre_dir
+
+- name: Verify JRE directory exists
+  ansible.builtin.fail:
+    msg: "JRE directory {{ ibm_cert_jre_path }} does not exist"
+  when: not jre_dir.stat.exists
+
+- name: Find Java keytool
+  ansible.builtin.find:
+    paths: "{{ ibm_cert_jre_path }}"
+    patterns: "keytool,keytool.exe"
+    recurse: true
+  register: keytool_find
+
+- name: Set keytool path
+  ansible.builtin.set_fact:
+    keytool_path: "{{ keytool_find.files[0].path }}"
+    is_windows_keytool: "{{ keytool_find.files[0].path.endswith('.exe') }}"
+  when: keytool_find.matched > 0
+
+- name: Verify keytool exists
+  ansible.builtin.fail:
+    msg: "keytool not found in {{ ibm_cert_jre_path }}"
+  when: keytool_find.matched == 0
+
+- name: Find Java cacerts keystore
+  ansible.builtin.find:
+    paths: "{{ ibm_cert_jre_path }}"
+    patterns: "cacerts"
+    recurse: true
+  register: cacerts_find
+
+- name: Set cacerts path
+  ansible.builtin.set_fact:
+    cacerts_path: "{{ cacerts_find.files[0].path }}"
+    cacerts_path_win: "{{ cacerts_find.files[0].path | regex_replace('^/cygdrive/([a-z])/', '\\1:/') | regex_replace('^/home/', 'C:/cygwin64/home/') | replace('/', '\\\\') }}"
+  when: cacerts_find.matched > 0
+
+- name: Verify cacerts exists
+  ansible.builtin.fail:
+    msg: "cacerts keystore not found in {{ ibm_cert_jre_path }}"
+  when: cacerts_find.matched == 0
+
+- name: Check if certificate already exists in keystore
+  ansible.builtin.command: >
+    {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
+    -storepass changeit -alias {{ ibm_cert_alias }}
+  register: cert_check
+  failed_when: false
+  changed_when: false
+  no_log: true
+
+- name: Install IBM Digital Certs root certificate
+  when: cert_check.rc != 0
+  block:
+
+    - name: Download IBM Digital Certs root certificate
+      ansible.builtin.get_url:
+        url: "{{ ibm_cert_url }}"
+        dest: ./ibm_root.cer
+        validate_certs: false
+        mode: '0644'
+
+    - name: Get absolute path of certificate file
+      ansible.builtin.stat:
+        path: ./ibm_root.cer
+      register: cert_file_stat
+
+    - name: Set certificate file path for Windows
+      ansible.builtin.set_fact:
+        cert_file_path: "{{ is_windows_keytool | default(false) | ternary(cert_file_stat.stat.path | regex_replace('^/cygdrive/([a-z])/', '\\1:/') | regex_replace('^/home/', 'C:/cygwin64/home/') | replace('/', '\\\\'), cert_file_stat.stat.path) }}"
+
+    - name: Import certificate into Java keystore
+      ansible.builtin.command: >
+        {{ keytool_path }} -import -trustcacerts -noprompt
+        -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }} -storepass changeit
+        -alias {{ ibm_cert_alias }} -file {{ cert_file_path }}
+      register: cert_import
+      changed_when: cert_import.rc == 0
+
+    - name: Remove temporary certificate file
+      ansible.builtin.file:
+        path: ./ibm_root.cer
+        state: absent
+
+    - name: Verify certificate installation
+      ansible.builtin.command: >
+        {{ keytool_path }} -list -keystore {{ is_windows_keytool | default(false) | ternary(cacerts_path_win, cacerts_path) }}
+        -storepass changeit -alias {{ ibm_cert_alias }}
+      register: cert_verify
+      changed_when: false
+
+    - name: Certificate installation result
+      ansible.builtin.debug:
+        msg: "IBM Digital Certs root certificate successfully installed"
+
+- name: Certificate already installed
+  ansible.builtin.debug:
+    msg: "IBM Digital Certs root certificate already exists in keystore"
+  when: cert_check.rc == 0
+
+# Made with Bob

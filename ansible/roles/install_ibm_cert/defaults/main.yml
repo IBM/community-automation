@@ -1,0 +1,6 @@
+---
+ibm_cert_url: 'changeme'
+ibm_cert_jre_path: '{{ install_base }}/IM/eclipse/'
+ibm_cert_alias: 'ibm_digital_certs_root'
+
+# Made with Bob

@@ -1,0 +1,3 @@
+---
+- name: Delete tWAS Managed Liberty Server
+  ansible.builtin.include_tasks: twas_delete_mls.yml

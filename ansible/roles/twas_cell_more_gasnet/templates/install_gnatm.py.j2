@@ -1,0 +1,9 @@
+#
+# Deploy GasNet_ATM_Module ee10 on MLSCluster1
+#
+# Usage: wsadmin.sh -f install_gnatm.py 
+import time
+
+print ("Installing app: GasNet_ATM_Module")
+AdminApp.install('{{ DefaultAppFile}}', '[  -distributeApp -useMetaDataFromBinary -appname GasNet_ATM_Module_war -validateinstall warn -nouseAutoLink -novalidateSchema -contextroot GasNet_ATM_Module  -MapResRefToEJB [[ GasNet_ATM_Module "" GasNet_ATM_Module.war,WEB-INF/web.xml jdbc/StationSecureDS javax.sql.DataSource "jdbc/StationSecureDS " "" "" "" ]] -MapModulesToServers [[ GasNet_ATM_Module GasNet_ATM_Module.war,WEB-INF/web.xml WebSphere:cell={{ cellName }},cluster={{ MLSClusterName }}+WebSphere:cell={{ cellName }},node={{ webNode }},server={{ webServerName }} ]] -MapWebModToVH [[ GasNet_ATM_Module GasNet_ATM_Module.war,WEB-INF/web.xml default_host ]]]' )
+AdminConfig.save()

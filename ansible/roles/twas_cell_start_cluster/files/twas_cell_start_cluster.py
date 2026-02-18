@@ -28,7 +28,7 @@ else:
         print ("Scope:   "+scope)
         if (scope == "cluster"):
                 clusterNamesList.append(sys.argv[1])
-               	print ("Cluster: "+clusterNamesList[0])
+                print ("Cluster: "+clusterNamesList[0])
                 if ( len(sys.argv) == 3 ):
                         clusterNamesList.append(sys.argv[2])
                         print ("Cluster: "+clusterNamesList[1])

@@ -1,0 +1,23 @@
+all:
+ vars:
+  agent_key: ''
+  instana_host: ''
+  instana_mode: '' # blank is dynamic offline is static
+  instana_zone: ''
+  instana_runtime: 'j9' # blank is azul j9 is Eclipse OpenJ9 11
+
+  # windows only required variables
+  ansible_user: Administrator # user on the target envs
+  ansible_shell_type: cmd  
+  instana_region: '' # if onprem install value is: singlebox-onprem
+  instana_unit: ''
+  instana_tenet: ''
+  # end windows only required variables
+
+ # adjust the contents below to match your configuration
+ hosts:         
+ children:
+  windows:
+   hosts:
+    windoze1.fyre.ibm.com:
+    windoze2.fyre.ibm.com:

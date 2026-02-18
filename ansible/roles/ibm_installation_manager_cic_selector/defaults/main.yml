@@ -12,6 +12,7 @@ cic_selector_os:
   Linux: 'linux'
   Windows: 'win32'
   CYGWIN_NT-10.0-20348: 'win32' # hard coded to a specific cygwin version
+  CYGWIN_NT-10.0-26100: 'win32' # hard coded to a specific cygwin version
   ZOS: 'zos'
   OS400: 'os400'
 # cmvc defect to get this fixed : 803544

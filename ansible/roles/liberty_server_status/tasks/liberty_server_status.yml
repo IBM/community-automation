@@ -1,0 +1,76 @@
+---
+- name: Check if liberty is installed
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ liberty_dir }}/bin/server"
+  register: islib
+  failed_when: islib.stat.exists == False
+
+- name: Set maint status boolean false
+  ansible.builtin.set_fact:
+    server_maint_status: false
+
+- name: MLS Server Status block
+  when: (more_enabled | default(false))
+  block:
+
+    - name: tWAS MoRE Liberty status
+      ansible.builtin.include_role:
+        name: twas_status_mls
+
+- name: Liberty Server Status block
+  when: not (more_enabled | default(false))
+  block:
+
+    - name: Check server status
+      ansible.builtin.command:
+        cmd: "{{ wlp_cmd }} {{ install_base }}/{{ liberty_dir }}/bin/server status {{ wl_server }}"
+      register: cmdOutput1
+      failed_when: ( cmdOutput1.rc not in [ 0, 1, 2 ] )
+
+    - name: Set status facts
+      ansible.builtin.set_fact:
+        server_status: '{{ cmdOutput1.stdout | trim }}'
+
+    - name: Is cc_hostname defined?
+      when: cc_hostname is defined
+      block:
+      - name: Check server maintenance status
+        ansible.builtin.shell:
+          "{{ install_base }}/{{ liberty_dir }}/bin/collective getMaintenanceMode \
+          --host={{ cc_hostname }} \
+          --port={{ liberty_admin_ports }} \
+          --user={{ liberty_admin_user }} \
+          --password={{ liberty_admin_pass }} \
+          --hostName={{ ansible_fqdn }} \
+          --usrDir={{ cygwin }}{{ wlp_usr_dir }} \
+          --server={{ wl_server }} \
+          --autoAcceptCertificates"
+        register: getMaintenanceModeOutput
+        failed_when: ( getMaintenanceModeOutput.rc not in [ 0, 255 ] )
+
+      - name: Set maint status boolean true
+        when: getMaintenanceModeOutput.stdout is search('is in maintenance mode')
+        ansible.builtin.set_fact:
+          server_maint_status: true
+
+- name: Create status dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+    state: directory
+    mode: '0755'
+
+- name: Create list with server name / status
+  ansible.builtin.set_fact:
+    liberty_server_name_status: '{{ liberty_server_name_status | default([]) + [ { "server": wl_server, "status": server_status, "maint_mode": server_maint_status|bool } ] }}'
+
+- name: New dict server status
+  ansible.builtin.set_fact:
+    versions: "{{{ ansible_fqdn : liberty_server_name_status }}}"
+
+- name: Write server status json file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ versions | to_nice_json( sort_keys=false ) }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ status_json_file }}"
+    mode: '0444'

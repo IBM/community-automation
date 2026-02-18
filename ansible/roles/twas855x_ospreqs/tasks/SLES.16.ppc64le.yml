@@ -1,0 +1,10 @@
+---
+
+- name: Install packages
+  become: true
+  zypper:
+   name: "{{ packages }}"
+   state: present
+  vars:
+   packages:
+   - 'libnsl-stub1'

@@ -1,0 +1,194 @@
+---
+- name: Any Liberty dumps block
+  when: 
+    - not (more_enabled | default(false))
+  block:
+    - name: Any Cores?
+      ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+      register: iscore
+      failed_when: iscore.rc not in [0,2]
+      ignore_errors: True
+      #allows it to pass for z/OS
+    - name: Any Heapdumps?
+      ansible.builtin.shell: "ls {{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+      register: isheap
+      failed_when: isheap.rc not in [0,2]
+      ignore_errors: True
+
+    - name: Dump archive logic
+      when: iscore.rc == 0 or isheap.rc == 0 
+      block: 
+      - name: Archive the liberty dump zip to fetch
+        ignore_errors: True
+        community.general.archive:
+          path:
+            - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/javacore*"
+            - "{{ wlp_usr_dir }}/servers/{{ wl_server }}/heapdump*"
+          dest: dumps.zip
+          format: zip
+          exclusion_patterns:
+            - '*.zip'
+            - '*.tar'
+            - '*.gz'
+
+- name: Any MoRE Liberty dumps block
+  when: more_enabled | default(false)
+  block:
+    - name: Any Cores?
+      ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/javacore*"
+      register: iscore
+      failed_when: iscore.rc not in [0,2]
+      ignore_errors: True
+      #allows it to pass for z/OS
+    - name: Any Heapdumps?
+      ansible.builtin.shell: "ls {{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/heapdump*"
+      register: isheap
+      failed_when: isheap.rc not in [0,2]
+      ignore_errors: True
+
+    - name: Dump archive logic
+      when: iscore.rc == 0 or isheap.rc == 0 
+      block: 
+      - name: Archive the liberty dump zip to fetch
+        ignore_errors: True
+        community.general.archive:
+          path:
+            - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/javacore*"
+            - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/logs/heapdump*"
+          dest: dumps.zip
+          format: zip
+          exclusion_patterns:
+            - '*.zip'
+            - '*.tar'
+            - '*.gz'
+
+- name: Any dumps.zip
+  ansible.builtin.stat:
+    path: dumps.zip
+  register: isdumpszip
+
+- name: Dump archive logic
+  when: isdumpszip.stat.exists
+  block: 
+  - name: Create local server dir
+    delegate_to: localhost
+    ansible.builtin.file:
+      path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      state: directory
+
+  - name: Fetch the liberty dump archive
+    ansible.builtin.fetch:
+      flat: true
+      src: dumps.zip
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+
+  - name: Remove temp dumps.zip
+    ansible.builtin.file:
+      path: dumps.zip
+      state: absent
+
+  # - name: List the contents of the dump zip file ( debug )
+  #   delegate_to: localhost
+  #   ansible.builtin.shell: "unzip -l {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+  #   register: zipcontents
+
+  # - name: List the contents of the dump zip file output ( debug )
+  #   debug:
+  #     msg: "{{ zipcontents.stdout_lines }}"
+
+  - name: Extract the liberty dump archive
+    delegate_to: localhost
+    ansible.builtin.unarchive:
+      src: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+      dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      remote_src: false
+
+  - name: Find files with restricted permissions
+    ansible.builtin.find:
+      paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      file_type: file
+      recurse: true
+    register: found_files
+    no_log: true
+
+  - name: Change permissions from to 0755
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      mode: '0755'
+    loop: "{{ found_files.files }}"
+    when: item.mode != '0755'
+    no_log: true
+
+  - name: Remove dumps.zip
+    delegate_to: localhost
+    file:
+      path: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/dumps.zip"
+      state: absent
+
+  - name: Dumps directory location
+    debug:
+      msg: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}"
+
+  - name: Find javacore files in extracted dumps
+    delegate_to: localhost
+    ansible.builtin.find:
+      paths: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/"
+      patterns: 'javacore*.txt'
+      recurse: true
+    register: javacore_files
+
+  - name: Get javacore metadata
+    delegate_to: localhost
+    when: javacore_files.matched > 0
+    block:
+      - name: Extract dump reason from latest javacore
+        ansible.builtin.shell: |
+          grep -m 1 "Dump Event" "{{ javacore_files.files | sort(attribute='mtime', reverse=true) | first | json_query('path') }}" | sed 's/.*Dump Event/Dump Event/'
+        register: dump_reason
+        failed_when: false
+
+      - name: Set javacore facts
+        ansible.builtin.set_fact:
+          javacore_data:
+            number_of_javacores: "{{ javacore_files.matched }}"
+            latest_javacore: "{{ javacore_files.files | sort(attribute='mtime', reverse=true) | first | json_query('path') | basename }}"
+            reason_javacore: "{{ dump_reason.stdout | default('') }}"
+
+      - name: Set empty javacore facts when no javacores found
+        delegate_to: localhost
+        when: javacore_files.matched == 0
+        ansible.builtin.set_fact:
+          javacore_data:
+            number_of_javacores: "0"
+            latest_javacore: ""
+            reason_javacore: ""
+
+      - name: Load existing java_core.json if it exists
+        delegate_to: localhost
+        ansible.builtin.slurp:
+          path: "{{ dumps_dir }}/{{ env_name }}/{{ java_core_json_file }}"
+        register: existing_json
+        failed_when: false
+        ignore_errors: true
+
+      - name: Parse existing JSON or initialize empty dict
+        delegate_to: localhost
+        ansible.builtin.set_fact:
+          java_core_dict: "{{ existing_json.content | b64decode | from_json if existing_json.content is defined else {} }}"
+
+      - name: Update java_core dictionary with current server data
+        delegate_to: localhost
+        ansible.builtin.set_fact:
+          java_core_dict: "{{ java_core_dict | combine({ansible_fqdn: {wl_server: javacore_data}}, recursive=true) }}"
+
+      - name: Write java_core.json
+        delegate_to: localhost
+        ansible.builtin.copy:
+          content: "{{ java_core_dict | to_nice_json }}"
+          dest: "{{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ java_core_json_file }}"
+          mode: '0644'
+
+      - name: Display java_core.json location
+        delegate_to: localhost
+        debug:
+          msg: "Javacore summary created at: {{ dumps_dir }}/{{ env_name }}/{{ ansible_fqdn }}/servers/{{ wl_server }}/{{ java_core_json_file }}"

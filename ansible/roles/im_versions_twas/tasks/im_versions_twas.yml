@@ -1,0 +1,43 @@
+---
+- name:  listInstalledPackages
+  ansible.builtin.shell: "{{ install_base }}/IM/eclipse/tools/imcl listInstalledPackages -long"
+  register: packageOutput
+
+# - name: packageOutput
+#   ansible.builtin.debug:
+#     msg: "{{ packageOutput.stdout_lines }}"
+
+- name: Create version dir
+  delegate_to: localhost
+  ansible.builtin.file:
+    path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: '0755'
+
+- name: Size of stdout_lines
+  delegate_to: localhost
+  ansible.builtin.set_fact:
+    max_counter: "{{ packageOutput.stdout_lines | length }}"
+
+- name: Create dict with IM version(s)
+  ansible.builtin.set_fact:
+    list_package: "{{ list_package | default({}) | combine( { item: packageOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+  no_log: true
+
+- name: New dict list_package
+  ansible.builtin.set_fact:
+    package: "{{ { ansible_fqdn : list_package } }}"
+
+# - name: New dict append_this
+#   delegate_to: localhost
+#   ansible.builtin.debug:
+#     msg: "{{ package }}"
+
+- name: Write var to file
+  delegate_to: localhost
+  ansible.builtin.copy:
+    content: "{{ package | to_nice_json }}"
+    dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ im_version_json_file }}"

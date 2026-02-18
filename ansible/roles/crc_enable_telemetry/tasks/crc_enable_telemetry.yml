@@ -40,5 +40,5 @@
     - monidx != ""
 
   when: 
-  - crcEnableTelemetryFlag == True
+  - crcEnableTelemetryFlag
   - ansible_facts['memtotal_mb'] >= 16000

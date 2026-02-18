@@ -6,7 +6,7 @@
     generate_ssh_key: yes
     shell: "/bin/bash" 
     state: present
-  become: yes
+  become: true
 
 - name: Add user to sudoers
   lineinfile:
@@ -16,7 +16,7 @@
     line: '{{ crc_username }} ALL=(ALL) NOPASSWD: ALL'
     validate: 'visudo -cf %s'
     backup: yes
-  become: yes
+  become: true
 
 - name: update user hard ulimit nofile
   pam_limits:
@@ -25,7 +25,7 @@
     limit_item: nofile
     use_max: yes
     value: '64000'
-  become: yes
+  become: true
 
 - name: update user soft ulimit nofile
   pam_limits:
@@ -34,7 +34,7 @@
     limit_item: nofile
     use_max: yes
     value: '64000'
-  become: yes
+  become: true
 
 - name: authorized_key
   authorized_key:
@@ -42,4 +42,4 @@
     state: present
     manage_dir: yes
     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"  
-  become: yes
+  become: true

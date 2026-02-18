@@ -1,2 +1,3 @@
 ---
-- include_tasks: twas_cell_daytrader7.yml
+- name: tWAS Cell DayTrader7
+  include_tasks: twas_cell_daytrader7.yml

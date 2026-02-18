@@ -16,7 +16,7 @@
   - name: set custom instana_dir var
     set_fact:
       instana_dir: "{{ instana_dir_custom }}/etc/instana/"
-    when: isInstana.stat.exists == True
+    when: isInstana.stat.exists
   
   - name: check if instana normal is installed
     stat:
@@ -25,9 +25,9 @@
   - name: set normal instana_dir var
     set_fact:
       instana_dir: "{{ instana_dir_normal }}/etc/instana/"
-    when: isInstana.stat.exists == True
+    when: isInstana.stat.exists
   - name: set the Instana server in etc/instana/com.instana.agent.main.sender.Backend.cfg
-    become: yes
+    become: true
     template:
      src: com.instana.agent.main.sender.Backend.cfg.j2
      dest: "{{ instana_dir }}com.instana.agent.main.sender.Backend.cfg"

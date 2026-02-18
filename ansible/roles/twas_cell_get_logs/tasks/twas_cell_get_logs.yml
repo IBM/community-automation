@@ -1,42 +1,74 @@
 ---
 
-- name: clear log directory
-  delegate_to: localhost
-  file:
-    path: "logs/{{ env_name }}/{{ ansible_fqdn }}"
-    state: absent
+- name: Any logs?
+  ansible.builtin.stat:
+    path: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+  register: islogs
 
-- name: create log directory
-  delegate_to: localhost
-  file:
-    path: "logs/{{ env_name }}/{{ ansible_fqdn }}"
-    state: directory
+- name: Log archive logic
+  when: islogs.stat.exists
+  block:
+    - name: Archive the logs dir to fetch
+      ignore_errors: true # ignore errors, if there are a lot of errors the logs will rollover causing the archive to fail
+      community.general.archive:
+        path:
+          - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/*" # needs * to allow the exclude_path to work
+        exclude_path:
+          - "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/service"
+        exclusion_patterns:
+          - '*.zip'
+          - '*.tar'
+          - '*.gz'
+          - '*.lck'
+          - 'SystemErr*.log'
+          - 'btrace*'
+          - 'objects*'
+        dest: logs.zip
+        format: zip
+        mode: '0755'
 
-- name: archive the logs dir to fetch
-  community.general.archive:
-    path:
-    - "{{install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
-    dest: logs.tar
-    format: tar
+    - name: Create local logs dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
+        state: directory
+        mode: '0755'
 
-- name: fetch the twas log archive
-  ansible.builtin.fetch:
-    src: logs.tar
-    dest: "logs/{{ env_name }}"
+    - name: Fetch the twas log archive
+      ansible.builtin.fetch:
+        flat: true
+        src: logs.zip
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/"
 
-    # unarchive fails to find handler
-- name: Extract the twas log archive
-  delegate_to: localhost
-  shell: tar xf logs.tar
-  args:
-    chdir: "logs/{{ env_name }}/{{ ansible_fqdn }}"
+    - name: Unarchive the twas logs
+      delegate_to: localhost
+      ansible.builtin.unarchive:
+        src: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs/"
+        remote_src: false
 
-- name: remove logs.tar
-  delegate_to: localhost
-  file:
-    path: "logs/{{ env_name }}/{{ ansible_fqdn }}/logs.tar"
-    state: absent
+    - name: Remove logs.zip
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs.zip"
+        state: absent
 
-- name: log/error directory location
-  debug:
-   msg: "{{ playbook_dir }}/logs/{{ env_name }}/{{ ansible_fqdn }}"
+    - name: Print local log/error directory location
+      ansible.builtin.debug:
+        msg: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
+
+    - name: Verbose GC log processing
+      when: verboseGC|bool
+      block:
+        - name: Run the IBM verbosegc logic
+          ansible.builtin.include_role:
+            name: ibm_vbgc
+          vars:
+            vbgc_dir: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ profile_name }}/logs"
+
+        - name: Run the IBM verbosegc report logic
+          run_once: true
+          ansible.builtin.include_role:
+            name: ibm_vbgc_report
+          vars:
+            vbgc_report_dir: "{{ logs_dir }}/{{ env_name }}"

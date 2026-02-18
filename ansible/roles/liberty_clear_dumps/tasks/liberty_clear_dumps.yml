@@ -1,0 +1,80 @@
+---
+- name: Set the local usr directory
+  when: 
+    - not (more_enabled | default(false))
+  set_fact: 
+    local_usr_dir: "{{ wlp_usr_dir }}/servers/{{ wl_server }}"
+
+- name: Set the local usr directory ( MoRE )
+  when: 
+    - more_enabled | default(false)
+  set_fact:
+    local_usr_dir: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs/{{ wl_server }}/"
+
+- name: Check if local_usr_dir exists
+  ansible.builtin.stat:
+    path: "{{ local_usr_dir }}"
+  register: local_usr_dir_stat
+
+- name: Display warning if directory doesn't exist
+  ansible.builtin.debug:
+    msg: "Warning: Directory {{ local_usr_dir }} does not exist. Skipping dump cleanup."
+  when: not local_usr_dir_stat.stat.exists
+
+- name: Clean up Liberty dumps
+  when: local_usr_dir_stat.stat.exists
+  block:
+    - name: Any heapdumps?
+      ansible.builtin.shell: "find {{ local_usr_dir }} -name 'heapdump*'"
+      register: isheap
+      changed_when: false
+
+    - name: Remove Liberty heapdumps
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: '{{ isheap.stdout_lines }}'
+
+    - name: Any javacores?
+      ansible.builtin.shell: "find {{ local_usr_dir }} -name 'javacore*'"
+      register: isjavacore
+      changed_when: false
+
+    - name: Remove Liberty javacores
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: '{{ isjavacore.stdout_lines }}'
+
+    - name: Any cores?
+      ansible.builtin.shell: "find {{ local_usr_dir }} -name 'core*'"
+      register: iscore
+      changed_when: false
+
+    - name: Remove Liberty cores
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: '{{ iscore.stdout_lines }}'
+
+    - name: Any Snaps?
+      ansible.builtin.shell: "find {{ local_usr_dir }} -name 'Snap*'"
+      register: issnap
+      changed_when: false
+
+    - name: Remove Liberty Snaps
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: '{{ issnap.stdout_lines }}'
+
+    - name: Any jitdumps?
+      ansible.builtin.shell: "find {{ local_usr_dir }} -name 'jitdump*'"
+      register: isjitdump
+      changed_when: false
+
+    - name: Remove Liberty jitdumps
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items: '{{ isjitdump.stdout_lines }}'

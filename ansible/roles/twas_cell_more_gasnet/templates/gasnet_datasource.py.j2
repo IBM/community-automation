@@ -1,0 +1,10 @@
+myDB2Alias=AdminTask.createAuthDataEntry('[-alias db2Alias -user {{ db_user }} -password {{ db_pass }} -description db2Alias]')
+print (myDB2Alias)
+myJDBC=AdminTask.createJDBCProvider('[-scope Cell={{ cellName }} -databaseType DB2 -providerType "DB2 Universal JDBC Driver Provider" -implementationType "XA data source" -name DB2_Universal_JDBC_Driver_Provider_XA -description DB2_Universal_JDBC_Driver_Provider_XA -classpath [{{ db2_jdbc_path }}/db2jcc4.jar] -nativePath [${DB2UNIVERSAL_JDBC_DRIVER_NATIVEPATH}] ]')
+print (myJDBC)
+myDS=AdminTask.createDatasource(myJDBC, '[-name StationSecureDS -jndiName jdbc/StationSecureDS -dataStoreHelperClassName com.ibm.websphere.rsadapter.DB2UniversalDataStoreHelper -containerManagedPersistence false -componentManagedAuthenticationAlias dmgr/db2Alias -xaRecoveryAuthAlias dmgr/db2Alias -configureResourceProperties [[databaseName java.lang.String STSECDB] [driverType java.lang.Integer 4] [serverName java.lang.String {{ gn_db_host }}] [portNumber java.lang.Integer {{ gn_db_port }}]]]')
+print (myDS)
+myMappingModule=AdminConfig.create('MappingModule', myDS, '[[authDataAlias dmgr/db2Alias] [mappingConfigAlias DefaultPrincipalMapping]]')
+print (myMappingModule)
+
+AdminConfig.save()

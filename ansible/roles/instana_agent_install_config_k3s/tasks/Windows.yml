@@ -1,0 +1,17 @@
+---
+- name: get the install agent script
+  win_get_url:
+   url: "{{ get_unattended_windows_exe }}"
+   dest: ./AgentBootstrap.exe
+   validate_certs: no
+   timeout: 1500 # just in case connections are slow
+- name: install the windows agent
+  win_command: "{{ AgentBootstrap }}"
+  register: isInstana
+- debug:
+   msg: "{{ isInstana.stdout_lines }}"
+- name: Set service startup mode to auto and ensure it is started
+  win_service:
+    name: instana-agent-service
+    start_mode: auto
+    state: started

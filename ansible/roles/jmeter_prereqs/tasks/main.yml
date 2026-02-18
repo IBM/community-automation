@@ -1,7 +1,7 @@
 ---
 
 - name: Install RHEL jmeter pre-reqs
-  become: yes
+  become: true
   dnf:
    name: "{{ packages }}"
    state: latest

@@ -1,0 +1,3 @@
+---
+- name: Install tWAS MoRE GasNet application
+  ansible.builtin.include_tasks: twas_cell_more_gasnet.yml

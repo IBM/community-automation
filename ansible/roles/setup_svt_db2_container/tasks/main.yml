@@ -1,2 +1,3 @@
 ---
-- include_tasks: setup_svt_db2_container.yml
+- name: Setup db2 container
+  ansible.builtin.include_tasks: setup_svt_db2_container.yml

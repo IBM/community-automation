@@ -25,7 +25,7 @@
     command: 'mv ~/.crc/bin/oc.bin/oc ~/.crc/bin/oc'
   when:
    - isbinococ.failed == False
-   - isbinococ.stat.exists == True
+   - isbinococ.stat.exists
 
 - name: link oc kubectl
   file:

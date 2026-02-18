@@ -1,3 +1,4 @@
 ---
 db_user: 'db2inst1'
 db_host: 'dbhost'
+svt_db_dir: dbdir

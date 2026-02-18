@@ -16,3 +16,6 @@ db_port1: '50000'
 db_name: 'tradedb'
 # could be sessions if separate db
 db_name1: 'tradedb' 
+console_log_level: OFF
+liberty_max_logs: 20
+liberty_max_file_size: 20 # MB

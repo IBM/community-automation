@@ -1,0 +1,4 @@
+if len(sys.argv) == 1:
+    nodeagent = AdminControl.queryNames('type=NodeAgent,process=nodeagent,node={{ profile_name }},*')
+    mls_status=AdminControl.invoke(nodeagent, 'getProcessStatus', str(sys.argv[0]))
+    print(mls_status)

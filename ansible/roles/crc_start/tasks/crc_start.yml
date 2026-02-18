@@ -25,7 +25,7 @@
   - name: crc delete stdout
     debug: 
       msg: "{{ crcdelete.stdout_lines }}"
-  when: isdotcrc.stat.exists == True
+  when: isdotcrc.stat.exists
 
 - name: crc setup
   shell: "crc setup"
@@ -72,7 +72,7 @@
     groups:
      - 'libvirt'
     append: yes
-  become: yes
+  become: true
 
 - name: crc status stdout
   debug: 

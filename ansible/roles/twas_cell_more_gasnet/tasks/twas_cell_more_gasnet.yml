@@ -1,0 +1,62 @@
+---
+# Tasks for WebSphere administration
+
+- name: Generate DB2 datasource script from template
+  ansible.builtin.template:
+    src: gasnet_datasource.py.j2
+    dest: "gasnet_datasource.py"
+    mode: '0755'
+
+- name: Run wsadmin script to create DB2 datasource
+  ansible.builtin.command:
+    cmd: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -f gasnet_datasource.py -username {{ twas_username }} -password {{ twas_password }}"
+  register: wsadmin_result
+  changed_when: "'WASX7209I: Connected to process' in wsadmin_result.stderr"
+  failed_when: wsadmin_result.rc != 0
+
+- name: Display wsadmin output
+  ansible.builtin.debug:
+    var: wsadmin_result.stdout_lines
+
+# MLS Cluster creation tasks
+- name: Generate MLS cluster script from template
+  ansible.builtin.template:
+    src: create_mls_cluster.py.j2
+    dest: "create_mls_cluster.py"
+    mode: '0755'
+
+- name: Run wsadmin script to create MLS cluster
+  ansible.builtin.command:
+    cmd: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -f create_mls_cluster.py -username {{ twas_username }} -password {{ twas_password }}"
+  register: mls_cluster_result
+  changed_when: "'WASX7209I: Connected to process' in mls_cluster_result.stderr"
+  failed_when: mls_cluster_result.rc != 0
+
+- name: Display MLS cluster creation output
+  ansible.builtin.debug:
+    var: mls_cluster_result.stdout_lines
+
+# Made with Bob
+
+# GasNet_ATM_Module deployment tasks
+- name: Generate GasNet_ATM_Module installation script from template
+  ansible.builtin.template:
+    src: install_gnatm.py.j2
+    dest: "install_gnatm.py"
+    mode: '0755'
+
+- name: Copy GasNet app
+  ansible.builtin.copy:
+   src: "{{ DefaultAppFile }}"
+   dest: "{{ DefaultAppFile }}"
+
+- name: Run wsadmin script to deploy GasNet_ATM_Module
+  ansible.builtin.command:
+    cmd: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/bin/wsadmin{{ ext }} -lang jython -f install_gnatm.py -username {{ twas_username }} -password {{ twas_password }}"
+  register: gnatm_result
+  changed_when: "'WASX7209I: Connected to process' in gnatm_result.stderr"
+  failed_when: gnatm_result.rc != 0
+
+- name: Display GasNet_ATM_Module deployment output
+  ansible.builtin.debug:
+    var: gnatm_result.stdout_lines

@@ -1,0 +1,121 @@
+---
+- name: Create the hardware_info facts
+  when:
+    - cpuinfo.stdout_lines is defined
+    - meminfo.stdout_lines is defined
+  block:
+
+    - name: Create hardware_info dir
+      delegate_to: localhost
+      ansible.builtin.file:
+        path: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}"
+        state: directory
+        mode: '0755'
+
+    - name: Create the hardware_info if cpus defined
+      when:
+        - cpus.stdout_lines is defined
+      block:
+
+        - name: Size of cpus
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            max_counter: "{{ cpus.stdout_lines | length }}"
+
+        - name: Create dict with cpus
+          ansible.builtin.set_fact:
+            hardware_cpus: "{{ hardware_cpus | default({}) | combine( { item: cpus.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+          with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+          no_log: true
+
+        - name: Add the cpus to hardware_cpus
+          ansible.builtin.set_fact:
+            hardware_cpus: '{ "cpus" : {{ hardware_cpus }}}'
+
+    - name: Size of kernelinfo
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        max_counter: "{{ kernelinfo.stdout_lines | length }}"
+
+    - name: Create dict with kernelinfo
+      ansible.builtin.set_fact:
+        hardware_kernelinfo: "{{ hardware_kernelinfo | default({}) | combine( { item: kernelinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
+
+    - name: Add the cpuinfo to hardware_kernelinfo
+      ansible.builtin.set_fact:
+        hardware_kernelinfo: '{ "kernelinfo" : {{ hardware_kernelinfo }}}'
+
+    - name: Size of cpuinfo
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        max_counter: "{{ cpuinfo.stdout_lines | length }}"
+
+    - name: Create dict with cpuinfo
+      ansible.builtin.set_fact:
+        hardware_cpuinfo: "{{ hardware_cpuinfo | default({}) | combine( { item: cpuinfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
+
+    - name: Add the cpuinfo to hardware_cpuinfo
+      ansible.builtin.set_fact:
+        hardware_cpuinfo: '{ "cpuinfo" : {{ hardware_cpuinfo }}}'
+
+    - name: Size of meminfo
+      delegate_to: localhost
+      ansible.builtin.set_fact:
+        max_counter: "{{ meminfo.stdout_lines | length }}"
+
+    - name: Create dict with meminfo
+      ansible.builtin.set_fact:
+        hardware_meminfo: "{{ hardware_meminfo | default({}) | combine( { item: meminfo.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
+      with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      no_log: true
+
+    - name: Add the meminfo to hardware_meminfo
+      ansible.builtin.set_fact:
+        hardware_meminfo: '{ "meminfo" : {{ hardware_meminfo }}}'
+
+    - name: Add the os name to hardware_osname
+      set_fact:
+        hardware_osname:
+          osname: "{{ ansible_distribution }}-{{ ansible_distribution_major_version }}"
+
+    - name: Combine hardware_info and hardware_osname
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_osname, recursive=True) }}"
+
+    - name: Combine hardware_info and hardware_kernelinfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_kernelinfo, recursive=True) }}"
+
+    - name: Combine hardware_info and hardware_cpus
+      when:
+        - cpus.stdout_lines is defined
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_cpus, recursive=True) }}"
+
+    - name: Combine hardware_info and hardware_cpuinfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_cpuinfo, recursive=True) }}"
+
+    - name: Combine hardware_info and hardware_meminfo
+      ansible.builtin.set_fact:
+        hardware_info: "{{ hardware_info | default({}) | combine(hardware_meminfo, recursive=True) }}"
+
+    - name: Add the fqdn to hardware_info
+      ansible.builtin.set_fact:
+        hardware_info: "{{ { ansible_fqdn : hardware_info } }}"
+
+    # - name: Debug hardware_info
+    #   delegate_to: localhost
+    #   ansible.builtin.debug:
+    #     msg: "{{ hardware_info }}"
+
+    - name: Write var to file
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ hardware_info | to_nice_json( sort_keys=false ) }}"
+        dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ hardware_info_json_file }}"
+        mode: '0644'
