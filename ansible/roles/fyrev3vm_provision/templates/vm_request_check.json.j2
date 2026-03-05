@@ -13,8 +13,11 @@
    "platform": "{{ fyre_platform }}",
    "memory": "{{ fyre_memory }}",
    "cpu": "{{ fyre_cpu }}",
-   {% if fyre_additional_disk is defined %}
+   {% if fyre_additional_disk is defined and fyre_additional_disk != "none" %}
    "additional_disk": [ "{{ fyre_additional_disk }}" ],
+   {% endif %}
+   {% if fyre_additional_disks is defined and fyre_additional_disks != [] %}
+   "additional_disk": {{ fyre_additional_disks }},
    {% endif %}
    {% if fyre_ceph_storage is defined %}
    "ceph_storage": "{{ fyre_ceph_storage }}",
