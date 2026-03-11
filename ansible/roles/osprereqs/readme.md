@@ -1,39 +1,70 @@
-Role Name
-=========
+OS Prerequisites Role
+=====================
 
-A brief description of the role goes here.
-
-------------
+This role configures operating system prerequisites for various platforms including Red Hat Enterprise Linux, Ubuntu, SLES, and AIX.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Ansible 2.9 or higher
+- `ansible.posix` collection (for sysctl module in core dump configuration)
+- Root/sudo privileges on target systems
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
-
 | Variable                | Required | Default | Choices                   | Comments                                 |
 |-------------------------|----------|---------|---------------------------|------------------------------------------|
-| foo                     | no       | false   | true, false               | example variable                         |
-| bar                     | yes      |         | eggs, spam                | example variable                         |
+| twas855x                | no       | false   | true, false               | Install 32-bit packages for tWAS 8.5.5.x |
+| enable_core_dumps       | no       | false   | true, false               | Enable full core dump generation         |
+
+## Core Dump Configuration
+
+When `enable_core_dumps` is set to `true`, the role will:
+- Configure unlimited core dump size in `/etc/security/limits.conf`
+- Set kernel core pattern to `/var/crash/core.%e.%p.%h.%t`
+- Create `/var/crash` directory with proper permissions
+- Configure systemd-coredump (if present) for uncompressed, unlimited dumps
+- Set ulimit in `/etc/profile.d/enable_coredumps.sh`
+
+See [tasks/README_enable_core_dumps.md](tasks/README_enable_core_dumps.md) for detailed documentation.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Basic usage:
 ```yaml
-    - hosts: all
-      roles:
-         - ansible-role-template
+- hosts: all
+  roles:
+    - role: osprereqs
 ```
+
+With core dumps enabled:
+```yaml
+- hosts: debug_servers
+  vars:
+    enable_core_dumps: true
+  roles:
+    - role: osprereqs
+```
+
+Include core dump task directly:
+```yaml
+- hosts: all
+  tasks:
+    - name: Enable core dumps
+      ansible.builtin.include_role:
+        name: osprereqs
+        tasks_from: enable_core_dumps
+      when: enable_core_dumps | default(false) | bool
+```
+
+See [examples/enable_core_dumps_example.yml](examples/enable_core_dumps_example.yml) for more examples.
 
 License
 -------

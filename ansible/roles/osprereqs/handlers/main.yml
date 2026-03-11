@@ -1,0 +1,10 @@
+---
+# Handlers for osprereqs role
+
+- name: restart systemd-coredump
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+  ignore_errors: true
+
+# Made with Bob

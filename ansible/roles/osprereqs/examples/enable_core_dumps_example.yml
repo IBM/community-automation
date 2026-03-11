@@ -1,0 +1,36 @@
+---
+# Example playbook to enable full core dumps on Red Hat systems
+#
+# Usage:
+#   ansible-playbook -i inventory enable_core_dumps_example.yml
+#
+# To enable core dumps, set the variable:
+#   ansible-playbook -i inventory enable_core_dumps_example.yml -e "enable_core_dumps=true"
+
+- name: Configure Red Hat systems with core dumps enabled
+  hosts: all
+  become: true
+  
+  vars:
+    # Set to true to enable full core dumps
+    enable_core_dumps: true
+  
+  roles:
+    - role: osprereqs
+      when: ansible_os_family == "RedHat"
+
+# Alternative: Include the task directly in a playbook
+- name: Enable core dumps on specific hosts
+  hosts: debug_servers
+  become: true
+  
+  tasks:
+    - name: Include core dump configuration
+      ansible.builtin.include_role:
+        name: osprereqs
+        tasks_from: enable_core_dumps
+      when: 
+        - ansible_os_family == "RedHat"
+        - enable_core_dumps | default(false) | bool
+
+# Made with Bob

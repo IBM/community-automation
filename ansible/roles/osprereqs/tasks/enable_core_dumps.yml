@@ -1,0 +1,90 @@
+---
+# Task to enable full core dumps on Red Hat systems
+# This configures the system to generate complete core dump files for debugging
+
+- name: Ensure core dump size is unlimited in limits.conf
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/security/limits.conf
+    regexp: '^\*\s+{{ item.type }}\s+core\s+'
+    line: '*               {{ item.type }}    core            unlimited'
+    insertbefore: '^# End of file'
+    create: false
+  loop:
+    - { type: 'soft' }
+    - { type: 'hard' }
+
+- name: Set kernel core pattern to generate core dumps in /var/crash
+  become: true
+  ansible.posix.sysctl:
+    name: kernel.core_pattern
+    value: '/var/crash/core.%e.%p.%h.%t'
+    state: present
+    sysctl_set: true
+    reload: true
+
+- name: Ensure /var/crash directory exists with proper permissions
+  become: true
+  ansible.builtin.file:
+    path: /var/crash
+    state: directory
+    mode: '1777'
+    owner: root
+    group: root
+
+- name: Disable automatic core dump compression (systemd-coredump)
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: '^#?Compress='
+    line: 'Compress=no'
+    create: true
+  when: ansible_service_mgr == "systemd"
+
+- name: Set maximum core dump size in systemd-coredump
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: '^#?ProcessSizeMax='
+    line: 'ProcessSizeMax=0'
+    create: true
+  when: ansible_service_mgr == "systemd"
+
+- name: Set external core dump size in systemd-coredump
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: '^#?ExternalSizeMax='
+    line: 'ExternalSizeMax=0'
+    create: true
+  when: ansible_service_mgr == "systemd"
+
+- name: Configure core dump storage location in systemd-coredump
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/coredump.conf
+    regexp: '^#?Storage='
+    line: 'Storage=external'
+    create: true
+  when: ansible_service_mgr == "systemd"
+
+- name: Set ulimit for core dumps in /etc/profile.d
+  become: true
+  ansible.builtin.copy:
+    dest: /etc/profile.d/enable_coredumps.sh
+    content: |
+      # Enable unlimited core dumps
+      ulimit -c unlimited
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Display core dump configuration status
+  ansible.builtin.debug:
+    msg:
+      - "Core dumps have been enabled on {{ ansible_hostname }}"
+      - "Core pattern: /var/crash/core.%e.%p.%h.%t"
+      - "Core size limit: unlimited"
+      - "Core dump directory: /var/crash"
+
+# Made with Bob

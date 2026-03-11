@@ -1,2 +1,3 @@
 ---
 twas855x: false
+enable_core_dumps: false
