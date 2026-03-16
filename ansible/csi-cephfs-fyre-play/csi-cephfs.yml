@@ -3,9 +3,6 @@
   hosts: bastion
   gather_facts: no
   tasks:
-  - name: python_install_fyre
-    include_role:
-      name: python_install_fyre
   - name: Gathering Facts
     setup:
   - name: git_install_fyre
