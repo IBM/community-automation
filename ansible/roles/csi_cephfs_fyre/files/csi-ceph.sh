@@ -57,7 +57,8 @@ fi
 echo "setup Docker registry image pull secrets exit"
 
 echo "Doing operator-openshift.yaml"
-oc create -f $rookPath/operator-openshift.yaml
+cat $rookPath/operator-openshift.yaml | sed 's#image: rook/ceph#image: docker-na-public.artifactory.swg-devops.com/sec-guardium-next-gen-dockerhub-docker-remote/rook/ceph#'  | kubectl apply -f -
+oc create -f /tmp/operator-openshift.yaml 
 echo "operator-openshift.yaml exit $?"
 sleep_count=30
 while [[ $sleep_count -gt 0 ]]; do
@@ -78,7 +79,8 @@ echo "Doing sed of deviceFilter"
 sed -i 's/#deviceFilter:/deviceFilter: ^vd[b-z]$/g' $rookPath/cluster.yaml
 echo "Exit from deviceFilter $?"
 echo "Doing cluster.yaml create"
-oc create -f $rookPath/cluster.yaml
+cat $rookPath/cluster.yaml | sed 's#image: ceph/ceph#image: docker-na-public.artifactory.swg-devops.com/sec-guardium-next-gen-dockerhub-docker-remote/ceph/ceph#' | kubectl apply -f -
+oc create -f /tmp/cluster.yaml
 echo "Exit from cluster.yaml $?"
 
 num_worker_nodes=$(oc get no | tr -s ' ' | cut -f3 -d' ' | grep worker  | wc -l)
