@@ -17,7 +17,10 @@
 
     - name: Jmeter container is not running
       delegate_to: localhost
-      when: container_info.containers[0] is not defined
+      when: >
+        container_info.containers[0] is not defined or
+        (container_info.containers[0] is defined and
+         container_info.containers[0].State.Status == 'exited')
       ansible.builtin.template:
         src: container_status_notrunning.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
