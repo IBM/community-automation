@@ -15,6 +15,7 @@
     - name: Create the hardware_info if cpus defined
       when:
         - cpus.stdout_lines is defined
+      no_log: true
       block:
 
         - name: Size of cpus
