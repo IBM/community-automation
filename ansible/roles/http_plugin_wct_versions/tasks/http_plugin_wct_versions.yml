@@ -62,10 +62,14 @@
 
 - name: Create dict with http version
   ansible.builtin.set_fact:
-    http_version: "{{ http_version | default({}) | combine( { item: HTTPServerVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    http_version: >-
+      {{ http_version | default({}) |
+         combine({ item: HTTPServerVersionOutput.stdout_lines[item] },
+                 recursive=True,
+                 list_merge='append') }}
+  loop: "{{ range(0, max_counter | int) | list }}"
   loop_control:
-    label: "Processing http version"
+    label: ""
   no_log: true
 
 - name: New dict http_version
@@ -107,10 +111,14 @@
 
 - name: Create dict with plugin version(s)
   ansible.builtin.set_fact:
-    plugin_version: "{{ plugin_version | default({}) | combine( { item: PluginVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    plugin_version: >-
+      {{ plugin_version | default({}) |
+         combine({ item: PluginVersionOutput.stdout_lines[item] },
+                 recursive=True,
+                 list_merge='append') }}
+  loop: "{{ range(0, max_counter | int) | list }}"
   loop_control:
-    label: "Processing plugin version(s)"
+    label: ""
   no_log: true
 
 - name: New dict plugin_version
@@ -152,10 +160,14 @@
 
 - name: Create dict with wct version(s)
   ansible.builtin.set_fact:
-    wct_version: "{{ wct_version | default({}) | combine( { item: WCTVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-  with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+    wct_version: >-
+      {{ wct_version | default({}) |
+         combine({ item: WCTVersionOutput.stdout_lines[item] },
+                 recursive=True,
+                 list_merge='append') }}
+  loop: "{{ range(0, max_counter | int) | list }}"
   loop_control:
-    label: "Processing wct version(s)"
+    label: ""
   no_log: true
 
 - name: New dict wct_version

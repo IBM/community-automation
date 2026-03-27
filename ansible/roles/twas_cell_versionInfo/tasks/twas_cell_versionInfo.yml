@@ -35,8 +35,14 @@
 
   - name: Create dict with tWAS version(s)
     ansible.builtin.set_fact:
-      twas_version: "{{ twas_version | default({}) | combine( { item: tversions.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-    with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      twas_version: >-
+        {{ twas_version | default({}) |
+           combine({ item: tversions.stdout_lines[item] },
+                   recursive=True,
+                   list_merge='append') }}
+    loop: "{{ range(0, max_counter | int) | list }}"
+    loop_control:
+      label: ""
     no_log: true
 
   - name: New dict twas_version
@@ -134,8 +140,14 @@
 
   - name: Create dict with tWAS version(s)
     ansible.builtin.set_fact:
-      app_version: "{{ app_version | default({}) | combine( { item: appVersionOutput.stdout_lines[item | int] }, recursive=True, list_merge='append' ) }}"
-    with_sequence: 'start=0 end={{ max_counter | int - 1 }}'
+      app_version: >-
+        {{ app_version | default({}) |
+           combine({ item: appVersionOutput.stdout_lines[item] },
+                   recursive=True,
+                   list_merge='append') }}
+    loop: "{{ range(0, max_counter | int) | list }}"
+    loop_control:
+      label: ""
     no_log: true
 
   - name: New dict app_version
