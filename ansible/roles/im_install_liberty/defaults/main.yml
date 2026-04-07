@@ -8,3 +8,4 @@ ibm_user: 'external_ibmuser'
 ibm_pass: 'external_ibmpass'
 im_liberty_package: 'com.ibm.websphere.liberty.ND'
 im_java_short_version: '11' # com.ibm.java.jdk.v17 com.ibm.java.jdk.v11, com.ibm.java.jdk.8
+wlp_keystore_password: 'changeit' # pragma: allowlist secret
