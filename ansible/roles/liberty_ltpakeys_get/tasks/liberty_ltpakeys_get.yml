@@ -7,7 +7,7 @@
 - name: Fetch ltpa.keys
   when: onprem.stat.exists
   block:
-    - name: fetch controller ltpa.keys
+    - name: Fetch controller ltpa.keys
       ansible.builtin.fetch:
         src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
         dest: /tmp/ltpa.keys
