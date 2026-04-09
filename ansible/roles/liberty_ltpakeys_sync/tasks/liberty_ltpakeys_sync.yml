@@ -24,7 +24,7 @@
       copy:
         src: "{{ ltpa_file_path }}"
         dest: "{{ ltpa_file_path }}"
-        mode: "{{ ltpa_mode }}"
+        mode: "0600"
       when:
         - inventory_hostname != ltpa_master_host
         - local_ltpa_stat.stat.checksum | default('') != master_ltpa_stat.stat.checksum
