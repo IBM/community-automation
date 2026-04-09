@@ -1,11 +1,16 @@
 ---
-- name: Is IHS running?
-  ignore_errors: true
+- name: Check IHS service availability
   ansible.builtin.uri:
     url: "https://localhost:{{ ihs_https_port }}"
-    return_content: no
+    return_content: false
     validate_certs: false
+    status_code:
+      - 200
+      - -1
+    timeout: 10
   register: isIHSup
+  failed_when: false
+  changed_when: false
 
 # - name: Is IHS running output
 #   ansible.builtin.debug:
