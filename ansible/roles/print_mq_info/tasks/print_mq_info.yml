@@ -9,7 +9,9 @@
       register: container_info
 
     - name: MQ is running in container
-      when: container_info.containers[0] is defined
+      when: 
+        - container_info.containers[0] is defined
+        - container_info.containers[0].State.Status == 'running'
       block:
 
         - name: Get the MQ container version info
