@@ -1,32 +1,31 @@
 ---
-# 1. Get checksum from master host (run once)
-- name: Get LTPA checksum from master host
-  ansible.builtin.stat:
-    path: "{{ ltpa_file_path }}"
-    checksum_algorithm: sha256
-  register: master_ltpa_stat
+# Read from master once
+- name: Read LTPA keys from master host
+  ansible.builtin.slurp:
+    src: "{{ ltpa_file_path }}"
+  register: master_ltpa_content
   delegate_to: "{{ ltpa_master_host }}"
   run_once: true
 
-- name: Sync ltpa.keys
-  when: master_ltpa_stat.stat.exists
-  block:
+# Compute master checksum once
+- name: Compute checksum of master LTPA keys
+  ansible.builtin.set_fact:
+    master_ltpa_checksum: "{{ master_ltpa_content.content | b64decode | hash('sha256') }}"
+  run_once: true
 
-    # 2. Get checksum from each node
-    - name: Get LTPA checksum from local host
-      ansible.builtin.stat:
-        path: "{{ ltpa_file_path }}"
-        checksum_algorithm: sha256
-      register: local_ltpa_stat
+# Get checksum from each node
+- name: Get LTPA checksum from local host
+  ansible.builtin.stat:
+    path: "{{ ltpa_file_path }}"
+    checksum_algorithm: sha256
+  register: local_ltpa_stat
 
-    # 3. Sync from master when different
-    - name: Sync LTPA keys from master host
-      ansible.builtin.synchronize:
-        src: "{{ ltpa_master_host }}:{{ ltpa_file_path }}"
-        dest: "{{ ltpa_file_path }}"
-        mode: pull
-        archive: true
-        checksum: true
-      when:
-        - inventory_hostname != ltpa_master_host
-        - local_ltpa_stat.stat.checksum | default('') != master_ltpa_stat.stat.checksum
+# Sync if different
+- name: Sync LTPA keys to target hosts
+  ansible.builtin.copy:
+    content: "{{ master_ltpa_content.content | b64decode }}"
+    dest: "{{ ltpa_file_path }}"
+    mode: "0600"
+  when:
+    - inventory_hostname != ltpa_master_host
+    - local_ltpa_stat.stat.checksum | default('') != master_ltpa_checksum
