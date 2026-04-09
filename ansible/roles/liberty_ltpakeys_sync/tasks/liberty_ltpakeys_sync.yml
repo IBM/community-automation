@@ -19,14 +19,19 @@
         checksum_algorithm: sha256
       register: local_ltpa_stat
 
-    # 3. Copy LTPA keys from master if different
     - name: Sync LTPA keys from master host
-      copy:
+      ansible.builtin.synchronize:
         src: "{{ ltpa_file_path }}"
         dest: "{{ ltpa_file_path }}"
-        mode: "0600"
-        remote_src: true
+        mode: pull
+        archive: yes
+        perms: yes
+        owner: yes
+        group: yes
+      delegate_to: "{{ inventory_hostname }}"
+      vars:
+        ansible_ssh_common_args: >
+          -o StrictHostKeyChecking=no
       when:
         - inventory_hostname != ltpa_master_host
         - local_ltpa_stat.stat.checksum | default('') != master_ltpa_stat.stat.checksum
-      delegate_to: "{{ ltpa_master_host }}"
