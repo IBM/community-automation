@@ -27,7 +27,6 @@
         archive: true
         perms: true
         checksum: true
-      delegate_to: "{{ inventory_hostname }}"
       vars:
         ansible_ssh_common_args: >
           -o StrictHostKeyChecking=no
