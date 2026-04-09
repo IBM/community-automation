@@ -1,2 +1,3 @@
 ---
-- include_tasks: liberty_ltpakeys_put.yml
+- name: Include tasks for Liberty LTPA keys sync
+  ansible.builtin.include_tasks: liberty_ltpakeys_put.yml

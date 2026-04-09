@@ -1,0 +1,3 @@
+---
+- name: Liberty ltpa sync keys
+  ansible.builtin.include_tasks: liberty_ltpakeys_sync.yml

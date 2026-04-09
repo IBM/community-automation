@@ -1,14 +1,14 @@
 ---
-- name: check for the existence ltpa.keys
-  stat:
+- name: Check for the existence ltpa.keys
+  ansible.builtin.stat:
    path: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
   register: onprem
 
-- block:
-  - name: fetch controller ltpa.keys
-    fetch:
-      src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
-      dest: /tmp/ltpa.keys
-      flat: yes
+- name: Fetch ltpa.keys
   when: onprem.stat.exists
-
+  block:
+    - name: fetch controller ltpa.keys
+      ansible.builtin.fetch:
+        src: "{{ wlp_usr_dir }}/servers/{{ cc_server }}/resources/security/ltpa.keys"
+        dest: /tmp/ltpa.keys
+        flat: true

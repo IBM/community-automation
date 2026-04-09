@@ -1,0 +1,4 @@
+---
+ltpa_group: ls
+ltpa_master_host: "{{ groups[ltpa_group][0] }}"
+ltpa_file_path: "{{ wlp_usr_dir }}/servers/{{ wl_server }}/resources/security/ltpa.keys"
