@@ -25,6 +25,7 @@
         src: "{{ ltpa_file_path }}"
         dest: "{{ ltpa_file_path }}"
         mode: "0600"
+        remote_src: true
       when:
         - inventory_hostname != ltpa_master_host
         - local_ltpa_stat.stat.checksum | default('') != master_ltpa_stat.stat.checksum
