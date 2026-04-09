@@ -23,7 +23,7 @@
     - name: Sync LTPA keys from master host
       copy:
         src: "{{ ltpa_file_path }}"
-        group: "{{ ltpa_group_name }}"
+        dest: "{{ ltpa_file_path }}"
         mode: "{{ ltpa_mode }}"
       when:
         - inventory_hostname != ltpa_master_host
