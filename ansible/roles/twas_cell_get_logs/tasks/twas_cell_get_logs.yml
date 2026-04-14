@@ -8,6 +8,26 @@
 - name: Log archive logic
   when: islogs.stat.exists
   block:
+
+    - name: Find verbosegc files
+      when: islogs.stat.exists
+      ansible.builtin.find:
+        paths: "{{ install_base }}/{{ twas_dir }}/profiles/{{ profile_name }}/logs"
+        patterns: 'verbosegc*'
+        file_type: file
+      register: verbosegc_files
+
+    - name: Remove old verbosegc files (keep only 50 most recent)
+      when:
+        - islogs.stat.exists
+        - verbosegc_files.matched > 50
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      loop: "{{ (verbosegc_files.files | sort(attribute='mtime') | reverse)[50:] }}"
+      loop_control:
+        label: "{{ item.path | basename }}"
+
     - name: Archive the logs dir to fetch
       ignore_errors: true # ignore errors, if there are a lot of errors the logs will rollover causing the archive to fail
       community.general.archive:
