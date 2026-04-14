@@ -27,7 +27,7 @@
         chdir: "{{ vbgc_report_dir }}"
       register: indexhtmloutput
       changed_when: false
-      ignore_errors: true
+      failed_when: indexhtmloutput.rc not in [0, 1]
       no_log: true
 
     - name: Any vbgc line plots?

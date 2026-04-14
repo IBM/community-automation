@@ -261,7 +261,7 @@ if (operation == "all" or operation == "configure"):
 	print ("------------------------------------------------")
 
 	# Create the JMS config objects
-	if ( enableWMQ == 'true' or enableWMQ == 'True' ):
+	if ( enableWMQ.lower() == 'true' ):
 		print ("")
 		print ("------------------------------------------------")
 		print (" IBM WMQ Resource Configuration started!!!")
