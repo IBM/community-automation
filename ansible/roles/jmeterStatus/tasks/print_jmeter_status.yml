@@ -17,14 +17,63 @@
 
     - name: Jmeter container is not running
       delegate_to: localhost
-      when: >
-        container_info.containers[0] is not defined or
-        (container_info.containers[0] is defined and
-         container_info.containers[0].State.Status == 'exited')
+      when:
+        - container_info.containers[0] is not defined
       ansible.builtin.template:
         src: container_status_notrunning.json.j2
         dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
         mode: '0444'
+
+    - name: Jmeter container was running, but is exited
+      when:
+        - container_info.containers[0] is defined
+        - container_info.containers[0].State.Status == 'exited'
+      block:
+
+        - name: Check if jmeter.json exists in exited container
+          ansible.builtin.command:
+            cmd: "podman exec {{ svt_jmeter_container_name }} test -f /jmeter/output/jmeter.json"
+          register: file_check
+          failed_when: false
+
+        - name: Copy jmeter.json from exited container
+          when: file_check.rc == 0
+          ansible.builtin.command:
+            cmd: "podman cp {{ svt_jmeter_container_name }}:/jmeter/output/jmeter.json /tmp/jmeter_status_{{ ansible_fqdn }}.json"
+          register: copy_result
+
+        - name: Process jmeter.json from exited container
+          when: file_check.rc == 0
+          block:
+
+            - name: Read jmeter.json content
+              ansible.builtin.slurp:
+                src: "/tmp/jmeter_status_{{ ansible_fqdn }}.json"
+              register: jmeter_json_content
+
+            - name: Add the hostname to the status
+              ansible.builtin.set_fact:
+                jmeter_status: "{{{ ansible_fqdn : jmeter_json_content.content | b64decode | from_json }}}"
+
+            - name: Save Jmeter status to stress_status
+              delegate_to: localhost
+              ansible.builtin.copy:
+                content: "{{ jmeter_status }}"
+                dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+                mode: '0444'
+
+            - name: Clean up temporary file
+              ansible.builtin.file:
+                path: "/tmp/jmeter_status_{{ ansible_fqdn }}.json"
+                state: absent
+
+        - name: There is no jmeter.json status, default to the not running template
+          when: file_check.rc != 0
+          delegate_to: localhost
+          ansible.builtin.template:
+            src: container_status_notrunning.json.j2
+            dest: "{{ logs_dir }}/{{ env_name }}/{{ ansible_fqdn }}/{{ status_json_file }}"
+            mode: '0444'
 
     - name: Jmeter container is running
       when: 
