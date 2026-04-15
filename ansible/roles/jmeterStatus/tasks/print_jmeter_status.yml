@@ -30,20 +30,14 @@
         - container_info.containers[0].State.Status == 'exited'
       block:
 
-        - name: Check if jmeter.json exists in exited container
-          ansible.builtin.command:
-            cmd: "podman exec {{ svt_jmeter_container_name }} test -f /jmeter/output/jmeter.json"
-          register: file_check
-          failed_when: false
-
         - name: Copy jmeter.json from exited container
-          when: file_check.rc == 0
           ansible.builtin.command:
             cmd: "podman cp {{ svt_jmeter_container_name }}:/jmeter/output/jmeter.json /tmp/jmeter_status_{{ ansible_fqdn }}.json"
           register: copy_result
+          failed_when: false
 
         - name: Process jmeter.json from exited container
-          when: file_check.rc == 0
+          when: copy_result.rc == 0
           block:
 
             - name: Read jmeter.json content
@@ -68,7 +62,7 @@
                 state: absent
 
         - name: There is no jmeter.json status, default to the not running template
-          when: file_check.rc != 0
+          when: copy_result.rc != 0
           delegate_to: localhost
           ansible.builtin.template:
             src: container_status_notrunning.json.j2
