@@ -55,7 +55,7 @@
 
     - name: Extract server status
       ansible.builtin.set_fact:
-        server_status: "{{ item.stdout | regex_search('(RUNNING|STOPPED)') | default('UNKNOWN') }}"
+        server_status: "{{ item.stdout | regex_search('(running|stopped)') | default('UNKNOWN') }}"
       with_items: "{{ statusMlsOutput.results }}"
       register: extracted_status
 
