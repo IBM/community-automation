@@ -1,0 +1,15 @@
+---
+- name: Find ULB Rollback version 
+  ansible.builtin.include_role:
+    name: im_rollback_find_version
+  vars:
+    was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+    im_package_id: 'com.ibm.websphere.EDGELBIPV4IPV6.v90'
+
+- name: Rollback ULB 
+  ansible.builtin.include_role:
+    name: im_rollback_was_product
+  vars:
+    was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+    im_package_id: 'com.ibm.websphere.EDGELBIPV4IPV6.v90'
+  when: rollback_version is defined

@@ -1,0 +1,18 @@
+---
+- name: Find ULB  JDK Rollback version
+  block:
+  - name: Find ULB JDK Rollback version
+    ansible.builtin.include_role:
+      name: im_rollback_find_version
+    vars:
+      was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+      im_package_id: 'com.ibm.java.jdk.v8'
+
+  - name: Rollback ULB JDK
+    ansible.builtin.include_role:
+      name: im_rollback_was_product
+    vars:
+      was_product_dir: "{{ install_base }}/{{ twas_dir }}"
+      im_package_id: 'com.ibm.java.jdk.v8'
+    when: rollback_version is defined
+  when: twas_release == 'WAS90.EDGIM'
