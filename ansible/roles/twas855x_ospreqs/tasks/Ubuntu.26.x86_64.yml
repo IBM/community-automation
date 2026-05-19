@@ -8,5 +8,5 @@
   vars:
     packages:
       - 'libxtst6'
-      - 'libgtk2.0-0'
+      # - 'libgtk2.0-0'
       - 'libxft2'
