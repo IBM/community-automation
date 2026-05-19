@@ -44,7 +44,7 @@
     - twas855x|bool
     - ansible_architecture == 'x86_64'
   become: true
-  a ansible.builtin.aptt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: present
   vars:
