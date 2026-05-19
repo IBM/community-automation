@@ -47,18 +47,6 @@
     - ansible_distribution == "SLES"
     - ansible_distribution_major_version == "16"
 
-# add check for Ubuntu 26, hack to allow IHS to start
-# add this to the < http install path >/bin/envvars
-# export GLIBC_TUNABLES=glibc.rtld.execstack=2
-- name: Hack tWAS90 linux Ubuntu 26 HTTP super hack
-  ansible.builtin.lineinfile:
-    dest: "{{ install_ihs_base }}/{{ wct_dir }}/bin/envvars"
-    line: "export GLIBC_TUNABLES=glibc.rtld.execstack=2"
-    regexp: '^export GLIBC_TUNABLES='
-  when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_major_version == "26"
-
 - name: New install configuration
   when:
     - ihs_upgrade_only is not defined
