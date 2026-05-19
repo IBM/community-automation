@@ -1,36 +1,39 @@
 ---
 # specific OS supports wildcards
-- name: remove extraneous packages
+- name: Remove extraneous packages
   become: true
-  ignore_errors: true
-  zypper:
+  ansible.builtin.package:
    name: "{{ packages }}"
    state: absent
   vars:
-   packages:
-   - "adobe*"
-   - "java*"
-   - "samba*"
-   - "valgrind*"
-   - "tignervnc"
+    packages:
+      - "adobe*"
+      - "java*"
+      - "samba*"
+      - "valgrind*"
+      - "tignervnc"
+      - '@workstation'
+      - 'tigervnc-server'
+  register: zypper_remove_result
+  failed_when: false
+  changed_when: zypper_remove_result.changed | default(false)
 
-- name: zypper update
+- name: Zypper update
   become: true
-  zypper:
+  ansible.builtin.package:
    name: '*'
    state: latest
 
-- name: install packages
+- name: Install packages
   become: true
-  zypper:
+  ansible.builtin.package:
    name: "{{ packages }}"
    state: present
   vars:
-   packages:
-   - 'xorg-x11-xauth'
-   - 'less'
-   - 'psmisc'
-   - 'bind-utils'
-   - 'zip'
-   - 'unzip'
-
+    packages:
+    - 'xorg-x11-xauth'
+    - 'less'
+    - 'psmisc'
+    - 'bind-utils'
+    - 'zip'
+    - 'unzip'

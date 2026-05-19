@@ -2,8 +2,7 @@
 # specific OS supports wildcards
 - name: remove extraneous packages
   become: true
-  ignore_errors: yes
-  zypper:
+  ansible.builtin.package:
    name: "{{ packages }}"
    state: absent
   vars:
@@ -13,16 +12,19 @@
    - "samba*"
    - "valgrind*"
    - "tignervnc"
+  register: zypper_remove_result
+  failed_when: false
+  changed_when: zypper_remove_result.changed | default(false)
 
-- name: remove extraneous packages
+- name: zypper update
   become: true
-  zypper:
+  ansible.builtin.package:
    name: '*'
    state: latest
 
 - name: install packages
   become: true
-  zypper:
+  ansible.builtin.package:
    name: "{{ packages }}"
    state: present
   vars:

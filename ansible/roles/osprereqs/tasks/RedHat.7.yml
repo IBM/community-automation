@@ -1,43 +1,50 @@
 ---
 # specific OS supports wildcards, if preceded with @ its a group
 # if the db is corrupt, this can fix it: rpm --rebuilddb
-- name: remove extraneous packages
+- name: Remove extraneous packages
   become: true
-  ignore_errors: true
-  yum:
+  ansible.builtin.yum:
    name: "{{ packages }}"
    state: absent
    autoremove: true
   vars:
-   packages:
-   - "adobe*"
-   - "java*"
-   - "samba*"
-   - "valgrind*"
-   - "tignervnc"
-   - '@workstation'
-   - 'tigervnc-server'
-   - 'xorg-x11-fonts-Type1'
+    packages:
+      - "adobe*"
+      - "java*"
+      - "samba*"
+      - "valgrind*"
+      - "tignervnc"
+      - '@workstation'
+      - 'tigervnc-server'
+      - 'xorg-x11-fonts-Type1'
+  register: yum_remove_result
+  failed_when: false
+  changed_when: yum_remove_result.changed | default(false)
 
-- name: yum update
+- name: Yum update
   become: true
-  ignore_errors: true
-  yum:
-   name: '*'
-   state: latest
+  ansible.builtin.yum:
+    name: '*'
+    state: present
+    update_cache: true
+  register: yum_update_result
+  failed_when: false
+  changed_when: yum_update_result.changed | default(false)
 
-- name: install packages
+- name: Install packages
   become: true
-  yum:
-   name: "{{ packages }}"
-   state: present
-   skip_broken: true
+  ansible.builtin.yum:
+    name: "{{ packages }}"
+    state: present
+    skip_broken: true
   vars:
-   packages:
-   - 'xorg-x11-xauth'
-   - 'gtk2'
-   - 'libXtst'
-   - 'xorg-x11-fonts-Type1'
-   - 'psmisc'
-   - 'zip'
-   - 'unzip'
+    packages:
+      - 'xorg-x11-xauth'
+      - 'gtk2'
+      - 'libXtst'
+      - 'xorg-x11-fonts-Type1'
+      - 'psmisc'
+      - 'zip'
+      - 'unzip'
+      - 'python3'
+      - 'jq'

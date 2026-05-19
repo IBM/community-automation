@@ -1,9 +1,8 @@
 ---
 # specific OS supports wildcards
-- name: remove extraneous packages
+- name: Remove extraneous packages
   become: true
-  ignore_errors: true
-  apt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: absent
    autoremove: true
@@ -13,16 +12,19 @@
    - "samba*"
    - "valgrind*"
    - "tignervnc"
+  register: apt_remove_result
+  failed_when: false
+  changed_when: apt_remove_result.changed | default(false)
 
-- name: apt update
+- name: Apt update
   become: true
-  apt:
+  ansible.builtin.apt:
    name: '*'
    state: latest
 
-- name: install packages
+- name: Install packages
   become: true
-  apt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: present
   vars:
@@ -31,18 +33,18 @@
    - 'unzip'
 
 - name: Install packages tWAS 855x 32bit packages
-  when: 
-    - twas855x|bool 
+  when:
+    - twas855x|bool
     - ansible_architecture == 'x86_64'
   become: true
-  command: dpkg --add-architecture i386
+  ansible.builtin.command: dpkg --add-architecture i386
 
-- name: dpkg --add-architecture i386 tWAS 855x 32bit packages
-  when: 
-    - twas855x|bool 
+- name: Dpkg --add-architecture i386 tWAS 855x 32bit packages
+  when:
+    - twas855x|bool
     - ansible_architecture == 'x86_64'
   become: true
-  apt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: present
   vars:

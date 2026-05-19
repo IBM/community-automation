@@ -1,34 +1,38 @@
 ---
 # specific OS supports wildcards
-- name: remove extraneous packages
+- name: Remove extraneous packages
   become: true
-  ignore_errors: true
-  apt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: absent
    autoremove: true
   vars:
-   packages:
-   - "java*"
-   - "samba*"
-   - "valgrind*"
-   - "tignervnc"
+    packages:
+    - "java*"
+    - "samba*"
+    - "valgrind*"
+    - "tignervnc"
+    - 'tigervnc-standalone-server'
+    - 'xorg-x11-fonts-Type1'
+  register: apt_remove_result
+  failed_when: false
+  changed_when: apt_remove_result.changed | default(false)
 
-- name: apt update
+- name: Apt update
   become: true
-  apt:
-   name: '*'
-   state: latest
+  ansible.builtin.apt:
+    name: '*'
+    state: latest
 
-- name: install packages
+- name: Install packages
   become: true
-  apt:
+  ansible.builtin.apt:
    name: "{{ packages }}"
    state: present
   vars:
-   packages:
-   - 'libxtst6'
-   - 'libgtk2.0-0'
-   - 'libxft2'
-   - 'zip'
-   - 'unzip'
+    packages:
+    - 'libxtst6'
+    - 'libgtk2.0-0'
+    - 'libxft2'
+    - 'zip'
+    - 'unzip'

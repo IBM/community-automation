@@ -3,7 +3,6 @@
 # if the db is corrupt, this can fix it: rpm --rebuilddb
 - name: Remove extraneous packages
   become: true
-  ignore_errors: true
   ansible.builtin.dnf:
     name: "{{ packages }}"
     state: absent
@@ -18,6 +17,9 @@
       - '@workstation'
       - 'tigervnc-server'
       - 'xorg-x11-fonts-Type1'
+  register: dnf_remove_result
+  failed_when: false
+  changed_when: dnf_remove_result.changed | default(false)
 
 - name: Update all packages
   become: true

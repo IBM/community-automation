@@ -45,14 +45,18 @@
   become: true
 
 - name: Install the latest version sudo
-  ignore_errors: true
   ansible.builtin.command: '/opt/freeware/bin/dnf -y install sudo zip unzip less'
   become: true
+  register: dnf_install_result
+  failed_when: false
+  changed_when: dnf_install_result.rc == 0
 
 - name: dnf update all latest
-  ignore_errors: true
   ansible.builtin.command: '/opt/freeware/bin/dnf -y update'
   become: true
+  register: dnf_update_result
+  failed_when: false
+  changed_when: dnf_update_result.rc == 0
 
 - name: enable full core dump from applications
   ansible.builtin.command: 'chdev -l sys0 -a fullcore=true'

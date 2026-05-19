@@ -1,61 +1,63 @@
 ---
 # specific OS supports wildcards, if preceded with @ its a group
 # if the db is corrupt, this can fix it: rpm --rebuilddb
-- name: remove extraneous packages
+- name: Remove extraneous packages
   become: true
-  ignore_errors: true
-  dnf:
+  ansible.builtin.dnf:
    name: "{{ packages }}"
    state: absent
    autoremove: true
   vars:
-   packages:
-   - "adobe*"
-   - "java*"
-   - "samba*"
-   - "valgrind*"
-   - "tignervnc"
-   - '@workstation'
-   - 'tigervnc-server'
-   - 'xorg-x11-fonts-Type1'
+    packages:
+      - "adobe*"
+      - "java*"
+      - "samba*"
+      - "valgrind*"
+      - "tignervnc"
+      - '@workstation'
+      - 'tigervnc-server'
+      - 'xorg-x11-fonts-Type1'
+  register: dnf_remove_result
+  failed_when: false
+  changed_when: dnf_remove_result.changed | default(false)
 
-- name: dnf update
+- name: Dnf update
   become: true
-  dnf:
+  ansible.builtin.dnf:
    name: '*'
    state: latest
 
-- name: install packages
+- name: Install packages
   become: true
-  dnf:
+  ansible.builtin.dnf:
    name: "{{ packages }}"
    state: present
    skip_broken: true
   vars:
-   packages:
-   - 'xorg-x11-xauth'
-   - 'gtk2'
-   - 'libXtst'
-   - 'xorg-x11-fonts-Type1'
-   - 'libnsl'
-   - 'zip'
-   - 'unzip'
-   - 'python3'
-   - 'jq'
+    packages:
+      - 'xorg-x11-xauth'
+      - 'gtk2'
+      - 'libXtst'
+      - 'xorg-x11-fonts-Type1'
+      - 'libnsl'
+      - 'zip'
+      - 'unzip'
+      - 'python3'
+      - 'jq'
 
 - name: Install packages tWAS 855x 32 bit packages
-  when: 
-    - twas855x|bool 
+  when:
+    - twas855x|bool
     - ansible_architecture == 'x86_64'
   become: true
-  dnf:
+  ansible.builtin.dnf:
    name: "{{ packages }}"
    state: present
-   skip_broken: yes
+   skip_broken: true
   vars:
-   packages:
-   - 'glibc.i686' 
-   - ' gtk2.i686'
-   - 'libXtst.i686'
-   - 'libXft.i686'
-   - 'libnsl.i686'
+    packages:
+      - 'glibc.i686'
+      - ' gtk2.i686'
+      - 'libXtst.i686'
+      - 'libXft.i686'
+      - 'libnsl.i686'
