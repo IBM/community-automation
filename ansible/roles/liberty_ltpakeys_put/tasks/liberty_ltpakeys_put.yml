@@ -1,6 +1,6 @@
 ---
 - name: Check for the existence ltpa.keys
-  ansible.bulitin.stat:
+  ansible.builtin.stat:
     path: /tmp/ltpa.keys
   register: onprem
 
