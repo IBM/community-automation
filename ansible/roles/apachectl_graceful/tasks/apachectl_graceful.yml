@@ -1,9 +1,9 @@
 ---
 - name: Restart the apache http server gracefully
-  tags: Restart 
+  tags: Restart
   block:
-  - name: check if apachectl is installed
-    stat:
+  - name: Check if apachectl is installed
+    ansible.builtin.stat:
       path: "{{ install_ihs_base }}/{{ http_dir }}/bin"
     register: ishttp
     failed_when: ishttp.stat.exists == False
@@ -12,25 +12,25 @@
     when: ansible_system is not search('CYG')
     block:
       - name: HTTPServer graceful load new / updated config
-        failed_when: false
-        shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl graceful"
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/apachectl graceful"
         register: gracefulOutput
+        failed_when: false
 
       - name: apachectl gracefulOutput
-        debug: 
+        ansible.builtin.debug:
         msg: "{{ gracefulOutput.stdout_lines }}"
 
       - name: check if adminctl is installed
-        stat:
+        ansible.builtin.stat:
           path: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl"
         register: ishttp
         failed_when: ishttp.stat.exists == False
 
       - name: HTTPServer adminctl graceful load new / updated config
-        failed_when: false
-        shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl graceful"
+        ansible.builtin.shell: "{{install_ihs_base }}/{{ http_dir }}/bin/adminctl graceful"
         register: gracefulOutput
+        failed_when: false
 
       - name: adminctl gracefulOutput
-        debug: 
-        msg: "{{ gracefulOutput.stdout_lines }}"
+        ansible.builtin.debug:
+          msg: "{{ gracefulOutput.stdout_lines }}"

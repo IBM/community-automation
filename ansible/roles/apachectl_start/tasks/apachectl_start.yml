@@ -3,7 +3,7 @@
   tags: apache_start
   block:
   - name: check if apachectl is installed
-    stat:
+    ansible.builtin.stat:
       path: "{{ install_ihs_base }}/{{ http_dir }}/bin"
     register: ishttp
     failed_when: ishttp.stat.exists == False
@@ -12,12 +12,12 @@
     when: ansible_system is not search('CYG')
     block:
       - name: HTTPServer start to  load new / updated config
-        failed_when: false
-        shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/apachectl start"
         register: ihsOutput
+        failed_when: false
 
       - name: HTTPServer apachectl start Output
-        debug: 
+        ansible.builtin.debug: 
           msg: "{{ ihsOutput.stdout_lines }}"
 
       - name: Disable admin.config User otherwise must run as root
@@ -33,14 +33,14 @@
           replace: '#Group'
 
       - name: HTTPServer adminctl start to  load new / updated config
-        failed_when: false
-        shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl start"
+        ansible.builtin.shell: "{{ install_ihs_base }}/{{ http_dir }}/bin/adminctl start"
         register: adminctl
+        failed_when: false
 
       - name: HTTPServer adminctl start Output
-        debug: 
+        ansible.builtin.debug:
           msg: "{{ adminctl.stdout_lines }}"
-    
+
   - name: Windoze HTTPServer operations
     when: ansible_system == 'Windows' or 'CYG' in ansible_system
     block:

@@ -1,7 +1,7 @@
 ---
 - name: Upgrade IM repo
   ansible.builtin.debug:
-   msg: "IM repo->{{ im_upgrade_repo }}"
+    msg: "IM repo->{{ im_upgrade_repo }}"
 
 - name: Install IBM Digital Certs root certificate
   when: ibm_cert_url is defined
@@ -9,17 +9,17 @@
     name: install_ibm_cert
 
 - name: Test connection to repo since this does fail test commit
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ im_upgrade_repo }}"
     dest: /tmp/test_im_upgrade_repo.html
     mode: '0755'
     validate_certs: false
     timeout: 2
   register: repoexists
-  ignore_errors: true
+  failed_when: false
 
 - name: Delete temp file
-  file:
+  ansible.builtin.file:
     state: absent
     path: /tmp/test_im_upgrade_repo.html
 
@@ -49,5 +49,3 @@
       ansible.builtin.debug:
         msg: "{{ updateOutput.stdout_lines }}"
       failed_when: ( updateOutput.rc not in [ 0, 1 ] )
-
-
