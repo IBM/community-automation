@@ -1,0 +1,219 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Ansible Collection Migration Issue</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #ffffff;
+    padding: 24px;
+  }
+  .wrapper {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+  }
+  button {
+    background: #3b82d4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  textarea {
+    width: 100%;
+    min-height: 900px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 16px;
+    resize: vertical;
+    white-space: pre;
+    tab-size: 2;
+  }
+  footer {
+    margin-top: 24px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 12px;
+    color: #57606a;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="toolbar">
+    <button>Copy to clipboard</button>
+  </div>
+  <textarea id="md">## Migrate shared Ansible collection from github.com fork to github.ibm.com/was-svt/ansible-common
+
+### Background
+
+The shared Ansible collection (230 roles, 1 filter plugin) currently lives inside a personal fork on github.com and is consumed by two repos via `ansible-galaxy`:
+
+- `was-svt/NEST-OSCert` — `ansible/requirements.yml`
+- `was-svt/nest-ops` — `ansible/requirements.yml`
+
+Both reference it today as:
+
+```yaml
+collections:
+  - name: https://github.com/stevenschader/community-automation.git
+    type: git
+    version: "main"
+```
+
+The goal is to move the collection into a dedicated, private IBM GHE repo (`was-svt/ansible-common`) and update both consumers to pull from there via SSH.
+
+---
+
+### Current state
+
+```
+github.com/stevenschader/community-automation
+  ansible/
+    galaxy.yml        ← namespace: ibm_community_automation, name: ibm_community_automation
+    roles/            ← 230 shared roles
+    plugins/filter/   ← get_twas_server_name.py
+```
+
+All roles are referenced in playbooks via FQCN:
+`ibm_community_automation.ibm_community_automation.<role_name>`
+
+---
+
+### Target state
+
+```
+github.ibm.com/was-svt/ansible-common   ← new private repo
+  galaxy.yml
+  roles/
+  plugins/
+```
+
+Both consumer `requirements.yml` files updated to:
+
+```yaml
+  - name: git@github.ibm.com:was-svt/ansible-common.git
+    type: git
+    version: "main"
+```
+
+---
+
+### Tasks
+
+- [ ] **Create the new repo**
+  ```bash
+  GH_HOST=github.ibm.com gh repo create was-svt/ansible-common \
+    --private \
+    --description "Shared Ansible collection of common roles for was-svt"
+  ```
+
+- [ ] **Push collection content** — copy the `ansible/` subtree from `community-automation` into the new repo root
+  ```bash
+  git clone git@github.ibm.com:was-svt/ansible-common.git /tmp/ansible-common
+  cp -r /path/to/community-automation/ansible/. /tmp/ansible-common/
+  cd /tmp/ansible-common
+  git add .
+  git commit -m "Initial import of shared Ansible collection from community-automation"
+  git push origin main
+  ```
+
+- [ ] **Update `galaxy.yml`** in the new repo — keep `namespace` and `name` unchanged (avoids any playbook edits), only update `repository`:
+  ```yaml
+  namespace: "ibm_community_automation"
+  name: "ibm_community_automation"
+  version: "1.0.0"
+  readme: "README.md"
+  license:
+    - "Apache-2.0"
+  repository: "https://github.ibm.com/was-svt/ansible-common"
+  build_ignore:
+    - "*/roles"
+    - "*-play"
+    - "*_play"
+    - "install_instana_agent"
+    - "request-ocs-local-storage-vmware"
+    - "was-automation-register"
+  ```
+
+- [ ] **Update `NEST-OSCert/ansible/requirements.yml`**
+  ```yaml
+  ---
+  collections:
+    - name: git@github.ibm.com:was-svt/ansible-common.git
+      type: git
+      version: "main"
+    - name: containers.podman
+    - name: community.general
+  ```
+
+- [ ] **Update `nest-ops/ansible/requirements.yml`**
+  ```yaml
+  ---
+  collections:
+    - name: git@github.ibm.com:was-svt/ansible-common.git
+      type: git
+      version: "main"
+    - name: containers.podman
+    - name: community.general
+    - name: ansible.posix
+    - name: community.okd
+    - name: kubernetes.core
+    - name: ibm.ibm_zos_core
+  ```
+
+- [ ] **Add SSH deploy key** to `was-svt/ansible-common` for any Jenkins agents / CI runners that execute `ansible-galaxy install -r requirements.yml`
+  ```bash
+  GH_HOST=github.ibm.com gh api \
+    --method POST \
+    /repos/was-svt/ansible-common/keys \
+    --field title="Jenkins deploy key" \
+    --field key="$(cat /path/to/jenkins_id_rsa.pub)" \
+    --field read_only=true
+  ```
+
+- [ ] **Smoke-test** on a dev machine:
+  ```bash
+  ansible-galaxy install -r ansible/requirements.yml --force
+  # confirm ibm_community_automation.ibm_community_automation collection installs cleanly
+  ```
+
+- [ ] **Tag an initial release** (optional — allows consumers to pin a stable version instead of `main`)
+  ```bash
+  git -C /tmp/ansible-common tag -a v1.0.0 -m "Initial release"
+  git -C /tmp/ansible-common push origin v1.0.0
+  ```
+
+---
+
+### Notes
+
+- **No playbook changes required** — keeping `namespace: ibm_community_automation` / `name: ibm_community_automation` means all existing `ibm_community_automation.ibm_community_automation.*` role references in both consumer repos remain valid.
+- The `github.com/stevenschader/community-automation` fork can be archived or left as-is after both consumers are migrated and verified.
+- SSH protocol is required (`git@github.ibm.com:...`) since the new repo is private and consumers authenticate via SSH key.
+</textarea>
+
+  <footer>Made with IBM Bob</footer>
+</div>
+
+
+</body>
+</html>
