@@ -1,11 +1,11 @@
 ---
 
 - name: Install QuickCheck6.jar
-  copy:
-    src: files/QuickCheck6.jar
+  ansible.builtin.copy:
+    src: "{{ quickcheck_jar }}"
     dest: ~/QuickCheck6.jar
 - name: Install daytrader.txt
-  copy:
+  ansible.builtin.copy:
     src: files/daytrader.txt
     dest: ~/daytrader.txt
 
